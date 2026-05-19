@@ -11,15 +11,34 @@ function voiceMode(): "gather" | "relay" {
   return m === "relay" ? "relay" : "gather";
 }
 
+const FALLBACK_TWIML = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="Polly.Joanna-Neural" language="en-US">
+    Hello! Thanks for calling H T R Group Texas appliance repair.
+    Please hold while we connect you.
+  </Say>
+  <Pause length="1"/>
+  <Say voice="Polly.Joanna-Neural">
+    If you hear this message, our phone system is online.
+    Visit htrgrouptx dot com to book online. Goodbye.
+  </Say>
+  <Hangup/>
+</Response>`;
+
 export function handleVoiceIncoming(req: Request, res: Response): void {
-  console.log(
-    `[VOICE] Incoming ${req.body?.CallSid ?? "?"} from ${req.body?.From ?? "?"} mode=${voiceMode()}`,
-  );
-  if (voiceMode() === "relay") {
-    res.type("text/xml").send(buildConversationRelayTwiml(req));
-    return;
+  try {
+    console.log(
+      `[VOICE] Incoming ${req.body?.CallSid ?? "?"} from ${req.body?.From ?? "?"} mode=${voiceMode()}`,
+    );
+    if (voiceMode() === "relay") {
+      res.type("text/xml").send(buildConversationRelayTwiml(req));
+      return;
+    }
+    handleGatherIncoming(req, res);
+  } catch (err) {
+    console.error("[VOICE] Incoming handler crashed:", err);
+    res.type("text/xml").send(FALLBACK_TWIML);
   }
-  handleGatherIncoming(req, res);
 }
 
 voiceRouter.post("/voice/incoming", (req, res) => handleVoiceIncoming(req, res));

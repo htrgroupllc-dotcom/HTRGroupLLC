@@ -30,5 +30,12 @@ server.listen(port, (err) => {
     process.exit(1);
   }
   logger.info({ port }, "Server listening (HTTP + Voice WebSocket)");
+  logger.info(
+  {
+    voiceMode: process.env["VOICE_MODE"] ?? "gather",
+    voiceRoutes: ["/api/voice/incoming", "/api/voice/gather", "/api/voice/status"],
+  },
+  "Voice operator routes registered",
+);
   startWatchdog();
 });

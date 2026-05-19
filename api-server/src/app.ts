@@ -38,6 +38,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", router);
 app.use(voiceRouter);
 
+// Guaranteed voice webhook (even if router order changes)
+app.post("/api/voice/incoming", (req, res) => handleVoiceIncoming(req, res));
+app.post("/voice/incoming", (req, res) => handleVoiceIncoming(req, res));
+
 app.post("/sms/incoming", (req, res, next) => {
   if (req.body?.CallSid) {
     handleVoiceIncoming(req, res);
