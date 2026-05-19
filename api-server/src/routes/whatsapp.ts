@@ -5,8 +5,6 @@ import twilio from "twilio";
 import pg from "pg";
 import crypto from "crypto";
 import { cancelDealInHubSpot, syncBookingToHubSpot } from "../hubspot.js";
-import { handleVoiceIncoming } from "./voice.js";
-import { handleGatherTurn } from "../voice/gather-handler.js";
 
 const waRouter = Router();
 
@@ -1330,36 +1328,12 @@ waRouter.delete("/whatsapp/sessions/:wa", async (req, res) => {
   return res.json({ ok: true, cleared: waFrom });
 });
 
-/* ── Voice (also mounted on voiceRouter — duplicate here so /api/voice/* works on Replit) ── */
-waRouter.get("/voice/status", (_req, res) => {
-  res.json({
-    ok: true,
-    mode: process.env["VOICE_MODE"] ?? "gather",
-    mountedOn: "whatsapp-router",
-    gemini: Boolean(
-      process.env["AI_INTEGRATIONS_GEMINI_API_KEY"] &&
-        process.env["AI_INTEGRATIONS_GEMINI_BASE_URL"],
-    ),
-  });
-});
-
-waRouter.post("/voice/incoming", (req, res) => handleVoiceIncoming(req, res));
-
-waRouter.post("/voice/gather", (req, res) => {
-  void handleGatherTurn(req, res);
-});
-
-waRouter.post("/voice/call-status", (req, res) => {
-  console.log(
-    `[VOICE] Status ${req.body?.CallSid ?? "?"} → ${req.body?.CallStatus ?? "?"}`,
-  );
-  res.status(200).send();
-});
-
 /* ── SMS ─────────────────────────────────────────────────────────────────── */
 waRouter.post("/sms/incoming", (req, res) => {
   if (req.body?.CallSid) {
-    handleVoiceIncoming(req, res);
+    res.type("text/xml").send(
+      `<?xml version="1.0" encoding="UTF-8"?><Response><Hangup/></Response>`,
+    );
     return;
   }
   const body = ((req.body?.Body as string) ?? "").trim();

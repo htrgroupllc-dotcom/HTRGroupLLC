@@ -1,0 +1,13 @@
+---
+description: Replit API — только HTRGroupLLC1, не путать с HTRGroupLLC / Cloudflare
+alwaysApply: true
+---
+
+# Replit ≠ Cloudflare
+
+- **htrgrouptx.com** — Cloudflare Pages, ветка **main** репо **HTRGroupLLC**.
+- **htr-group-llc-appliance-repair.replit.app** — Replit, репо **HTRGroupLLC1**.
+
+Правки голоса/API для звонков → коммит в **HTRGroupLLC1** → на Replit: `bash scripts/replit-sync-and-build.sh` → **Publish**.
+
+Подробности: см. тот же файл `replit-deploy-htr.mdc` в репозитории **HTRGroupLLC1**.

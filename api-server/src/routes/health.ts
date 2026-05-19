@@ -8,8 +8,4 @@ router.get("/healthz", (_req, res) => {
   res.json(data);
 });
 
-router.get("/voice/status", (_req, res) => {
-  res.json({ ok: true, via: "health-router", build: "voice-v3" });
-});
-
 export default router;

@@ -11,7 +11,8 @@ alwaysApply: true
 
 `C:\Users\htrgr\Desktop\Проект сайта и CRM-HTRGroup\htrgr\REPLIT-LATEST\HTRGroupLLC-source`
 
-- Репозиторий GitHub: `https://github.com/htrgroupllc-dotcom/HTRGroupLLC`
+- Репозиторий GitHub (сайт): `https://github.com/htrgroupllc-dotcom/HTRGroupLLC`
+- **Голосовой AI:** репозиторий **HTRGroupLLC1** → Replit (в этой папке только заглушка `/api/voice/*`)
 - Менеджер пакетов: **pnpm** (не npm)
 
 ## Домены (запомнить)
