@@ -35,6 +35,19 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Voice health — registered first so Replit always exposes this route after deploy
+app.get(["/api/voice/status", "/voice/status"], (_req, res) => {
+  res.json({
+    ok: true,
+    mode: process.env["VOICE_MODE"] ?? "gather",
+    build: "voice-v3",
+    gemini: Boolean(
+      process.env["AI_INTEGRATIONS_GEMINI_API_KEY"] &&
+        process.env["AI_INTEGRATIONS_GEMINI_BASE_URL"],
+    ),
+  });
+});
+
 app.use("/api", router);
 app.use(voiceRouter);
 
