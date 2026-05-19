@@ -1,0 +1,53 @@
+---
+description: Пошаговый деплой HTR — GitHub Desktop → Replit, куда нажимать
+alwaysApply: true
+---
+
+# Деплой HTR — объяснять пользователю пошагово
+
+Когда нужно выложить правки (голос, API, сайт), давать **полный** список. Не писать «см. выше».
+
+## Три места (запомнить)
+
+| Место | Для чего | Сайт |
+|-------|----------|------|
+| **Cursor** | Агент правит код | папка `HTRGroupLLC-source` на ПК |
+| **GitHub Desktop** | Отправить код на GitHub | программа на ПК |
+| **Replit** | Сервер в интернете (звонки, API) | сайт replit.com в браузере |
+
+**htrgrouptx.com** — только **сайт** для клиентов.  
+**Голос и /api/...** — только **Replit**: `htr-group-llc-appliance-repair.replit.app`
+
+## Шаблон ответа пользователю
+
+### Часть 1 — GitHub Desktop (на компьютере)
+
+1. Открыть **GitHub Desktop**
+2. Вверху слева репозиторий: **HTRGroupLLC**
+3. Вверху по центру ветка: предпочтительно **main** (или **restore-stable-v2** если Replit на ней)
+4. Слева список файлов — если **0 changed files**, код уже закоммичен → сразу шаг 7 (Push)
+5. Поле **Summary** — вставить текст из code block (Copy)
+6. Синяя кнопка **Commit X files to …**
+7. Вверху **Push origin** (если нет — **Publish branch**, потом **Push origin**)
+8. Если есть **Publish branch** и ветки main нет на GitHub — нажать **Publish branch**
+
+### Часть 2 — Replit (в браузере)
+
+1. replit.com → проект **HTRGroupLLC-Appliance Repair** (или похожее имя)
+2. Слева или сверху **Git** → **Pull** / синхронизация с GitHub (если есть кнопка)
+3. Сверху вкладка **Publishing**
+4. Кнопка **Publish** или **Republish**
+5. Ждать зелёные галочки: Provision → … → **Promote** (2–5 мин)
+
+### Часть 3 — Проверка
+
+1. Браузер: `https://htr-group-llc-appliance-repair.replit.app/api/voice/status`
+2. Должен быть текст с `"ok":true` — не ошибка «Не удается получить»
+3. Позвонить **+1 606 660 6067**
+
+### Часть 4 — Twilio
+
+Менять **только** если пользователь сам менял URL. Обычно уже стоит:
+`https://htr-group-llc-appliance-repair.replit.app/api/voice/incoming`
+
+Всегда давать **Summary** в отдельном fenced code block для Copy.
