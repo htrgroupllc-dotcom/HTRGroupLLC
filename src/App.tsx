@@ -8,6 +8,7 @@ import Gallery from "@/pages/gallery";
 import Blog from "@/pages/blog";
 import BlogPost from "@/pages/blog-post";
 import AdminPage from "@/pages/admin";
+import VoiceBookCallPage from "@/pages/voice-book-call";
 import BackButton from "@/components/BackButton";
 import PromoPopup from "@/components/PromoPopup";
 import AuthGate from "@/components/AuthGate";
@@ -58,6 +59,7 @@ function Router() {
           <AdminPage />
         </AuthGate>
       </Route>
+      <Route path="/book-call/:token" component={VoiceBookCallPage} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -70,6 +72,7 @@ function GlobalUI() {
   const [location] = useLocation();
   const isAdmin   = location === "/admin";
   const isGallery = location === "/gallery";
+  const isBookCall = location.startsWith("/book-call/");
   const [bubbleVisible, setBubbleVisible] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -88,13 +91,13 @@ function GlobalUI() {
   }, []);
 
   useEffect(() => {
-    if (isAdmin || isGallery) return;
+    if (isAdmin || isGallery || isBookCall) return;
     const t = setTimeout(() => setBubbleVisible(true), 3000);
     const t2 = setTimeout(() => setBubbleVisible(false), 10000);
     return () => { clearTimeout(t); clearTimeout(t2); };
-  }, [isAdmin, isGallery]);
+  }, [isAdmin, isGallery, isBookCall]);
 
-  if (isAdmin || isGallery) return null;
+  if (isAdmin || isGallery || isBookCall) return null;
 
   // Desktop: WA stacked above chat with enough gap so chat bubble doesn't reach WA button
   // Mobile:  WA at bottom-right corner, chat at bottom-left
