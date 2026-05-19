@@ -13,7 +13,13 @@ alwaysApply: true
 
 - Репозиторий GitHub: `https://github.com/htrgroupllc-dotcom/HTRGroupLLC`
 - Менеджер пакетов: **pnpm** (не npm)
-- Бэкенд API (прод): `https://htr-group-llc-appliance-repair.replit.app`
+
+## Домены (запомнить)
+
+- **Основной сайт (бренд, Cloudflare Pages):** [https://htrgrouptx.com](https://htrgrouptx.com)
+- **Бэкенд API (Replit, голос/SMS/CRM):** `https://htr-group-llc-appliance-repair.replit.app`  
+  (или кастомный Replit-домен, если настроен — в Twilio должен быть URL **именно API**, не статика Cloudflare)
+- Для Secrets: `PUBLIC_BASE_URL` = URL того сервера, куда смотрит Twilio webhook
 
 ## Статическая сборка для Cloudflare / Netlify
 
