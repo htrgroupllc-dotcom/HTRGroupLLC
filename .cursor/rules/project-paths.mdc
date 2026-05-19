@@ -1,0 +1,28 @@
+---
+description: Основные пути проекта HTR Group (исходники и деплой)
+alwaysApply: true
+---
+
+# Пути проекта HTR Group
+
+## Исходный код (Replit / GitHub)
+
+Рабочая папка с исходниками:
+
+`C:\Users\htrgr\Desktop\Проект сайта и CRM-HTRGroup\htrgr\REPLIT-LATEST\HTRGroupLLC-source`
+
+- Репозиторий GitHub (GitHub Desktop): `HTRGroupLLC` — `https://github.com/htrgroupllc-dotcom/HTRGroupLLC`
+- Актуальный полный проект с Replit (если клонирован): `HTRGroupLLC1` — `htrgroup-dotcom/HTRGroupLLC1`
+- Для публикации сайта: ветка **`main`** → Cloudflare Pages `htrgrouptx`
+- Менеджер пакетов: **pnpm** (не npm)
+- Бэкенд API (прод): `https://htr-group-llc-appliance-repair.replit.app`
+
+## Статическая сборка для Cloudflare / Netlify
+
+Отдельная папка с готовым сайтом (после `npm run build` / zip) — не путать с исходниками.
+
+## Маршруты
+
+- `/employee` — портал сотрудника (в актуальной сборке; может отсутствовать в старой ветке на GitHub)
+- `/admin` — админ CRM
+- `/pay` — оплата
