@@ -1,0 +1,45 @@
+---
+description: Где что открывать (программа/сайт/зачем) — повторять в каждом ответе
+alwaysApply: true
+---
+
+# Где что делать — HTR Group (всегда повторять пользователю)
+
+Пользователь не хочет каждый раз вспоминать. В **каждом** ответе давать блок **«Где что открыть»** (таблица ниже) + **«Что делать сейчас»** (шаги). Без «см. выше».
+
+## Карта — запомнить
+
+| Что нужно | Где | Адрес / программа | Зачем |
+|-----------|-----|-------------------|--------|
+| Правки кода (агент Cursor) | **Программа на ПК** | **Cursor** → папка `HTRGroupLLC-source` | Агент меняет файлы |
+| Отправить код в облако Git | **Программа на ПК** | **GitHub Desktop** → репо **HTRGroupLLC** → ветка **main** | Commit + Push / Publish branch |
+| Сервер API, звонки, WhatsApp | **Сайт в браузере** | **replit.com** → Repl **HTRGroupLLC-Appliance-Repair** | Тут живёт бэкенд для Twilio |
+| Проверка API (голос) | **Браузер** | `https://htr-group-llc-appliance-repair.replit.app/api/voice/status` | Должен быть JSON `ok:true` |
+| Сайт для клиентов | **Браузер** | **https://htrgrouptx.com** | Только сайт, **не** API голоса |
+| Настройка телефона | **Сайт в браузере** | **console.twilio.com** → номер **+1 606 660 6067** | Voice webhook → Replit URL |
+| Деплой сайта (статика) | **Сайт в браузере** | **Cloudflare** → проект **htrgrouptx** | Только после `pnpm build`, ветка **main** |
+
+## Типовой порядок (после правок в Cursor)
+
+1. **Cursor** — агент поправил код (уже сделано).
+2. **GitHub Desktop** (ПК) — Summary → Commit to **main** → **Push origin** / **Publish branch**.
+3. **Replit** (браузер) — **Shell**: `git pull origin main` ИЛИ Git-иконка → затем **Publishing** → **Publish**.
+4. **Браузер** — проверить `.../api/voice/status` на **Replit** (не htrgrouptx.com).
+5. **Телефон** — звонок **+1 606 660 6067**.
+
+## Replit — если нет кнопки Pull
+
+- Вкладка **Shell** (слева иконка терминала) → команды `git fetch` / `git checkout main` / `git pull origin main`.
+- Потом **Publishing** → **Publish**.
+
+## Twilio Voice URL (не менять без нужды)
+
+`https://htr-group-llc-appliance-repair.replit.app/api/voice/incoming` (POST)
+
+## Коммит
+
+Тема + **Summary** в отдельном fenced code block (Copy).
+
+## Скрин от пользователя
+
+Сначала: где он на скрине → что значит → куда нажать (1–3 клика).

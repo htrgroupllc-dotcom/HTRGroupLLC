@@ -6,6 +6,7 @@ import pg from "pg";
 import crypto from "crypto";
 import { cancelDealInHubSpot, syncBookingToHubSpot } from "../hubspot.js";
 import { handleVoiceIncoming } from "./voice.js";
+import { handleGatherTurn } from "../voice/gather-handler.js";
 
 const waRouter = Router();
 
@@ -1327,6 +1328,32 @@ waRouter.delete("/whatsapp/sessions/:wa", async (req, res) => {
   await deleteSession(waFrom);
   console.log(`[ADMIN] Session cleared: ${waFrom}`);
   return res.json({ ok: true, cleared: waFrom });
+});
+
+/* ── Voice (also mounted on voiceRouter — duplicate here so /api/voice/* works on Replit) ── */
+waRouter.get("/voice/status", (_req, res) => {
+  res.json({
+    ok: true,
+    mode: process.env["VOICE_MODE"] ?? "gather",
+    mountedOn: "whatsapp-router",
+    gemini: Boolean(
+      process.env["AI_INTEGRATIONS_GEMINI_API_KEY"] &&
+        process.env["AI_INTEGRATIONS_GEMINI_BASE_URL"],
+    ),
+  });
+});
+
+waRouter.post("/voice/incoming", (req, res) => handleVoiceIncoming(req, res));
+
+waRouter.post("/voice/gather", (req, res) => {
+  void handleGatherTurn(req, res);
+});
+
+waRouter.post("/voice/call-status", (req, res) => {
+  console.log(
+    `[VOICE] Status ${req.body?.CallSid ?? "?"} → ${req.body?.CallStatus ?? "?"}`,
+  );
+  res.status(200).send();
 });
 
 /* ── SMS ─────────────────────────────────────────────────────────────────── */
