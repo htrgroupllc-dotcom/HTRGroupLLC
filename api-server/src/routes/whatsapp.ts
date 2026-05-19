@@ -5,6 +5,7 @@ import twilio from "twilio";
 import pg from "pg";
 import crypto from "crypto";
 import { cancelDealInHubSpot, syncBookingToHubSpot } from "../hubspot.js";
+import { handleVoiceIncoming } from "./voice.js";
 
 const waRouter = Router();
 
@@ -1328,10 +1329,25 @@ waRouter.delete("/whatsapp/sessions/:wa", async (req, res) => {
   return res.json({ ok: true, cleared: waFrom });
 });
 
-/* ── SMS ─────────────────────────────────────────────────────────────────── */
+/* ── SMS (and misconfigured voice webhooks on this URL) ──────────────────── */
 waRouter.post("/sms/incoming", (req, res) => {
-  console.log(`[SMS] FROM=${req.body?.From} BODY="${req.body?.Body}"`);
-  res.type("text/xml").send(`<?xml version="1.0" encoding="UTF-8"?><Response></Response>`);
+  if (req.body?.CallSid) {
+    handleVoiceIncoming(req, res);
+    return;
+  }
+
+  const from = (req.body?.From as string) ?? "";
+  const body = ((req.body?.Body as string) ?? "").trim();
+  console.log(`[SMS] FROM=${from} BODY="${body.slice(0, 80)}"`);
+
+  const reply =
+    body.toUpperCase() === "BOOK"
+      ? "Hi! Thanks for texting HTR Group TX. To finish booking, call +1 606 660 6067 or visit https://htrgrouptx.com — we reply within 15 minutes."
+      : "Hi! Thanks for texting HTR Group TX — appliance repair in Houston. Reply BOOK to schedule, or visit https://htrgrouptx.com. For fastest help, call +1 606 660 6067.";
+
+  res.type("text/xml").send(
+    `<?xml version="1.0" encoding="UTF-8"?><Response><Message>${reply.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</Message></Response>`,
+  );
 });
 
 export default waRouter;

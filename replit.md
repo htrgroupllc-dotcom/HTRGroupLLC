@@ -100,8 +100,14 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - Чтобы WA работало стабильно: писать боту (+15559554342) раз в сутки для поддержания сессии
 
 ### Webhooks для Twilio номеров
-- `+16066606067` (SID: `PN02be3e0e82030fd96a4938f6f5fac493`)
-  - SMS webhook: `https://htr-group-llc-appliance-repair.replit.app/sms/incoming`
+- `+16066606067` (SID: `PN02be3e0e82030fd96a4938f6f5fac493`) — **AI оператор (голос + SMS)**
+  - **Voice** (A CALL COMES IN): `https://htr-group-llc-appliance-repair.replit.app/api/voice/incoming` (POST)
+  - **WebSocket** (Conversation Relay): `wss://htr-group-llc-appliance-repair.replit.app/api/voice/relay`
+  - **SMS**: `https://htr-group-llc-appliance-repair.replit.app/api/sms/incoming` (POST)
+  - Старые URL без `/api` тоже работают: `/voice/incoming`, `/voice/relay`, `/sms/incoming`
+  - Технология: **Twilio Conversation Relay** (Deepgram flux STT + ElevenLabs TTS) + **Gemini** (логика оператора)
+  - В Twilio Console нужно включить **Conversation Relay** (AI addendum) — см. [onboarding](https://www.twilio.com/docs/voice/conversationrelay/onboarding)
+  - Env (опционально): `VOICE_ELEVENLABS_ID`, `VOICE_WELCOME_GREETING`, `VOICE_RELAY_WSS_URL`
 - `+15559554342` — WhatsApp: через Messaging Service (настроено в Twilio Console)
 
 ### Ключевые файлы бота
