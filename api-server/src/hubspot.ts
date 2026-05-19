@@ -21,7 +21,7 @@ export interface HsBooking {
   preferredDate: string;
   preferredTime: string;
   message?:      string;
-  source:        "website" | "whatsapp" | "admin";
+  source:        "website" | "whatsapp" | "admin" | "phone";
 }
 
 export interface HsResult {

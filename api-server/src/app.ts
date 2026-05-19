@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import router from "./routes";
+import voiceRouter, { handleVoiceIncoming } from "./routes/voice";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
@@ -35,5 +36,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+app.use(voiceRouter);
+
+app.post("/sms/incoming", (req, res, next) => {
+  if (req.body?.CallSid) {
+    handleVoiceIncoming(req, res);
+    return;
+  }
+  req.url = "/sms/incoming";
+  router(req, res, next);
+});
 
 export default app;
