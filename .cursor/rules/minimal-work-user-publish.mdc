@@ -1,0 +1,17 @@
+---
+description: Все проекты HTR — агент пушит сам, пользователь только публикует
+alwaysApply: true
+---
+
+# Минимум работы пользователя (все проекты HTR)
+
+См. то же правило в родительской папке проекта. Кратко:
+
+- **Агент:** commit + push в нужный репозиторий
+- **Пользователь:** Replit → **Publish** (API) или ничего / Push (сайт на Cloudflare)
+- **Запрещено** давать пользователю Shell-команды (в т.ч. Replit Shell — sync/build делает Publish сам)
+
+| Цель | Repo | Пользователь |
+|------|------|--------------|
+| API / голос | HTRGroupLLC1 | Replit **Publish** |
+| Сайт | HTRGroupLLC `main` | Ждать Cloudflare или Push в GitHub Desktop |

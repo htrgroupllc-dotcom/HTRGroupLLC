@@ -9,6 +9,14 @@ type IntakePayload = {
   language?: string;
   phoneMasked?: string;
   partialNotes?: string;
+  prefill?: {
+    name?: string;
+    phone?: string;
+    street?: string;
+    appliance?: string;
+    brandModel?: string;
+    problem?: string;
+  };
   slots?: Slot[];
   completed?: boolean;
   error?: string;
@@ -17,7 +25,10 @@ type IntakePayload = {
 export default function VoiceBookCallPage() {
   const [, params] = useRoute("/book-call/:token");
   const token = params?.token ?? "";
-  const apiBase = (import.meta.env.VITE_API_BASE ?? "").replace(/\/$/, "");
+  /** API on Replit; Cloudflare build must set VITE_API_BASE or this fallback is used */
+  const apiBase = (
+    import.meta.env.VITE_API_BASE ?? "https://htr-group-llc-appliance-repair.replit.app"
+  ).replace(/\/$/, "");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -51,12 +62,19 @@ export default function VoiceBookCallPage() {
         setSlots(d.slots ?? []);
         setLang(d.language ?? "en");
         setPhoneMasked(d.phoneMasked ?? "");
-        if (d.partialNotes?.includes("Appliance:")) {
+        const pf = d.prefill;
+        if (pf?.name) setName(pf.name);
+        if (pf?.phone) setPhone(pf.phone.replace(/\D/g, "").slice(-10));
+        if (pf?.street) setStreet(pf.street);
+        if (pf?.appliance) setAppliance(pf.appliance);
+        if (pf?.brandModel) setBrandModel(pf.brandModel);
+        if (pf?.problem) setProblem(pf.problem);
+        else if (d.partialNotes?.includes("Appliance:")) {
           const m = d.partialNotes.match(/Appliance:\s*([^;]+)/);
           if (m?.[1]) setAppliance(m[1].trim());
         }
       })
-      .catch(() => setError("expired"))
+      .catch(() => setError("load_failed"))
       .finally(() => setLoading(false));
   }, [token, apiBase]);
 
@@ -120,12 +138,18 @@ export default function VoiceBookCallPage() {
     );
   }
 
-  if (error === "expired") {
+  if (error === "expired" || error === "load_failed") {
     return (
       <PageShell>
-        <h1 className="text-xl font-bold">Link expired</h1>
+        <h1 className="text-xl font-bold">
+          {error === "expired" ? "Link expired" : "Could not load form"}
+        </h1>
         <p className="text-stone-600 text-center max-w-sm mt-2">
-          Please call us at <a href="tel:+16066606067" className="text-violet-700 font-semibold">(606) 660-6067</a>.
+          {error === "expired"
+            ? "This link is no longer valid."
+            : "The form page may need an update on the website. Please call us — we can send a new link."}
+          {" "}
+          <a href="tel:+16066606067" className="text-violet-700 font-semibold">(606) 660-6067</a>
         </p>
       </PageShell>
     );
