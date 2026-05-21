@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Lock, Unlock, Calendar, RefreshCw, LogOut, ShieldCheck,
-  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search,
+  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Camera,
 } from "lucide-react";
+import GalleryPhotoManager from "@/components/GalleryPhotoManager";
 
 const ACCENT    = "#1B6FE8";
 const TIME_SLOTS = ["9:00 AM","9:30 AM","10:00 AM","10:30 AM","11:00 AM","11:30 AM","12:00 PM","12:30 PM","1:00 PM","1:30 PM","2:00 PM","2:30 PM","3:00 PM","3:30 PM","4:00 PM","4:30 PM","5:00 PM"];
@@ -134,7 +135,7 @@ export default function AdminPage() {
   const [apiError,      setApiError]      = useState<string | null>(null);
   const [reason,        setReason]        = useState("");
   const [actionSlot,    setActionSlot]    = useState<string | null>(null);
-  const [mobileTab,      setMobileTab]      = useState<"slots"|"bookings">("slots");
+  const [mobileTab,      setMobileTab]      = useState<"slots"|"bookings"|"photos">("slots");
   const [showCompleted,  setShowCompleted]  = useState(true);
   const [searchQuery,    setSearchQuery]    = useState("");
 
@@ -1184,8 +1185,8 @@ export default function AdminPage() {
         </div>
       </header>
 
-      {/* ── Mobile tab bar ── */}
-      <div className="md:hidden sticky top-14 z-20 flex border-b border-stone-200 bg-white shadow-sm">
+      {/* ── Tab bar (mobile + desktop) ── */}
+      <div className="sticky top-14 z-20 flex border-b border-stone-200 bg-white shadow-sm">
         <button onClick={() => setMobileTab("slots")}
           className={`flex-1 py-3 text-sm font-semibold border-b-2 transition ${mobileTab === "slots" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"}`}>
           📅 Слоты
@@ -1194,10 +1195,31 @@ export default function AdminPage() {
           className={`flex-1 py-3 text-sm font-semibold border-b-2 transition ${mobileTab === "bookings" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"}`}>
           📋 Заявки ({allBookings.length})
         </button>
+        <button onClick={() => setMobileTab("photos")}
+          className={`flex-1 py-3 text-sm font-semibold border-b-2 transition flex items-center justify-center gap-1 ${mobileTab === "photos" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"}`}>
+          <Camera className="w-3.5 h-3.5" />
+          Фото сайта
+        </button>
       </div>
 
+      {/* ── Gallery photos tab ── */}
+      {mobileTab === "photos" && (
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 max-w-2xl mx-auto w-full" style={{ paddingBottom: 80 }}>
+          <div className="bg-white rounded-xl shadow-sm p-5 border border-stone-100">
+            <h2 className="text-base font-bold text-stone-800 mb-1 flex items-center gap-2">
+              <Camera className="w-5 h-5" style={{ color: ACCENT }} />
+              Загрузка фото на сайт
+            </h2>
+            <p className="text-xs text-stone-500 mb-4">
+              Раздел Our Work / Gallery на htrgrouptx.com
+            </p>
+            <GalleryPhotoManager adminPin={pin} adminBearer={adminBearer} />
+          </div>
+        </div>
+      )}
+
       {/* ── Two-panel layout (desktop) / Tab content (mobile) ── */}
-      <div className="flex gap-0 md:overflow-hidden md:h-[calc(100vh-56px)]">
+      <div className={`flex gap-0 md:overflow-hidden md:h-[calc(100vh-56px)] ${mobileTab === "photos" ? "hidden" : ""}`}>
 
         {/* ═══ LEFT PANEL / Слоты tab ═══ */}
         <div className={`overflow-y-auto border-r border-stone-200 p-4 space-y-4 ${mobileTab !== "slots" ? "hidden md:block" : "block"} md:w-[300px] md:flex-none`}

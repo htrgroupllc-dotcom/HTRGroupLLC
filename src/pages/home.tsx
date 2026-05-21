@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import AdminSecretAccess from "@/components/AdminSecretAccess";
+import { onGlobeSecretClick, queueGalleryAdminOpen } from "@/lib/gallerySecretUnlock";
 import { motion } from "framer-motion";
 import {
   Phone, Wrench, ShieldCheck, Clock, Star, CheckCircle2,
@@ -1144,7 +1145,17 @@ export default function Home() {
 
           {/* Language switcher — left side */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            <Globe className="h-3.5 w-3.5 text-stone-400" />
+            <Globe
+              className="h-3.5 w-3.5 text-stone-400 select-none"
+              style={{ cursor: "default" }}
+              onClick={() => {
+                onGlobeSecretClick(() => {
+                  queueGalleryAdminOpen();
+                  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+                  window.location.href = `${base}/gallery`;
+                });
+              }}
+            />
             <button
               onClick={() => setLang("en")}
               className="text-xs font-bold px-2 py-1 rounded transition-all"

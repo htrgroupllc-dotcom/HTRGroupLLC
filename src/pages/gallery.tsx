@@ -1,5 +1,11 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import AdminSecretAccess from "@/components/AdminSecretAccess";
+import {
+  clearGalleryAdminOpenQueue,
+  consumeGalleryAdminOpen,
+  onGlobeSecretClick,
+} from "@/lib/gallerySecretUnlock";
+import GalleryPhotoManager from "@/components/GalleryPhotoManager";
 import { motion } from "framer-motion";
 import { Phone, Wrench, Globe, X, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
 import ChatWidget from "@/components/ChatWidget";
@@ -174,8 +180,6 @@ interface DynamicPhoto {
   caption_en: string;
   caption_es: string;
 }
-
-type GlobePhase = "idle" | "after_two" | "ready_three";
 
 const K = {
   accent:      "#1B6FE8",
@@ -392,31 +396,12 @@ export default function Gallery() {
   // ── Dynamic photos from backend ──────────────────────────────────────────
   const [dynPhotos,    setDynPhotos]    = useState<DynamicPhoto[]>([]);
 
-  // ── Globe secret click pattern ───────────────────────────────────────────
-  const gPhase   = useRef<GlobePhase>("idle");
-  const gCount   = useRef(0);
-  const gT1      = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const gT2      = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const gT3      = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   // ── Admin gallery panel state ─────────────────────────────────────────────
   const [adminOpen,    setAdminOpen]    = useState(false);
   const [adminPin,     setAdminPin]     = useState("");
   const [adminAuthed,  setAdminAuthed]  = useState(false);
   const [adminError,   setAdminError]   = useState("");
   const [adminLoading, setAdminLoading] = useState(false);
-
-  // Upload form — multi-file
-  const [upFiles,      setUpFiles]      = useState<File[]>([]);
-  const [upLoading,    setUpLoading]    = useState(false);
-  const [upError,      setUpError]      = useState("");
-  const [upProgress,   setUpProgress]   = useState<{ done: number; total: number } | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Multi-select delete
-  const [selectedIds,     setSelectedIds]     = useState<Set<number>>(new Set());
-  const [isBulkDeleting,  setIsBulkDeleting]  = useState(false);
-  const [bulkDeleteError, setBulkDeleteError] = useState("");
 
   const T    = TR[lang];
   const isEs = lang === "es";
@@ -432,50 +417,21 @@ export default function Gallery() {
 
   useEffect(() => { void loadDynPhotos(); }, [loadDynPhotos]);
 
-  // ── Globe click handler ───────────────────────────────────────────────────
-  const clearGlobeTimers = () => {
-    [gT1, gT2, gT3].forEach(r => { if (r.current) clearTimeout(r.current); r.current = null; });
-  };
-  const resetGlobe = useCallback(() => {
-    clearGlobeTimers();
-    gPhase.current = "idle";
-    gCount.current = 0;
+  const openGalleryAdmin = useCallback(() => {
+    setAdminOpen(true);
+    setAdminPin("");
+    setAdminError("");
+    setAdminAuthed(false);
   }, []);
 
+  useEffect(() => {
+    if (consumeGalleryAdminOpen()) openGalleryAdmin();
+    else clearGalleryAdminOpenQueue();
+  }, [openGalleryAdmin]);
+
   const handleGlobeClick = useCallback(() => {
-    const phase = gPhase.current;
-    if (phase === "idle") {
-      gCount.current += 1;
-      if (gCount.current < 2) {
-        if (gT1.current) clearTimeout(gT1.current);
-        gT1.current = setTimeout(resetGlobe, 1500);
-      } else {
-        if (gT1.current) clearTimeout(gT1.current);
-        gCount.current = 0;
-        gPhase.current = "after_two";
-        gT2.current = setTimeout(() => {
-          gPhase.current = "ready_three";
-          gCount.current = 0;
-          gT3.current = setTimeout(resetGlobe, 10000);
-        }, 900);
-      }
-      return;
-    }
-    if (phase === "after_two") { resetGlobe(); return; }
-    if (phase === "ready_three") {
-      if (gT3.current) clearTimeout(gT3.current);
-      gCount.current += 1;
-      if (gCount.current >= 3) {
-        resetGlobe();
-        setAdminOpen(true);
-        setAdminPin("");
-        setAdminError("");
-        setAdminAuthed(false);
-      } else {
-        gT3.current = setTimeout(resetGlobe, 2000);
-      }
-    }
-  }, [resetGlobe]);
+    onGlobeSecretClick(openGalleryAdmin);
+  }, [openGalleryAdmin]);
 
   // ── Admin PIN verify ──────────────────────────────────────────────────────
   const handleAdminLogin = useCallback(async (e: React.FormEvent) => {
@@ -493,35 +449,6 @@ export default function Gallery() {
     setAdminLoading(false);
   }, [adminPin, loadDynPhotos]);
 
-  // ── Upload multiple photos ────────────────────────────────────────────────
-  const handleUploadMany = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (upFiles.length === 0) { setUpError("Выберите хотя бы один файл"); return; }
-    setUpLoading(true); setUpError(""); setUpProgress({ done: 0, total: upFiles.length });
-    let failed = 0;
-    for (let i = 0; i < upFiles.length; i++) {
-      const file = upFiles[i]!;
-      setUpProgress({ done: i, total: upFiles.length });
-      try {
-        const fd = new FormData();
-        fd.append("photo", file);
-        const r = await fetch(`${API}/api/gallery/upload`, {
-          method: "POST",
-          headers: { "x-admin-pin": adminPin },
-          body: fd,
-        });
-        if (!r.ok) failed++;
-      } catch { failed++; }
-    }
-    setUpProgress({ done: upFiles.length, total: upFiles.length });
-    if (failed > 0) setUpError(`${failed} файл(ов) не удалось загрузить`);
-    setUpFiles([]);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-    void loadDynPhotos();
-    setTimeout(() => { setUpLoading(false); setUpProgress(null); }, 800);
-  }, [upFiles, adminPin, loadDynPhotos]);
-
-  // ── Delete single dynamic photo ───────────────────────────────────────────
   const handleDelete = useCallback(async (id: number) => {
     if (!confirm("Удалить это фото из галереи?")) return;
     try {
@@ -529,32 +456,9 @@ export default function Gallery() {
         method: "DELETE",
         headers: { "x-admin-pin": adminPin },
       });
-      setSelectedIds(prev => { const n = new Set(prev); n.delete(id); return n; });
       void loadDynPhotos();
     } catch { /* non-fatal */ }
   }, [adminPin, loadDynPhotos]);
-
-  // ── Bulk delete selected photos ───────────────────────────────────────────
-  const handleBulkDelete = useCallback(async () => {
-    if (selectedIds.size === 0) return;
-    if (!confirm(`Удалить ${selectedIds.size} фото из галереи? Это нельзя отменить.`)) return;
-    setIsBulkDeleting(true); setBulkDeleteError("");
-    try {
-      const r = await fetch(`${API}/api/gallery/bulk-delete`, {
-        method: "POST",
-        headers: { "x-admin-pin": adminPin, "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: [...selectedIds] }),
-      });
-      const data = await r.json() as { ok?: boolean; error?: string };
-      if (!r.ok || data.error) { setBulkDeleteError(data.error ?? `Ошибка ${r.status}`); }
-      else { setSelectedIds(new Set()); void loadDynPhotos(); }
-    } catch { setBulkDeleteError("Ошибка соединения"); }
-    setIsBulkDeleting(false);
-  }, [selectedIds, adminPin, loadDynPhotos]);
-
-  const toggleSelect = useCallback((id: number) => {
-    setSelectedIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  }, []);
 
   const navHrefs = [`${base}/`, ...["#services", "#about", "#reviews", "#faq", "#contact"].map(h => `${base}/${h}`)];
 
@@ -767,167 +671,11 @@ export default function Gallery() {
                 </button>
               </form>
             ) : (
-              <div className="p-5 space-y-5">
-
-                {/* ── Upload section ── */}
-                <form onSubmit={handleUploadMany}>
-                  <p className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-3">
-                    📤 Добавить фото (до 50 за раз)
-                  </p>
-
-                  {/* Drop zone */}
-                  <div
-                    className="border-2 border-dashed rounded-xl p-4 text-center cursor-pointer hover:bg-stone-50 transition mb-3"
-                    style={{ borderColor: upFiles.length > 0 ? K.accent : "#cbd5e1" }}
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    {upFiles.length > 0 ? (
-                      <div>
-                        <p className="text-sm font-bold" style={{ color: K.accent }}>
-                          ✅ Выбрано: {upFiles.length} фото
-                        </p>
-                        <p className="text-xs text-stone-400 mt-0.5">
-                          {(upFiles.reduce((s, f) => s + f.size, 0) / 1024 / 1024).toFixed(1)} МБ общий объём
-                        </p>
-                        <p className="text-xs text-stone-400 mt-1 underline">Нажмите чтобы изменить выбор</p>
-                      </div>
-                    ) : (
-                      <div>
-                        <p className="text-2xl mb-1">📷</p>
-                        <p className="text-sm font-semibold text-stone-600">Нажмите для выбора фото</p>
-                        <p className="text-xs text-stone-400 mt-1">JPG / PNG / WebP · до 15 МБ каждое · до 50 штук</p>
-                      </div>
-                    )}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={e => {
-                        const files = Array.from(e.target.files ?? []).slice(0, 50);
-                        setUpFiles(files);
-                        setUpError("");
-                      }}
-                    />
-                  </div>
-
-                  {/* Upload progress */}
-                  {upProgress && (
-                    <div className="mb-3">
-                      <div className="flex justify-between text-xs text-stone-500 mb-1">
-                        <span>Загружаем...</span>
-                        <span>{upProgress.done} / {upProgress.total}</span>
-                      </div>
-                      <div className="w-full bg-stone-100 rounded-full h-2 overflow-hidden">
-                        <div
-                          className="h-2 rounded-full transition-all"
-                          style={{ width: `${(upProgress.done / upProgress.total) * 100}%`, background: K.accent }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {upError && <p className="text-xs text-red-500 mb-2">⚠️ {upError}</p>}
-
-                  <button type="submit" disabled={upLoading || upFiles.length === 0}
-                    className="w-full py-2.5 rounded-xl text-white font-bold text-sm transition disabled:opacity-40"
-                    style={{ background: K.accent }}>
-                    {upLoading
-                      ? `⏳ Загружаем ${upProgress ? `${upProgress.done}/${upProgress.total}` : ""}...`
-                      : `📤 Загрузить ${upFiles.length > 0 ? `${upFiles.length} фото` : ""}`}
-                  </button>
-                </form>
-
-                {/* ── Uploaded photos list ── */}
-                {dynPhotos.length > 0 && (
-                  <div>
-                    {/* Header row */}
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs font-bold text-stone-500 uppercase tracking-wide">
-                        Загруженные фото ({dynPhotos.length})
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (selectedIds.size === dynPhotos.length) setSelectedIds(new Set());
-                          else setSelectedIds(new Set(dynPhotos.map(p => p.id)));
-                        }}
-                        className="text-xs font-semibold underline text-stone-400 hover:text-stone-600 transition"
-                      >
-                        {selectedIds.size === dynPhotos.length ? "Снять всё" : "Выбрать всё"}
-                      </button>
-                    </div>
-
-                    {/* Bulk delete bar */}
-                    {selectedIds.size > 0 && (
-                      <div className="flex items-center gap-2 mb-2 px-3 py-2 bg-red-50 rounded-xl border border-red-100">
-                        <span className="text-xs font-semibold text-red-700 flex-1">
-                          Выбрано: {selectedIds.size} фото
-                        </span>
-                        <button
-                          type="button"
-                          onClick={handleBulkDelete}
-                          disabled={isBulkDeleting}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold text-white transition disabled:opacity-50"
-                          style={{ background: "#dc2626" }}>
-                          {isBulkDeleting ? "Удаляем..." : "🗑 Удалить выбранные"}
-                        </button>
-                      </div>
-                    )}
-                    {bulkDeleteError && <p className="text-xs text-red-500 mb-2">⚠️ {bulkDeleteError}</p>}
-
-                    {/* Photo grid */}
-                    <div className="grid grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1">
-                      {dynPhotos.map(p => {
-                        const sel = selectedIds.has(p.id);
-                        return (
-                          <div
-                            key={p.id}
-                            className="relative rounded-xl overflow-hidden border-2 cursor-pointer transition"
-                            style={{ borderColor: sel ? K.accent : "#e2e8f0" }}
-                            onClick={() => toggleSelect(p.id)}
-                          >
-                            <img
-                              src={`${API}/api/gallery/file/${p.filename}`}
-                              alt={p.caption_en || p.filename}
-                              className="w-full h-24 object-cover block"
-                            />
-                            {/* Selection overlay */}
-                            {sel && (
-                              <div className="absolute inset-0 flex items-center justify-center"
-                                style={{ background: `${K.accent}40` }}>
-                                <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow">
-                                  <span style={{ color: K.accent, fontSize: 16 }}>✓</span>
-                                </div>
-                              </div>
-                            )}
-                            {/* Checkbox corner */}
-                            <div className="absolute top-1.5 left-1.5 w-5 h-5 rounded border-2 flex items-center justify-center"
-                              style={{ background: sel ? K.accent : "white", borderColor: sel ? K.accent : "#cbd5e1" }}>
-                              {sel && <span className="text-white text-xs font-bold leading-none">✓</span>}
-                            </div>
-                            {/* Delete button */}
-                            <button
-                              type="button"
-                              onClick={e => { e.stopPropagation(); void handleDelete(p.id); }}
-                              className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center shadow hover:bg-red-600 transition"
-                              title="Удалить">
-                              <X className="w-3 h-3 text-white" />
-                            </button>
-                            {/* Caption */}
-                            {p.caption_en && (
-                              <div className="absolute bottom-0 left-0 right-0 bg-black/50 px-1.5 py-1">
-                                <p className="text-white text-[10px] leading-tight truncate">{p.caption_en}</p>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
+              <div className="p-5">
+                <GalleryPhotoManager
+                  adminPin={adminPin}
+                  onPhotosChange={() => void loadDynPhotos()}
+                />
               </div>
             )}
           </div>

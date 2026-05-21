@@ -35,11 +35,11 @@ export default function AdminSecretAccess({ label }: { label: string }) {
     if (phase === "idle") {
       countRef.current += 1;
       if (countRef.current < 2) {
-        // 1st click: wait up to 1.5s for 2nd click
+        // 1st click: wait up to 1.5s for 2nd click (admin only — ©)
         if (t1.current) clearTimeout(t1.current);
         t1.current = setTimeout(resetState, 1500);
       } else {
-        // 2nd click received → enter "after_two", start min-pause gate (900ms)
+        // 2nd click → admin min-pause gate (900ms)
         if (t1.current) clearTimeout(t1.current);
         countRef.current = 0;
         phaseRef.current = "after_two";

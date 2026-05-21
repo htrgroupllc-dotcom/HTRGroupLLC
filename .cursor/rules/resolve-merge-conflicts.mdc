@@ -1,0 +1,12 @@
+---
+description: При merge/pull сам находить и исправлять git-конфликты
+alwaysApply: true
+---
+
+# Merge-конфликты — всегда исправлять самому
+
+См. ту же политику в `HTRGroupLLC1/.cursor/rules/resolve-merge-conflicts.mdc`.
+
+- Искать `<<<<<<<` / `=======` / `>>>>>>>` и исправлять без запроса к пользователю.
+- Не коммитить conflicted files.
+- Сайт (галерея, Cloudflare) → **HTRGroupLLC**; API/голос → **HTRGroupLLC1**.

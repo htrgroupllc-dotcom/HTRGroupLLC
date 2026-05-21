@@ -47,11 +47,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/gallery">
-        <AuthGate title="Our Work — Gallery">
-          <Gallery />
-        </AuthGate>
-      </Route>
+      <Route path="/gallery" component={Gallery} />
       <Route path="/blog" component={Blog} />
       <Route path="/blog/:slug" component={BlogPost} />
       <Route path="/admin">
