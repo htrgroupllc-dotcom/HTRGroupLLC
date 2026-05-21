@@ -15,9 +15,13 @@ alwaysApply: true
 2. **Минимальный diff** — не трогать приветствие, STEP 1–8, greeting, cancel/reschedule, если об этом не просили.
 3. Репозиторий API: `HTRGroupLLC1` (`artifacts/api-server/src/routes/voice.ts`). Не путать с сайтом `HTRGroupLLC`.
 
+## Один голос (не откатывать)
+
+См. `voice-single-marin.mdc`: **только marin**, без Polly в начале звонка.
+
 ## Зафиксированный порядок звонка (не менять без просьбы)
 
-1. Bilingual приветствие (English / Spanish / other language) — **всегда первым**.
+1. Приветствие + выбор языка (English / Spanish / other) — **одним голосом marin**, **всегда первым**.
 2. STEP 2: техника, проблема, марка/модель.
 3. STEP 3: имя.
 4. STEP 5: адрес + ZIP.
