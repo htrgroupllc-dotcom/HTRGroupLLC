@@ -164,7 +164,7 @@ export default function GalleryPhotoManager({
         </p>
 
         <div
-          className="border-2 border-dashed rounded-xl p-4 text-center cursor-pointer hover:bg-stone-50 transition mb-3"
+          className="border-2 border-dashed rounded-xl p-5 sm:p-4 text-center cursor-pointer active:bg-stone-100 hover:bg-stone-50 transition mb-3 min-h-[120px] flex flex-col items-center justify-center touch-manipulation"
           style={{ borderColor: upFiles.length > 0 ? ACCENT : "#cbd5e1" }}
           onClick={() => fileInputRef.current?.click()}
         >
@@ -220,7 +220,7 @@ export default function GalleryPhotoManager({
         <button
           type="submit"
           disabled={upLoading || upFiles.length === 0}
-          className="w-full py-2.5 rounded-xl text-white font-bold text-sm transition disabled:opacity-40"
+          className="w-full py-3.5 sm:py-2.5 rounded-xl text-white font-bold text-sm transition disabled:opacity-40 touch-manipulation"
           style={{ background: ACCENT }}
         >
           {upLoading
@@ -265,7 +265,7 @@ export default function GalleryPhotoManager({
           {bulkDeleteError && <p className="text-xs text-red-500 mb-2">{bulkDeleteError}</p>}
 
           <div
-            className={`grid gap-2 max-h-64 overflow-y-auto ${compact ? "grid-cols-3" : "grid-cols-4"}`}
+            className={`grid gap-2 max-h-[50vh] sm:max-h-64 overflow-y-auto grid-cols-2 sm:grid-cols-3 ${compact ? "md:grid-cols-3" : "md:grid-cols-4"}`}
           >
             {dynPhotos.map(p => (
               <div key={p.id} className="relative group rounded-lg overflow-hidden aspect-square bg-stone-100">
