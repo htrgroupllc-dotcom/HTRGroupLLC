@@ -56,6 +56,8 @@ function Router() {
         </AuthGate>
       </Route>
       <Route path="/book-call/:token" component={VoiceBookCallPage} />
+      <Route path="/intake/:token" component={VoiceBookCallPage} />
+      <Route path="/form/:token" component={VoiceBookCallPage} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -68,7 +70,10 @@ function GlobalUI() {
   const [location] = useLocation();
   const isAdmin   = location === "/admin";
   const isGallery = location === "/gallery";
-  const isBookCall = location.startsWith("/book-call/");
+  const isBookCall =
+    location.startsWith("/book-call/") ||
+    location.startsWith("/intake/") ||
+    location.startsWith("/form/");
   const [bubbleVisible, setBubbleVisible] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
