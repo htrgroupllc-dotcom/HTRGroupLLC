@@ -3,6 +3,7 @@
 dist
 build
 .cache
+public
 coverage
 .git
 .vercel
