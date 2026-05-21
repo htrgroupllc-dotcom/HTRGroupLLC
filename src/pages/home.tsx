@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import {
   Phone, Wrench, ShieldCheck, Clock, Star, CheckCircle2,
   ChevronRight, Menu, X, Users, Award, RefreshCw, ExternalLink, ThumbsUp, Globe,
-  Camera, CalendarCheck, Truck, SearchCode, Hammer, BadgeCheck,
+  CalendarCheck, Truck, SearchCode, Hammer, BadgeCheck,
 } from "lucide-react";
 import { FaFacebook, FaInstagram, FaTiktok, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import { useToast } from "@/hooks/use-toast";
@@ -1477,16 +1477,7 @@ export default function Home() {
               <div>
                 <h2 className="text-2xl md:text-3xl font-extrabold mb-2">{T.galleryH2}</h2>
                 <div className="h-1 w-12 mb-4 rounded-full" style={{ backgroundColor: K.accent }} />
-                <p className="text-stone-500 text-sm leading-relaxed mb-6">{T.gallerySub}</p>
-                <a
-                  href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/gallery`}
-                  className="inline-flex items-center gap-2 font-bold px-6 py-3 rounded text-white text-sm uppercase tracking-wide transition-opacity hover:opacity-85"
-                  style={{ backgroundColor: K.accent }}
-                >
-                  <Camera className="h-4 w-4" />
-                  {T.galleryViewAll} ({GALLERY_PHOTOS.length})
-                  <ChevronRight className="h-4 w-4" />
-                </a>
+                <p className="text-stone-500 text-sm leading-relaxed">{T.gallerySub}</p>
               </div>
 
             </div>
