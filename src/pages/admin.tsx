@@ -97,16 +97,13 @@ export default function AdminPage() {
   // Auto-login: AuthGate session token (PIN or biometric), then legacy localStorage session
   useEffect(() => {
     try {
-      const authToken = sessionStorage.getItem("adminAuthToken");
-      const authPin   = sessionStorage.getItem("adminPin");
-      if (authToken && authPin) {
-        setPin(authPin);
-        setAuthed(true);
-        return;
-      }
-      // Biometric auth: valid token exists but no PIN — use Bearer token for API calls
+      const authToken =
+        sessionStorage.getItem("adminAuthToken") ?? localStorage.getItem("adminAuthToken");
+      const authPin =
+        sessionStorage.getItem("adminPin") ?? localStorage.getItem("adminPin");
       if (authToken) {
         setBearer(authToken);
+        if (authPin) setPin(authPin);
         setAuthed(true);
         return;
       }
@@ -215,12 +212,17 @@ export default function AdminPage() {
   const [eSaving, setESaving] = useState(false);
 
   const dateStr = `${MONTHS_S[month-1]} ${day}, ${year}`;
-  // Returns admin auth headers: Bearer token if biometric auth, PIN otherwise
   const adminAuthH = useCallback((extra?: Record<string, string>): Record<string, string> => {
     const base = extra ?? {};
-    if (pin) return { ...base, "x-admin-pin": encodeURIComponent(pin) };
-    if (adminBearer) return { ...base, "Authorization": `Bearer ${adminBearer}` };
-    return base;
+    const h: Record<string, string> = { ...base };
+    const token =
+      adminBearer
+      ?? sessionStorage.getItem("adminAuthToken")
+      ?? localStorage.getItem("adminAuthToken")
+      ?? "";
+    if (token) h["Authorization"] = `Bearer ${token}`;
+    if (pin) h["x-admin-pin"] = encodeURIComponent(pin);
+    return h;
   }, [pin, adminBearer]);
   const headers = adminAuthH({ "Content-Type": "application/json" });
 
