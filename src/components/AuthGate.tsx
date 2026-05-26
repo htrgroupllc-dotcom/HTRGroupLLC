@@ -10,13 +10,23 @@ type AuthenticationOptionsJSON = Parameters<typeof startAuthentication>[0]["opti
 type RegisterOptionsResponse = RegistrationOptionsJSON   & { challengeId: string };
 type LoginOptionsResponse    = AuthenticationOptionsJSON & { challengeId: string };
 
-const API = (import.meta.env.VITE_API_BASE as string | undefined) ?? "";
+const API = (
+  import.meta.env.VITE_API_BASE as string | undefined
+) ?? "https://htr-group-llc-appliance-repair.replit.app";
 const TOKEN_KEY  = "adminAuthToken";
 const FID_KEY    = "htr_fid_cred_id"; // localStorage: credential ID for this device
 
-function getToken(): string | null       { return sessionStorage.getItem(TOKEN_KEY); }
-function saveToken(token: string)        { sessionStorage.setItem(TOKEN_KEY, token); }
-function clearToken()                    { sessionStorage.removeItem(TOKEN_KEY); }
+function getToken(): string | null {
+  return sessionStorage.getItem(TOKEN_KEY) ?? localStorage.getItem(TOKEN_KEY);
+}
+function saveToken(token: string) {
+  sessionStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(TOKEN_KEY, token);
+}
+function clearToken() {
+  sessionStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(TOKEN_KEY);
+}
 function getLocalCredId(): string | null { return localStorage.getItem(FID_KEY); }
 function saveLocalCredId(id: string)     { localStorage.setItem(FID_KEY, id); }
 
@@ -87,15 +97,29 @@ export default function AuthGate({ children, title = "HTRGroupTX" }: AuthGatePro
       const res = await fetch(`${API}/api/auth/verify-pin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pin }),
+        body: JSON.stringify({ pin: pin.trim() }),
       });
+      const data = await res.json().catch(() => ({})) as { error?: string; code?: string; token?: string };
       if (!res.ok) {
-        setError("Неверный пароль");
+        if (data.code === "admin_pin_missing") {
+          setError("На сервере не задан ADMIN_PIN. Replit → Secrets → ADMIN_PIN → Publish.");
+        } else if (data.code === "session_secret_missing") {
+          setError("На сервере не задан SESSION_SECRET. Replit → Secrets → Publish.");
+        } else if (res.status >= 500) {
+          setError(data.error ?? "Ошибка сервера. Проверьте Replit Secrets.");
+        } else {
+          setError("Неверный пароль");
+        }
         return;
       }
-      const data = await res.json() as { token: string };
+      if (!data.token) {
+        setError("Ошибка сервера: нет токена");
+        return;
+      }
       saveToken(data.token);
-      sessionStorage.setItem("adminPin", pin);
+      const trimmed = pin.trim();
+      sessionStorage.setItem("adminPin", trimmed);
+      localStorage.setItem("adminPin", trimmed);
 
       // Offer Face ID registration only if device supports biometrics
       // and doesn't already have a registered credential on this device
