@@ -1,0 +1,27 @@
+---
+description: Админ /admin — рабочий вход, не ломать auth и API без явной просьбы
+alwaysApply: true
+---
+
+# Админ CRM (/admin) — не ломать
+
+## Работает (не откатывать без запроса)
+
+- Вход: https://htrgrouptx.com/admin
+- API: `VITE_API_BASE` → Replit (`htr-group-llc-appliance-repair.replit.app`)
+- На Replit: **`SESSION_SECRET`** + **`ADMIN_PIN`** (оба); после смены — Publish
+
+Если снова «Неверный пароль» при верном пароле — сначала проверить Replit Secret **`ADMIN_PIN`**, не переписывать логику входа наугад.
+
+## Фронт — осторожно
+
+- `AuthGate.tsx`, `admin.tsx`: заголовки Bearer + `x-admin-pin`, токен в storage — не упрощать «для рефакторинга»
+- Не менять маппинг ошибок и URL API без явной задачи пользователя
+
+## Бэкенд (другой репо)
+
+Логика PIN/JWT в **HTRGroupLLC1** (`admin-pin-config.ts`, `routes/auth.ts`). Правки auth — там, минимальный diff. См. правило `admin-auth-stable` в HTRGroupLLC1.
+
+## Деплой после правок сайта
+
+GitHub Desktop **HTRGroupLLC-source** → `main` → Push → Cloudflare → Ctrl+F5 на /admin.
