@@ -178,6 +178,15 @@ export default function BlogPost() {
           <button className="md:hidden p-2 rounded" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="h-5 w-5" /> : <span className="block w-5 space-y-1"><span className="block h-0.5 bg-stone-700" /><span className="block h-0.5 bg-stone-700" /><span className="block h-0.5 bg-stone-700" /></span>}
           </button>
+
+        <div className="htr-header-mobile-strip md:hidden">
+          <div className="container mx-auto px-4 py-2 flex flex-col gap-2">
+            <BlogHeaderPhonesMobile />
+            <a href={`${base}/#contact`} className="htr-header-mobile-book text-white font-bold px-3 py-2 rounded text-sm uppercase tracking-wider" style={{ backgroundColor: K.dark }}>
+              {T.bookNow}
+            </a>
+          </div>
+        </div>
         </div>
 
         {menuOpen && (
@@ -238,7 +247,7 @@ export default function BlogPost() {
                 />
 
                 {/* Sidebar */}
-                <div className="flex flex-col gap-5">
+                <div className="htr-blog-post-aside flex flex-col gap-5">
 
                   {/* CTA card */}
                   <div className="rounded-2xl p-6 text-white" style={{ backgroundColor: K.dark }}>

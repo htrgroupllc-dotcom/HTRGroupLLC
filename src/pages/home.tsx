@@ -1254,6 +1254,15 @@ export default function Home() {
           <button className="md:hidden p-2 rounded" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
+
+        <div className="htr-header-mobile-strip md:hidden">
+          <div className="container mx-auto px-4 py-2 flex flex-col gap-2">
+            <PhonePair inHeader />
+            <a href="#contact" className="htr-header-mobile-book text-white font-bold px-3 py-2 rounded text-sm uppercase tracking-wider" style={{ backgroundColor: K.dark }}>
+              {T.bookNow}
+            </a>
+          </div>
+        </div>
         </div>
 
         {menuOpen && (

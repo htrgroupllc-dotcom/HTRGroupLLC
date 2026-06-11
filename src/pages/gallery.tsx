@@ -514,6 +514,18 @@ export default function Gallery() {
           <button className="md:hidden p-2 rounded" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="h-5 w-5" /> : <span className="block w-5 space-y-1"><span className="block h-0.5 bg-stone-700" /><span className="block h-0.5 bg-stone-700" /><span className="block h-0.5 bg-stone-700" /></span>}
           </button>
+
+        <div className="htr-header-mobile-strip md:hidden">
+          <div className="container mx-auto px-4 py-2 flex flex-col gap-2">
+            <div className="header-phone-pair flex flex-col gap-1.5 items-stretch w-full">
+              <a href={COMPANY_PHONE_HREF} className="header-phone-link htr-phone-btn flex items-center justify-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-full" style={{ backgroundColor: K.accent }}><Phone className="h-3.5 w-3.5" /> {COMPANY_PHONE_DISPLAY}</a>
+              <a href={PHONE_HREF} className="header-phone-link htr-phone-btn flex items-center justify-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-full" style={{ backgroundColor: K.accent }}><Phone className="h-3.5 w-3.5" /> {PHONE_DISPLAY}</a>
+            </div>
+            <a href={`${base}/#contact`} className="htr-header-mobile-book text-white font-bold px-3 py-2 rounded text-sm uppercase tracking-wider" style={{ backgroundColor: K.dark }}>
+              {T.bookNow}
+            </a>
+          </div>
+        </div>
         </div>
 
         {menuOpen && (
