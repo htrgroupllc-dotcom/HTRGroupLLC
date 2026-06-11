@@ -1,7 +1,10 @@
 import { Router, type IRouter } from "express";
 
 const CACHE_TTL_MS = 3 * 60 * 60 * 1000;
-const CACHE_VERSION = 7;
+const CACHE_VERSION = 8;
+
+/** Google Places Details returns max 5 reviews per request. */
+const GOOGLE_PLACES_REVIEWS_PER_REQUEST = 5;
 
 /** Verified via g.page/r/CU7DlHNCZb8hEAE (Maps feature 0x2066db6f9cc15e1b:0x21bf65427394c34e). */
 const BUSINESS_LOCATION = { lat: 29.7463431, lng: -95.7612032 };
@@ -123,7 +126,8 @@ async function fetchPlaceIdentity(
 }
 
 function reviewDedupeKey(r: ReviewOut): string {
-  return `${r.name}|${r.time}|${(r.textEn || "").slice(0, 80)}`.toLowerCase();
+  if (r.publishTime) return `t:${r.publishTime}|${r.name.toLowerCase()}`;
+  return `${r.name}|${r.time}|${(r.textEn || "").slice(0, 120)}`.toLowerCase();
 }
 
 function mergeReviewLists(...lists: ReviewOut[][]): ReviewOut[] {
@@ -149,9 +153,23 @@ type ReviewOut = {
   textEn: string;
   textEs: string;
   category: "5" | "4" | "recent";
+  publishTime?: number;
 };
 
-function mapLegacyReviews(reviews: { author_name?: string; rating?: number; relative_time_description?: string; text?: string }[]): ReviewOut[] {
+type LegacyFetchOpts = {
+  reviewsSort?: string;
+  language?: string;
+};
+
+function mapLegacyReviews(
+  reviews: {
+    author_name?: string;
+    rating?: number;
+    relative_time_description?: string;
+    text?: string;
+    time?: number;
+  }[],
+): ReviewOut[] {
   return reviews
     .filter((r) => (r.rating ?? 0) >= 4)
     .map((r) => {
@@ -167,6 +185,7 @@ function mapLegacyReviews(reviews: { author_name?: string; rating?: number; rela
         textEn: text,
         textEs: text,
         category: rating >= 5 ? "5" : "4",
+        publishTime: typeof r.time === "number" ? r.time : undefined,
       };
     });
 }
@@ -175,6 +194,7 @@ function mapNewReviews(
   reviews: {
     rating?: number;
     relativePublishTimeDescription?: string;
+    publishTime?: string;
     text?: { text?: string };
     authorAttribution?: { displayName?: string };
   }[],
@@ -185,6 +205,11 @@ function mapNewReviews(
       const name = r.authorAttribution?.displayName ?? "Google User";
       const rating = r.rating ?? 5;
       const text = r.text?.text ?? "";
+      let publishTime: number | undefined;
+      if (r.publishTime) {
+        const ms = Date.parse(r.publishTime);
+        if (!Number.isNaN(ms)) publishTime = Math.floor(ms / 1000);
+      }
       return {
         name,
         initials: initials(name),
@@ -194,6 +219,7 @@ function mapNewReviews(
         textEn: text,
         textEs: text,
         category: rating >= 5 ? "5" : "4",
+        publishTime,
       };
     });
 }
@@ -219,11 +245,12 @@ async function fetchPlaceReviewsNew(key: string, placeId: string) {
   };
 }
 
-async function fetchPlaceReviewsLegacy(key: string, placeId: string, reviewsSort?: string) {
+async function fetchPlaceReviewsLegacy(key: string, placeId: string, opts: LegacyFetchOpts = {}) {
   const detailsUrl = new URL("https://maps.googleapis.com/maps/api/place/details/json");
   detailsUrl.searchParams.set("place_id", placeId);
   detailsUrl.searchParams.set("fields", "rating,user_ratings_total,reviews");
-  if (reviewsSort) detailsUrl.searchParams.set("reviews_sort", reviewsSort);
+  if (opts.reviewsSort) detailsUrl.searchParams.set("reviews_sort", opts.reviewsSort);
+  if (opts.language) detailsUrl.searchParams.set("language", opts.language);
   detailsUrl.searchParams.set("key", key);
   const detRes = await fetch(detailsUrl.toString());
   if (!detRes.ok) return null;
@@ -244,9 +271,14 @@ async function fetchPlaceReviewsLegacy(key: string, placeId: string, reviewsSort
 
 async function fetchAllReviewsForPlace(key: string, placeId: string) {
   const fromNew = await fetchPlaceReviewsNew(key, placeId);
-  const legacyRelevant = await fetchPlaceReviewsLegacy(key, placeId, "most_relevant");
-  const legacyNewest = await fetchPlaceReviewsLegacy(key, placeId, "newest");
-  return { fromNew, legacyRelevant, legacyNewest };
+  const legacyFetches = await Promise.all([
+    fetchPlaceReviewsLegacy(key, placeId, { reviewsSort: "most_relevant" }),
+    fetchPlaceReviewsLegacy(key, placeId, { reviewsSort: "newest" }),
+    fetchPlaceReviewsLegacy(key, placeId, { reviewsSort: "rating" }),
+    fetchPlaceReviewsLegacy(key, placeId, { reviewsSort: "most_relevant", language: "en" }),
+    fetchPlaceReviewsLegacy(key, placeId, { reviewsSort: "newest", language: "en" }),
+  ]);
+  return { fromNew, legacyFetches };
 }
 
 const router: IRouter = Router();
@@ -299,51 +331,38 @@ router.get("/google-reviews", async (_req, res) => {
     let rating: number | null = null;
     let userRatingCount: number | null = null;
 
-    const collectFromFetches = (
-      fromNew: Awaited<ReturnType<typeof fetchPlaceReviewsNew>>,
-      legacyRelevant: Awaited<ReturnType<typeof fetchPlaceReviewsLegacy>>,
-      legacyNewest: Awaited<ReturnType<typeof fetchPlaceReviewsLegacy>>,
-    ) => {
-      const freshLists: ReviewOut[][] = [];
-      let nextRating: number | null = null;
-      let nextCount: number | null = null;
-      if (fromNew?.reviews?.length) {
-        freshLists.push(fromNew.reviews);
-        nextRating = fromNew.rating ?? nextRating;
-        nextCount = fromNew.userRatingCount ?? nextCount;
-      }
-      if (legacyRelevant && !("error" in legacyRelevant)) {
-        freshLists.push(legacyRelevant.reviews);
-        nextRating = legacyRelevant.rating ?? nextRating;
-        nextCount = legacyRelevant.userRatingCount ?? nextCount;
-      }
-      if (legacyNewest && !("error" in legacyNewest)) {
-        freshLists.push(legacyNewest.reviews);
-        nextRating = legacyNewest.rating ?? nextRating;
-        nextCount = legacyNewest.userRatingCount ?? nextCount;
-      }
-      return { freshLists, nextRating, nextCount };
-    };
+    const { fromNew, legacyFetches } = await fetchAllReviewsForPlace(key, placeId);
 
-    const { fromNew, legacyRelevant, legacyNewest } = await fetchAllReviewsForPlace(key, placeId);
-    const collected = collectFromFetches(fromNew, legacyRelevant, legacyNewest);
+    const freshLists: ReviewOut[][] = [];
+    let legacyError = "";
+    if (fromNew?.reviews?.length) {
+      freshLists.push(fromNew.reviews);
+      rating = fromNew.rating ?? rating;
+      userRatingCount = fromNew.userRatingCount ?? userRatingCount;
+    }
+    for (const legacy of legacyFetches) {
+      if (!legacy) continue;
+      if ("error" in legacy && legacy.error) {
+        legacyError = String(legacy.error);
+        continue;
+      }
+      if (legacy.reviews.length) freshLists.push(legacy.reviews);
+      rating = legacy.rating ?? rating;
+      userRatingCount = legacy.userRatingCount ?? userRatingCount;
+    }
 
-    const legacyError =
-      legacyRelevant && "error" in legacyRelevant && legacyRelevant.error
-        ? String(legacyRelevant.error)
-        : "";
-
-    if (!collected.freshLists.length) {
+    if (!freshLists.length) {
       const err =
         legacyError ||
-        (fromNew == null && legacyRelevant == null ? "google_http_error" : "no_reviews");
+        (fromNew == null && legacyFetches.every((l) => l == null) ? "google_http_error" : "no_reviews");
       res.status(200).json({ ok: false, source: "error", error: err, reviews: [] });
       return;
     }
 
-    rating = collected.nextRating;
-    userRatingCount = collected.nextCount;
-    const reviews = mergeReviewLists(...collected.freshLists);
+    const priorAccum = Array.isArray(cache?.payload?.accumulatedReviews)
+      ? (cache!.payload.accumulatedReviews as ReviewOut[])
+      : [];
+    const reviews = mergeReviewLists(priorAccum, ...freshLists);
 
     if (!reviews.length) {
       res.status(200).json({ ok: false, source: "error", error: "reviews_rejected", reviews: [] });
@@ -357,7 +376,10 @@ router.get("/google-reviews", async (_req, res) => {
       placeName: identity.name,
       rating,
       userRatingCount,
+      reviewsReturned: reviews.length,
+      googlePlacesApiLimitPerRequest: GOOGLE_PLACES_REVIEWS_PER_REQUEST,
       reviews,
+      accumulatedReviews: reviews,
       fetchedAt: new Date().toISOString(),
     };
 
