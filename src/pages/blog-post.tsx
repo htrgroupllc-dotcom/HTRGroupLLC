@@ -22,8 +22,34 @@ import svcWarmerImg   from "@assets/svc_warmer.png";
 
 import { BLOG_POSTS } from "@/data/posts";
 
-const PHONE_DISPLAY = "(346) 820-6021";
-const PHONE_HREF    = "tel:3468206021";
+import { PHONE_DISPLAY, PHONE_HREF, COMPANY_PHONE_DISPLAY, COMPANY_PHONE_HREF } from "@/lib/sitePhones";
+
+
+function BlogHeaderPhones() {
+  return (
+    <div className="header-phone-pair htr-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end">
+      <a href={COMPANY_PHONE_HREF} className="header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm" style={{ backgroundColor: K.accent }}>
+        <Phone className="h-3.5 w-3.5" /> {COMPANY_PHONE_DISPLAY}
+      </a>
+      <a href={PHONE_HREF} className="header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm" style={{ backgroundColor: K.accent }}>
+        <Phone className="h-3.5 w-3.5" /> {PHONE_DISPLAY}
+      </a>
+    </div>
+  );
+}
+
+function BlogHeaderPhonesMobile() {
+  return (
+    <div className="header-phone-pair htr-phone-pair flex flex-col gap-1.5 mt-1 items-start">
+      <a href={COMPANY_PHONE_HREF} className="header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit" style={{ backgroundColor: K.accent }}>
+        <Phone className="h-3.5 w-3.5" /> {COMPANY_PHONE_DISPLAY}
+      </a>
+      <a href={PHONE_HREF} className="header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit" style={{ backgroundColor: K.accent }}>
+        <Phone className="h-3.5 w-3.5" /> {PHONE_DISPLAY}
+      </a>
+    </div>
+  );
+}
 
 const K = {
   accent:      "#1B6FE8",
@@ -143,9 +169,7 @@ export default function BlogPost() {
           </nav>
 
           <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-            <a href={PHONE_HREF} className="flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm" style={{ backgroundColor: K.accent }}>
-              <Phone className="h-3.5 w-3.5" /> {PHONE_DISPLAY}
-            </a>
+            <BlogHeaderPhones />
             <a href={`${base}/#contact`} className="text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider" style={{ backgroundColor: K.dark }}>
               {T.bookNow}
             </a>
@@ -162,9 +186,7 @@ export default function BlogPost() {
               <a key={label} href={navHrefs[i]} onClick={() => setMenuOpen(false)} className="py-2 border-b border-stone-100">{label}</a>
             ))}
             <a href={`${base}/blog`} onClick={() => setMenuOpen(false)} className="py-2 border-b border-stone-100" style={{ color: K.accent }}>{T.blog}</a>
-            <a href={PHONE_HREF} className="flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit mt-1" style={{ backgroundColor: K.accent }}>
-              <Phone className="h-3.5 w-3.5" /> {PHONE_DISPLAY}
-            </a>
+            <BlogHeaderPhonesMobile />
           </div>
         )}
       </header>

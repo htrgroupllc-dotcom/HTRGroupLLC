@@ -1317,13 +1317,13 @@ export default function Home() {
           </div>
 
           {/* ════ DESKTOP layout (≥ md): text overlay on image ════ */}
-          <div className="hidden md:block relative">
+          <div className="hidden md:block relative htr-home-hero-desktop">
             <img src={heroImg} alt="Appliance repair" className="w-full block" style={{ display: "block" }} />
             <div className="absolute inset-0" style={{ background: "rgba(11,26,63,0.10)" }} />
             <HeroCircuitEffect />
             <div className="hero-pulse-ring" />
             <div className="hero-pulse-ring-2" />
-            <div className="absolute top-0 left-0 z-10">
+            <div className="absolute top-0 left-0 z-10 htr-hero-banner">
               <motion.div
                 initial="hidden" animate="visible" variants={STAGGER}
                 style={{

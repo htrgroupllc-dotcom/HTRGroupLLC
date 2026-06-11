@@ -7734,3 +7734,17 @@
   padding-top: calc(0.25rem + 2.5mm) !important;
   padding-bottom: calc(0.25rem + 2.5mm) !important;
 }
+
+/* Home hero: keep blue banner from overlapping services grid */
+.htr-home-hero-desktop {
+  overflow: hidden;
+  isolation: isolate;
+}
+.htr-home-hero-desktop .htr-hero-banner {
+  max-height: 100%;
+  overflow: auto;
+}
+#services {
+  position: relative;
+  z-index: 20;
+}
