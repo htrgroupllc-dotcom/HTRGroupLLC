@@ -629,15 +629,35 @@ const SERVICES = [
   { titleEn: "Warming Drawer Repair",titleEs: "Reparación de Cajón Calentador", img: svcWarmerImg,   descEn: "Warming drawer not heating or stuck? We service all major brands.",                  descEs: "¿El cajón calentador no calienta o está atascado? Reparamos todas las marcas.",         appEn: "Warming Drawer",         appEs: "Cajón Calentador" },
 ];
 
+function statsDayIncrement(seed: string): number {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+  }
+  return 1 + (Math.abs(h) % 3);
+}
+
 function getDailyStats(): string[] {
-  const BASE_DATE  = new Date(2026, 3, 4); // April 4, 2026
-  const BASE       = [4123, 3995, 9567, 10];
-  const PER_DAY    = [2, 3, 2, 0];         // daily increment per counter
-  const today      = new Date();
+  const LAUNCH_DATE = new Date(2026, 5, 11); // June 11, 2026 — baseline day
+  const BASE = [4259, 4199, 9703, 10];
+  const today = new Date();
   today.setHours(0, 0, 0, 0);
-  BASE_DATE.setHours(0, 0, 0, 0);
-  const days = Math.max(0, Math.floor((today.getTime() - BASE_DATE.getTime()) / 86400000));
-  return BASE.map((v, i) => (v + days * PER_DAY[i]).toLocaleString("en-US"));
+  LAUNCH_DATE.setHours(0, 0, 0, 0);
+  const days = Math.max(0, Math.floor((today.getTime() - LAUNCH_DATE.getTime()) / 86400000));
+  let extraHappy = 0;
+  let extraServices = 0;
+  for (let d = 0; d < days; d++) {
+    const day = new Date(LAUNCH_DATE.getTime() + d * 86400000);
+    const key = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, "0")}-${String(day.getDate()).padStart(2, "0")}`;
+    extraHappy += statsDayIncrement(key + ":happy");
+    extraServices += statsDayIncrement(key + ":services");
+  }
+  return [
+    BASE[0] + extraHappy,
+    BASE[1] + extraServices,
+    BASE[2],
+    BASE[3],
+  ].map((v) => v.toLocaleString("en-US"));
 }
 const STATS_VALUES = getDailyStats();
 
