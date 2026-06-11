@@ -41,7 +41,7 @@ import svcFreezerImg  from "@assets/svc_freezer.png";
 import svcDisposalImg from "@assets/svc_disposal.png";
 import svcWarmerImg   from "@assets/svc_warmer.png";
 import g62  from "@assets/photo_62_2026-04-02_02-47-29_1775273301589.jpg";
-import ourWorkSectionImg from "@assets/our-work-section-65084024.png";
+import ourWorkSectionImg from "@assets/our-work-hero.webp";
 import g67  from "@assets/photo_67_2026-04-02_02-42-16_1775273301590.jpg";
 import g73  from "@assets/photo_73_2026-04-02_02-42-16_1775273301591.jpg";
 import g75  from "@assets/photo_75_2026-04-02_02-42-16_1775273301591.jpg";
