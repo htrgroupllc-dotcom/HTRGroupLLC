@@ -14,6 +14,11 @@ import {
 } from "@/components/ui/accordion";
 
 import { ALL_REVIEWS } from "../data/reviews";
+import {
+  GOOGLE_FEATURED_REVIEWS,
+  GOOGLE_REVIEW_COUNT,
+  GOOGLE_REVIEW_URL,
+} from "../data/googleBusinessReviews";
 import ChatWidget from "@/components/ChatWidget";
 import ServiceAreaMapOverlay from "@/components/ServiceAreaMapOverlay";
 import { HeroCircuitEffect } from "@/components/HeroCircuitEffect";
@@ -470,9 +475,9 @@ const TR = {
       { title: "Fully Stocked Trucks",   desc: "We carry common parts, completing 85% of repairs on the first visit — saving your time." },
       { title: "Upfront Honest Pricing", desc: "See the full quote before we start. No hidden fees. 90-day parts and labor warranty." },
     ],
-    reviewsH2:   "Customer Reviews",
-    reviewsBased: "Based on 312 reviews",
-    writeReview:  "Write a Review",
+    reviewsH2:   "Google Reviews",
+    reviewsBased: "9 reviews on Google",
+    writeReview:  "Leave a Google Review",
     refresh:      "Refresh",
     reviewsUpdated: "Reviews updated",
     showingLatest:  "Showing latest reviews.",
@@ -548,9 +553,9 @@ const TR = {
       { title: "Camiones Equipados",         desc: "Llevamos las piezas más comunes y completamos el 85% de reparaciones en la primera visita." },
       { title: "Precios Honestos y Claros",  desc: "Vea el presupuesto completo antes de empezar. Sin cargos ocultos. Garantía de 90 días en piezas y mano de obra." },
     ],
-    reviewsH2:    "Reseñas de Clientes",
-    reviewsBased: "Basado en 312 reseñas",
-    writeReview:  "Escribir Reseña",
+    reviewsH2:    "Reseñas en Google",
+    reviewsBased: "9 reseñas en Google",
+    writeReview:  "Dejar reseña en Google",
     refresh:      "Actualizar",
     reviewsUpdated: "Reseñas actualizadas",
     showingLatest:  "Mostrando las últimas reseñas.",
@@ -1123,11 +1128,8 @@ export default function Home() {
   const [f5a,f5b,f5c,f5d,f5e,f5f] = _pickN(_fiveStar, 6);
   const [f4a,f4b]                  = _pickN(_fourStar, 2);
   const _dailyMix = [f5a, f5b, f5c, f4a, f5d, f5e, f5f, f4b];
-  const filteredReviews =
-    reviewTab === "all"    ? _dailyMix :
-    reviewTab === "5"      ? _pickN(_fiveStar, 8) :
-    reviewTab === "4"      ? _pickN(_fourStar, 8) :
-                             _pickN(_recentRev, 8);
+  const googleHomeReviews = GOOGLE_FEATURED_REVIEWS;
+  const filteredReviews = googleHomeReviews;
 
   const handleServiceClick = (svc: typeof SERVICES[0]) => {
     setAppliance(isEs ? svc.appEs : svc.appEn);
@@ -1672,56 +1674,69 @@ export default function Home() {
         </section>
 
         {/* ── GOOGLE REVIEWS ── */}
-        <section id="reviews" className="py-10" style={{ backgroundColor: K.bg }}>
+        <section id="reviews" className="py-10 md:py-12" style={{ backgroundColor: K.bg }}>
           <div className="container mx-auto px-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
               <div>
-                <h2 className="text-2xl font-extrabold">{T.reviewsH2}</h2>
-                <div className="flex items-center gap-2 mt-1">
-                  <div className="flex gap-0.5">{[1,2,3,4,5].map(i => <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />)}</div>
-                  <span className="text-sm font-semibold text-stone-600">5.0 · {T.reviewsBased}</span>
-                  <span className="text-lg font-bold text-[#4285F4]">G</span>
+                <h2 className="text-2xl md:text-3xl font-extrabold">{T.reviewsH2}</h2>
+                <div className="flex flex-wrap items-center gap-2 mt-3">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white border border-stone-200 px-3 py-1.5 text-sm font-bold text-stone-800 shadow-sm">
+                    <span className="text-base font-extrabold text-[#4285F4] leading-none" aria-hidden="true">G</span>
+                    <span>5.0</span>
+                    <span className="flex gap-0.5" aria-label="5 out of 5 stars">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </span>
+                    <span className="text-stone-500 font-semibold">Google</span>
+                    <span className="text-stone-600">({GOOGLE_REVIEW_COUNT} reviews)</span>
+                  </span>
+                  <span className="text-xs text-stone-500 font-medium">{T.reviewsBased}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <a href="https://google.com/maps" target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded border border-stone-300 hover:bg-stone-100 transition-colors">
-                  <ExternalLink className="h-3.5 w-3.5" /> {T.writeReview}
-                </a>
-                <button onClick={handleRefresh} className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded text-white transition-opacity hover:opacity-80" style={{ backgroundColor: K.accent }}>
-                  <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> {T.refresh}
-                </button>
-              </div>
+              <a
+                href={GOOGLE_REVIEW_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 text-sm font-bold px-5 py-3 rounded-lg text-white shadow-md transition-opacity hover:opacity-90 w-full sm:w-auto"
+                style={{ backgroundColor: K.accent }}
+              >
+                <ExternalLink className="h-4 w-4 shrink-0" />
+                {T.writeReview}
+              </a>
             </div>
 
-            <div className="flex gap-1 mb-5 bg-white rounded-lg p-1 w-fit shadow-sm border border-stone-200">
-              {(["all","5","4","recent"] as Tab[]).map((key, i) => (
-                <button key={key} onClick={() => setReviewTab(key)}
-                  className="px-3 py-1.5 rounded text-xs font-semibold transition-all"
-                  style={reviewTab === key ? { backgroundColor: K.accent, color: "#fff" } : { color: "#57534e" }}>
-                  {T.tabLabels[i]}
-                </button>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
               {filteredReviews.map((r, i) => (
-                <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={FADE_UP}
-                  className="bg-white rounded-lg p-2.5 shadow-sm border border-stone-100 flex flex-col">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <div className="h-7 w-7 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0" style={{ backgroundColor: r.avatarColor }}>{r.initials}</div>
+                <motion.div
+                  key={`${r.name}-${i}`}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={FADE_UP}
+                  className="bg-white rounded-xl p-4 shadow-sm border border-stone-100 flex flex-col h-full"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div
+                        className="h-9 w-9 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0"
+                        style={{ backgroundColor: r.avatarColor }}
+                      >
+                        {r.initials}
+                      </div>
                       <div className="min-w-0">
-                        <p className="font-semibold text-xs text-stone-900 truncate">{r.name}</p>
-                        <p className="text-[10px] text-stone-400 leading-none">{r.time}</p>
+                        <p className="font-semibold text-sm text-stone-900 truncate">{r.name}</p>
+                        <p className="text-[11px] text-stone-400 leading-none">{r.time}</p>
                       </div>
                     </div>
-                    <span className="text-[#4285F4] font-bold text-base leading-none flex-shrink-0">G</span>
+                    <span className="text-[#4285F4] font-extrabold text-lg leading-none flex-shrink-0" aria-hidden="true">G</span>
                   </div>
-                  <div className="flex items-center gap-0.5 mb-1.5">
-                    {Array.from({ length: r.rating }).map((_, j) => <Star key={j} className="h-3 w-3 fill-yellow-400 text-yellow-400" />)}
+                  <div className="flex items-center gap-0.5 mb-2">
+                    {Array.from({ length: r.rating }).map((_, j) => (
+                      <Star key={j} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                    ))}
                   </div>
-                  <p className="text-stone-600 text-[11px] leading-snug flex-1 line-clamp-4">{isEs ? r.textEs : r.textEn}</p>
+                  <p className="text-stone-600 text-sm leading-relaxed flex-1">{isEs ? r.textEs : r.textEn}</p>
                 </motion.div>
               ))}
             </div>
