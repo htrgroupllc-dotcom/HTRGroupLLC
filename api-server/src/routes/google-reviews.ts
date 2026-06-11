@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 
 const CACHE_TTL_MS = 3 * 60 * 60 * 1000;
+const CACHE_VERSION = 2;
 
 /** Verified via g.page/r/CU7DlHNCZb8hEAE (Maps feature 0x2066db6f9cc15e1b:0x21bf65427394c34e). */
 const BUSINESS_LOCATION = { lat: 29.7463431, lng: -95.7612032 };
@@ -21,7 +22,7 @@ const AVATAR_COLORS = [
   "#7D6608", "#884EA0", "#1F618D",
 ];
 
-type CacheEntry = { fetchedAt: number; payload: Record<string, unknown> };
+type CacheEntry = { version: number; fetchedAt: number; payload: Record<string, unknown> };
 let cache: CacheEntry | null = null;
 
 function initials(name: string): string {
@@ -259,7 +260,7 @@ router.get("/google-reviews", async (_req, res) => {
     return;
   }
 
-  if (cache && Date.now() - cache.fetchedAt < CACHE_TTL_MS) {
+  if (cache && cache.version === CACHE_VERSION && Date.now() - cache.fetchedAt < CACHE_TTL_MS) {
     res.json({ ...cache.payload, source: "cache" });
     return;
   }
@@ -305,7 +306,7 @@ router.get("/google-reviews", async (_req, res) => {
       fetchedAt: new Date().toISOString(),
     };
 
-    cache = { fetchedAt: Date.now(), payload };
+    cache = { version: CACHE_VERSION, fetchedAt: Date.now(), payload };
     res.json(payload);
   } catch (err) {
     res.status(500).json({
