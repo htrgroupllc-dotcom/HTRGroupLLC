@@ -33219,7 +33219,7 @@ function Home() {
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "logo-spark logo-spark-2", children: "✦" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "logo-spark logo-spark-3", children: "✦" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "htr-site-header-nav hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600", children: [
           ["/", "#services", "#about", "#faq", "#contact"].map((href, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href, className: "hover:opacity-70 transition-opacity", children: T2.nav[i] }, href)),
           /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${"/".replace(/\/$/, "")}/blog`, className: "hover:opacity-70 transition-opacity", style: { color: K$3.accent }, children: isEs ? "Blog" : "Blog" })
         ] }),
@@ -34408,7 +34408,7 @@ function Gallery() {
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: K$2.accent }, children: "GroupTX" })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600", children: T2.nav.map((label, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: navHrefs[i], className: "hover:opacity-70 transition-opacity", children: label }, label)) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "htr-site-header-nav hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600", children: T2.nav.map((label, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: navHrefs[i], className: "hover:opacity-70 transition-opacity", children: label }, label)) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden md:flex items-center gap-2 flex-shrink-0", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$2, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$2.accent }, children: [

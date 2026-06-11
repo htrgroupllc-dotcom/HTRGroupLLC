@@ -1237,7 +1237,7 @@ export default function Home() {
           </div>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600">
+          <nav className="htr-site-header-nav hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600">
             {["/","#services","#about","#reviews","#faq","#contact"].map((href, i) => (
               <a key={href} href={href} className="hover:opacity-70 transition-opacity">{T.nav[i]}</a>
             ))}
@@ -1268,7 +1268,7 @@ export default function Home() {
         </div>
 
         {menuOpen && (
-          <div className="md:hidden bg-white border-t border-stone-100 px-4 pb-3 flex flex-col gap-2 text-sm font-semibold text-stone-700">
+          <div className="htr-site-header-mobile-menu md:hidden bg-white border-t border-stone-100 px-4 pb-3 flex flex-col gap-2 text-sm font-semibold text-stone-700">
             {["/","#services","#about","#reviews","#faq","#contact"].map((href, i) => (
               <a key={href} href={href} onClick={() => setMenuOpen(false)} className="py-2 border-b border-stone-100">{T.nav[i]}</a>
             ))}

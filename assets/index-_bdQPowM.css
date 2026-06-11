@@ -7780,6 +7780,21 @@
   flex-wrap: wrap;
   row-gap: 0.25rem;
 }
+/* Desktop: more space between logo and first nav link (Home) */
+@media (min-width: 768px) {
+  .htr-site-header-nav,
+  .htr-blog-header-nav {
+    margin-left: 2rem;
+  }
+}
+
+/* Mobile flyout menu: align nav links slightly right of logo column */
+@media (max-width: 767px) {
+  .htr-site-header-mobile-menu {
+    padding-left: 1.25rem;
+  }
+}
+
 .htr-blog-header-actions {
   flex: 1 1 16rem;
   min-width: 0;

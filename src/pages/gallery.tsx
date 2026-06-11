@@ -497,7 +497,7 @@ export default function Gallery() {
             </span>
           </a>
 
-          <nav className="hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600">
+          <nav className="htr-site-header-nav hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600">
             {T.nav.map((label, i) => (
               <a key={label} href={navHrefs[i]} className="hover:opacity-70 transition-opacity">{label}</a>
             ))}
@@ -529,7 +529,7 @@ export default function Gallery() {
         </div>
 
         {menuOpen && (
-          <div className="md:hidden bg-white border-t border-stone-100 px-4 pb-3 flex flex-col gap-2 text-sm font-semibold text-stone-700">
+          <div className="htr-site-header-mobile-menu md:hidden bg-white border-t border-stone-100 px-4 pb-3 flex flex-col gap-2 text-sm font-semibold text-stone-700">
             {T.nav.map((label, i) => (
               <a key={label} href={navHrefs[i]} onClick={() => setMenuOpen(false)} className="py-2 border-b border-stone-100">{label}</a>
             ))}
