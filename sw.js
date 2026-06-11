@@ -1,4 +1,4 @@
-﻿const CACHE = "htr-pwa-v6";
+const CACHE = "htr-pwa-v7";
 
 self.addEventListener("install", e => {
   e.waitUntil(self.skipWaiting());
@@ -16,10 +16,10 @@ self.addEventListener("fetch", e => {
   if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
 
-  // API â€” Ð½Ðµ Ð¿ÐµÑ€ÐµÑ…Ð²Ð°Ñ‚Ñ‹Ð²Ð°Ñ‚ÑŒ
+  // API — не перехватывать
   if (url.pathname.startsWith("/api/")) return;
 
-  // HTML-Ð½Ð°Ð²Ð¸Ð³Ð°Ñ†Ð¸Ñ â€” Ð²ÑÐµÐ³Ð´Ð° Ñ ÑÐµÑ‚Ð¸, Ð½Ðµ ÐºÐµÑˆÐ¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ
+  // HTML-навигация — всегда с сети, не кешировать
   if (e.request.mode === "navigate") {
     e.respondWith(
       fetch(e.request).catch(() => caches.match("/index.html"))
@@ -27,7 +27,7 @@ self.addEventListener("fetch", e => {
     return;
   }
 
-  // Ð¡Ñ‚Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ Ñ€ÐµÑÑƒÑ€ÑÑ‹ (JS, CSS, Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ñ) â€” ÑÐµÑ‚ÑŒ + ÐºÐµÑˆ
+  // Статические ресурсы (JS, CSS, изображения) — сеть + кеш
   e.respondWith(
     fetch(e.request)
       .then(res => {
@@ -41,7 +41,7 @@ self.addEventListener("fetch", e => {
   );
 });
 
-// â”€â”€ Badge state persistence via IndexedDB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Badge state persistence via IndexedDB ─────────────────────────────────────
 function openBadgeDb() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open("htr-badge-db", 1);
@@ -89,7 +89,7 @@ async function checkAndSetBadge() {
   } catch { /* network error */ }
 }
 
-// â”€â”€ Message handler (from main page) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Message handler (from main page) ─────────────────────────────────────────
 self.addEventListener("message", async event => {
   const msg = event.data || {};
   if (msg.type === "BADGE_INIT") {
@@ -107,7 +107,7 @@ self.addEventListener("message", async event => {
   }
 });
 
-// â”€â”€ Periodic Background Sync (Chrome Android) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Periodic Background Sync (Chrome Android) ─────────────────────────────────
 self.addEventListener("periodicsync", event => {
   if (event.tag === "emp-badge-check") {
     event.waitUntil(checkAndSetBadge());
