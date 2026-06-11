@@ -49,6 +49,12 @@ ok: true, source: cache
 - Reviews: `grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5` (без `.htr-reviews-row`), 5 видимых карточек, 2-й ряд 0.
 - Marquee: одна полоса с `justify-end` на left track, `leftDelta` ~1197px (full-width drift).
 
+## 8. Prod после деплоя v59 (Playwright 1280px)
+
+- cache: **v59**
+- Reviews: `htr-reviews-row` × 2, row0 = 5 карточек, row1 = 0 (API даёт 5 отзывов), `firstCols = 5`
+- Marquee: wings left/right, `justify-start` / `justify-end`, `animLeft` + `animRight` = true
+
 ## 7. Что вам делать
 
-После деплоя Cloudflare Pages (2–5 мин после push): **Ctrl+F5** на https://www.htrgrouptx.com и проверить секцию Reviews + center marquee между services и stats.
+Деплой уже на **v59**. **Ctrl+F5** на https://www.htrgrouptx.com и проверить секцию Reviews + center marquee между services и stats.
