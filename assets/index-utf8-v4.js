@@ -33369,7 +33369,10 @@ function Home() {
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative htr-google-reviews-grid-wrap hidden md:block", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-google-reviews-grid grid gap-2 md:gap-2.5 lg:grid-cols-5 lg:grid-rows-2 lg:grid-flow-row", children: googleHomeReviews.slice(reviewPage * 10, reviewPage * 10 + 10).map((r, i) => renderGoogleReviewCard(r, i, "desk")) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4", children: googleHomeReviews.slice(reviewPage * 10, reviewPage * 10 + 5).map((r, i) => renderGoogleReviewCard(r, i, "desk")) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4", children: googleHomeReviews.slice(reviewPage * 10 + 5, reviewPage * 10 + 10).map((r, i) => renderGoogleReviewCard(r, i + 5, "desk")) })
+            ] }),
             Math.ceil(googleHomeReviews.length / 10) > 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-3 mt-4", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", "aria-label": isEs ? "Reseñas anteriores" : "Previous reviews", disabled: reviewPage <= 0, onClick: () => setReviewPage((p) => Math.max(0, p - 1)), className: "inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm disabled:opacity-40 hover:opacity-80", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "h-5 w-5" }) }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-semibold text-stone-500 tabular-nums", children: [reviewPage + 1, " / ", Math.max(1, Math.ceil(googleHomeReviews.length / 10))] }),

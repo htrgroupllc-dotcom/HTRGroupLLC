@@ -107,6 +107,8 @@ export default function ReviewsSection({
     safePage * REVIEWS_PER_PAGE,
     safePage * REVIEWS_PER_PAGE + REVIEWS_PER_PAGE,
   );
+  const firstRow = pagedReviews.slice(0, 5);
+  const secondRow = pagedReviews.slice(5, 10);
 
   useEffect(() => {
     setPage(0);
@@ -199,12 +201,19 @@ export default function ReviewsSection({
               )}
             </div>
 
-            {/* Tablet + desktop grid */}
+            {/* Tablet + desktop: two rows of up to 5 cards */}
             <div className="relative htr-google-reviews-grid-wrap hidden md:block">
-              <div className="htr-google-reviews-grid grid gap-2 md:gap-2.5 lg:grid-cols-5 lg:grid-rows-2 lg:grid-flow-row">
-                {pagedReviews.map((r, i) => (
-                  <ReviewCard key={`${r.name}-${safePage}-${i}`} review={r} isEs={isEs} />
-                ))}
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                  {firstRow.map((r, i) => (
+                    <ReviewCard key={`${r.name}-${safePage}-${i}`} review={r} isEs={isEs} />
+                  ))}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                  {secondRow.map((r, i) => (
+                    <ReviewCard key={`${r.name}-${safePage}-${i + 5}`} review={r} isEs={isEs} />
+                  ))}
+                </div>
               </div>
               {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-3 mt-4">
