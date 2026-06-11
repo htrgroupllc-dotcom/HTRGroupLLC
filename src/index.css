@@ -644,8 +644,8 @@
   to { transform: translateX(0); }
 }
 @keyframes htr-marquee-center-right {
-  from { transform: translateX(50%); }
-  to { transform: translateX(0); }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 /* Home: Why Us + Our Work split photos (smaller, proportional) */
