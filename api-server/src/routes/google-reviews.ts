@@ -9,6 +9,7 @@ const BUSINESS_LOCATION = { lat: 29.7463431, lng: -95.7612032 };
 const DEFAULT_GOOGLE_PLACE_ID = "";
 
 const SEARCH_QUERIES = [
+  "Hitechrepairgroup LLC appliance repair Katy TX",
   "Hitechrepairgroup LLC Katy TX",
   "Hitech Repair Group Katy Texas",
   "htrgrouptx appliance repair Katy",
@@ -43,6 +44,37 @@ function apiKey(): string {
   ).trim();
 }
 
+
+function scoreBusinessCandidate(name: string, address: string): number {
+  const n = name.toLowerCase();
+  const a = address.toLowerCase();
+  let score = 0;
+  if (/hitech|htrg|htr group/.test(n)) score += 12;
+  if (/repair/.test(n)) score += 4;
+  if (/appliance/.test(n)) score += 6;
+  if (/katy|richmond|fulshear|sugar land|houston/.test(a)) score += 3;
+  if (/brake|tire|oil change|muffler|collision/.test(n + " " + a)) score -= 25;
+  return score;
+}
+
+function pickBestPlace(
+  places: { id?: string; displayName?: { text?: string }; formattedAddress?: string }[] | undefined,
+): string | null {
+  if (!places?.length) return null;
+  let bestId: string | null = null;
+  let bestScore = -999;
+  for (const p of places) {
+    const name = p.displayName?.text ?? "";
+    const address = p.formattedAddress ?? "";
+    const score = scoreBusinessCandidate(name, address);
+    if (score > bestScore && p.id) {
+      bestScore = score;
+      bestId = normalizePlaceId(p.id);
+    }
+  }
+  return bestScore >= 10 ? bestId : null;
+}
+
 function normalizePlaceId(raw: string): string {
   return raw.replace(/^places\//, "").trim();
 }
@@ -54,7 +86,7 @@ async function searchPlaceIdNew(key: string): Promise<string | null> {
       headers: {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": key,
-        "X-Goog-FieldMask": "places.id,places.displayName",
+        "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress",
       },
       body: JSON.stringify({
         textQuery,
@@ -68,8 +100,8 @@ async function searchPlaceIdNew(key: string): Promise<string | null> {
     });
     if (!res.ok) continue;
     const data = (await res.json()) as { places?: { id?: string }[] };
-    const id = data.places?.[0]?.id;
-    if (id) return normalizePlaceId(id);
+    const picked = pickBestPlace(data.places);
+    if (picked) return picked;
   }
   return null;
 }
@@ -84,8 +116,10 @@ async function searchPlaceIdLegacy(key: string): Promise<string | null> {
     const res = await fetch(url.toString());
     if (!res.ok) continue;
     const data = (await res.json()) as { results?: { place_id?: string }[]; status?: string };
-    const pid = data.results?.[0]?.place_id;
-    if (pid) return pid;
+    for (const r of data.results ?? []) {
+      const score = scoreBusinessCandidate(r.name ?? "", r.formatted_address ?? "");
+      if (score >= 10 && r.place_id) return r.place_id;
+    }
   }
   for (const input of SEARCH_QUERIES) {
     const url = new URL("https://maps.googleapis.com/maps/api/place/findplacefromtext/json");
