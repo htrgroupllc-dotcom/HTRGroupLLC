@@ -49,7 +49,7 @@ export function onGlobeSecretClick(onUnlock: () => void): void {
     count += 1;
     if (count < 2) {
       if (t1) clearTimeout(t1);
-      t1 = setTimeout(reset, 10_000);
+      t1 = setTimeout(reset, 15_000);
     } else {
       if (t1) clearTimeout(t1);
       count = 0;

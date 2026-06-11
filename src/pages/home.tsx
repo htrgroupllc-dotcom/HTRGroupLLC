@@ -1145,9 +1145,10 @@ export default function Home() {
 
           {/* Language switcher — left side */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            <Globe
-              className="h-3.5 w-3.5 text-stone-400 select-none"
-              style={{ cursor: "default" }}
+            <button
+              type="button"
+              aria-label="Language region"
+              className="p-2 -m-1 rounded-md touch-manipulation"
               onClick={() => {
                 onGlobeSecretClick(() => {
                   queueGalleryAdminOpen();
@@ -1155,7 +1156,9 @@ export default function Home() {
                   window.location.href = `${base}/gallery`;
                 });
               }}
-            />
+            >
+              <Globe className="h-4 w-4 text-stone-500 pointer-events-none select-none" />
+            </button>
             <button
               onClick={() => setLang("en")}
               className="text-xs font-bold px-2 py-1 rounded transition-all"

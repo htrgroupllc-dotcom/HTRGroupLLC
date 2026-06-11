@@ -470,11 +470,14 @@ export default function Gallery() {
         <div className="container mx-auto px-4 h-14 flex items-center justify-between gap-3">
 
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            <Globe
-              className="h-3.5 w-3.5 text-stone-400 select-none"
-              style={{ cursor: "default" }}
+            <button
+              type="button"
+              aria-label="Language region"
+              className="p-2 -m-1 rounded-md touch-manipulation"
               onClick={handleGlobeClick}
-            />
+            >
+              <Globe className="h-4 w-4 text-stone-500 pointer-events-none select-none" />
+            </button>
             <button
               onClick={() => setLang("en")}
               className="text-xs font-bold px-2 py-1 rounded transition-all"
