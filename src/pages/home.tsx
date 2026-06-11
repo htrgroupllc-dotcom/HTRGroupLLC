@@ -196,17 +196,22 @@ import { PHONE_DISPLAY, PHONE_HREF, COMPANY_PHONE_DISPLAY, COMPANY_PHONE_HREF } 
 
 /* ── Brand / Model data ────────────────────────────────────────── */
 
-function PhonePair({ compact = false }: { compact?: boolean }) {
-  const cls = compact
+function PhonePair({ compact = false, inHeader = false }: { compact?: boolean; inHeader?: boolean }) {
+  const linkCls = compact
     ? "inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm"
-    : "flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm";
+    : inHeader
+      ? "header-phone-link flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm"
+      : "flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm";
   const iconCls = compact ? "h-4 w-4" : "h-3.5 w-3.5";
+  const wrapCls = inHeader
+    ? "header-phone-pair flex flex-col gap-1 items-end"
+    : "flex flex-col gap-1.5 items-start";
   return (
-    <div className="flex flex-col gap-1.5 items-start">
-      <a href={PHONE_HREF} className={cls} style={{ backgroundColor: K.accent }}>
+    <div className={wrapCls}>
+      <a href={PHONE_HREF} className={linkCls} style={{ backgroundColor: K.accent }}>
         <Phone className={iconCls} /> {PHONE_DISPLAY}
       </a>
-      <a href={COMPANY_PHONE_HREF} className={cls} style={{ backgroundColor: K.accent }}>
+      <a href={COMPANY_PHONE_HREF} className={linkCls} style={{ backgroundColor: K.accent }}>
         <Phone className={iconCls} /> {COMPANY_PHONE_DISPLAY}
       </a>
     </div>
@@ -901,7 +906,7 @@ type Tab  = "all" | "5" | "4" | "recent";
 type Lang = "en" | "es";
 
 /* ── Draggable infinite marquee ──────────────────────────────────── */
-function DraggableMarquee({ brands, base }: { brands: [string, string][]; base: string }) {
+function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, string][]; base: string; reverse?: boolean }) {
   const trackRef  = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(0);
   const speedRef  = useRef(0);
@@ -920,9 +925,15 @@ function DraggableMarquee({ brands, base }: { brands: [string, string][]; base: 
         }
         if (!drag.current.active) {
           const dt = lastTsRef.current ? ts - lastTsRef.current : 0;
-          offsetRef.current -= speedRef.current * dt;
+          offsetRef.current += (reverse ? 1 : -1) * speedRef.current * dt;
           const half = track.scrollWidth / 2;
-          if (half > 0 && -offsetRef.current >= half) offsetRef.current += half;
+          if (half > 0) {
+            if (reverse) {
+              if (offsetRef.current >= half) offsetRef.current -= half;
+            } else if (-offsetRef.current >= half) {
+              offsetRef.current += half;
+            }
+          }
           track.style.transform = `translateX(${offsetRef.current}px)`;
         }
       }
@@ -931,7 +942,7 @@ function DraggableMarquee({ brands, base }: { brands: [string, string][]; base: 
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, []);
+  }, [reverse]);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     drag.current = { active: true, startX: e.clientX, startOffset: offsetRef.current };
@@ -1172,9 +1183,9 @@ export default function Home() {
     <div className="min-h-screen flex flex-col overflow-x-hidden font-sans" style={{ backgroundColor: K.bg, color: K.dark }}>
 
       {/* ── NAV ── */}
-      <div className="h-14 w-full flex-shrink-0" aria-hidden="true" />
+      <div className="htr-header-spacer w-full flex-shrink-0" aria-hidden="true" />
       <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm">
-        <div className="container mx-auto px-4 h-14 flex items-center justify-between gap-3">
+        <div className="container mx-auto px-4 htr-site-header-bar flex items-center justify-between gap-3">
 
           {/* Language switcher — left side */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -1227,7 +1238,7 @@ export default function Home() {
           </nav>
 
           <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-            <PhonePair />
+            <PhonePair inHeader />
             <a href="#contact" className="text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider" style={{ backgroundColor: K.dark }}>
               {T.bookNow}
             </a>
@@ -1244,7 +1255,7 @@ export default function Home() {
               <a key={href} href={href} onClick={() => setMenuOpen(false)} className="py-2 border-b border-stone-100">{T.nav[i]}</a>
             ))}
             <a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/blog`} onClick={() => setMenuOpen(false)} className="py-2 border-b border-stone-100" style={{ color: K.accent }}>Blog</a>
-            <div className="mt-1"><PhonePair /></div>
+            <div className="mt-1"><PhonePair inHeader /></div>
           </div>
         )}
       </header>
@@ -1692,6 +1703,13 @@ export default function Home() {
             brands={MARQUEE_BRANDS}
             base={import.meta.env.BASE_URL.replace(/\/$/, "")}
           />
+          <div className="mt-3">
+            <DraggableMarquee
+              brands={MARQUEE_BRANDS}
+              base={import.meta.env.BASE_URL.replace(/\/$/, "")}
+              reverse
+            />
+          </div>
         </section>
 
         {/* ── CTA BANNER ── */}

@@ -7685,3 +7685,22 @@
     opacity: 0;
   }
 }
+
+/* Header phone buttons (desktop + mobile menu) */
+.htr-header-spacer {
+  min-height: 3.5rem;
+}
+.htr-site-header-bar {
+  min-height: 3.5rem;
+  padding-top: 2mm;
+  padding-bottom: 2mm;
+}
+.header-phone-pair {
+  margin-top: 5mm;
+  transform: translateX(5mm);
+}
+.header-phone-link {
+  padding-top: calc(0.375rem + 2.5mm) !important;
+  padding-bottom: calc(0.375rem + 2.5mm) !important;
+  box-sizing: border-box;
+}

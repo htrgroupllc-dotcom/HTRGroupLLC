@@ -32651,7 +32651,7 @@ const MARQUEE_BRANDS = [
   ["Cosmo", "cosmo"],
   ["Empava", "empava"]
 ];
-function DraggableMarquee({ brands, base }) {
+function DraggableMarquee({ brands, base, reverse = false }) {
   const trackRef = reactExports.useRef(null);
   const offsetRef = reactExports.useRef(0);
   const speedRef = reactExports.useRef(0);
@@ -32669,9 +32669,15 @@ function DraggableMarquee({ brands, base }) {
         }
         if (!drag2.current.active) {
           const dt = lastTsRef.current ? ts - lastTsRef.current : 0;
-          offsetRef.current -= speedRef.current * dt;
+          offsetRef.current += (reverse ? 1 : -1) * speedRef.current * dt;
           const half = track.scrollWidth / 2;
-          if (half > 0 && -offsetRef.current >= half) offsetRef.current += half;
+          if (half > 0) {
+            if (reverse) {
+              if (offsetRef.current >= half) offsetRef.current -= half;
+            } else if (-offsetRef.current >= half) {
+              offsetRef.current += half;
+            }
+          }
           track.style.transform = `translateX(${offsetRef.current}px)`;
         }
       }
@@ -32682,7 +32688,7 @@ function DraggableMarquee({ brands, base }) {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, []);
+  }, [reverse]);
   const onPointerDown = (e) => {
     drag2.current = { active: true, startX: e.clientX, startOffset: offsetRef.current };
     setGrabbing(true);
@@ -32942,9 +32948,9 @@ function Home() {
         }
       )
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-14 w-full flex-shrink-0", "aria-hidden": "true" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-header-spacer w-full flex-shrink-0", "aria-hidden": "true" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 h-14 flex items-center justify-between gap-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 htr-site-header-bar flex items-center justify-between gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 flex-shrink-0", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "h-3.5 w-3.5 text-stone-400" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -32979,10 +32985,17 @@ function Home() {
           /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${"/".replace(/\/$/, "")}/blog`, className: "hover:opacity-70 transition-opacity", style: { color: K$3.accent }, children: isEs ? "Blog" : "Blog" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden md:flex items-center gap-2 flex-shrink-0", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
-            " ",
-            PHONE_DISPLAY$3
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair flex flex-col gap-1 items-end", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+              " ",
+              PHONE_DISPLAY$3
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+              " ",
+              COMPANY_PHONE_DISPLAY$3
+            ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#contact", className: "text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K$3.dark }, children: T2.bookNow })
         ] }),
@@ -32991,10 +33004,17 @@ function Home() {
       menuOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:hidden bg-white border-t border-stone-100 px-4 pb-3 flex flex-col gap-2 text-sm font-semibold text-stone-700", children: [
         ["/", "#services", "#about", "#faq", "#contact"].map((href, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href, onClick: () => setMenuOpen(false), className: "py-2 border-b border-stone-100", children: T2.nav[i] }, href)),
         /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${"/".replace(/\/$/, "")}/blog`, onClick: () => setMenuOpen(false), className: "py-2 border-b border-stone-100", style: { color: K$3.accent }, children: "Blog" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit mt-1", style: { backgroundColor: K$3.accent }, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
-          " ",
-          PHONE_DISPLAY$3
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair flex flex-col gap-1.5 mt-1 items-start", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K$3.accent }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+            " ",
+            PHONE_DISPLAY$3
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K$3.accent }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+            " ",
+            COMPANY_PHONE_DISPLAY$3
+          ] })
         ] })
       ] })
     ] }),
@@ -33310,7 +33330,15 @@ function Home() {
             brands: MARQUEE_BRANDS,
             base: "/".replace(/\/$/, "")
           }
-        )
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          DraggableMarquee,
+          {
+            brands: MARQUEE_BRANDS,
+            base: "/".replace(/\/$/, ""),
+            reverse: true
+          }
+        ) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "relative py-12", style: { background: "linear-gradient(135deg, #0B1A3F 0%, #0D47B0 55%, #1B6FE8 100%)" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { initial: "hidden", whileInView: "visible", viewport: { once: true }, variants: STAGGER, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(motion.h2, { variants: FADE_UP$3, className: "text-2xl md:text-4xl font-extrabold text-white uppercase mb-2", children: T2.ctaH2 }),
