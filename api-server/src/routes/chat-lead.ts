@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import nodemailer from "nodemailer";
 import { GoogleGenAI } from "@google/genai";
 import twilio from "twilio";
@@ -124,7 +124,7 @@ chatLeadRouter.post("/chat-lead", async (req, res) => {
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:linear-gradient(135deg,#1B6FE8,#0D47B0);padding:20px 24px;">
     <h2 style="color:#fff;margin:0;font-size:18px;">🤖 New Lead from AI Assistant</h2>
-    <p style="color:#b3d4ff;margin:4px 0 0;font-size:13px;">HTRGroupTX — Appliance Repair Chat Widget</p>
+    <p style="color:#b3d4ff;margin:4px 0 0;font-size:13px;">HTRGroup — Appliance Repair Chat Widget</p>
   </div>
 
   <div style="padding:20px 24px;">
@@ -177,14 +177,14 @@ chatLeadRouter.post("/chat-lead", async (req, res) => {
   </div>
 
   <div style="background:#f8fafc;padding:12px 24px;font-size:11px;color:#94a3b8;text-align:center;">
-    Sent automatically by HTRGroupTX AI Assistant • ${new Date().toLocaleString("en-US", { timeZone: "America/Chicago" })} CT
+    Sent automatically by HTRGroup AI Assistant • ${new Date().toLocaleString("en-US", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`;
 
   const translatedForText = translatedMessages ?? filteredMessages;
   const textLines = [
     "🤖 НОВЫЙ ЛИД ОТ AI АССИСТЕНТА",
-    "HTRGroupTX — Appliance Repair Chat Widget",
+    "HTRGroup — Appliance Repair Chat Widget",
     "",
     "⚠️ Лид отправлен автоматически после достижения клиентом лимита вопросов.",
     "",
@@ -203,7 +203,7 @@ chatLeadRouter.post("/chat-lead", async (req, res) => {
 
   try {
     await transporter.sendMail({
-      from: '"HTRGroupTX AI Assistant" <htrgroupllc@gmail.com>',
+      from: '"HTRGroup AI Assistant" <htrgroupllc@gmail.com>',
       to: emailTo,
       subject,
       html,

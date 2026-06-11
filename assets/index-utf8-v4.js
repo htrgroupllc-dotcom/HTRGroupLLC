@@ -1,4 +1,4 @@
-function _mergeNamespaces(n, m) {
+﻿function _mergeNamespaces(n, m) {
   for (var i = 0; i < m.length; i++) {
     const e = m[i];
     if (typeof e !== "string" && !Array.isArray(e)) {
@@ -31334,7 +31334,7 @@ const WELCOME = {
 };
 const TR$4 = {
   en: {
-    title: "Appliance Assistant",
+    title: "HTRGroup",
     subtitle: "AI Diagnostic Help",
     placeholder: "Describe your appliance problem…",
     send: "Send",
@@ -31357,7 +31357,7 @@ const TR$4 = {
     formPhonePh: "e.g. (346) 555-0000"
   },
   es: {
-    title: "Asistente de Aparatos",
+    title: "HTRGroup",
     subtitle: "Diagnóstico con IA",
     placeholder: "Describe el problema con tu electrodoméstico…",
     send: "Enviar",

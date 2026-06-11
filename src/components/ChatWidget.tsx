@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+﻿import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, X, Send, Bot, User, Loader2,
@@ -21,7 +21,7 @@ const WELCOME: Record<"en" | "es", string> = {
 
 const TR = {
   en: {
-    title: "Appliance Assistant",
+    title: "HTRGroup",
     subtitle: "AI Diagnostic Help",
     placeholder: "Describe your appliance problem…",
     send: "Send",
@@ -44,7 +44,7 @@ const TR = {
     formPhonePh: "e.g. (346) 555-0000",
   },
   es: {
-    title: "Asistente de Aparatos",
+    title: "HTRGroup",
     subtitle: "Diagnóstico con IA",
     placeholder: "Describe el problema con tu electrodoméstico…",
     send: "Enviar",

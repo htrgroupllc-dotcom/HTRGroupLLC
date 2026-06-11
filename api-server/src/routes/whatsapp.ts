@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import { GoogleGenAI } from "@google/genai";
 import nodemailer from "nodemailer";
 import twilio from "twilio";
@@ -12,7 +12,7 @@ const FROM_NUM     = process.env["TWILIO_WHATSAPP_NUMBER"] ?? "whatsapp:+1415523
 const OWNER_WA     = "whatsapp:+13468206021";
 const OWNER_PHONE  = "(346) 820-6021";
 const OWNER_EMAIL  = "htrgroupllc@gmail.com";
-const COMPANY_NAME = "HTRGroupTX";
+const COMPANY_NAME = "HTRGroup";
 
 const pool = new pg.Pool({ connectionString: process.env["DATABASE_URL"] });
 
@@ -748,7 +748,7 @@ waRouter.post("/whatsapp/incoming", async (req, res) => {
       // force=true: owner writes in Russian → translate to any client language including English
       const lang       = clientSess?.lang ?? "English";
       const translated = await translateTo(message, lang, ai, /* force */ true);
-      const sent = await sendWA(targetWA, `💬 *HTRGroupTX:* ${translated}`);
+      const sent = await sendWA(targetWA, `💬 *HTRGroup:* ${translated}`);
 
       if (sent) {
         // Mark chat as open so client replies are forwarded back to owner
@@ -1052,7 +1052,7 @@ waRouter.post("/whatsapp/incoming", async (req, res) => {
           `📍 Houston Metropolitan Area\n` +
           `📞 ${OWNER_PHONE}\n\n` +
           `Our technician will contact you shortly before the visit.\n` +
-          `Thank you for choosing *HTRGroupTX*! 🙏`;
+          `Thank you for choosing *HTRGroup*! 🙏`;
         await sendWA(fromRaw, await tx(confirmEn, existing.lang));
 
         // ── Notify owner IMMEDIATELY (no blocking Gemini translation) ──────────
@@ -1285,7 +1285,7 @@ waRouter.post("/whatsapp/incoming", async (req, res) => {
     ).catch(() => {});
 
     // Send date picker (step 1) in client's language
-    let greeting = `Hi ${firstName}! 👋 Thank you for contacting *HTRGroupTX* — appliance repair in Houston.\n\n📅 Please choose a date that works for you:`;
+    let greeting = `Hi ${firstName}! 👋 Thank you for contacting *HTRGroup* — appliance repair in Houston.\n\n📅 Please choose a date that works for you:`;
     if (lang !== "English") {
       try { greeting = await translateTo(greeting, lang, ai); } catch {}
     }

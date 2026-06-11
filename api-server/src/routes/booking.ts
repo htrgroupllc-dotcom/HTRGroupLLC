@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import pg from "pg";
@@ -69,13 +69,13 @@ function sendClientConfirmWA(booking: Booking, log?: NotifyLog): void {
       `🔧 ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
       `📅 ${booking.preferredDate} · ${booking.preferredTime}\n\n` +
       `Le contactaremos antes de la visita.\n` +
-      `¡Gracias por elegir *HTRGroupTX*! 🙏`
+      `¡Gracias por elegir *HTRGroup*! 🙏`
     : `✅ *Appointment Confirmed!*\n\n` +
       `👤 ${booking.name}\n` +
       `🔧 ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
       `📅 ${booking.preferredDate} · ${booking.preferredTime}\n\n` +
       `Our technician will contact you before the visit.\n` +
-      `Thank you for choosing *HTRGroupTX*! 🙏`;
+      `Thank you for choosing *HTRGroup*! 🙏`;
 
   const client = twilio(sid, token);
   void client.messages
@@ -110,14 +110,14 @@ function sendClientRestoreWA(booking: Booking, log?: NotifyLog): void {
       `📅 ${booking.preferredDate} · ${booking.preferredTime}\n\n` +
       `Su solicitud ha sido reactivada por el administrador.\n` +
       `Le contactaremos para confirmar.\n` +
-      `¡Gracias por elegir *HTRGroupTX*! 🙏`
+      `¡Gracias por elegir *HTRGroup*! 🙏`
     : `🔄 *Your appointment has been restored!*\n\n` +
       `👤 ${booking.name}\n` +
       `🔧 ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
       `📅 ${booking.preferredDate} · ${booking.preferredTime}\n\n` +
       `Your request has been reactivated by our admin.\n` +
       `We will contact you shortly to confirm.\n` +
-      `Thank you for choosing *HTRGroupTX*! 🙏`;
+      `Thank you for choosing *HTRGroup*! 🙏`;
 
   const client = twilio(sid, token);
   void client.messages
@@ -1014,7 +1014,7 @@ bookingRouter.post("/admin/block", requireAdminPin, async (req, res) => {
 <div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#0B1A3F;padding:22px 24px;">
     <h2 style="color:#fff;margin:0;font-size:20px;">🔒 Slot Blocked by Administrator</h2>
-    <p style="color:#8ba3cc;margin:6px 0 0;font-size:13px;">HTRGroupTX &nbsp;·&nbsp; Admin Action</p>
+    <p style="color:#8ba3cc;margin:6px 0 0;font-size:13px;">HTRGroup &nbsp;·&nbsp; Admin Action</p>
   </div>
   <div style="padding:24px;">
     <div style="display:inline-block;background:#f97316;color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:.5px;margin-bottom:20px;">
@@ -1040,10 +1040,10 @@ bookingRouter.post("/admin/block", requireAdminPin, async (req, res) => {
     </p>
   </div>
   <div style="background:#f5f5f5;padding:12px 24px;font-size:11px;color:#aaa;text-align:center;">
-    HTRGroupTX · (346) 820-6021 · htrgrouptx.com
+    HTRGroup · (346) 820-6021 · htrgrouptx.com
   </div>
 </div>`;
-        await transporter.sendMail({ from: `"HTRGroupTX Admin" <${emailUser}>`, to: emailTo, subject, html });
+        await transporter.sendMail({ from: `"HTRGroup Admin" <${emailUser}>`, to: emailTo, subject, html });
       } catch (err) {
         console.warn("Block notification email failed:", err);
       }
@@ -1080,7 +1080,7 @@ bookingRouter.delete("/admin/block", requireAdminPin, async (req, res) => {
 <div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#0B1A3F;padding:22px 24px;">
     <h2 style="color:#fff;margin:0;font-size:20px;">🔓 Slot Unblocked by Administrator</h2>
-    <p style="color:#8ba3cc;margin:6px 0 0;font-size:13px;">HTRGroupTX &nbsp;·&nbsp; Admin Action</p>
+    <p style="color:#8ba3cc;margin:6px 0 0;font-size:13px;">HTRGroup &nbsp;·&nbsp; Admin Action</p>
   </div>
   <div style="padding:24px;">
     <div style="display:inline-block;background:#16a34a;color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:.5px;margin-bottom:20px;">
@@ -1101,10 +1101,10 @@ bookingRouter.delete("/admin/block", requireAdminPin, async (req, res) => {
     </p>
   </div>
   <div style="background:#f5f5f5;padding:12px 24px;font-size:11px;color:#aaa;text-align:center;">
-    HTRGroupTX · (346) 820-6021 · htrgrouptx.com
+    HTRGroup · (346) 820-6021 · htrgrouptx.com
   </div>
 </div>`;
-        await transporter.sendMail({ from: `"HTRGroupTX Admin" <${emailUser}>`, to: emailTo, subject, html });
+        await transporter.sendMail({ from: `"HTRGroup Admin" <${emailUser}>`, to: emailTo, subject, html });
       } catch (err) {
         console.warn("Unblock notification email failed:", err);
       }
@@ -1555,8 +1555,8 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
         const isEs = booking.language === "es";
 
         const clientSubject = isEs
-          ? `Su cita ha sido cancelada — HTRGroupTX`
-          : `Your appointment has been cancelled — HTRGroupTX`;
+          ? `Su cita ha sido cancelada — HTRGroup`
+          : `Your appointment has been cancelled — HTRGroup`;
 
         const clientHtml = `
 <div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
@@ -1564,7 +1564,7 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
     <h2 style="color:#fff;margin:0;font-size:18px;">
       ${isEs ? "Su cita ha sido cancelada" : "Your appointment has been cancelled"}
     </h2>
-    <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">HTRGroupTX · Hi-Tech Repair Group</p>
+    <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">HTRGroup · Hi-Tech Repair Group</p>
   </div>
   <div style="padding:24px;font-size:14px;color:#333;line-height:1.7;">
     <p>${isEs ? "Estimado/a" : "Dear"} <strong>${booking.name}</strong>,</p>
@@ -1583,7 +1583,7 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
       ✉️ <a href="mailto:htrgroupllc@gmail.com" style="color:#1B6FE8;">htrgroupllc@gmail.com</a>
     </div>
     <p style="font-size:13px;color:#666;">
-      ${isEs ? "Gracias por elegir HTRGroupTX." : "Thank you for choosing HTRGroupTX."}
+      ${isEs ? "Gracias por elegir HTRGroup." : "Thank you for choosing HTRGroup."}
     </p>
   </div>
   <div style="background:#f8fafc;padding:12px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
@@ -1592,13 +1592,13 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
 </div>`;
 
         await transporter.sendMail({
-          from:    `"HTRGroupTX" <${emailUser}>`,
+          from:    `"HTRGroup" <${emailUser}>`,
           to:      clientEmail,
           subject: clientSubject,
           html:    clientHtml,
           text: isEs
-            ? `Estimado/a ${booking.name},\n\nSu cita del ${booking.preferredDate} a las ${booking.preferredTime} ha sido cancelada.\n\nPara reagendar: (346) 820-6021\n\nHTRGroupTX`
-            : `Dear ${booking.name},\n\nYour appointment on ${booking.preferredDate} at ${booking.preferredTime} has been cancelled.\n\nTo reschedule: (346) 820-6021\n\nHTRGroupTX`,
+            ? `Estimado/a ${booking.name},\n\nSu cita del ${booking.preferredDate} a las ${booking.preferredTime} ha sido cancelada.\n\nPara reagendar: (346) 820-6021\n\nHTRGroup`
+            : `Dear ${booking.name},\n\nYour appointment on ${booking.preferredDate} at ${booking.preferredTime} has been cancelled.\n\nTo reschedule: (346) 820-6021\n\nHTRGroup`,
         });
         req.log.info({ bookingId: id, clientEmail }, "Cancellation email sent to client");
       }
@@ -1895,7 +1895,7 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
     <h2 style="color:#fff;margin:0;font-size:18px;">
       ${isEs ? "♻️ Su cita ha sido reactivada" : "♻️ Your appointment has been restored"}
     </h2>
-    <p style="color:#ffe8d6;margin:6px 0 0;font-size:13px;">HTRGroupTX · Hi-Tech Repair Group</p>
+    <p style="color:#ffe8d6;margin:6px 0 0;font-size:13px;">HTRGroup · Hi-Tech Repair Group</p>
   </div>
   <div style="padding:24px;font-size:14px;color:#333;line-height:1.7;">
     <p>${isEs ? "Estimado/a" : "Dear"} <strong>${effectiveBooking.name}</strong>,</p>
@@ -1921,7 +1921,7 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
           await transporter.sendMail({
             from:    `"Hi-Tech Repair Group" <${emailUser}>`,
             to:      clientEmail,
-            subject: isEs ? "♻️ Su cita ha sido restaurada — HTRGroupTX" : "♻️ Your appointment has been restored — HTRGroupTX",
+            subject: isEs ? "♻️ Su cita ha sido restaurada — HTRGroup" : "♻️ Your appointment has been restored — HTRGroup",
             html:    clientHtml,
             text:    isEs
               ? `Su cita ha sido restaurada. Fecha: ${restoreDate} · ${restoreTime}. Servicio: ${effectiveBooking.appliance}. Preguntas: (346) 820-6021`
@@ -2067,15 +2067,15 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
         if (clientEmail && clientEmail.includes("@")) {
           const isEs = updatedBooking.language === "es";
           await transporter.sendMail({
-            from: `"HTRGroupTX" <${emailUser}>`,
+            from: `"HTRGroup" <${emailUser}>`,
             to:   clientEmail,
             subject: isEs
-              ? `📅 Su cita ha sido reprogramada — HTRGroupTX`
-              : `📅 Your appointment has been rescheduled — HTRGroupTX`,
+              ? `📅 Su cita ha sido reprogramada — HTRGroup`
+              : `📅 Your appointment has been rescheduled — HTRGroup`,
             html: `<div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#1B6FE8;padding:22px 24px;">
     <h2 style="color:#fff;margin:0;font-size:20px;">${isEs ? "📅 Cita Reprogramada" : "📅 Appointment Rescheduled"}</h2>
-    <p style="color:#dbeafe;margin:4px 0 0;font-size:13px;">HTRGroupTX · Houston Metropolitan Area</p>
+    <p style="color:#dbeafe;margin:4px 0 0;font-size:13px;">HTRGroup · Houston Metropolitan Area</p>
   </div>
   <div style="padding:24px;">
     <p style="font-size:15px;color:#1e293b;">${isEs ? `Estimado/a <strong>${updatedBooking.name}</strong>,` : `Dear <strong>${updatedBooking.name}</strong>,`}</p>
@@ -2091,14 +2091,14 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
       ? "Si tiene preguntas, comuníquese con nosotros al (346) 820-6021."
       : "If you have any questions, please contact us at (346) 820-6021."
     }</p>
-    <p style="font-size:14px;color:#1e293b;">${isEs ? "¡Gracias por confiar en HTRGroupTX!" : "Thank you for choosing HTRGroupTX!"}</p>
+    <p style="font-size:14px;color:#1e293b;">${isEs ? "¡Gracias por confiar en HTRGroup!" : "Thank you for choosing HTRGroup!"}</p>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    HTRGroupTX · Houston Metropolitan Area · (346) 820-6021
+    HTRGroup · Houston Metropolitan Area · (346) 820-6021
   </div></div>`,
             text: isEs
-              ? `Estimado/a ${updatedBooking.name},\n\nSu cita ha sido reprogramada.\nNueva fecha: ${rsDate} · ${rsTime}\n\nHTRGroupTX`
-              : `Dear ${updatedBooking.name},\n\nYour appointment has been rescheduled.\nNew date: ${rsDate} · ${rsTime}\n\nHTRGroupTX`,
+              ? `Estimado/a ${updatedBooking.name},\n\nSu cita ha sido reprogramada.\nNueva fecha: ${rsDate} · ${rsTime}\n\nHTRGroup`
+              : `Dear ${updatedBooking.name},\n\nYour appointment has been rescheduled.\nNew date: ${rsDate} · ${rsTime}\n\nHTRGroup`,
           });
           req.log.info({ bookingId: id }, "Client reschedule email sent");
         }
@@ -2219,7 +2219,7 @@ bookingRouter.get("/cancel", async (req, res) => {
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#b45309;padding:22px 24px;">
     <h2 style="color:#fff;margin:0;font-size:20px;">⚠️ Клиент самостоятельно отменил запись</h2>
-    <p style="color:#fde68a;margin:6px 0 0;font-size:13px;">HTRGroupTX · ID: <strong style="color:#fff;">${shortId}</strong></p>
+    <p style="color:#fde68a;margin:6px 0 0;font-size:13px;">HTRGroup · ID: <strong style="color:#fff;">${shortId}</strong></p>
   </div>
   <div style="background:#fffbeb;border-left:4px solid #b45309;padding:12px 20px;font-size:13px;color:#92400e;font-weight:600;">
     ℹ️ Клиент нажал ссылку «Отменить запись» в письме подтверждения — слот освобождён
@@ -2315,7 +2315,7 @@ bookingRouter.get("/approve", async (req, res) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Confirm Appointment — HTRGroupTX</title>
+  <title>Confirm Appointment — HTRGroup</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:Arial,sans-serif;background:#f0f4f8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
@@ -2808,7 +2808,7 @@ bookingRouter.post("/hubspot/webhook", async (req, res) => {
               await transporter.sendMail({
                 from:    `"Hi-Tech Repair Group" <${emailUser}>`,
                 to:      clientEmail,
-                subject: isEs ? `Su cita ha sido cancelada — HTRGroupTX` : `Your appointment has been cancelled — HTRGroupTX`,
+                subject: isEs ? `Su cita ha sido cancelada — HTRGroup` : `Your appointment has been cancelled — HTRGroup`,
                 text: isEs
                   ? `Estimado/a ${booking.name},\nSu cita del ${booking.preferredDate} a las ${booking.preferredTime} ha sido cancelada.\nContacto: (346) 820-6021 | htrgroupllc@gmail.com`
                   : `Dear ${booking.name},\nYour appointment on ${booking.preferredDate} at ${booking.preferredTime} has been cancelled.\nContact: (346) 820-6021 | htrgroupllc@gmail.com`,
