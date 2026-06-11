@@ -1025,9 +1025,14 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
 }
 
 ﻿function CenterConvergeMarquee({ brands, base }: { brands: [string, string][]; base: string }) {
-  const all = [...brands, ...brands];
   const cardClass =
     "htr-brand-marquee-center__card flex-shrink-0 flex items-center justify-center bg-white rounded-xl border border-stone-100 shadow-sm p-2";
+  const renderStrip = (prefix: string) =>
+    brands.map(([name, file], i) => (
+      <div key={`${prefix}-${i}`} className={cardClass}>
+        <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
+      </div>
+    ));
 
   return (
     <section className="htr-brand-marquee-center relative w-full py-6 bg-stone-50 border-y border-stone-200 overflow-hidden" aria-label="Brands we service">
@@ -1036,21 +1041,15 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
           <div className="htr-brand-marquee-center__row relative w-full min-h-[88px] h-[88px] overflow-hidden">
             <div className="htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-20" aria-hidden="true" />
             <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
-              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 w-max h-full justify-end">
-                {all.map(([name, file], i) => (
-                  <div key={`l-${i}`} className={cardClass}>
-                    <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
-                  </div>
-                ))}
+              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center w-max h-full justify-start">
+                <div className="htr-brand-marquee-center__strip flex items-center gap-3 flex-shrink-0">{renderStrip("la")}</div>
+                <div className="htr-brand-marquee-center__strip flex items-center gap-3 flex-shrink-0" aria-hidden="true">{renderStrip("lb")}</div>
               </div>
             </div>
             <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute inset-y-0 right-0 w-1/2 overflow-hidden z-10">
-              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 w-max h-full justify-start">
-                {all.map(([name, file], i) => (
-                  <div key={`r-${i}`} className={cardClass}>
-                    <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
-                  </div>
-                ))}
+              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center w-max h-full justify-end">
+                <div className="htr-brand-marquee-center__strip flex items-center gap-3 flex-shrink-0">{renderStrip("ra")}</div>
+                <div className="htr-brand-marquee-center__strip flex items-center gap-3 flex-shrink-0" aria-hidden="true">{renderStrip("rb")}</div>
               </div>
             </div>
           </div>

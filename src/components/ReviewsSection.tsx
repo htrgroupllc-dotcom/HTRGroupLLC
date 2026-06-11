@@ -204,12 +204,12 @@ export default function ReviewsSection({
             {/* Tablet + desktop: two rows of up to 5 cards */}
             <div className="relative htr-google-reviews-grid-wrap hidden md:block">
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="htr-reviews-row gap-4">
                   {firstRow.map((r, i) => (
                     <ReviewCard key={`${r.name}-${safePage}-${i}`} review={r} isEs={isEs} />
                   ))}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="htr-reviews-row gap-4">
                   {secondRow.map((r, i) => (
                     <ReviewCard key={`${r.name}-${safePage}-${i + 5}`} review={r} isEs={isEs} />
                   ))}

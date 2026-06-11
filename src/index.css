@@ -624,6 +624,23 @@ footer {
   width: 0.75rem !important;
 }
 
+/* Reviews: two rows — explicit grid (Tailwind-safe on patched bundle) */
+.htr-reviews-row {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .htr-reviews-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .htr-reviews-row {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
 /* Center-converge brand marquee (between services and stats) */
 .htr-brand-marquee-center__bleed { max-width: 100vw; }
 .htr-brand-marquee-center__card {
@@ -636,13 +653,16 @@ footer {
 .htr-brand-marquee-center__row {
   position: relative; overflow: hidden; height: 88px; min-height: 88px;
 }
-.htr-brand-marquee-center__wing--left {
+.htr-brand-marquee-center__wing--left,
+.htr-brand-marquee-center__wing--right {
   height: 100%;
+  position: relative;
+}
+.htr-brand-marquee-center__wing--left {
   -webkit-mask-image: linear-gradient(to right, #000 0%, #000 20%, rgba(0,0,0,0.85) 42%, rgba(0,0,0,0.45) 58%, rgba(0,0,0,0.12) 72%, transparent 82%);
   mask-image: linear-gradient(to right, #000 0%, #000 20%, rgba(0,0,0,0.85) 42%, rgba(0,0,0,0.45) 58%, rgba(0,0,0,0.12) 72%, transparent 82%);
 }
 .htr-brand-marquee-center__wing--right {
-  height: 100%;
   -webkit-mask-image: linear-gradient(to left, #000 0%, #000 20%, rgba(0,0,0,0.85) 42%, rgba(0,0,0,0.45) 58%, rgba(0,0,0,0.12) 72%, transparent 82%);
   mask-image: linear-gradient(to left, #000 0%, #000 20%, rgba(0,0,0,0.85) 42%, rgba(0,0,0,0.45) 58%, rgba(0,0,0,0.12) 72%, transparent 82%);
 }
@@ -665,6 +685,12 @@ footer {
 }
 .htr-brand-marquee-center__stage::after {
   right: 0; background: linear-gradient(to left, #f9fafb, transparent);
+}
+.htr-brand-marquee-center__strip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
 }
 .htr-brand-marquee-center__track--left,
 .htr-brand-marquee-center__track--right {
