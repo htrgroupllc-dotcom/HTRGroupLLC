@@ -1,4 +1,4 @@
-﻿function _mergeNamespaces(n, m) {
+function _mergeNamespaces(n, m) {
   for (var i = 0; i < m.length; i++) {
     const e = m[i];
     if (typeof e !== "string" && !Array.isArray(e)) {
@@ -97649,7 +97649,7 @@ const WA_ICON = /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { viewBox: "0 0 32 
 function Router() {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(Switch, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", component: Home }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/gallery", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AuthGate, { title: "Our Work — Gallery", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Gallery, {}) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/gallery", component: Gallery }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/blog", component: Blog }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/blog/:slug", component: BlogPost }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/admin", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AuthGate, { title: "Admin Panel", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AdminPage, {}) }) }),
