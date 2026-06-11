@@ -635,18 +635,23 @@ footer {
 }
 .htr-brand-marquee-center__wing--left {
   height: 100%;
-  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 38%, transparent 88%, transparent 100%);
-  mask-image: linear-gradient(to right, #000 0%, #000 38%, transparent 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 20%, rgba(0,0,0,0.85) 42%, rgba(0,0,0,0.45) 58%, rgba(0,0,0,0.12) 72%, transparent 82%);
+  mask-image: linear-gradient(to right, #000 0%, #000 20%, rgba(0,0,0,0.85) 42%, rgba(0,0,0,0.45) 58%, rgba(0,0,0,0.12) 72%, transparent 82%);
 }
 .htr-brand-marquee-center__wing--right {
   height: 100%;
-  -webkit-mask-image: linear-gradient(to left, #000 0%, #000 38%, transparent 88%, transparent 100%);
-  mask-image: linear-gradient(to left, #000 0%, #000 38%, transparent 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, #000 0%, #000 20%, rgba(0,0,0,0.85) 42%, rgba(0,0,0,0.45) 58%, rgba(0,0,0,0.12) 72%, transparent 82%);
+  mask-image: linear-gradient(to left, #000 0%, #000 20%, rgba(0,0,0,0.85) 42%, rgba(0,0,0,0.45) 58%, rgba(0,0,0,0.12) 72%, transparent 82%);
 }
 .htr-brand-marquee-center__seam {
-  width: min(32vw, 220px);
-  margin-left: calc(min(32vw, 220px) / -2);
-  background: linear-gradient(90deg, transparent 0%, #f9fafb 28%, #f9fafb 72%, transparent 100%);
+  width: min(38vw, 300px);
+  margin-left: calc(min(38vw, 300px) / -2);
+  background:
+    radial-gradient(ellipse 95% 115% at 50% 50%, #fff 0%, #f9fafb 28%, rgba(249,250,251,0.88) 48%, rgba(249,250,251,0.35) 68%, transparent 100%);
+  box-shadow:
+    0 0 28px 16px rgba(255,255,255,0.95),
+    0 0 56px 32px rgba(249,250,251,0.65);
+  z-index: 25;
 }
 .htr-brand-marquee-center__stage::before,
 .htr-brand-marquee-center__stage::after {
@@ -658,19 +663,26 @@ footer {
 .htr-brand-marquee-center__stage::after {
   right: 0; background: linear-gradient(to left, #f9fafb, transparent);
 }
+.htr-brand-marquee-center__track--left,
+.htr-brand-marquee-center__track--right {
+  width: max-content;
+  backface-visibility: hidden;
+}
 .htr-brand-marquee-center__track--left {
-  animation: htr-marquee-center-left 48s linear infinite; will-change: transform;
+  animation: htr-marquee-center-left 50s linear infinite;
+  will-change: transform;
 }
 .htr-brand-marquee-center__track--right {
-  animation: htr-marquee-center-right 48s linear infinite; will-change: transform;
+  animation: htr-marquee-center-right 50s linear infinite;
+  will-change: transform;
 }
 @keyframes htr-marquee-center-left {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
+  0% { transform: translate3d(-50%, 0, 0); }
+  100% { transform: translate3d(0, 0, 0); }
 }
 @keyframes htr-marquee-center-right {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 /* Home: Why Us + Our Work split photos (smaller, proportional) */

@@ -26,7 +26,7 @@ function serve(dir, port) {
   const srv = await serve(root, 4178);
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
-  await page.goto("http://127.0.0.1:4178/", { waitUntil: "networkidle", timeout: 120000 });
+  await page.goto("http://127.0.0.1:4178/", { waitUntil: "domcontentloaded", timeout: 60000 });
   await page.locator("#services").scrollIntoViewIfNeeded();
   await page.waitForTimeout(1000);
 
@@ -66,7 +66,7 @@ function serve(dir, port) {
       right: rightTrack ? getComputedStyle(rightTrack).transform : null,
     };
 
-    await new Promise((r) => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, 5000));
 
     const t1Left = visibleCards(".htr-brand-marquee-center__wing--left");
     const t1Right = visibleCards(".htr-brand-marquee-center__wing--right");
