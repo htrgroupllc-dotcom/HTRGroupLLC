@@ -1,5 +1,6 @@
 ﻿"""Generate Houston metro ZIP polygons for map overlay."""
 import json
+import math
 from pathlib import Path
 
 ROOT = Path(r"C:\Projects\HTRGroupLLC")
@@ -10,20 +11,11 @@ EXCLUDED = {
     "77414", "77419", "77426", "77430", "77434", "77437", "77442", "77448",
     "77455", "77456", "77457", "77458", "77460", "77470", "77485", "77488",
 }
-# Far-south / coastal zips outside trimmed metro (Alvin, Angleton, Lake Jackson, etc.)
-SOUTHERN_EXCLUDED = {
-    "77415", "77417", "77420", "77422", "77432", "77435", "77436", "77440",
-    "77443", "77444", "77451", "77453", "77461", "77465", "77467", "77468",
-    "77469", "77478", "77479", "77480", "77481", "77482", "77486", "77489",
-    "77502", "77503", "77504", "77505", "77506", "77507", "77510", "77511",
-    "77514", "77515", "77517", "77518", "77531", "77534", "77539", "77541",
-    "77545", "77546", "77550", "77551", "77554", "77563", "77565", "77566",
-    "77568", "77571", "77573", "77577", "77578", "77581", "77583", "77584",
-    "77586", "77590", "77591", "77598",
-}
-# Southern trim arc (lng -> min lat); matches user red line on service map
+# Downtown Houston; service area is a circle on the z=9 embed (calibrated to user red ring ~165px ~43.8km).
 HOUSTON_CENTER = (29.7604, -95.3698)
-# Southern trim arc (lng -> min lat); user red dashed line on service map
+RADIUS_KM = 43.8
+MIN_INSIDE_FRAC = 0.5
+# Southern trim arc (lng -> min lat); tightens south edge where circle is slightly generous.
 SOUTHERN_CUTOFF = (
     (-96.0, 29.74),
     (-95.85, 29.745),
@@ -36,6 +28,16 @@ SOUTHERN_CUTOFF = (
 )
 BBOX = (-96.35, 28.85, -94.45, 30.55)
 MAX_PTS = 22
+
+
+def haversine_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    r = 6371.0
+    p = math.pi / 180
+    a = (
+        math.sin((lat2 - lat1) * p / 2) ** 2
+        + math.cos(lat1 * p) * math.cos(lat2 * p) * math.sin((lng2 - lng1) * p / 2) ** 2
+    )
+    return 2 * r * math.asin(min(1.0, math.sqrt(a)))
 
 
 def southern_cutoff_lat(lng: float) -> float:
@@ -69,6 +71,27 @@ def south_of_trim_line(ring) -> bool:
     return False
 
 
+def inside_service_circle(ring) -> bool:
+    clng, clat, _, _ = ring_centroid(ring)
+    center_lat, center_lng = HOUSTON_CENTER
+    centroid_km = haversine_km(center_lat, center_lng, clat, clng)
+    if centroid_km > RADIUS_KM:
+        return False
+    max_km = max(
+        haversine_km(center_lat, center_lng, lat, lng) for lng, lat in ring
+    )
+    if max_km > RADIUS_KM:
+        return False
+    inside = sum(
+        1
+        for lng, lat in ring
+        if haversine_km(center_lat, center_lng, lat, lng) <= RADIUS_KM
+    )
+    if inside / len(ring) < MIN_INSIDE_FRAC:
+        return False
+    return True
+
+
 def in_bbox_ring(ring):
     lngs = [p[0] for p in ring]
     lats = [p[1] for p in ring]
@@ -94,11 +117,12 @@ def simplify_ring(ring):
 def collect():
     data = json.loads((ROOT / "scripts/_tx_zips.geojson").read_text(encoding="utf-8"))
     polys = []
+    skipped_circle = []
     skipped_south = []
     for feat in data["features"]:
         props = feat.get("properties") or {}
         z = str(props.get("ZCTA5CE10") or props.get("ZIP") or "")
-        if len(z) != 5 or not z.startswith(PREFIXES) or z in EXCLUDED or z in SOUTHERN_EXCLUDED:
+        if len(z) != 5 or not z.startswith(PREFIXES) or z in EXCLUDED:
             continue
         geom = feat["geometry"]
         rings = []
@@ -109,12 +133,14 @@ def collect():
         for ring in rings:
             if len(ring) < 4 or not in_bbox_ring(ring):
                 continue
-            if south_of_trim_line(ring):
-                skipped_south.append(z)
+            if not inside_service_circle(ring):
+                skipped_circle.append(z)
                 break
             polys.append({"z": z, "r": simplify_ring(ring)})
             break
     polys.sort(key=lambda p: p["z"])
+    if skipped_circle:
+        print("outside_circle:", len(set(skipped_circle)))
     if skipped_south:
         print("south_of_line:", ", ".join(sorted(set(skipped_south))))
     return polys
@@ -143,7 +169,7 @@ def emit_ts(polys):
         "",
         "export type ZipPolygon = { zip: string; ring: LngLat[] };",
         "",
-        "/** Allowed metro ZIPs (770/772/773/774/775 minus rural + southern trim). */",
+        f"/** Allowed metro ZIPs inside ~{RADIUS_KM}km circle from downtown + southern trim. */",
         "export const SERVICE_ZIP_POLYGONS: ZipPolygon[] = [",
     ]
     for p in polys:

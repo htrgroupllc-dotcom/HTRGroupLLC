@@ -46,3 +46,23 @@
 
 ## ????????
 - `node --check assets/index-utf8-v4.js` ? OK.
+
+---
+
+# REPORT — southern map trim (2026-06-11)
+
+## Problem
+- Blue ZIP fill still extended south of user red dashed boundary (Sugar Land, Pearland, Friendswood, coastal).
+
+## Fix (commit d5d1aea)
+- uild_service_area_geo.py: raised SOUTHERN_CUTOFF arc (+0.10–0.14 lat), stricter centroid/min-lat test, expanded SOUTHERN_EXCLUDED.
+- Rebuilt polygons: **173 → 120** ZIPs.
+- index.html: cache bump index-utf8-v4.js?v=26.
+- Prod verified: page loads ?v=26; Playwright _prod_contact_map.png.
+
+## Risks
+- Inner south Houston (e.g. 77002 min lat ~29.73) still shown — inside loop, above arc at -95.45.
+
+## Checks
+- 
+ode --check assets/index-utf8-v4.js — OK.
