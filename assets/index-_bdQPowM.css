@@ -7816,7 +7816,7 @@
 /* Mobile layout (max-width 767px): header phones, marquee, blog sidebar */
 @media (max-width: 767px) {
   .htr-header-spacer {
-    min-height: 10.75rem;
+    min-height: calc(15rem + env(safe-area-inset-top, 0px));
   }
   .htr-header-mobile-strip {
     width: 100%;
