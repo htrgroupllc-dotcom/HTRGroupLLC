@@ -32786,12 +32786,68 @@ function DraggableMarquee({ brands, base, reverse = false }) {
   ] });
 }
 function CenterConvergeMarquee({ brands, base }) {
+  const leftTrackRef = reactExports.useRef(null);
+  const rightTrackRef = reactExports.useRef(null);
+  const leftOffsetRef = reactExports.useRef(0);
+  const rightOffsetRef = reactExports.useRef(0);
+  const lastTsRef = reactExports.useRef(0);
+  const rafRef = reactExports.useRef();
+  const leftInitRef = reactExports.useRef(false);
+  const rightInitRef = reactExports.useRef(false);
+  const wrapOffsetCenter = (offset, half) => {
+    if (half <= 0) return offset;
+    while (offset > 0) offset -= half;
+    while (offset <= -half) offset += half;
+    return offset;
+  };
+  reactExports.useEffect(() => {
+    leftInitRef.current = false;
+    rightInitRef.current = false;
+    const DURATION_MS = 12e4;
+    const tick = (ts) => {
+      const dt = lastTsRef.current ? ts - lastTsRef.current : 0;
+      const leftTrack = leftTrackRef.current;
+      const rightTrack = rightTrackRef.current;
+      if (leftTrack && dt) {
+        const half = leftTrack.scrollWidth / 2;
+        if (half > 0) {
+          const speed = half / DURATION_MS;
+          if (!leftInitRef.current) {
+            leftOffsetRef.current = -half;
+            leftInitRef.current = true;
+          }
+          leftOffsetRef.current += speed * dt;
+          leftOffsetRef.current = wrapOffsetCenter(leftOffsetRef.current, half);
+          leftTrack.style.transform = `translateX(${leftOffsetRef.current}px)`;
+        }
+      }
+      if (rightTrack && dt) {
+        const half = rightTrack.scrollWidth / 2;
+        if (half > 0) {
+          const speed = half / DURATION_MS;
+          if (!rightInitRef.current) {
+            rightOffsetRef.current = 0;
+            rightInitRef.current = true;
+          }
+          rightOffsetRef.current -= speed * dt;
+          rightOffsetRef.current = wrapOffsetCenter(rightOffsetRef.current, half);
+          rightTrack.style.transform = `translateX(${rightOffsetRef.current}px)`;
+        }
+      }
+      lastTsRef.current = ts;
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
   const all = [...brands, ...brands];
-  const cardClass = "htr-brand-marquee-center__card flex-shrink-0 flex items-center justify-center bg-white rounded-xl border border-stone-100 shadow-sm";
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "htr-brand-marquee-center py-6 bg-white border-y border-stone-100", "aria-label": "Brands we service", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__stage relative mx-auto w-full max-w-6xl px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-brand-marquee-center__row relative h-[72px] md:h-[88px] overflow-hidden", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-30 w-20 -ml-10" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute left-0 top-0 bottom-0 w-1/2 overflow-hidden z-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 md:gap-4 w-max h-full justify-end", children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "eager", decoding: "async" }) }, `l-${i}`)) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden z-20", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 md:gap-4 w-max h-full justify-start", children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "eager", decoding: "async" }) }, `r-${i}`)) }) })
+  const cardClass = "htr-brand-marquee-center__card flex-shrink-0 flex items-center justify-center bg-white rounded-xl border border-stone-100 shadow-sm p-3";
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "htr-brand-marquee-center py-6 bg-white border-y border-stone-100", "aria-label": "Brands we service", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__stage relative mx-auto w-full max-w-6xl px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-brand-marquee-center__row relative min-h-[96px] h-[96px] overflow-hidden", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-20 w-16 -ml-8" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute left-0 top-0 bottom-0 w-1/2 overflow-hidden z-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: leftTrackRef, className: "htr-brand-marquee-center__track flex items-center gap-4 w-max h-full justify-end", style: { willChange: "transform" }, children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, style: { width: 180, height: 90 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "lazy" }) }, `l-${i}`)) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden z-[15]", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: rightTrackRef, className: "htr-brand-marquee-center__track flex items-center gap-4 w-max h-full justify-start", style: { willChange: "transform" }, children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, style: { width: 180, height: 90 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "lazy" }) }, `r-${i}`)) }) })
   ] }) }) });
 }
 const SERVICE_AREA_MAP_EMBED = { centerLat: 29.7, centerLng: -95.4, zoom: 9 };
@@ -33604,11 +33660,11 @@ function Home() {
             whileInView: "visible",
             viewport: { once: true },
             variants: FADE_UP$3,
-            className: "bg-white rounded-lg p-2.5 md:p-3 shadow-sm border border-stone-100 flex flex-col h-full min-h-0",
+            className: "bg-white rounded-lg p-2 md:p-2.5 shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 min-w-0", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-9 w-9 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0", style: { backgroundColor: r.avatarColor }, children: r.initials }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-8 w-8 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0", style: { backgroundColor: r.avatarColor }, children: r.initials }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold text-xs text-stone-900 truncate", children: r.name }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-stone-400 leading-none", children: r.time })
@@ -33617,7 +33673,7 @@ function Home() {
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#4285F4] font-extrabold text-lg leading-none flex-shrink-0", "aria-hidden": "true", children: "G" })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-2", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "h-3.5 w-3.5 htr-google-star", style: { color: "#FBBC04", fill: "#FBBC04" } })) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-[11px] md:text-xs leading-snug flex-1 line-clamp-4", children: isEs ? r.textEs : r.textEn })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-[11px] md:text-xs leading-snug flex-1 line-clamp-3", children: isEs ? r.textEs : r.textEn })
             ]
           }
         )) }),
