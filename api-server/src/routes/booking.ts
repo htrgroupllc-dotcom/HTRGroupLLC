@@ -1598,8 +1598,7 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
           html:    clientHtml,
           text: isEs
             ? `Estimado/a ${booking.name},\n\nSu cita del ${booking.preferredDate} a las ${booking.preferredTime} ha sido cancelada.\n\nPara reagendar: (346) 820-6021\n\nHTRGroup`
-            : `Dear ${booking.name},\n\nYour appointment on ${booking.preferredDate} at ${booking.preferredTime} has been cancelled.\n\nTo reschedule: (346) 820-6021\n\nHTRGroup`,
-        });
+            : `Dear ${booking.name},\n\nYour appointment on ${booking.preferredDate} at ${booking.preferredTime} has been cancelled.\n\nTo reschedule: (346) 820-6021\n\nHTRGroup`,        });
         req.log.info({ bookingId: id, clientEmail }, "Cancellation email sent to client");
       }
     } catch (err) {
@@ -2098,8 +2097,7 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
   </div></div>`,
             text: isEs
               ? `Estimado/a ${updatedBooking.name},\n\nSu cita ha sido reprogramada.\nNueva fecha: ${rsDate} · ${rsTime}\n\nHTRGroup`
-              : `Dear ${updatedBooking.name},\n\nYour appointment has been rescheduled.\nNew date: ${rsDate} · ${rsTime}\n\nHTRGroup`,
-          });
+              : `Dear ${updatedBooking.name},\n\nYour appointment has been rescheduled.\nNew date: ${rsDate} · ${rsTime}\n\nHTRGroup`,          });
           req.log.info({ bookingId: id }, "Client reschedule email sent");
         }
       } catch (e) {

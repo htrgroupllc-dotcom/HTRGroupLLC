@@ -1339,7 +1339,7 @@ waRouter.post("/sms/incoming", (req, res) => {
   const body = ((req.body?.Body as string) ?? "").trim();
   console.log(`[SMS] FROM=${req.body?.From} BODY="${body.slice(0, 60)}"`);
   const reply =
-    "Hi! Thanks for texting HTR Group TX. Call us or visit htrgrouptx.com to book appliance repair. Reply BOOK for help.";
+    "Hi! Thanks for texting HTR Group TX. Call us or visit HTRGroup.com to book appliance repair. Reply BOOK for help.";
   res.type("text/xml").send(
     `<?xml version="1.0" encoding="UTF-8"?><Response><Message>${reply}</Message></Response>`,
   );
