@@ -1,25 +1,48 @@
-﻿# REPORT — htrgrouptx.com (2026-06-11)
+﻿# REPORT — Blog не открывался (2026-06-11)
 
-## Проверка prod СЕЙЧАС
-- `https://htrgrouptx.com` — HTTP 200, `index.html` → `/assets/index-utf8-v4.js?v=9`
-- `node --check` на prod и local bundle — OK
-- SHA256 prod JS = local `main` (после cc0894a — footer class + cache bust)
-- Playwright (desktop/mobile, SW on): `#root` ~210k, console/page errors — нет
-- Cloudflare Pages deploy run #35 (cc0894a) — success
+## Найденные ошибки
+- **ReferenceError: PHONE_HREF is not defined** в `BlogPost` (мобильная полоса телефонов в шапке).
+- В бандле одна строка: `href: PHONE_HREF` / `PHONE_DISPLAY` вместо `PHONE_HREF$6` / `PHONE_DISPLAY$6`.
+- `node --check` на бандле проходил (синтаксис валиден); падение только в рантайме React.
+- Playwright: тело страницы ~58 символов, статьи не рендерились; клик с `/blog` таймаутил из‑за пустого UI.
 
-## Ошибка на prod (до 0a4f4d9)
-- **Runtime:** `ReferenceError: $3 is not defined` при рендере Home (footer)
-- **Причина:** в commit `1c12648` при смене порядка телефонов в минифицированном bundle в `children` попал голый `$3` вместо JSX компании:
-  `children: [$3, /* ... PHONE_HREF$3 ... */]`
+## Диагностика
+- Prod и git main бандлы совпадали по хешу до фикса — не «устаревший деплой», а баг в закоммиченном бандле.
+- Коммиты d858da0 / 44ae14a (legal, home mobile) к блогу не относятся; map 37a7398 / 29548fc5 — отдельно.
 
 ## Исправления
-| Commit | Что |
-|--------|-----|
-| `0a4f4d9` | Восстановлен JSX `COMPANY_PHONE_HREF$3` / `COMPANY_PHONE_DISPLAY$3` в footer Home |
-| `cc0894a` | `sw.js` cache `htr-pwa-v9`, query `?v=9` на JS, класс `htr-phone-pair--row` в footer bundle |
+- `assets/index-utf8-v4.js`: `PHONE_HREF` → `PHONE_HREF$6`, `PHONE_DISPLAY` → `PHONE_DISPLAY$6` (1 строка).
+- `index.html`: `?v=21`, deploy comment `sw-v12`.
+- `sw.js`: `htr-pwa-v11`.
+- Commit `3612480`, push `main`.
+
+## Проверка после деплоя
+- 13 slug — `failed []`.
+- Playwright: article? true, len 2400+, клик с `/blog` → `/blog/5-signs-refrigerator-needs-repair`, errors [].
 
 ## Риски
-- Установленное PWA могло держать старый JS в Cache Storage (`htr-pwa-v8`) — v9 сбрасывает старые кэши при activate
+- Старый SW/кеш у части пользователей до обновления; v21 + sw-v11 снижают задержку.
 
-## Действие пользователю
-Если экран всё ещё белый: закрыть вкладку/приложение PWA, открыть заново `https://htrgrouptx.com` (Ctrl+F5 на ПК). На телефоне: очистить данные сайта для htrgrouptx.com или переустановить ярлык PWA.
+## Рекомендации
+- При патче телефонов в бандле гонять скрипт проверки bare `PHONE_HREF` / `PHONE_DISPLAY` в `Blog`/`BlogPost`.
+
+
+---
+
+# REPORT ? ????? service area (2026-06-11)
+
+## ??????
+- ZIP-???????? ?? iframe Google Maps ???????? ?? ???????????: ???????? ???????? lng/lat ? ????????????? bbox (MAP_VIEW) + viewBox 1000?300 ?? ????????? ? Web Mercator ? ??????? embed.
+
+## ???????????
+- `serviceAreaGeo.ts`: Web Mercator, ????? embed `29.7,-95.4`, zoom `9` (MAP_EMBED).
+- `ServiceAreaMapOverlay.tsx`: ResizeObserver ? viewBox = ???????? ?????? ??????????.
+- `home.tsx` + bundle: `ll=29.7,-95.4` ? URL iframe.
+- ?????: fill `rgba(56,189,248,0.28)`, stroke `#333`.
+- `index.html`: `index-utf8-v4.js?v=22`.
+
+## ?????
+- ?????? ????? geocode Google ????? ???? ?????????? ?? `ll=` ? ??? ???????? ?????????? centerLat/centerLng ? MAP_EMBED.
+
+## ????????
+- `node --check assets/index-utf8-v4.js` ? OK.

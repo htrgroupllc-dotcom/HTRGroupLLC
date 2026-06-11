@@ -32765,8 +32765,7 @@ function DraggableMarquee({ brands, base, reverse = false }) {
     )
   ] });
 }
-const SERVICE_AREA_MAP_VB = { w: 1e3, h: 300 };
-const SERVICE_AREA_MAP_VIEW = { west: -96.53, east: -94.306, north: 31.044, south: 28.549 };
+const SERVICE_AREA_MAP_EMBED = { centerLat: 29.7, centerLng: -95.4, zoom: 9 };
 const SERVICE_AREA_MAP_FILL = "rgba(56, 189, 248, 0.28)";
 const SERVICE_AREA_MAP_STROKE = "#333333";
 const SERVICE_AREA_ZIP_POLYGONS = [
@@ -33012,30 +33011,59 @@ const SERVICE_AREA_ZIP_POLYGONS = [
   { z: "77597", r: [[-94.7502,29.8461],[-94.745,29.8759],[-94.7389,29.8872],[-94.715,29.8874],[-94.6959,29.8859],[-94.6844,29.8867],[-94.6604,29.8848],[-94.6626,29.8788],[-94.6639,29.8723],[-94.6683,29.8658],[-94.6707,29.8576],[-94.6681,29.8539],[-94.6616,29.849],[-94.6551,29.8444],[-94.6654,29.8327],[-94.6678,29.8212],[-94.6592,29.8043],[-94.6666,29.7905],[-94.6749,29.7815],[-94.6864,29.7755],[-94.6946,29.776],[-94.7316,29.8129],[-94.7611,29.8409],[-94.7502,29.8461]] },
   { z: "77598", r: [[-95.1823,29.5855],[-95.1834,29.5862],[-95.1841,29.5868],[-95.1833,29.5875],[-95.1823,29.5884],[-95.1825,29.5879],[-95.1825,29.5869],[-95.182,29.5869],[-95.1814,29.5869],[-95.1812,29.5867],[-95.1804,29.5858],[-95.1798,29.5852],[-95.1805,29.5845],[-95.1806,29.5845],[-95.1809,29.5842],[-95.1819,29.585],[-95.1823,29.5855]] }
 ];
-function serviceAreaProject(lng, lat) {
-  const { west, east, north, south } = SERVICE_AREA_MAP_VIEW;
-  const { w, h } = SERVICE_AREA_MAP_VB;
-  const x = (lng - west) / (east - west) * w;
-  const y = (north - lat) / (north - south) * h;
+function serviceAreaLatLngToWorld(lat, lng) {
+  const sinY = Math.sin(lat * Math.PI / 180);
+  const clamped = Math.min(Math.max(sinY, -0.9999), 0.9999);
+  return {
+    x: (lng + 180) / 360,
+    y: 0.5 - Math.log((1 + clamped) / (1 - clamped)) / (4 * Math.PI)
+  };
+}
+function serviceAreaProject(lng, lat, w, h) {
+  const { centerLat, centerLng, zoom } = SERVICE_AREA_MAP_EMBED;
+  const scale = 256 * Math.pow(2, zoom);
+  const center = serviceAreaLatLngToWorld(centerLat, centerLng);
+  const point = serviceAreaLatLngToWorld(lat, lng);
+  const x = (point.x - center.x) * scale + w / 2;
+  const y = (point.y - center.y) * scale + h / 2;
   return `${x.toFixed(2)},${y.toFixed(2)}`;
 }
-function serviceAreaRingPath(ring) {
-  const pts = ring.map(([lng, lat]) => serviceAreaProject(lng, lat));
+function serviceAreaRingPath(ring, w, h) {
+  const pts = ring.map(([lng, lat]) => serviceAreaProject(lng, lat, w, h));
   return `M ${pts.join(" L ")} Z`;
 }
 function ServiceAreaMapOverlay() {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("svg", {
-    className: "absolute inset-0 w-full h-full pointer-events-none z-[1]",
-    viewBox: `0 0 ${SERVICE_AREA_MAP_VB.w} ${SERVICE_AREA_MAP_VB.h}`,
-    preserveAspectRatio: "none",
-    "aria-hidden": true,
-    children: SERVICE_AREA_ZIP_POLYGONS.map((z) => /* @__PURE__ */ jsxRuntimeExports.jsx("path", {
-      d: serviceAreaRingPath(z.r),
-      fill: SERVICE_AREA_MAP_FILL,
-      stroke: SERVICE_AREA_MAP_STROKE,
-      strokeWidth: 1.25,
-      vectorEffect: "non-scaling-stroke"
-    }, z.z))
+  const wrapRef = reactExports.useRef(null);
+  const [size, setSize] = reactExports.useState({ w: 1e3, h: 300 });
+  reactExports.useLayoutEffect(() => {
+    const el = wrapRef.current?.parentElement;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      const w = Math.max(1, Math.round(width));
+      const h = Math.max(1, Math.round(height));
+      setSize((prev) => prev.w === w && prev.h === h ? prev : { w, h });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const { w, h } = size;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+    ref: wrapRef,
+    className: "absolute inset-0 pointer-events-none z-[1]",
+    children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", {
+      className: "w-full h-full",
+      viewBox: `0 0 ${w} ${h}`,
+      preserveAspectRatio: "none",
+      "aria-hidden": true,
+      children: SERVICE_AREA_ZIP_POLYGONS.map((z) => /* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+        d: serviceAreaRingPath(z.r, w, h),
+        fill: SERVICE_AREA_MAP_FILL,
+        stroke: SERVICE_AREA_MAP_STROKE,
+        strokeWidth: 1.25,
+        vectorEffect: "non-scaling-stroke"
+      }, z.z))
+    })
   });
 }
 /* SERVICE_AREA_MAP_OVERLAY */
@@ -33927,7 +33955,7 @@ function Home() {
                   "iframe",
                   {
                     title: "Service Area Map",
-                    src: "https://maps.google.com/maps?q=Houston+Metropolitan+Area,+Texas&z=9&output=embed",
+                    src: "https://maps.google.com/maps?q=Houston+Metropolitan+Area,+Texas&ll=29.7,-95.4&z=9&output=embed",
                     width: "100%",
                     height: "300",
                     style: { border: 0, pointerEvents: "none" },

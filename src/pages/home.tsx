@@ -1982,7 +1982,7 @@ export default function Home() {
               >
                 <iframe
                   title="Service Area Map"
-                  src="https://maps.google.com/maps?q=Houston+Metropolitan+Area,+Texas&z=9&output=embed"
+                  src="https://maps.google.com/maps?q=Houston+Metropolitan+Area,+Texas&ll=29.7,-95.4&z=9&output=embed"
                   width="100%"
                   height="300"
                   style={{ border: 0, pointerEvents: "none" }}

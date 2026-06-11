@@ -1,10 +1,19 @@
 /** Houston-metro ZIP boundaries (ZCTA, simplified) for z=9 map embed. */
-export const MAP_VIEW = {
-  west: -96.53,
-  east: -94.306,
-  north: 31.044,
-  south: 28.549,
+/** Matches Google embed: Houston Metropolitan Area @29.7,-95.4 z=9 */
+export const MAP_EMBED = {
+  centerLat: 29.7,
+  centerLng: -95.4,
+  zoom: 9,
 } as const;
+
+function latLngToWorld(lat: number, lng: number): { x: number; y: number } {
+  const sinY = Math.sin((lat * Math.PI) / 180);
+  const clamped = Math.min(Math.max(sinY, -0.9999), 0.9999);
+  return {
+    x: (lng + 180) / 360,
+    y: 0.5 - Math.log((1 + clamped) / (1 - clamped)) / (4 * Math.PI),
+  };
+}
 
 export type LngLat = readonly [number, number];
 
@@ -256,9 +265,12 @@ export const SERVICE_ZIP_POLYGONS: ZipPolygon[] = [
 ];
 
 export function projectPoint(lng: number, lat: number, width: number, height: number): string {
-  const { west, east, north, south } = MAP_VIEW;
-  const x = ((lng - west) / (east - west)) * width;
-  const y = ((north - lat) / (north - south)) * height;
+  const { centerLat, centerLng, zoom } = MAP_EMBED;
+  const scale = 256 * Math.pow(2, zoom);
+  const center = latLngToWorld(centerLat, centerLng);
+  const point = latLngToWorld(lat, lng);
+  const x = (point.x - center.x) * scale + width / 2;
+  const y = (point.y - center.y) * scale + height / 2;
   return `${x.toFixed(2)},${y.toFixed(2)}`;
 }
 
