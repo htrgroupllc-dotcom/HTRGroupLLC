@@ -732,7 +732,7 @@ export default function Gallery() {
       {/* ── LIGHTBOX ── */}
       {galleryIdx !== null && (
         <div
-          className="fixed inset-0 z-[120] flex items-center justify-center bg-black/90"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90"
           onClick={() => setGalleryIdx(null)}
         >
           <button

@@ -34866,7 +34866,7 @@ function Gallery() {
     galleryIdx !== null && /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: "fixed inset-0 z-[120] flex items-center justify-center bg-black/90",
+        className: "fixed inset-0 z-[100] flex items-center justify-center bg-black/90",
         onClick: () => setGalleryIdx(null),
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
