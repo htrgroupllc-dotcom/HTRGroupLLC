@@ -27,7 +27,7 @@ function serve(dir, port) {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   await page.route("**/api/google-reviews**", async (route) => {
-    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, reviews: mockReviews, rating: 5, userRatingCount: 20 }) });
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, placeId: "ChIJG17BnG_bZiARTsOUc0JlvyE", reviews: mockReviews, rating: 5, userRatingCount: 20 }) });
   });
   await page.goto("http://127.0.0.1:4189/", { waitUntil: "domcontentloaded", timeout: 120000 });
   await page.waitForSelector(".htr-brand-marquee-center", { timeout: 60000 });
