@@ -33095,7 +33095,13 @@ function Home() {
     { name: "Mukhtar Quseynov", initials: "MQ", avatarColor: "#1A7A6E", rating: 5, time: "3 weeks ago", textEn: "Great experience with Hitechrepairgroup LLC. Professional technicians and fair pricing.", textEs: "Excelente experiencia con Hitechrepairgroup LLC. Técnicos profesionales y precios justos." },
     { name: "Brian T.", initials: "B", avatarColor: "#C0392B", rating: 5, time: "2 weeks ago", textEn: "Oven fixed same day I called. Kitchen spotless after they left.", textEs: "Horno arreglado el mismo día que llamé. La cocina impecable después de que se fueron." },
     { name: "Matthew R.", initials: "M", avatarColor: "#2471A3", rating: 5, time: "1 month ago", textEn: "Oven igniter replaced. Works perfectly on first try. Highly recommend.", textEs: "Encendedor del horno reemplazado. Funciona perfectamente. Muy recomendado." },
-    { name: "Emma L.", initials: "E", avatarColor: "#117A65", rating: 5, time: "3 weeks ago", textEn: "Oven igniters sparking constantly. Fixed same day. Safe and quiet now.", textEs: "Encendedores del horno chispeando. Arreglados ese día. Seguros y silenciosos." }
+    { name: "Emma L.", initials: "E", avatarColor: "#117A65", rating: 5, time: "3 weeks ago", textEn: "Oven igniters sparking constantly. Fixed same day. Safe and quiet now.", textEs: "Encendedores del horno chispeando. Arreglados ese día. Seguros y silenciosos." },
+    { name: "James W.", initials: "JW", avatarColor: "#7D6608", rating: 5, time: "1 month ago", textEn: "Fixed my fridge same day, no drama. Highly recommend.", textEs: "Arreglaron la nevera el mismo dia. Muy recomendados." },
+    { name: "Sarah J.", initials: "SJ", avatarColor: "#884EA0", rating: 5, time: "2 months ago", textEn: "Tech showed up on time and knew exactly what was wrong. Fair price.", textEs: "El tecnico llego puntual y supo el problema de inmediato. Precio justo." },
+    { name: "David T.", initials: "DT", avatarColor: "#1F618D", rating: 5, time: "7 months ago", textEn: "Called at 8 AM, fixed by noon. Oven works perfectly now.", textEs: "Llame a las 8, arreglado al mediodia. El horno funciona perfecto." },
+    { name: "Lisa M.", initials: "LM", avatarColor: "#D35400", rating: 5, time: "6 months ago", textEn: "Refrigerator back to normal after one visit. No hidden fees at all.", textEs: "La nevera normal despues de una visita. Sin cargos ocultos." },
+    { name: "Maria S.", initials: "MS", avatarColor: "#1E8449", rating: 5, time: "2 months ago", textEn: "Called for dishwasher repair. Fixed same day, no extra fees.", textEs: "Llame por el lavavajillas. Arreglado ese dia, sin cargos extra." },
+
   ];
 
   const [googleHomeReviews, setGoogleHomeReviews] = reactExports.useState(GOOGLE_HOME_REVIEWS_STATIC);
@@ -33103,7 +33109,7 @@ function Home() {
     const apiBase = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
     fetch(apiBase + "/api/google-reviews", { cache: "no-store" }).then((r) => r.json()).then((d) => {
       const live = (d.reviews ?? []).filter((r) => (r.rating ?? 0) >= 4);
-      if (live.length) {
+      {
         const seen = new Set();
         const merged = [];
         for (const r of [...live, ...GOOGLE_HOME_REVIEWS_STATIC]) {
@@ -33112,7 +33118,7 @@ function Home() {
           seen.add(k);
           if ((r.rating ?? 0) >= 4) merged.push(r);
         }
-        setGoogleHomeReviews(merged);
+        if (merged.length) setGoogleHomeReviews(merged);
       }
       if (typeof d.rating === "number") setGoogleRating(d.rating);
       if (typeof d.userRatingCount === "number") setGoogleReviewCount(d.userRatingCount);
