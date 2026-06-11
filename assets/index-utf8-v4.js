@@ -32985,13 +32985,13 @@ function Home() {
           /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${"/".replace(/\/$/, "")}/blog`, className: "hover:opacity-70 transition-opacity", style: { color: K$3.accent }, children: isEs ? "Blog" : "Blog" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden md:flex items-center gap-2 flex-shrink-0", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair flex flex-col gap-1 items-end", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair htr-phone-pair flex flex-col gap-1 items-end", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
               " ",
               PHONE_DISPLAY$3
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
               " ",
               COMPANY_PHONE_DISPLAY$3
@@ -33004,13 +33004,13 @@ function Home() {
       menuOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:hidden bg-white border-t border-stone-100 px-4 pb-3 flex flex-col gap-2 text-sm font-semibold text-stone-700", children: [
         ["/", "#services", "#about", "#faq", "#contact"].map((href, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href, onClick: () => setMenuOpen(false), className: "py-2 border-b border-stone-100", children: T2.nav[i] }, href)),
         /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${"/".replace(/\/$/, "")}/blog`, onClick: () => setMenuOpen(false), className: "py-2 border-b border-stone-100", style: { color: K$3.accent }, children: "Blog" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair flex flex-col gap-1.5 mt-1 items-start", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K$3.accent }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair htr-phone-pair flex flex-col gap-1.5 mt-1 items-start", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K$3.accent }, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
             " ",
             PHONE_DISPLAY$3
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K$3.accent }, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K$3.accent }, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
             " ",
             COMPANY_PHONE_DISPLAY$3
@@ -33047,12 +33047,12 @@ function Home() {
               style: { background: "rgba(11,26,63,0.92)" },
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { variants: FADE_UP$3, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1.5 mb-4", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "htr-phone-btn inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
                     " ",
                     PHONE_DISPLAY$3
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "htr-phone-btn inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
                     " ",
                     COMPANY_PHONE_DISPLAY$3
@@ -33092,12 +33092,12 @@ function Home() {
               },
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { variants: FADE_UP$3, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1.5 mb-4", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "htr-phone-btn inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
                     " ",
                     PHONE_DISPLAY$3
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "htr-phone-btn inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
                     " ",
                     COMPANY_PHONE_DISPLAY$3
@@ -33183,7 +33183,7 @@ function Home() {
           ] }, i))
         }
       ) }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-6 text-center bg-white border-y border-stone-100", children: [/* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-sm font-semibold mb-3", children: "Call us anytime" }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), COMPANY_PHONE_DISPLAY$3] })] }) ] }), /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-10 bg-white", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid lg:grid-cols-[2fr_3fr] gap-8 items-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-6 text-center bg-white border-y border-stone-100", children: [/* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-sm font-semibold mb-3", children: "Call us anytime" }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), COMPANY_PHONE_DISPLAY$3] })] }) ] }), /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-10 bg-white", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid lg:grid-cols-[2fr_3fr] gap-8 items-center", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { initial: "hidden", whileInView: "visible", viewport: { once: true }, variants: FADE_UP$3, className: "relative", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: whyUsBgImg, alt: "Appliance repair", className: "rounded-xl shadow-lg w-full object-cover aspect-[4/3]" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl md:text-3xl font-extrabold mb-2", children: T2.whyH2 }),
@@ -33242,7 +33242,7 @@ function Home() {
           className: "flex flex-col",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-6 text-center bg-white border-y border-stone-100", children: [/* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-sm font-semibold mb-3", children: "Call us anytime" }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), COMPANY_PHONE_DISPLAY$3] })] }) ] }),           /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl md:text-3xl font-extrabold", children: T2.certsH2 }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-6 text-center bg-white border-y border-stone-100", children: [/* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-sm font-semibold mb-3", children: "Call us anytime" }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), COMPANY_PHONE_DISPLAY$3] })] }) ] }),           /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl md:text-3xl font-extrabold", children: T2.certsH2 }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-1 w-12 mt-2 rounded-full", style: { backgroundColor: K$3.accent } }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-500 text-sm leading-relaxed mt-2", children: T2.certsSub })
             ] }),
@@ -33367,8 +33367,8 @@ function Home() {
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4 mt-0.5 flex-shrink-0", style: { color: K$3.accent } }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: PHONE_HREF$3, className: "font-bold text-stone-900 hover:opacity-70 transition-opacity block", children: PHONE_DISPLAY$3 }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: COMPANY_PHONE_HREF$3, className: "font-bold text-stone-900 hover:opacity-70 transition-opacity block mt-1", children: COMPANY_PHONE_DISPLAY$3 })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--contact font-bold text-stone-900 hover:opacity-70 transition-opacity block", children: PHONE_DISPLAY$3 }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: COMPANY_PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--contact font-bold text-stone-900 hover:opacity-70 transition-opacity block mt-1", children: COMPANY_PHONE_DISPLAY$3 })
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-400 text-xs mt-0.5 leading-snug", children: T2.smsHint })
                 ] })
@@ -33663,7 +33663,7 @@ function Home() {
           s.label
         )) })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3 mb-4 text-sm", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity", children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4", style: { color: K$3.accentLight } }), PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity", children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4", style: { color: K$3.accentLight } }), COMPANY_PHONE_DISPLAY$3] })] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3 mb-4 text-sm", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity", children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4", style: { color: K$3.accentLight } }), PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity", children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4", style: { color: K$3.accentLight } }), COMPANY_PHONE_DISPLAY$3] })] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3 mb-4 text-sm", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "htr-phone-btn inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity", children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4", style: { color: K$3.accentLight } }), PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "htr-phone-btn inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity", children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4", style: { color: K$3.accentLight } }), COMPANY_PHONE_DISPLAY$3] })] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(AdminSecretAccess, { label: `© ${(/* @__PURE__ */ new Date()).getFullYear()} HTRGroupTX. ${T2.allRights}` }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-5 items-center", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { href: "/privacy-policy", className: "hover:text-white transition-colors", children: T2.privacy }),
@@ -34143,10 +34143,17 @@ function Gallery() {
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600", children: T2.nav.map((label, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: navHrefs[i], className: "hover:opacity-70 transition-opacity", children: label }, label)) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden md:flex items-center gap-2 flex-shrink-0", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$2, className: "flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$2.accent }, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
-            " ",
-            PHONE_DISPLAY$2
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair htr-phone-pair flex flex-col gap-1 items-end", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$2, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$2.accent }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+              " ",
+              PHONE_DISPLAY$2
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$2, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$2.accent }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+              " ",
+              COMPANY_PHONE_DISPLAY$2
+            ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${base}/#contact`, className: "text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K$2.dark }, children: T2.bookNow })
         ] }),
@@ -34158,10 +34165,17 @@ function Gallery() {
       ] }),
       menuOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:hidden bg-white border-t border-stone-100 px-4 pb-3 flex flex-col gap-2 text-sm font-semibold text-stone-700", children: [
         T2.nav.map((label, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: navHrefs[i], onClick: () => setMenuOpen(false), className: "py-2 border-b border-stone-100", children: label }, label)),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$2, className: "flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit mt-1", style: { backgroundColor: K$2.accent }, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
-          " ",
-          PHONE_DISPLAY$2
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair htr-phone-pair flex flex-col gap-1.5 mt-1 items-start", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$2, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K$2.accent }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+            " ",
+            PHONE_DISPLAY$2
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$2, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K$2.accent }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+            " ",
+            COMPANY_PHONE_DISPLAY$2
+          ] })
         ] })
       ] })
     ] }),
@@ -34238,19 +34252,18 @@ function Gallery() {
       ] }) }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-8 text-center", style: { backgroundColor: K$2.dark }, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white font-bold text-lg mb-3", children: isEs ? "¿Tiene un electrodoméstico dañado?" : "Got a broken appliance?" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "a",
-          {
-            href: PHONE_HREF$2,
-            className: "inline-flex items-center gap-2 font-bold px-6 py-3 rounded text-white text-base",
-            style: { backgroundColor: K$2.accent },
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
-              " ",
-              PHONE_DISPLAY$2
-            ]
-          }
-        )
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-phone-pair--row flex flex-col sm:flex-row items-center justify-center gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$2, className: "htr-phone-btn htr-phone-btn--lg inline-flex items-center gap-2 font-bold px-6 py-3 rounded text-white text-base", style: { backgroundColor: K$2.accent }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+            " ",
+            PHONE_DISPLAY$2
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$2, className: "htr-phone-btn htr-phone-btn--lg inline-flex items-center gap-2 font-bold px-6 py-3 rounded text-white text-base", style: { backgroundColor: K$2.accent }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+            " ",
+            COMPANY_PHONE_DISPLAY$2
+          ] })
+        ] })
       ] })
     ] }),
     adminOpen && /* @__PURE__ */ jsxRuntimeExports.jsx(

@@ -504,7 +504,7 @@ export default function Gallery() {
           </nav>
 
           <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-            <div className="flex flex-col gap-1 items-end"><a href={PHONE_HREF} className="flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm" style={{ backgroundColor: K.accent }}><Phone className="h-3.5 w-3.5" /> {PHONE_DISPLAY}</a><a href={COMPANY_PHONE_HREF} className="flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm" style={{ backgroundColor: K.accent }}><Phone className="h-3.5 w-3.5" /> {COMPANY_PHONE_DISPLAY}</a></div>
+            <div className="header-phone-pair htr-phone-pair flex flex-col gap-1 items-end"><a href={PHONE_HREF} className="header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm" style={{ backgroundColor: K.accent }}><Phone className="h-3.5 w-3.5" /> {PHONE_DISPLAY}</a><a href={COMPANY_PHONE_HREF} className="header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm" style={{ backgroundColor: K.accent }}><Phone className="h-3.5 w-3.5" /> {COMPANY_PHONE_DISPLAY}</a></div>
             <a href={`${base}/#contact`} className="text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider" style={{ backgroundColor: K.dark }}>
               {T.bookNow}
             </a>
@@ -520,7 +520,7 @@ export default function Gallery() {
             {T.nav.map((label, i) => (
               <a key={label} href={navHrefs[i]} onClick={() => setMenuOpen(false)} className="py-2 border-b border-stone-100">{label}</a>
             ))}
-            <div className="flex flex-col gap-1.5 mt-1"><a href={PHONE_HREF} className="flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit" style={{ backgroundColor: K.accent }}><Phone className="h-3.5 w-3.5" /> {PHONE_DISPLAY}</a><a href={COMPANY_PHONE_HREF} className="flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit" style={{ backgroundColor: K.accent }}><Phone className="h-3.5 w-3.5" /> {COMPANY_PHONE_DISPLAY}</a></div>
+            <div className="header-phone-pair htr-phone-pair flex flex-col gap-1.5 mt-1 items-start"><a href={PHONE_HREF} className="header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit" style={{ backgroundColor: K.accent }}><Phone className="h-3.5 w-3.5" /> {PHONE_DISPLAY}</a><a href={COMPANY_PHONE_HREF} className="header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit" style={{ backgroundColor: K.accent }}><Phone className="h-3.5 w-3.5" /> {COMPANY_PHONE_DISPLAY}</a></div>
           </div>
         )}
       </header>
@@ -622,11 +622,11 @@ export default function Gallery() {
           <p className="text-white font-bold text-lg mb-3">
             {isEs ? "¿Tiene un electrodoméstico dañado?" : "Got a broken appliance?"}
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a href={PHONE_HREF} className="inline-flex items-center gap-2 font-bold px-6 py-3 rounded text-white text-base" style={{ backgroundColor: K.accent }}>
+          <div className="htr-phone-pair--row flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href={PHONE_HREF} className="htr-phone-btn htr-phone-btn--lg inline-flex items-center gap-2 font-bold px-6 py-3 rounded text-white text-base" style={{ backgroundColor: K.accent }}>
               <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
             </a>
-            <a href={COMPANY_PHONE_HREF} className="inline-flex items-center gap-2 font-bold px-6 py-3 rounded text-white text-base" style={{ backgroundColor: K.accent }}>
+            <a href={COMPANY_PHONE_HREF} className="htr-phone-btn htr-phone-btn--lg inline-flex items-center gap-2 font-bold px-6 py-3 rounded text-white text-base" style={{ backgroundColor: K.accent }}>
               <Phone className="h-4 w-4" /> {COMPANY_PHONE_DISPLAY}
             </a>
           </div>
