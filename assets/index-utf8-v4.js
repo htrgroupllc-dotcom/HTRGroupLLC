@@ -36159,7 +36159,7 @@ function BlogPost() {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 py-2 flex flex-col gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair htr-phone-pair flex flex-col gap-1.5 items-stretch w-full", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$6, className: "header-phone-link htr-phone-btn flex items-center justify-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-full", style: { backgroundColor: K.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }), " ", COMPANY_PHONE_DISPLAY$6] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF, className: "header-phone-link htr-phone-btn flex items-center justify-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-full", style: { backgroundColor: K.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }), " ", PHONE_DISPLAY] })
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$6, className: "header-phone-link htr-phone-btn flex items-center justify-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-full", style: { backgroundColor: K.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }), " ", PHONE_DISPLAY$6] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${base}/#contact`, className: "htr-header-mobile-book text-white font-bold px-3 py-2 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K.dark }, children: T2.bookNow })
         ] })
