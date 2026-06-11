@@ -203,16 +203,18 @@ function PhonePair({ compact = false, inHeader = false }: { compact?: boolean; i
       ? "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm"
       : "htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm";
   const iconCls = compact ? "h-4 w-4" : "h-3.5 w-3.5";
-  const wrapCls = inHeader
-    ? "header-phone-pair htr-phone-pair flex flex-col gap-1 items-end"
-    : "htr-phone-pair flex flex-col gap-1.5 items-start";
+  const wrapCls = compact
+    ? "htr-phone-pair--hero-top flex flex-row flex-wrap gap-2 items-center justify-start"
+    : inHeader
+      ? "header-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end"
+      : "htr-phone-pair flex flex-col gap-1.5 items-start";
   return (
     <div className={wrapCls}>
-      <a href={PHONE_HREF} className={linkCls} style={{ backgroundColor: K.accent }}>
-        <Phone className={iconCls} /> {PHONE_DISPLAY}
-      </a>
       <a href={COMPANY_PHONE_HREF} className={linkCls} style={{ backgroundColor: K.accent }}>
         <Phone className={iconCls} /> {COMPANY_PHONE_DISPLAY}
+      </a>
+      <a href={PHONE_HREF} className={linkCls} style={{ backgroundColor: K.accent }}>
+        <Phone className={iconCls} /> {PHONE_DISPLAY}
       </a>
     </div>
   );
@@ -223,11 +225,11 @@ function MidPhoneStrip() {
     <div className="py-6 text-center bg-white border-y border-stone-100">
       <p className="text-stone-600 text-sm font-semibold mb-3">Call us anytime</p>
       <div className="htr-phone-pair--row flex flex-col sm:flex-row items-center justify-center gap-3">
-        <a href={PHONE_HREF} className="htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm" style={{ backgroundColor: K.accent }}>
-          <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
-        </a>
         <a href={COMPANY_PHONE_HREF} className="htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm" style={{ backgroundColor: K.accent }}>
           <Phone className="h-4 w-4" /> {COMPANY_PHONE_DISPLAY}
+        </a>
+      <a href={PHONE_HREF} className="htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm" style={{ backgroundColor: K.accent }}>
+          <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
         </a>
       </div>
     </div>
@@ -1744,8 +1746,8 @@ export default function Home() {
                   <li className="flex items-start gap-2">
                     <Phone className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: K.accent }} />
                     <div>
-                      <a href={PHONE_HREF} className="htr-phone-btn htr-phone-btn--contact font-bold text-stone-900 hover:opacity-70 transition-opacity block">{PHONE_DISPLAY}</a>
-                      <a href={COMPANY_PHONE_HREF} className="htr-phone-btn htr-phone-btn--contact font-bold text-stone-900 hover:opacity-70 transition-opacity block mt-1">{COMPANY_PHONE_DISPLAY}</a>
+                      <a href={COMPANY_PHONE_HREF} className="htr-phone-btn htr-phone-btn--contact font-bold text-stone-900 hover:opacity-70 transition-opacity block">{COMPANY_PHONE_DISPLAY}</a>
+                      <a href={PHONE_HREF} className="htr-phone-btn htr-phone-btn--contact font-bold text-stone-900 hover:opacity-70 transition-opacity block mt-1">{PHONE_DISPLAY}</a>
                       <p className="text-stone-400 text-xs mt-0.5 leading-snug">{T.smsHint}</p>
                     </div>
                   </li>
@@ -1985,11 +1987,11 @@ export default function Home() {
             </div>
           </div>
           <div className="htr-phone-pair--row flex flex-col sm:flex-row items-center justify-center gap-3 mb-4 text-sm">
-            <a href={PHONE_HREF} className="htr-phone-btn inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity">
-              <Phone className="h-4 w-4" style={{ color: K.accentLight }} /> {PHONE_DISPLAY}
-            </a>
             <a href={COMPANY_PHONE_HREF} className="htr-phone-btn inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity">
               <Phone className="h-4 w-4" style={{ color: K.accentLight }} /> {COMPANY_PHONE_DISPLAY}
+            </a>
+      <a href={PHONE_HREF} className="htr-phone-btn inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity">
+              <Phone className="h-4 w-4" style={{ color: K.accentLight }} /> {PHONE_DISPLAY}
             </a>
           </div>
           <div className="border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400">
