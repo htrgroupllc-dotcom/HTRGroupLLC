@@ -1,16 +1,14 @@
-import React from "react";
-import { METRO_OUTLINE, SERVICE_ZONES, ringToPath } from "@/lib/serviceAreaGeo";
+﻿import React from "react";
+import { SERVICE_ZIP_POLYGONS, ringToPath } from "@/lib/serviceAreaGeo";
 
 const VB_W = 1000;
 const VB_H = 300;
 
-const FILL = "rgba(92, 58, 33, 0.32)";
-const STROKE = "#6B4423";
-const STROKE_OUTER = "#5C3D1E";
+const FILL = "rgba(56, 189, 248, 0.28)";
+const STROKE = "#333333";
 
-/** Semi-transparent brown overlays aligned to the Google Maps embed (z=9). */
+/** Semi-transparent ZIP overlays aligned to the Google Maps embed (z=9). */
 export default function ServiceAreaMapOverlay() {
-  const outer = ringToPath(METRO_OUTLINE, VB_W, VB_H);
   return (
     <svg
       className="absolute inset-0 w-full h-full pointer-events-none z-[1]"
@@ -18,24 +16,16 @@ export default function ServiceAreaMapOverlay() {
       preserveAspectRatio="none"
       aria-hidden
     >
-      {SERVICE_ZONES.map((z) => (
+      {SERVICE_ZIP_POLYGONS.map((z) => (
         <path
-          key={z.id}
+          key={z.zip}
           d={ringToPath(z.ring, VB_W, VB_H)}
           fill={FILL}
           stroke={STROKE}
-          strokeWidth={2}
+          strokeWidth={1.25}
           vectorEffect="non-scaling-stroke"
         />
       ))}
-      <path
-        d={outer}
-        fill="none"
-        stroke={STROKE_OUTER}
-        strokeWidth={2.5}
-        vectorEffect="non-scaling-stroke"
-        strokeDasharray="none"
-      />
     </svg>
   );
 }
