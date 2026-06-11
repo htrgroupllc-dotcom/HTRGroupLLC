@@ -7983,3 +7983,13 @@
   max-width: 100%;
   object-fit: contain;
 }
+.htr-home-why-section .htr-home-split-grid,
+.htr-home-our-work-section .htr-home-split-grid {
+  align-items: start;
+}
+.htr-home-why-section .htr-home-split-photo,
+.htr-home-our-work-section .htr-home-split-photo,
+.htr-home-split-photo__frame {
+  overflow: visible;
+}
+

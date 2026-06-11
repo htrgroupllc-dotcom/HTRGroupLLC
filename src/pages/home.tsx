@@ -1558,7 +1558,7 @@ export default function Home() {
         {/* â”€â”€ WHY US â”€â”€ */}
         <section className="py-10 bg-white htr-home-why-section">
           <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-[2fr_3fr] gap-8 items-center">
+            <div className="grid lg:grid-cols-[2fr_3fr] gap-8 items-start htr-home-split-grid">
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={FADE_UP} className="relative htr-home-split-photo">
                 <img src={whyUsBgImg} alt="Appliance repair" className="htr-home-split-photo__img rounded-xl shadow-lg w-full h-auto object-contain" />
 
@@ -1612,11 +1612,11 @@ export default function Home() {
         {/* â”€â”€ OUR WORK â”€â”€ */}
         <section id="gallery" className="py-10 bg-white htr-home-our-work-section">
           <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-[2fr_3fr] gap-8 items-center">
+            <div className="grid lg:grid-cols-[2fr_3fr] gap-8 items-start htr-home-split-grid">
 
               {/* LEFT â€” photo */}
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={FADE_UP} className="relative htr-home-split-photo">
-                <a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/gallery`} className="block rounded-xl overflow-hidden shadow-lg group htr-home-split-photo__frame">
+                <a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/gallery`} className="block rounded-xl overflow-visible shadow-lg group htr-home-split-photo__frame">
                   <img
                     src={GALLERY_PHOTOS[0].src}
                     alt={isEs ? GALLERY_PHOTOS[0].captionEs : GALLERY_PHOTOS[0].captionEn}
