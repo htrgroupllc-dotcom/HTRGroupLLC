@@ -1027,94 +1027,49 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
 }
 
 function CenterConvergeMarquee({ brands, base }: { brands: [string, string][]; base: string }) {
-  const leftTrackRef = useRef<HTMLDivElement>(null);
-  const rightTrackRef = useRef<HTMLDivElement>(null);
-  const leftOffsetRef = useRef(0);
-  const rightOffsetRef = useRef(0);
-  const lastTsRef = useRef(0);
-  const rafRef = useRef<number>();
-  const leftInitRef = useRef(false);
-  const rightInitRef = useRef(false);
-
-  const wrapOffset = (offset: number, half: number) => {
-    if (half <= 0) return offset;
-    while (offset > 0) offset -= half;
-    while (offset <= -half) offset += half;
-    return offset;
-  };
-
-  useEffect(() => {
-    leftInitRef.current = false;
-    rightInitRef.current = false;
-    const DURATION_MS = 120_000;
-    const tick = (ts: number) => {
-      const dt = lastTsRef.current ? ts - lastTsRef.current : 0;
-      const leftTrack = leftTrackRef.current;
-      const rightTrack = rightTrackRef.current;
-      if (leftTrack && dt) {
-        const half = leftTrack.scrollWidth / 2;
-        if (half > 0) {
-          const speed = half / DURATION_MS;
-          if (!leftInitRef.current) {
-            leftOffsetRef.current = -half;
-            leftInitRef.current = true;
-          }
-          leftOffsetRef.current += speed * dt;
-          leftOffsetRef.current = wrapOffset(leftOffsetRef.current, half);
-          leftTrack.style.transform = `translateX(${leftOffsetRef.current}px)`;
-        }
-      }
-      if (rightTrack && dt) {
-        const half = rightTrack.scrollWidth / 2;
-        if (half > 0) {
-          const speed = half / DURATION_MS;
-          if (!rightInitRef.current) {
-            rightOffsetRef.current = 0;
-            rightInitRef.current = true;
-          }
-          rightOffsetRef.current -= speed * dt;
-          rightOffsetRef.current = wrapOffset(rightOffsetRef.current, half);
-          rightTrack.style.transform = `translateX(${rightOffsetRef.current}px)`;
-        }
-      }
-      lastTsRef.current = ts;
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, []);
-
   const all = [...brands, ...brands];
   const cardClass =
     "htr-brand-marquee-center__card flex-shrink-0 flex items-center justify-center bg-white rounded-xl border border-stone-100 shadow-sm p-3";
 
   return (
-    <section className="htr-brand-marquee-center py-6 bg-white border-y border-stone-100" aria-label="Brands we service">
-      <div className="htr-brand-marquee-center__stage relative mx-auto w-full max-w-6xl px-4">
-        <div className="htr-brand-marquee-center__row relative min-h-[96px] h-[96px] overflow-hidden">
-          <div className="htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-20 w-16 -ml-8" />
-          <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute left-0 top-0 bottom-0 w-1/2 overflow-hidden z-10">
-            <div
-              ref={leftTrackRef}
-              className="htr-brand-marquee-center__track flex items-center gap-4 w-max h-full justify-end"
-              style={{ willChange: "transform" }}
-            >
+    <section className="htr-brand-marquee-center relative w-full py-6 bg-white border-y border-stone-100" aria-label="Brands we service">
+      <div className="htr-brand-marquee-center__stage relative w-full">
+        <div
+          className="absolute left-0 top-0 bottom-0 w-20 z-30 pointer-events-none"
+          style={{ background: "linear-gradient(to right, #ffffff, transparent)" }}
+        />
+        <div
+          className="absolute right-0 top-0 bottom-0 w-20 z-30 pointer-events-none"
+          style={{ background: "linear-gradient(to left, #ffffff, transparent)" }}
+        />
+        <div className="htr-brand-marquee-center__row relative w-full min-h-[96px] h-[96px] overflow-hidden">
+          <div className="htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-20 w-12 -ml-6" />
+          <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
+            <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-4 w-max h-full justify-end">
               {all.map(([name, file], i) => (
                 <div key={`l-${i}`} className={cardClass} style={{ width: 180, height: 90 }}>
-                  <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
+                  <img
+                    src={`${base}/logos/${file}.png`}
+                    alt={name}
+                    className="w-full h-full object-contain"
+                    draggable={false}
+                    loading="lazy"
+                  />
                 </div>
               ))}
             </div>
           </div>
-          <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden z-[15]">
-            <div
-              ref={rightTrackRef}
-              className="htr-brand-marquee-center__track flex items-center gap-4 w-max h-full justify-start"
-              style={{ willChange: "transform" }}
-            >
+          <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute inset-y-0 right-0 w-1/2 overflow-hidden z-10">
+            <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-4 w-max h-full justify-start">
               {all.map(([name, file], i) => (
                 <div key={`r-${i}`} className={cardClass} style={{ width: 180, height: 90 }}>
-                  <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
+                  <img
+                    src={`${base}/logos/${file}.png`}
+                    alt={name}
+                    className="w-full h-full object-contain"
+                    draggable={false}
+                    loading="lazy"
+                  />
                 </div>
               ))}
             </div>
@@ -1125,7 +1080,7 @@ function CenterConvergeMarquee({ brands, base }: { brands: [string, string][]; b
   );
 }
 
-export default function Homeexport default function Homeexport default function Home() {
+export default function Home() {
   const { toast }  = useToast();
   const contactRef    = useRef<HTMLElement>(null);
   const bookingFormRef = useRef<HTMLDivElement>(null);
