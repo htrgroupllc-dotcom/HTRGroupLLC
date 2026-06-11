@@ -90634,7 +90634,7 @@ const translations = {
     sigTitle: "Client Signature",
     sigClear: "Clear",
     sigDraw: "Sign here (optional)",
-    sigConsentText: "By signing, the client authorizes Hi-Tech Repair Group to perform the described repairs. Electronic signature valid under Texas law (TUETA).",
+    sigConsentText: "By signing, the client authorizes Hitechrepairgroup LLC to perform the described repairs. Electronic signature valid under Texas law (TUETA).",
     sigOptional: "(optional)",
     editEmail: "Edit Email",
     emailSaved: "Email saved",
@@ -90782,7 +90782,7 @@ const translations = {
     sigTitle: "Подпись клиента",
     sigClear: "Очистить",
     sigDraw: "Нарисуйте подпись (опционально)",
-    sigConsentText: "Подписывая, клиент разрешает Hi-Tech Repair Group выполнить описанный ремонт. Электронная подпись действительна по законодательству Техаса (TUETA).",
+    sigConsentText: "Подписывая, клиент разрешает Hitechrepairgroup LLC выполнить описанный ремонт. Электронная подпись действительна по законодательству Техаса (TUETA).",
     sigOptional: "(опционально)",
     editEmail: "Изменить Email",
     emailSaved: "Email сохранён",
@@ -90930,7 +90930,7 @@ const translations = {
     sigTitle: "Firma del cliente",
     sigClear: "Limpiar",
     sigDraw: "Firme aquí (opcional)",
-    sigConsentText: "Al firmar, el cliente autoriza a Hi-Tech Repair Group a realizar las reparaciones descritas. Firma electrónica válida bajo la ley de Texas (TUETA).",
+    sigConsentText: "Al firmar, el cliente autoriza a Hitechrepairgroup LLC a realizar las reparaciones descritas. Firma electrónica válida bajo la ley de Texas (TUETA).",
     sigOptional: "(opcional)",
     editEmail: "Editar Email",
     emailSaved: "Email guardado",
@@ -91073,7 +91073,7 @@ const translations = {
     sigTitle: "Müşteri İmzası",
     sigClear: "Temizle",
     sigDraw: "Buraya imzalayın (isteğe bağlı)",
-    sigConsentText: "İmzalayarak müşteri, Hi-Tech Repair Group'un açıklanan onarımları yapmasını onaylar. Texas hukukuna göre geçerli elektronik imza (TUETA).",
+    sigConsentText: "İmzalayarak müşteri, Hitechrepairgroup LLC'un açıklanan onarımları yapmasını onaylar. Texas hukukuna göre geçerli elektronik imza (TUETA).",
     sigOptional: "(isteğe bağlı)",
     editEmail: "E-posta Düzenle",
     emailSaved: "E-posta kaydedildi",
@@ -91216,7 +91216,7 @@ const translations = {
     sigTitle: "Müştəri İmzası",
     sigClear: "Təmizlə",
     sigDraw: "Buraya imzalayın (ixtiyari)",
-    sigConsentText: "İmzalayaraq müştəri Hi-Tech Repair Group-un təsvir olunan təmirləri etməsinə icazə verir. Texas qanunvericiliyinə əsasən etibarlı elektron imza (TUETA).",
+    sigConsentText: "İmzalayaraq müştəri Hitechrepairgroup LLC-un təsvir olunan təmirləri etməsinə icazə verir. Texas qanunvericiliyinə əsasən etibarlı elektron imza (TUETA).",
     sigOptional: "(ixtiyari)",
     editEmail: "E-poçtu Yenilə",
     emailSaved: "E-poçt qeydə alındı",
@@ -91359,7 +91359,7 @@ const translations = {
     sigTitle: "Підпис клієнта",
     sigClear: "Очистити",
     sigDraw: "Намалюйте підпис (опціонально)",
-    sigConsentText: "Підписуючи, клієнт дозволяє Hi-Tech Repair Group виконати описаний ремонт. Електронний підпис дійсний за законодавством Техасу (TUETA).",
+    sigConsentText: "Підписуючи, клієнт дозволяє Hitechrepairgroup LLC виконати описаний ремонт. Електронний підпис дійсний за законодавством Техасу (TUETA).",
     sigOptional: "(опціонально)",
     editEmail: "Оновити Email",
     emailSaved: "Email збережено",
@@ -96513,7 +96513,7 @@ const stripePromiseEs = loadStripe(STRIPE_PK, { locale: "es" });
 const T = {
   en: {
     title: "Pay for Your Repair",
-    subtitle: "Hi-Tech Repair Group",
+    subtitle: "Hitechrepairgroup LLC",
     amountLabel: "Amount (USD)",
     amountPlh: "e.g. 150",
     nameLabel: "Your Name (optional)",
@@ -96536,7 +96536,7 @@ const T = {
   },
   es: {
     title: "Pagar su Reparación",
-    subtitle: "Hi-Tech Repair Group",
+    subtitle: "Hitechrepairgroup LLC",
     amountLabel: "Monto (USD)",
     amountPlh: "ej. 150",
     nameLabel: "Su Nombre (opcional)",
@@ -97062,7 +97062,7 @@ function PrivacyPolicy() {
     /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { style: { fontSize: 32, fontWeight: 700, marginTop: 24, marginBottom: 8 }, children: "Privacy Policy" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { color: "#666", fontSize: 14, marginBottom: 32 }, children: "Last updated: May 7, 2026" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-      'Hi-Tech Repair Group LLC ("HTRGroupTX", "we", "us", or "our") operates the website ',
+      'Hitechrepairgroup LLC ("HTRGroupTX", "we", "us", or "our") operates the website ',
       /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "htrgrouptx.com" }),
       " and provides appliance repair services in the Houston, TX metropolitan area. This Privacy Policy explains how we collect, use, and protect your personal information."
     ] }),
@@ -97131,7 +97131,7 @@ function PrivacyPolicy() {
     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated date." }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "8. Contact Us" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-      "Hi-Tech Repair Group LLC",
+      "Hitechrepairgroup LLC",
       /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
       "Houston, TX",
       /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
@@ -97159,7 +97159,7 @@ function Terms() {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
       'These Terms of Service ("Terms") govern your use of the website ',
       /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "htrgrouptx.com" }),
-      ' and the appliance repair services provided by Hi-Tech Repair Group LLC ("HTRGroupTX", "we", "us", or "our"). By using our website or services, you agree to these Terms.'
+      ' and the appliance repair services provided by Hitechrepairgroup LLC ("HTRGroupTX", "we", "us", or "our"). By using our website or services, you agree to these Terms.'
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "1. Services" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "HTRGroupTX provides professional appliance repair services in the Houston, TX metropolitan area. Services include diagnosis, repair, and maintenance of home appliances including refrigerators, washers, dryers, dishwashers, ovens, microwaves, and other household appliances." }),
@@ -97199,12 +97199,12 @@ function Terms() {
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "6. Limitation of Liability" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "HTRGroupTX shall not be liable for any indirect, incidental, or consequential damages arising from the use of our services. Our total liability shall not exceed the amount paid for the specific service giving rise to the claim." }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "7. Intellectual Property" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "All content on htrgrouptx.com, including text, images, and branding, is the property of Hi-Tech Repair Group LLC and may not be reproduced without written permission." }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "All content on htrgrouptx.com, including text, images, and branding, is the property of Hitechrepairgroup LLC and may not be reproduced without written permission." }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "8. Governing Law" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "These Terms are governed by the laws of the State of Texas, United States. Any disputes shall be resolved in the courts of Harris County, Texas." }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "9. Contact Us" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
-      "Hi-Tech Repair Group LLC",
+      "Hitechrepairgroup LLC",
       /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
       "Houston, TX",
       /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
