@@ -32715,7 +32715,7 @@ function DraggableMarquee({ brands, base, reverse = false }) {
     lastTsRef.current = 0;
   };
   const all = [...brands, ...brands];
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full overflow-hidden", style: { touchAction: "pan-y" }, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-full overflow-hidden min-h-[96px] htr-brand-marquee", style: { touchAction: "pan-y" }, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
@@ -33324,21 +33324,23 @@ function Home() {
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { id: "brands", className: "py-10 bg-stone-50 border-y border-stone-200 overflow-hidden", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4 mb-6 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold uppercase tracking-widest text-stone-400", children: isEs ? "Marcas que reparamos" : "Brands We Service" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          DraggableMarquee,
-          {
-            brands: MARQUEE_BRANDS,
-            base: "/".replace(/\/$/, "")
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          DraggableMarquee,
-          {
-            brands: MARQUEE_BRANDS,
-            base: "/".replace(/\/$/, ""),
-            reverse: true
-          }
-        ) })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-brand-marquee-stack flex flex-col gap-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            DraggableMarquee,
+            {
+              brands: MARQUEE_BRANDS,
+              base: "/".replace(/\/$/, "")
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            DraggableMarquee,
+            {
+              brands: MARQUEE_BRANDS,
+              base: "/".replace(/\/$/, ""),
+              reverse: true
+            }
+          )
+        ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "relative py-12", style: { background: "linear-gradient(135deg, #0B1A3F 0%, #0D47B0 55%, #1B6FE8 100%)" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { initial: "hidden", whileInView: "visible", viewport: { once: true }, variants: STAGGER, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(motion.h2, { variants: FADE_UP$3, className: "text-2xl md:text-4xl font-extrabold text-white uppercase mb-2", children: T2.ctaH2 }),

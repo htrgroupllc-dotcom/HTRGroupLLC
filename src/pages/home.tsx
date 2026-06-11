@@ -968,7 +968,7 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
 
   const all = [...brands, ...brands];
   return (
-    <div className="relative w-full overflow-hidden" style={{ touchAction: "pan-y" }}>
+    <div className="relative w-full overflow-hidden min-h-[96px] htr-brand-marquee" style={{ touchAction: "pan-y" }}>
       <div className="absolute left-0 top-0 bottom-0 w-20 z-10 pointer-events-none"
         style={{ background: "linear-gradient(to right, #f9fafb, transparent)" }} />
       <div className="absolute right-0 top-0 bottom-0 w-20 z-10 pointer-events-none"
@@ -1699,11 +1699,11 @@ export default function Home() {
               {isEs ? "Marcas que reparamos" : "Brands We Service"}
             </p>
           </div>
-          <DraggableMarquee
-            brands={MARQUEE_BRANDS}
-            base={import.meta.env.BASE_URL.replace(/\/$/, "")}
-          />
-          <div className="mt-3">
+          <div className="htr-brand-marquee-stack flex flex-col gap-4">
+            <DraggableMarquee
+              brands={MARQUEE_BRANDS}
+              base={import.meta.env.BASE_URL.replace(/\/$/, "")}
+            />
             <DraggableMarquee
               brands={MARQUEE_BRANDS}
               base={import.meta.env.BASE_URL.replace(/\/$/, "")}
