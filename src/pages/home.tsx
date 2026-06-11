@@ -1045,7 +1045,7 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
           <div className="htr-brand-marquee-center__row relative w-full min-h-[88px] h-[88px] overflow-hidden">
             <div className="htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-20" aria-hidden="true" />
             <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
-              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 w-max h-full justify-end">
+              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 w-max h-full justify-start">
                 {all.map(([name, file], i) => (
                   <div key={`l-${i}`} className={cardClass}>
                     <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
@@ -1054,7 +1054,7 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
               </div>
             </div>
             <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute inset-y-0 right-0 w-1/2 overflow-hidden z-10">
-              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 w-max h-full justify-start">
+              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 w-max h-full justify-end">
                 {all.map(([name, file], i) => (
                   <div key={`r-${i}`} className={cardClass}>
                     <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
@@ -1163,10 +1163,13 @@ export default function Home() {
     setLoadingGoogleReviews(true);
     try {
       const data = await fetchGoogleReviewsFromApi(apiBase);
-      if (data?.ok && data.reviews) setLiveGoogleReviews(data.reviews);
-      else setLiveGoogleReviews([]);
-      if (typeof data?.rating === "number") setGoogleRating(data.rating);
-      if (typeof data?.userRatingCount === "number") setGoogleReviewCount(data.userRatingCount);
+      if (data?.ok && data.reviews) {
+        setLiveGoogleReviews(data.reviews);
+        if (typeof data.rating === "number") setGoogleRating(data.rating);
+        if (typeof data.userRatingCount === "number") setGoogleReviewCount(data.userRatingCount);
+      } else {
+        setLiveGoogleReviews([]);
+      }
     } finally {
       setLoadingGoogleReviews(false);
     }

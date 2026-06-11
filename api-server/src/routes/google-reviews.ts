@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 
 const CACHE_TTL_MS = 3 * 60 * 60 * 1000;
-const CACHE_VERSION = 4;
+const CACHE_VERSION = 5;
 
 /** Verified via g.page/r/CU7DlHNCZb8hEAE (Maps feature 0x2066db6f9cc15e1b:0x21bf65427394c34e). */
 const BUSINESS_LOCATION = { lat: 29.7463431, lng: -95.7612032 };
@@ -145,8 +145,17 @@ async function searchPlaceIdLegacy(key: string): Promise<string | null> {
 async function resolvePlaceId(key: string): Promise<string | null> {
   const fromEnv = (process.env["GOOGLE_PLACE_ID"] ?? "").trim();
   if (fromEnv) return fromEnv;
-  if (DEFAULT_GOOGLE_PLACE_ID.trim()) return DEFAULT_GOOGLE_PLACE_ID.trim();
-  return (await searchPlaceIdNew(key)) ?? (await searchPlaceIdLegacy(key));
+  const searched = (await searchPlaceIdNew(key)) ?? (await searchPlaceIdLegacy(key));
+  if (searched) return searched;
+  const fallback = DEFAULT_GOOGLE_PLACE_ID.trim();
+  return fallback || null;
+}
+
+async function fetchAllReviewsForPlace(key: string, placeId: string) {
+  const fromNew = await fetchPlaceReviewsNew(key, placeId);
+  const legacyRelevant = await fetchPlaceReviewsLegacy(key, placeId, "most_relevant");
+  const legacyNewest = await fetchPlaceReviewsLegacy(key, placeId, "newest");
+  return { fromNew, legacyRelevant, legacyNewest };
 }
 
 
@@ -305,37 +314,61 @@ router.get("/google-reviews", async (_req, res) => {
     let reviews: ReviewOut[] = [];
     let rating: number | null = null;
     let userRatingCount: number | null = null;
+    let activePlaceId = placeId;
 
-    const fromNew = await fetchPlaceReviewsNew(key, placeId);
-    const legacyRelevant = await fetchPlaceReviewsLegacy(key, placeId, "most_relevant");
-    const legacyNewest = await fetchPlaceReviewsLegacy(key, placeId, "newest");
+    const collectFromFetches = (
+      fromNew: Awaited<ReturnType<typeof fetchPlaceReviewsNew>>,
+      legacyRelevant: Awaited<ReturnType<typeof fetchPlaceReviewsLegacy>>,
+      legacyNewest: Awaited<ReturnType<typeof fetchPlaceReviewsLegacy>>,
+    ) => {
+      const freshLists: ReviewOut[][] = [];
+      let nextRating: number | null = null;
+      let nextCount: number | null = null;
+      if (fromNew?.reviews?.length) {
+        freshLists.push(fromNew.reviews);
+        nextRating = fromNew.rating ?? nextRating;
+        nextCount = fromNew.userRatingCount ?? nextCount;
+      }
+      if (legacyRelevant && !("error" in legacyRelevant)) {
+        freshLists.push(legacyRelevant.reviews);
+        nextRating = legacyRelevant.rating ?? nextRating;
+        nextCount = legacyRelevant.userRatingCount ?? nextCount;
+      }
+      if (legacyNewest && !("error" in legacyNewest)) {
+        freshLists.push(legacyNewest.reviews);
+        nextRating = legacyNewest.rating ?? nextRating;
+        nextCount = legacyNewest.userRatingCount ?? nextCount;
+      }
+      return { freshLists, nextRating, nextCount };
+    };
 
-    if (legacyRelevant && "error" in legacyRelevant && legacyRelevant.error) {
-      res.status(200).json({ ok: false, source: "error", error: legacyRelevant.error, reviews: [] });
+    let { fromNew, legacyRelevant, legacyNewest } = await fetchAllReviewsForPlace(key, activePlaceId);
+    let collected = collectFromFetches(fromNew, legacyRelevant, legacyNewest);
+
+    const legacyError =
+      legacyRelevant && "error" in legacyRelevant && legacyRelevant.error
+        ? String(legacyRelevant.error)
+        : "";
+    if (!collected.freshLists.length && /invalid.*placeid/i.test(legacyError)) {
+      const searched = (await searchPlaceIdNew(key)) ?? (await searchPlaceIdLegacy(key));
+      if (searched && searched !== activePlaceId) {
+        activePlaceId = searched;
+        ({ fromNew, legacyRelevant, legacyNewest } = await fetchAllReviewsForPlace(key, activePlaceId));
+        collected = collectFromFetches(fromNew, legacyRelevant, legacyNewest);
+      }
+    }
+
+    if (!collected.freshLists.length) {
+      const err =
+        legacyError ||
+        (fromNew == null && legacyRelevant == null ? "google_http_error" : "no_reviews");
+      res.status(200).json({ ok: false, source: "error", error: err, reviews: [] });
       return;
     }
 
-    const freshLists: ReviewOut[][] = [];
-    if (fromNew?.reviews?.length) {
-      freshLists.push(fromNew.reviews);
-      rating = fromNew.rating ?? rating;
-      userRatingCount = fromNew.userRatingCount ?? userRatingCount;
-    }
-    if (legacyRelevant && !("error" in legacyRelevant)) {
-      freshLists.push(legacyRelevant.reviews);
-      rating = legacyRelevant.rating ?? rating;
-      userRatingCount = legacyRelevant.userRatingCount ?? userRatingCount;
-    }
-    if (legacyNewest && !("error" in legacyNewest)) {
-      freshLists.push(legacyNewest.reviews);
-      rating = legacyNewest.rating ?? rating;
-      userRatingCount = legacyNewest.userRatingCount ?? userRatingCount;
-    }
-
-    if (!freshLists.length) {
-      res.status(502).json({ ok: false, source: "error", error: "google_http_error", reviews: [] });
-      return;
-    }
+    rating = collected.nextRating;
+    userRatingCount = collected.nextCount;
+    const freshLists = collected.freshLists;
 
     const priorAccum = Array.isArray(cache?.payload?.accumulatedReviews)
       ? (cache!.payload.accumulatedReviews as ReviewOut[])
@@ -345,7 +378,7 @@ router.get("/google-reviews", async (_req, res) => {
     const payload = {
       ok: true,
       source: "google",
-      placeId,
+      placeId: activePlaceId,
       rating,
       userRatingCount,
       reviews,

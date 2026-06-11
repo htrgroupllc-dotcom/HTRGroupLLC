@@ -32790,8 +32790,8 @@ function CenterConvergeMarquee({ brands, base }) {
   const cardClass = "htr-brand-marquee-center__card flex-shrink-0 flex items-center justify-center bg-white rounded-xl border border-stone-100 shadow-sm p-2";
   return /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "htr-brand-marquee-center relative w-full py-6 bg-stone-50 border-y border-stone-200 overflow-hidden", "aria-label": "Brands we service", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__bleed w-screen relative left-1/2 -translate-x-1/2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__stage relative w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-brand-marquee-center__row relative w-full min-h-[88px] h-[88px] overflow-hidden", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-20", "aria-hidden": "true" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 w-max h-full justify-end", children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "lazy" }) }, `l-${i}`)) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute inset-y-0 right-0 w-1/2 overflow-hidden z-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 w-max h-full justify-start", children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "lazy" }) }, `r-${i}`)) }) })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 w-max h-full justify-start", children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "lazy" }) }, `l-${i}`)) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute inset-y-0 right-0 w-1/2 overflow-hidden z-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 w-max h-full justify-end", children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "lazy" }) }, `r-${i}`)) }) })
   ] }) }) }) });
 }
 const SERVICE_AREA_MAP_EMBED = { centerLat: 29.7, centerLng: -95.4, zoom: 9 };
@@ -33002,8 +33002,8 @@ function Home() {
   const [menuOpen, setMenuOpen] = reactExports.useState(false);
   const [reviewTab, setReviewTab] = reactExports.useState("all");
   const [reviewPage, setReviewPage] = reactExports.useState(0);
-  const [googleRating, setGoogleRating] = reactExports.useState(5);
-  const [googleReviewCount, setGoogleReviewCount] = reactExports.useState(9);
+  const [googleRating, setGoogleRating] = reactExports.useState(null);
+  const [googleReviewCount, setGoogleReviewCount] = reactExports.useState(null);
   const [refreshing, setRefreshing] = reactExports.useState(false);
   const [appliance, setAppliance] = reactExports.useState("");
   const [brandModel, setBrandModel] = reactExports.useState("");
@@ -33092,11 +33092,11 @@ function Home() {
       if (d.ok && Array.isArray(d.reviews)) {
         const live = d.reviews.filter((r) => (r.rating ?? 0) >= 4);
         setGoogleHomeReviews(live);
+        if (typeof d.rating === "number") setGoogleRating(d.rating);
+        if (typeof d.userRatingCount === "number") setGoogleReviewCount(d.userRatingCount);
       } else {
         setGoogleHomeReviews([]);
       }
-      if (typeof d.rating === "number") setGoogleRating(d.rating);
-      if (typeof d.userRatingCount === "number") setGoogleReviewCount(d.userRatingCount);
     }).catch(() => {
       setGoogleHomeReviews([]);
     });
@@ -33583,10 +33583,10 @@ function Home() {
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2 mt-3", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-white border border-stone-200 px-3 py-1.5 text-sm font-bold text-stone-800 shadow-sm", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-base font-extrabold text-[#4285F4] leading-none", "aria-hidden": "true", children: "G" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: googleRating.toFixed(1) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: googleRating != null ? googleRating.toFixed(1) : "—" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex gap-0.5", "aria-label": "5 out of 5 stars", children: [1, 2, 3, 4, 5].map((si) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: si, className: "h-3.5 w-3.5 htr-google-star", style: { color: "#FBBC04", fill: "#FBBC04" } })) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-500 font-semibold", children: "Google" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-600", children: `(${googleReviewCount} reviews)` })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-600", children: `(${googleReviewCount ?? 0} reviews)` })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-stone-500 font-medium", children: T2.reviewsBased })
             ] })
