@@ -20,12 +20,12 @@ SOUTHERN_EXCLUDED = {
 }
 # Southern trim arc (lng -> min lat); matches user red line on service map
 SOUTHERN_CUTOFF = (
-    (-96.0, 29.48),
-    (-95.7, 29.49),
-    (-95.4, 29.51),
-    (-95.1, 29.53),
-    (-94.7, 29.54),
-    (-94.45, 29.55),
+    (-96.0, 29.60),
+    (-95.7, 29.61),
+    (-95.4, 29.63),
+    (-95.1, 29.65),
+    (-94.7, 29.66),
+    (-94.45, 29.67),
 )
 BBOX = (-96.35, 28.85, -94.45, 30.55)
 MAX_PTS = 22
@@ -43,7 +43,7 @@ def southern_cutoff_lat(lng: float) -> float:
         if lng0 <= lng <= lng1:
             t = (lng - lng0) / (lng1 - lng0)
             return lat0 + t * (lat1 - lat0)
-    return 29.52
+    return 29.64
 
 
 def ring_centroid(ring):
