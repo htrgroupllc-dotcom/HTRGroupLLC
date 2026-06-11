@@ -66,11 +66,11 @@ const FADE_UP = {
 type Lang = "en" | "es";
 
 const SOCIALS = [
-  { label: "Facebook",  href: "https://www.facebook.com/htrgroupllc",          bg: "#1877F2", icon: <FaFacebook  size={14} /> },
-  { label: "Instagram", href: "https://www.instagram.com/htrgrouptx",          bg: "#E1306C", icon: <FaInstagram size={14} /> },
-  { label: "TikTok",    href: "https://www.tiktok.com/@htrgrouptx",            bg: "#000",    icon: <FaTiktok   size={14} /> },
-  { label: "LinkedIn",  href: "https://www.linkedin.com/company/htrgrouptx",   bg: "#0A66C2", icon: <FaLinkedinIn size={14} /> },
-  { label: "YouTube",   href: "https://www.youtube.com/@htrgrouptx",           bg: "#FF0000", icon: <FaYoutube  size={14} /> },
+  { label: "Facebook",  href: "https://www.facebook.com/profile.php?id=61589369241020",          bg: "#1877F2", icon: <FaFacebook  size={14} /> },
+  { label: "Instagram", href: "https://www.instagram.com/htrgroupllc/",          bg: "#E1306C", icon: <FaInstagram size={14} /> },
+  { label: "TikTok",    href: "https://www.tiktok.com/@htrgroupllc",            bg: "#000",    icon: <FaTiktok   size={14} /> },
+  { label: "LinkedIn",  href: "https://www.linkedin.com/in/eivaz-rakhmanov-010013401",   bg: "#0A66C2", icon: <FaLinkedinIn size={14} /> },
+  { label: "YouTube",   href: "https://www.youtube.com/",           bg: "#FF0000", icon: <FaYoutube  size={14} /> },
 ];
 
 const IMG_MAP: Record<string, string> = {

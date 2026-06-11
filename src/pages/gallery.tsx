@@ -355,11 +355,11 @@ const GALLERY_PHOTOS = [
 ];
 
 const SOCIALS = [
-  { icon: <FaFacebook   className="h-4 w-4" />, href: "https://www.facebook.com/htrgroupllc",  label: "Facebook",  bg: "#1877F2" },
-  { icon: <FaInstagram  className="h-4 w-4" />, href: "https://www.instagram.com/htrgrouptx", label: "Instagram", bg: "linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)" },
-  { icon: <FaTiktok     className="h-4 w-4" />, href: "https://www.tiktok.com/@htrgrouptx",    label: "TikTok",    bg: "#010101" },
-  { icon: <FaLinkedinIn className="h-4 w-4" />, href: "https://www.linkedin.com/company/htrgrouptx",  label: "LinkedIn",  bg: "#0A66C2" },
-  { icon: <FaYoutube    className="h-4 w-4" />, href: "https://www.youtube.com/@htrgrouptx",   label: "YouTube",   bg: "#FF0000" },
+  { icon: <FaFacebook   className="h-4 w-4" />, href: "https://www.facebook.com/profile.php?id=61589369241020",  label: "Facebook",  bg: "#1877F2" },
+  { icon: <FaInstagram  className="h-4 w-4" />, href: "https://www.instagram.com/htrgroupllc/", label: "Instagram", bg: "linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)" },
+  { icon: <FaTiktok     className="h-4 w-4" />, href: "https://www.tiktok.com/@htrgroupllc",    label: "TikTok",    bg: "#010101" },
+  { icon: <FaLinkedinIn className="h-4 w-4" />, href: "https://www.linkedin.com/in/eivaz-rakhmanov-010013401",  label: "LinkedIn",  bg: "#0A66C2" },
+  { icon: <FaYoutube    className="h-4 w-4" />, href: "https://www.youtube.com/",   label: "YouTube",   bg: "#FF0000" },
 ];
 
 type Lang = "en" | "es";
