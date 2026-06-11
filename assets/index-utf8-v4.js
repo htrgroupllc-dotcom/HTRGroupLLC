@@ -33592,7 +33592,7 @@ function Home() {
         ] })
       ] }) }),
 
-      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "reviews", className: "py-10 md:py-12", style: { backgroundColor: K$3.bg }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "reviews", className: "htr-google-reviews py-10 md:py-12", style: { backgroundColor: K$3.bg }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl md:text-3xl font-extrabold", children: T2.reviewsH2 }),
@@ -33600,7 +33600,7 @@ function Home() {
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-white border border-stone-200 px-3 py-1.5 text-sm font-bold text-stone-800 shadow-sm", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-base font-extrabold text-[#4285F4] leading-none", "aria-hidden": "true", children: "G" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: googleRating.toFixed(1) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex gap-0.5", "aria-label": "5 out of 5 stars", children: [1, 2, 3, 4, 5].map((si) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: si, className: "h-3.5 w-3.5 fill-[#FBBC04] text-[#FBBC04]" })) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex gap-0.5", "aria-label": "5 out of 5 stars", children: [1, 2, 3, 4, 5].map((si) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: si, className: "h-3.5 w-3.5 htr-google-star", style: { color: "#FBBC04", fill: "#FBBC04" } })) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-500 font-semibold", children: "Google" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-600", children: `(${googleReviewCount} reviews)` })
               ] }),
@@ -33612,7 +33612,7 @@ function Home() {
             T2.writeReview
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-2.5", children: googleHomeReviews.slice(reviewPage * 10, reviewPage * 10 + 10).map((r, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-google-reviews-grid gap-2 md:gap-2.5", children: googleHomeReviews.slice(reviewPage * 10, reviewPage * 10 + 10).map((r, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
           {
             key: `${r.name}-${i}`,
@@ -33632,7 +33632,7 @@ function Home() {
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#4285F4] font-extrabold text-lg leading-none flex-shrink-0", "aria-hidden": "true", children: "G" })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-2", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "h-3.5 w-3.5 fill-[#FBBC04] text-[#FBBC04]" })) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-2", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "h-3.5 w-3.5 htr-google-star", style: { color: "#FBBC04", fill: "#FBBC04" } })) }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-[11px] md:text-xs leading-snug flex-1 line-clamp-4", children: isEs ? r.textEs : r.textEn })
             ]
           }

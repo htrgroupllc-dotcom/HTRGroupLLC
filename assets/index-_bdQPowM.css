@@ -7879,3 +7879,29 @@
 .htr-brand-marquee-stack .htr-brand-marquee {
   min-height: 96px;
 }
+
+/* Google Reviews — prod-safe (not purged) */
+.htr-google-reviews .htr-google-star,
+.htr-google-reviews svg.lucide-star {
+  fill: #FBBC04 !important;
+  color: #FBBC04 !important;
+  stroke: #FBBC04 !important;
+}
+.htr-google-reviews-grid {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 768px) {
+  .htr-google-reviews-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .htr-google-reviews-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, auto);
+    max-height: none;
+  }
+}
+

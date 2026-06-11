@@ -1705,7 +1705,7 @@ export default function Home() {
         </section>
 
         {/* â”€â”€ GOOGLE REVIEWS â”€â”€ */}
-        <section id="reviews" className="py-10 md:py-12" style={{ backgroundColor: K.bg }}>
+        <section id="reviews" className="htr-google-reviews py-10 md:py-12" style={{ backgroundColor: K.bg }}>
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
               <div>
@@ -1716,7 +1716,7 @@ export default function Home() {
                     <span>{googleRatingLabel}</span>
                     <span className="flex gap-0.5" aria-label="5 out of 5 stars">
                       {[1, 2, 3, 4, 5].map((i) => (
-                        <Star key={i} className="h-3 w-3" style={{ color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR }} />
+                        <Star key={i} className="h-3 w-3 htr-google-star" style={{ color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR }} />
                       ))}
                     </span>
                     <span className="text-stone-500 font-semibold">Google</span>
@@ -1737,7 +1737,7 @@ export default function Home() {
               </a>
             </div>
 
-            <div className="relative"><div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-2.5">{pagedGoogleReviews.map((r, i) => (
+            <div className="relative"><div className="htr-google-reviews-grid gap-2 md:gap-2.5">{pagedGoogleReviews.map((r, i) => (
                 <motion.div
                   key={`${r.name}-${i}`}
                   initial="hidden"
@@ -1763,7 +1763,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-center gap-0.5 mb-2">
                     {Array.from({ length: r.rating }).map((_, j) => (
-                      <Star key={j} className="h-3 w-3" style={{ color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR }} />
+                      <Star key={j} className="h-3 w-3 htr-google-star" style={{ color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR }} />
                     ))}
                   </div>
                   <p className="text-stone-600 text-[11px] md:text-xs leading-snug flex-1 line-clamp-4">{isEs ? r.textEs : r.textEn}</p>
