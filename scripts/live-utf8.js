@@ -97050,7 +97050,7 @@ function Terms() {
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "2. Appointments and Scheduling" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Appointments can be scheduled through our website, by calling (346) 820-6021, or via WhatsApp at (555) 955-4342 or by calling (346) 820-6021." }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "We will confirm your appointment within 15 minutes during business hours." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "We will confirm your appointment as soon as possible during business hours." }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Please provide accurate appliance information and service address to ensure timely service." }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Cancellations should be made at least 2 hours before the scheduled appointment time." })
     ] }),
