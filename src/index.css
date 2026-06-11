@@ -178,6 +178,25 @@
   }
 }
 
+/* Footer: clear fixed WhatsApp (52px btn + 24px inset) over social icons at max scroll */
+footer {
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)) !important;
+}
+.footer-top-row {
+  margin-bottom: 1rem;
+}
+@media (min-width: 640px) {
+  footer {
+    padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .footer-top-row {
+    margin-bottom: 5rem;
+  }
+  .footer-social-clear {
+    margin-right: 5rem;
+  }
+}
+
 /* ── Logo sparkle animation ─────────────────────────────────────── */
 @keyframes logoShimmer {
   0%   { background-position: -300% center; }

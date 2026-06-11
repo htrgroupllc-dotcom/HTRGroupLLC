@@ -263,12 +263,12 @@ export default function Blog() {
       {/* ── FOOTER ── */}
       <footer className="pt-6 pb-20 sm:pb-6" style={{ backgroundColor: K.dark }}>
         <div className="container mx-auto px-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 footer-top-row">
             <div className="flex items-center gap-2">
               <Wrench className="h-4 w-4" style={{ color: K.accentLight }} />
               <span className="text-white font-extrabold">HTR<span style={{ color: K.accentLight }}>GroupTX</span></span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 footer-social-clear">
               {SOCIALS.map(s => (
                 <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}
                   className="h-8 w-8 rounded-full flex items-center justify-center text-white hover:opacity-75 transition-opacity"

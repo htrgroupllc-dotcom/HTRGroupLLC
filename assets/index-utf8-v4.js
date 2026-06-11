@@ -33688,7 +33688,7 @@ function Home() {
       ] }) })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "pt-6 pb-20 sm:pb-6", style: { backgroundColor: K$3.dark }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-between gap-4 mb-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-between gap-4 footer-top-row", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "h-4 w-4", style: { color: K$3.accentLight } }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white font-extrabold", children: [
@@ -33696,7 +33696,7 @@ function Home() {
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: K$3.accentLight }, children: "GroupTX" })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2", children: SOCIALS$3.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 footer-social-clear", children: SOCIALS$3.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           "a",
           {
             href: s.href,
@@ -34562,7 +34562,7 @@ function Gallery() {
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "pt-6 pb-20 sm:pb-6", style: { backgroundColor: K$2.dark }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-between gap-4 mb-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-between gap-4 footer-top-row", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "h-4 w-4", style: { color: K$2.accentLight } }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white font-extrabold", children: [
@@ -34570,7 +34570,7 @@ function Gallery() {
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: K$2.accentLight }, children: "GroupTX" })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2", children: SOCIALS$2.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 footer-social-clear", children: SOCIALS$2.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           "a",
           {
             href: s.href,
@@ -35737,7 +35737,7 @@ function Blog() {
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "pt-6 pb-20 sm:pb-6", style: { backgroundColor: K$1.dark }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-between gap-4 mb-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-between gap-4 footer-top-row", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "h-4 w-4", style: { color: K$1.accentLight } }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white font-extrabold", children: [
@@ -35745,7 +35745,7 @@ function Blog() {
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: K$1.accentLight }, children: "GroupTX" })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2", children: SOCIALS$1.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 footer-social-clear", children: SOCIALS$1.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           "a",
           {
             href: s.href,
@@ -36041,7 +36041,7 @@ function BlogPost() {
       ] }) })
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "pt-6 pb-20 sm:pb-6", style: { backgroundColor: K.dark }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-between gap-4 mb-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-between gap-4 footer-top-row", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "h-4 w-4", style: { color: K.accentLight } }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white font-extrabold", children: [
@@ -36049,7 +36049,7 @@ function BlogPost() {
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: K.accentLight }, children: "GroupTX" })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2", children: SOCIALS.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 footer-social-clear", children: SOCIALS.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           "a",
           {
             href: s.href,

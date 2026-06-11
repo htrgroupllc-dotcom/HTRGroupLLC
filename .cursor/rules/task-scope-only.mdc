@@ -1,0 +1,10 @@
+---
+description: Fix only the task given — no unrelated changes
+alwaysApply: true
+---
+
+# Task scope only
+
+When the user gives a task, fix **ONLY** that task.
+
+Do not change unrelated sections, styles, or behavior.
