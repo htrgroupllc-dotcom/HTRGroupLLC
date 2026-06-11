@@ -31850,6 +31850,7 @@ const svcFreezerImg = "/assets/svc_freezer-D1N0rAED.png";
 const svcDisposalImg = "/assets/svc_disposal-CPvrcFHc.png";
 const svcWarmerImg = "/assets/svc_warmer-KjhJaYYR.png";
 const g62 = "/assets/photo_62_2026-04-02_02-47-29_1775273301589-Ds2r63q0.jpg";
+const ourWorkSectionImg = "/assets/our-work-section-65084024.png";
 const g67 = "/assets/photo_67_2026-04-02_02-42-16_1775273301590-CBuZeJBF.jpg";
 const g73 = "/assets/photo_73_2026-04-02_02-42-16_1775273301591-Wo_zxND6.jpg";
 const g75 = "/assets/photo_75_2026-04-02_02-42-16_1775273301591-EdwvpMS-.jpg";
@@ -32404,7 +32405,7 @@ function getDailyStats() {
 }
 const STATS_VALUES = getDailyStats();
 const GALLERY_PHOTOS$1 = [
-  { src: g62, captionEn: "Washer repair – Houston, TX", captionEs: "Reparación lavadora – Houston, TX" },
+  { src: ourWorkSectionImg, captionEn: "Washer repair – Houston, TX", captionEs: "Reparación lavadora – Houston, TX" },
   { src: g67, captionEn: "Refrigerator repair – Katy, TX", captionEs: "Reparación refrigerador – Katy, TX" },
   { src: g73, captionEn: "Dryer repair – Sugar Land, TX", captionEs: "Reparación secadora – Sugar Land, TX" },
   { src: g75, captionEn: "Dishwasher repair – Pearland, TX", captionEs: "Reparación lavavajillas – Pearland, TX" },

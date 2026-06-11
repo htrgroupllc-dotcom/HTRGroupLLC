@@ -33,6 +33,7 @@ import svcFreezerImg  from "@assets/svc_freezer.png";
 import svcDisposalImg from "@assets/svc_disposal.png";
 import svcWarmerImg   from "@assets/svc_warmer.png";
 import g62  from "@assets/photo_62_2026-04-02_02-47-29_1775273301589.jpg";
+import ourWorkSectionImg from "@assets/our-work-section-65084024.png";
 import g67  from "@assets/photo_67_2026-04-02_02-42-16_1775273301590.jpg";
 import g73  from "@assets/photo_73_2026-04-02_02-42-16_1775273301591.jpg";
 import g75  from "@assets/photo_75_2026-04-02_02-42-16_1775273301591.jpg";
@@ -649,7 +650,7 @@ const STATS_VALUES = getDailyStats();
      { src: myPhoto, captionEn: "Washer repair – Katy TX", captionEs: "Reparación lavadora – Katy TX" },
 ─────────────────────────────────────────────────────────────────── */
 const GALLERY_PHOTOS: { src: string; captionEn: string; captionEs: string }[] = [
-  { src: g62,  captionEn: "Washer repair – Houston, TX",       captionEs: "Reparación lavadora – Houston, TX" },
+  { src: ourWorkSectionImg,  captionEn: "Washer repair – Houston, TX",       captionEs: "Reparación lavadora – Houston, TX" },
   { src: g67,  captionEn: "Refrigerator repair – Katy, TX",    captionEs: "Reparación refrigerador – Katy, TX" },
   { src: g73,  captionEn: "Dryer repair – Sugar Land, TX",     captionEs: "Reparación secadora – Sugar Land, TX" },
   { src: g75,  captionEn: "Dishwasher repair – Pearland, TX",  captionEs: "Reparación lavavajillas – Pearland, TX" },
