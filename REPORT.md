@@ -66,3 +66,31 @@
 ## Checks
 - 
 ode --check assets/index-utf8-v4.js — OK.
+
+---
+
+# REPORT - circular service map (2026-06-11, commit d349e45)
+
+## Problem
+- User red circle on screenshot: metro boundary from downtown Houston, not only southern arc (Woodlands, Katy, Baytown, south must be outside fill).
+
+## Screenshot analysis (verified)
+- Red ring on map crop: center near downtown projection (~557,325 px), radius ~165 px ≈ **43.8 km (~27 mi)** at z=9 Mercator (km/px ≈ 0.265 on embed).
+
+## Fix
+- `scripts/build_service_area_geo.py`: `RADIUS_KM = 43.8`, `HOUSTON_CENTER = (29.7604, -95.3698)`, haversine filter:
+  - centroid ≤ radius
+  - ≥50% ring vertices inside circle
+  - max vertex distance ≤ radius (no polygons sticking outside circle)
+- Removed southern-only `SOUTHERN_EXCLUDED` list and southern arc cut from collect (arc was cutting inner Houston south).
+- Rebuilt: **120 → 138 ZIPs** (strict circle; excludes e.g. 77380 Woodlands, 77521 Baytown, 77384; keeps inner 770xx).
+- `index.html`: `index-utf8-v4.js?v=27`
+- `node --check assets/index-utf8-v4.js` — OK
+- Prod: `https://www.htrgrouptx.com/?v=27#contact` loads script `?v=27` (Playwright verified).
+
+## Risks
+- 77494 Katy centroid ~39 km — still inside 43.8 km circle; if user wants Katy west out, lower `RADIUS_KM` (~39) manually.
+- ZIP count (138) > rough estimate 60–90 because many small 770xx polygons fit in 27 mi circle.
+
+## Recommendations
+- Compare live map to red circle screenshot; if west/south still too wide, reduce `RADIUS_KM` in `build_service_area_geo.py` and rerun script.
