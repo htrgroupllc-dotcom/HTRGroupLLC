@@ -13,16 +13,8 @@ import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
 
-import { GOOGLE_REVIEW_URL } from "../data/googleBusinessReviews";
-import {
-  GOOGLE_STAR_COLOR,
-  REVIEWS_PER_PAGE,
-  fetchGoogleReviewsFromApi,
-  filterPositiveGoogleReviews,
-  isVerifiedGooglePlace,
-} from "../lib/googleReviewsClient";
-
-import type { ReviewData } from "../data/reviews";
+import ReviewsSection from "@/components/ReviewsSection";
+import { useGoogleReviews } from "@/hooks/useGoogleReviews";
 import ChatWidget from "@/components/ChatWidget";
 import ServiceAreaMapOverlay from "@/components/ServiceAreaMapOverlay";
 import { HeroCircuitEffect } from "@/components/HeroCircuitEffect";
@@ -1150,46 +1142,10 @@ export default function Home() {
     <Award  className="h-8 w-8" />,
   ];
 
-  // Show 8 reviews per day (2 rows Ã— 4 cols), rotating daily
-  const [reviewPage, setReviewPage] = useState(0);
-  const [liveGoogleReviews, setLiveGoogleReviews] = useState<ReviewData[]>([]);
-  const [googleRating, setGoogleRating] = useState<number | null>(null);
-  const [googleReviewCount, setGoogleReviewCount] = useState<number | null>(null);
-  const [loadingGoogleReviews, setLoadingGoogleReviews] = useState(false);
-
-  const loadGoogleReviews = useCallback(async () => {
-    const apiBase = (import.meta.env.VITE_API_BASE ?? "https://htr-group-llc-appliance-repair.replit.app").replace(/\/$/, "");
-    setLoadingGoogleReviews(true);
-    try {
-      const data = await fetchGoogleReviewsFromApi(apiBase);
-      if (data?.ok && data.reviews && isVerifiedGooglePlace(data.placeId)) {
-        setLiveGoogleReviews(data.reviews);
-        if (typeof data.rating === "number") setGoogleRating(data.rating);
-        if (typeof data.userRatingCount === "number") setGoogleReviewCount(data.userRatingCount);
-      } else {
-        setLiveGoogleReviews([]);
-        setGoogleRating(null);
-        setGoogleReviewCount(null);
-      }
-    } finally {
-      setLoadingGoogleReviews(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadGoogleReviews();
-  }, [loadGoogleReviews]);
-
-  const mergedGoogleReviews = filterPositiveGoogleReviews(liveGoogleReviews);
-  const totalReviewPages = Math.max(1, Math.ceil(mergedGoogleReviews.length / REVIEWS_PER_PAGE));
-  const safeReviewPage = Math.min(reviewPage, totalReviewPages - 1);
-  const pagedGoogleReviews = mergedGoogleReviews.slice(
-    safeReviewPage * REVIEWS_PER_PAGE,
-    safeReviewPage * REVIEWS_PER_PAGE + REVIEWS_PER_PAGE,
-  );
-  const googleRatingLabel = googleRating != null ? googleRating.toFixed(1) : "—";
-  const overlayReview = mergedGoogleReviews.length
-    ? mergedGoogleReviews[Math.floor(Date.now() / (12 * 36e5)) % mergedGoogleReviews.length]
+  // Google reviews — shared hook for hero overlay + ReviewsSection
+  const { reviews: googleReviews, rating: googleRating, reviewCount: googleReviewCount, loading: loadingGoogleReviews, refresh: loadGoogleReviews } = useGoogleReviews();
+  const overlayReview = googleReviews.length
+    ? googleReviews[Math.floor(Date.now() / (12 * 36e5)) % googleReviews.length]
     : null;
 
   const handleServiceClick = (svc: typeof SERVICES[0]) => {
@@ -1743,104 +1699,26 @@ export default function Home() {
           </div>
         </section>
 
-        {/* â”€â”€ GOOGLE REVIEWS â”€â”€ */}
-        <section id="reviews" className="htr-google-reviews py-10 md:py-12" style={{ backgroundColor: K.bg }}>
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-extrabold">{T.reviewsH2}</h2>
-                <div className="flex flex-wrap items-center gap-2 mt-3">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-white border border-stone-200 px-3 py-1.5 text-sm font-bold text-stone-800 shadow-sm">
-                    <span className="text-base font-extrabold text-[#4285F4] leading-none" aria-hidden="true">G</span>
-                    <span>{googleRatingLabel}</span>
-                    <span className="flex gap-0.5" aria-label="5 out of 5 stars">
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <Star key={i} className="h-3 w-3 htr-google-star" style={{ color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR }} />
-                      ))}
-                    </span>
-                    <span className="text-stone-500 font-semibold">Google</span>
-                    <span className="text-stone-600">({googleReviewCount ?? 0} reviews)</span>
-                  </span>
-                  <span className="text-xs text-stone-500 font-medium">{googleReviewCount != null ? `${googleReviewCount} ${isEs ? "reseñas en Google" : "reviews on Google"}` : (loadingGoogleReviews ? T.reviewsLoading : "")}</span>
-                </div>
-              </div>
-              <a
-                href={GOOGLE_REVIEW_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 text-sm font-bold px-5 py-3 rounded-lg text-white shadow-md transition-opacity hover:opacity-90 w-full sm:w-auto"
-                style={{ backgroundColor: K.accent }}
-              >
-                <ExternalLink className="h-4 w-4 shrink-0" />
-                {T.writeReview}
-              </a>
-            </div>
-
-            {loadingGoogleReviews && !mergedGoogleReviews.length && (
-              <p className="text-sm text-stone-500 font-medium py-6 text-center col-span-full">{T.reviewsLoading}</p>
-            )}
-            {!loadingGoogleReviews && mergedGoogleReviews.length === 0 && (
-              <p className="text-sm text-stone-500 font-medium py-6 text-center col-span-full">
-                {isEs ? "No hay reseñas de Google disponibles en este momento." : "No Google reviews available right now. Please try again later."}
-              </p>
-            )}
-            <div className="relative htr-google-reviews-grid-wrap"><div className="htr-google-reviews-grid grid gap-2 md:gap-2.5 lg:grid-cols-5 lg:grid-rows-2 lg:grid-flow-row">{pagedGoogleReviews.map((r, i) => (
-                <div key={`${r.name}-${i}`} className="bg-white rounded-lg shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <div
-                        className="htr-google-review-avatar rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
-                        style={{ backgroundColor: r.avatarColor }}
-                      >
-                        {r.initials}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="htr-google-review-name font-semibold text-stone-900 truncate">{r.name}</p>
-                        <p className="htr-google-review-time text-stone-400 leading-none">{r.time}</p>
-                      </div>
-                    </div>
-                    <span className="text-[#4285F4] font-extrabold text-sm leading-none flex-shrink-0" aria-hidden="true">G</span>
-                  </div>
-                  <div className="flex items-center gap-0.5 mb-1.5">
-                    {Array.from({ length: r.rating }).map((_, j) => (
-                      <Star key={j} className="htr-google-star htr-google-review-star" style={{ color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR }} />
-                    ))}
-                  </div>
-                  <p className="htr-google-review-body text-stone-600 flex-1 line-clamp-3">{isEs ? r.textEs : r.textEn}</p>
-                </div>
-              ))}
-              </div>
-              {totalReviewPages > 1 && (
-                <div className="flex items-center justify-center gap-3 mt-4">
-                  <button
-                    type="button"
-                    aria-label={isEs ? "Reseñas anteriores" : "Previous reviews"}
-                    disabled={safeReviewPage <= 0}
-                    onClick={() => setReviewPage((p) => Math.max(0, p - 1))}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm transition-opacity disabled:opacity-40 hover:opacity-80"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  <span className="text-xs font-semibold text-stone-500 tabular-nums">
-                    {safeReviewPage + 1} / {totalReviewPages}
-                  </span>
-                  <button
-                    type="button"
-                    aria-label={isEs ? "Siguientes reseñas" : "Next reviews"}
-                    disabled={safeReviewPage >= totalReviewPages - 1}
-                    onClick={() => setReviewPage((p) => Math.min(totalReviewPages - 1, p + 1))}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm transition-opacity disabled:opacity-40 hover:opacity-80"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </div>
-              )}
-              {loadingGoogleReviews && (
-                <p className="text-center text-[11px] text-stone-400 mt-2">{isEs ? "Actualizando reseñas…" : "Updating reviews…"}</p>
-              )}
-            </div>
-          </div>
-        </section>
+        <ReviewsSection
+          reviews={googleReviews}
+          rating={googleRating}
+          reviewCount={googleReviewCount}
+          loading={loadingGoogleReviews}
+          isEs={isEs}
+          accentColor={K.accent}
+          bgColor={K.bg}
+          copy={{
+            reviewsH2: T.reviewsH2,
+            reviewsLoading: T.reviewsLoading,
+            writeReview: T.writeReview,
+            viewOnGoogle: isEs ? "Ver en Google" : "View on Google",
+            empty: isEs
+              ? "No hay reseñas de Google disponibles en este momento."
+              : "No Google reviews available right now. Please try again later.",
+            prev: isEs ? "Reseñas anteriores" : "Previous reviews",
+            next: isEs ? "Siguientes reseñas" : "Next reviews",
+          }}
+        />
 
         {/* â”€â”€ FAQ â”€â”€ */}
         <section id="faq" className="py-16 bg-white">

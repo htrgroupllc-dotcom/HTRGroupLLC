@@ -13,6 +13,7 @@ export type GoogleReviewsApiResponse = {
   rating?: number | null;
   userRatingCount?: number | null;
   reviews?: ReviewData[];
+  googleReviewUrl?: string;
 };
 
 export function isVerifiedGooglePlace(placeId: string | null | undefined): boolean {
@@ -21,6 +22,11 @@ export function isVerifiedGooglePlace(placeId: string | null | undefined): boole
 
 export function filterPositiveGoogleReviews(live: ReviewData[]): ReviewData[] {
   return live.filter((r) => r.rating >= 4);
+}
+
+/** Newest first — uses publishTime when available. */
+export function sortGoogleReviewsNewest(reviews: ReviewData[]): ReviewData[] {
+  return [...reviews].sort((a, b) => (b.publishTime ?? 0) - (a.publishTime ?? 0));
 }
 
 /** @deprecated use filterPositiveGoogleReviews */

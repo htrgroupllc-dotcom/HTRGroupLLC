@@ -32836,6 +32836,28 @@ function Home() {
       setGoogleHomeReviews([]);
     });
   }, []);
+  const renderGoogleReviewCard = (r, i, keyPrefix) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div", { key: `${keyPrefix}-${r.name}-${i}`, className: "bg-white rounded-lg shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card",
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-1.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 min-w-0", children: [
+            r.profilePhotoUrl ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: r.profilePhotoUrl, alt: "", className: "htr-google-review-avatar rounded-full flex-shrink-0 object-cover", loading: "lazy", referrerPolicy: "no-referrer" }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-google-review-avatar rounded-full flex items-center justify-center text-white font-bold flex-shrink-0", style: { backgroundColor: r.avatarColor }, children: r.initials }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "htr-google-review-name font-semibold text-stone-900 truncate", children: r.name }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "htr-google-review-time text-stone-400 leading-none", children: r.time })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#4285F4] font-extrabold text-sm leading-none flex-shrink-0", "aria-hidden": "true", children: "G" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-1.5", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "htr-google-star htr-google-review-star", style: { color: "#FBBC04", fill: "#FBBC04" } })) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "htr-google-review-body text-stone-600 flex-1 line-clamp-3", children: isEs ? r.textEs : r.textEn }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: GOOGLE_REVIEW_URL_HOME, target: "_blank", rel: "noopener noreferrer", className: "mt-1.5 inline-flex items-center gap-1 text-[10px] font-semibold text-[#4285F4] hover:underline", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ExternalLink, { className: "h-3 w-3 shrink-0" }),
+          isEs ? "Ver en Google" : "View on Google"
+        ] })
+      ]
+    }
+  );
   const handleServiceClick = (svc) => {
     setAppliance(isEs ? svc.appEs : svc.appEn);
     setTimeout(() => {
@@ -33332,28 +33354,23 @@ function Home() {
           ] })
         ] }),
         !googleHomeReviews.length && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-500 font-medium py-6 text-center col-span-full", children: isEs ? "No hay reseñas de Google disponibles en este momento." : "No Google reviews available right now. Please try again later." }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative htr-google-reviews-grid-wrap", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-google-reviews-grid grid gap-2 md:gap-2.5 lg:grid-cols-5 lg:grid-rows-2 lg:grid-flow-row", children: googleHomeReviews.slice(reviewPage * 10, reviewPage * 10 + 10).map((r, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div", { key: `${r.name}-${i}`, className: "bg-white rounded-lg shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card",
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-1.5", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 min-w-0", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-google-review-avatar rounded-full flex items-center justify-center text-white font-bold flex-shrink-0", style: { backgroundColor: r.avatarColor }, children: r.initials }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "htr-google-review-name font-semibold text-stone-900 truncate", children: r.name }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "htr-google-review-time text-stone-400 leading-none", children: r.time })
-                  ] })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#4285F4] font-extrabold text-sm leading-none flex-shrink-0", "aria-hidden": "true", children: "G" })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-1.5", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "htr-google-star htr-google-review-star", style: { color: "#FBBC04", fill: "#FBBC04" } })) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "htr-google-review-body text-stone-600 flex-1 line-clamp-3", children: isEs ? r.textEs : r.textEn })
-            ]
-          }
-        )) }) }),
-        Math.ceil(googleHomeReviews.length / 10) > 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-3 mt-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", "aria-label": "Previous reviews", disabled: reviewPage <= 0, onClick: () => setReviewPage((p) => Math.max(0, p - 1)), className: "inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm disabled:opacity-40 hover:opacity-80", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "h-5 w-5" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-semibold text-stone-500 tabular-nums", children: [reviewPage + 1, " / ", Math.max(1, Math.ceil(googleHomeReviews.length / 10))] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", "aria-label": "Next reviews", disabled: reviewPage >= Math.ceil(googleHomeReviews.length / 10) - 1, onClick: () => setReviewPage((p) => Math.min(Math.ceil(googleHomeReviews.length / 10) - 1, p + 1)), className: "inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm disabled:opacity-40 hover:opacity-80", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "h-5 w-5" }) })
+        googleHomeReviews.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:hidden relative htr-google-reviews-mobile", children: [
+            renderGoogleReviewCard(googleHomeReviews[mobileReviewIdx], mobileReviewIdx, "mob"),
+            googleHomeReviews.length > 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-3 mt-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", "aria-label": isEs ? "Reseñas anteriores" : "Previous reviews", disabled: mobileReviewIdx <= 0, onClick: () => setMobileReviewIdx((i) => Math.max(0, i - 1)), className: "inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm disabled:opacity-40 hover:opacity-80", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "h-5 w-5" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-semibold text-stone-500 tabular-nums", children: [mobileReviewIdx + 1, " / ", googleHomeReviews.length] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", "aria-label": isEs ? "Siguientes reseñas" : "Next reviews", disabled: mobileReviewIdx >= googleHomeReviews.length - 1, onClick: () => setMobileReviewIdx((i) => Math.min(googleHomeReviews.length - 1, i + 1)), className: "inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm disabled:opacity-40 hover:opacity-80", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "h-5 w-5" }) })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative htr-google-reviews-grid-wrap hidden md:block", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-google-reviews-grid grid gap-2 md:gap-2.5 lg:grid-cols-5 lg:grid-rows-2 lg:grid-flow-row", children: googleHomeReviews.slice(reviewPage * 10, reviewPage * 10 + 10).map((r, i) => renderGoogleReviewCard(r, i, "desk")) }),
+            Math.ceil(googleHomeReviews.length / 10) > 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-3 mt-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", "aria-label": isEs ? "Reseñas anteriores" : "Previous reviews", disabled: reviewPage <= 0, onClick: () => setReviewPage((p) => Math.max(0, p - 1)), className: "inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm disabled:opacity-40 hover:opacity-80", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "h-5 w-5" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-semibold text-stone-500 tabular-nums", children: [reviewPage + 1, " / ", Math.max(1, Math.ceil(googleHomeReviews.length / 10))] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", "aria-label": isEs ? "Siguientes reseñas" : "Next reviews", disabled: reviewPage >= Math.ceil(googleHomeReviews.length / 10) - 1, onClick: () => setReviewPage((p) => Math.min(Math.ceil(googleHomeReviews.length / 10) - 1, p + 1)), className: "inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm disabled:opacity-40 hover:opacity-80", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "h-5 w-5" }) })
+            ] })
+          ] })
         ] })
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "faq", className: "py-16 bg-white", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 max-w-4xl", children: [

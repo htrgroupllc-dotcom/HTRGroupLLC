@@ -7940,6 +7940,9 @@ footer {
 @media (min-width: 768px) {
   .htr-google-review-card { padding: 0.5rem 0.625rem !important; }
 }
+.htr-google-reviews-mobile {
+  max-width: 100%;
+}
 .htr-google-review-card .htr-google-review-avatar {
   height: 1.75rem;
   width: 1.75rem;
