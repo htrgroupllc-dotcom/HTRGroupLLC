@@ -14,6 +14,13 @@ import {
 } from "@/components/ui/accordion";
 
 import { GOOGLE_REVIEW_URL } from "../data/googleBusinessReviews";
+import {
+  GOOGLE_STAR_COLOR,
+  REVIEWS_PER_PAGE,
+  fetchGoogleReviewsFromApi,
+  filterPositiveGoogleReviews,
+} from "../lib/googleReviewsClient";
+
 import type { ReviewData } from "../data/reviews";
 import ChatWidget from "@/components/ChatWidget";
 import ServiceAreaMapOverlay from "@/components/ServiceAreaMapOverlay";
@@ -1026,52 +1033,34 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
   );
 }
 
-function CenterConvergeMarquee({ brands, base }: { brands: [string, string][]; base: string }) {
+﻿function CenterConvergeMarquee({ brands, base }: { brands: [string, string][]; base: string }) {
   const all = [...brands, ...brands];
   const cardClass =
-    "htr-brand-marquee-center__card flex-shrink-0 flex items-center justify-center bg-white rounded-xl border border-stone-100 shadow-sm p-3";
+    "htr-brand-marquee-center__card flex-shrink-0 flex items-center justify-center bg-white rounded-xl border border-stone-100 shadow-sm p-2";
 
   return (
-    <section className="htr-brand-marquee-center relative w-full py-6 bg-white border-y border-stone-100" aria-label="Brands we service">
-      <div className="htr-brand-marquee-center__stage relative w-full">
-        <div
-          className="absolute left-0 top-0 bottom-0 w-20 z-30 pointer-events-none"
-          style={{ background: "linear-gradient(to right, #ffffff, transparent)" }}
-        />
-        <div
-          className="absolute right-0 top-0 bottom-0 w-20 z-30 pointer-events-none"
-          style={{ background: "linear-gradient(to left, #ffffff, transparent)" }}
-        />
-        <div className="htr-brand-marquee-center__row relative w-full min-h-[96px] h-[96px] overflow-hidden">
-          <div className="htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-20 w-12 -ml-6" />
-          <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
-            <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-4 w-max h-full justify-end">
-              {all.map(([name, file], i) => (
-                <div key={`l-${i}`} className={cardClass} style={{ width: 180, height: 90 }}>
-                  <img
-                    src={`${base}/logos/${file}.png`}
-                    alt={name}
-                    className="w-full h-full object-contain"
-                    draggable={false}
-                    loading="lazy"
-                  />
-                </div>
-              ))}
+    <section className="htr-brand-marquee-center relative w-full py-6 bg-stone-50 border-y border-stone-200 overflow-hidden" aria-label="Brands we service">
+      <div className="htr-brand-marquee-center__bleed w-screen relative left-1/2 -translate-x-1/2">
+        <div className="htr-brand-marquee-center__stage relative w-full">
+          <div className="htr-brand-marquee-center__row relative w-full min-h-[88px] h-[88px] overflow-hidden">
+            <div className="htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-20" aria-hidden="true" />
+            <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
+              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 w-max h-full justify-end">
+                {all.map(([name, file], i) => (
+                  <div key={`l-${i}`} className={cardClass}>
+                    <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute inset-y-0 right-0 w-1/2 overflow-hidden z-10">
-            <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-4 w-max h-full justify-start">
-              {all.map(([name, file], i) => (
-                <div key={`r-${i}`} className={cardClass} style={{ width: 180, height: 90 }}>
-                  <img
-                    src={`${base}/logos/${file}.png`}
-                    alt={name}
-                    className="w-full h-full object-contain"
-                    draggable={false}
-                    loading="lazy"
-                  />
-                </div>
-              ))}
+            <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute inset-y-0 right-0 w-1/2 overflow-hidden z-10">
+              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 w-max h-full justify-start">
+                {all.map(([name, file], i) => (
+                  <div key={`r-${i}`} className={cardClass}>
+                    <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -1079,6 +1068,7 @@ function CenterConvergeMarquee({ brands, base }: { brands: [string, string][]; b
     </section>
   );
 }
+
 
 export default function Home() {
   const { toast }  = useToast();
@@ -1789,14 +1779,7 @@ export default function Home() {
               <p className="text-sm text-stone-500 font-medium py-6 text-center col-span-full sr-only">{T.reviewsLoading}</p>
             )}
             <div className="relative"><div className="htr-google-reviews-grid gap-2 md:gap-2.5">{pagedGoogleReviews.map((r, i) => (
-                <motion.div
-                  key={`${r.name}-${i}`}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={FADE_UP}
-                  className="bg-white rounded-lg p-2 md:p-2.5 shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card"
-                >
+                <div key={`${r.name}-${i}`} className="bg-white rounded-lg p-2 md:p-2.5 shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2 min-w-0">
                       <div
@@ -1818,7 +1801,7 @@ export default function Home() {
                     ))}
                   </div>
                   <p className="text-stone-600 text-[11px] md:text-xs leading-snug flex-1 line-clamp-3">{isEs ? r.textEs : r.textEn}</p>
-                </motion.div>
+                </div>
               ))}
               </div>
               {totalReviewPages > 1 && (

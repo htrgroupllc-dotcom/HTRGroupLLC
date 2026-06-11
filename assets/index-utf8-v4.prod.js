@@ -33450,8 +33450,8 @@ function Home() {
           ] }, i))
         }
       ) }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-6 text-center bg-white border-y border-stone-100", children: [/* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-sm font-semibold mb-3", children: "Call us anytime" }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), COMPANY_PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), PHONE_DISPLAY$3] })] }) ] }), /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-10 bg-white", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid lg:grid-cols-[2fr_3fr] gap-8 items-center", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { initial: "hidden", whileInView: "visible", viewport: { once: true }, variants: FADE_UP$3, className: "relative", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: whyUsBgImg, alt: "Appliance repair", className: "rounded-xl shadow-lg w-full object-cover aspect-[4/3]" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-6 text-center bg-white border-y border-stone-100", children: [/* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-sm font-semibold mb-3", children: "Call us anytime" }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), COMPANY_PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), PHONE_DISPLAY$3] })] }) ] }), /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-10 bg-white htr-home-why-section", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid lg:grid-cols-[2fr_3fr] gap-8 items-start htr-home-split-grid", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { initial: "hidden", whileInView: "visible", viewport: { once: true }, variants: FADE_UP$3, className: "relative htr-home-split-photo", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: whyUsBgImg, alt: "Appliance repair", className: "htr-home-split-photo__img rounded-xl shadow-lg w-full h-auto object-contain" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl md:text-3xl font-extrabold mb-2", children: T2.whyH2 }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-1 w-12 mb-4 rounded-full", style: { backgroundColor: K$3.accent } }),
@@ -33465,14 +33465,14 @@ function Home() {
           ] }, i)) })
         ] })
       ] }) }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "gallery", className: "py-10 bg-white", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid lg:grid-cols-[2fr_3fr] gap-8 items-center", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { initial: "hidden", whileInView: "visible", viewport: { once: true }, variants: FADE_UP$3, className: "relative", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: `${"/".replace(/\/$/, "")}/gallery`, className: "block rounded-xl overflow-hidden shadow-lg group", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "gallery", className: "py-10 bg-white htr-home-our-work-section", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid lg:grid-cols-[2fr_3fr] gap-8 items-start htr-home-split-grid", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { initial: "hidden", whileInView: "visible", viewport: { once: true }, variants: FADE_UP$3, className: "relative htr-home-split-photo", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: `${"/".replace(/\/$/, "")}/gallery`, className: "block rounded-xl overflow-visible shadow-lg group htr-home-split-photo__frame", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "img",
             {
               src: GALLERY_PHOTOS$1[0].src,
               alt: isEs ? GALLERY_PHOTOS$1[0].captionEs : GALLERY_PHOTOS$1[0].captionEn,
-              className: "w-full object-cover aspect-[4/3] group-hover:scale-105 transition-transform duration-500"
+              className: "htr-home-split-photo__img w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500"
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" })
@@ -33601,18 +33601,11 @@ function Home() {
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-google-reviews-grid gap-2 md:gap-2.5", children: googleHomeReviews.slice(reviewPage * 10, reviewPage * 10 + 10).map((r, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          motion.div,
-          {
-            key: `${r.name}-${i}`,
-            initial: "hidden",
-            whileInView: "visible",
-            viewport: { once: true },
-            variants: FADE_UP$3,
-            className: "bg-white rounded-lg p-2.5 md:p-3 shadow-sm border border-stone-100 flex flex-col h-full min-h-0",
+          "div", { key: `${r.name}-${i}`, className: "bg-white rounded-lg p-2 md:p-2.5 shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 min-w-0", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-9 w-9 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0", style: { backgroundColor: r.avatarColor }, children: r.initials }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-8 w-8 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0", style: { backgroundColor: r.avatarColor }, children: r.initials }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold text-xs text-stone-900 truncate", children: r.name }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-stone-400 leading-none", children: r.time })
@@ -33621,7 +33614,7 @@ function Home() {
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#4285F4] font-extrabold text-lg leading-none flex-shrink-0", "aria-hidden": "true", children: "G" })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-2", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "h-3.5 w-3.5 htr-google-star", style: { color: "#FBBC04", fill: "#FBBC04" } })) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-[11px] md:text-xs leading-snug flex-1 line-clamp-4", children: isEs ? r.textEs : r.textEn })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-[11px] md:text-xs leading-snug flex-1 line-clamp-3", children: isEs ? r.textEs : r.textEn })
             ]
           }
         )) }),
@@ -34273,6 +34266,14 @@ function Gallery() {
   reactExports.useEffect(() => {
     void loadDynPhotos();
   }, [loadDynPhotos]);
+  reactExports.useEffect(() => {
+    if (galleryIdx === null) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [galleryIdx]);
   const clearGlobeTimers = () => {
     [gT1, gT2, gT3].forEach((r2) => {
       if (r2.current) clearTimeout(r2.current);
@@ -34533,7 +34534,7 @@ function Gallery() {
                     className: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   }
                 ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow", fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.15 10.15z" }) }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow", fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.15 10.15z" }) }) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute top-1.5 left-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white", style: { background: K$2.accent }, children: "NEW" }),
                 adminAuthed && /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "button",
@@ -34573,7 +34574,7 @@ function Gallery() {
                     className: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   }
                 ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow", fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.15 10.15z" }) }) })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow", fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.15 10.15z" }) }) })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-2 py-1.5 text-center", style: { backgroundColor: K$2.bg, height: "27px" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-medium text-stone-600 truncate leading-tight", children: isEs ? photo.captionEs : photo.captionEn }) })
             ]
@@ -34862,7 +34863,7 @@ function Gallery() {
     galleryIdx !== null && /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: "fixed inset-0 z-50 flex items-center justify-center bg-black/90",
+        className: "fixed inset-0 z-[100] flex items-center justify-center bg-black/90",
         onClick: () => setGalleryIdx(null),
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(

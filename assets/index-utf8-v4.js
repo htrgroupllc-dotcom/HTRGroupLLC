@@ -33601,14 +33601,7 @@ function Home() {
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-google-reviews-grid gap-2 md:gap-2.5", children: googleHomeReviews.slice(reviewPage * 10, reviewPage * 10 + 10).map((r, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          motion.div,
-          {
-            key: `${r.name}-${i}`,
-            initial: "hidden",
-            whileInView: "visible",
-            viewport: { once: true },
-            variants: FADE_UP$3,
-            className: "bg-white rounded-lg p-2 md:p-2.5 shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card",
+          "div", { key: `${r.name}-${i}`, className: "bg-white rounded-lg p-2 md:p-2.5 shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 min-w-0", children: [
