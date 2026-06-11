@@ -19,6 +19,7 @@ import {
   REVIEWS_PER_PAGE,
   fetchGoogleReviewsFromApi,
   filterPositiveGoogleReviews,
+  isVerifiedGooglePlace,
 } from "../lib/googleReviewsClient";
 
 import type { ReviewData } from "../data/reviews";
@@ -1161,12 +1162,14 @@ export default function Home() {
     setLoadingGoogleReviews(true);
     try {
       const data = await fetchGoogleReviewsFromApi(apiBase);
-      if (data?.ok && data.reviews) {
+      if (data?.ok && data.reviews && isVerifiedGooglePlace(data.placeId)) {
         setLiveGoogleReviews(data.reviews);
         if (typeof data.rating === "number") setGoogleRating(data.rating);
         if (typeof data.userRatingCount === "number") setGoogleReviewCount(data.userRatingCount);
       } else {
         setLiveGoogleReviews([]);
+        setGoogleRating(null);
+        setGoogleReviewCount(null);
       }
     } finally {
       setLoadingGoogleReviews(false);

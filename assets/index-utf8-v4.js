@@ -32822,13 +32822,15 @@ function Home() {
   reactExports.useEffect(() => {
     const apiBase = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
     fetch(apiBase + "/api/google-reviews", { cache: "no-store" }).then((r) => r.json()).then((d) => {
-      if (d.ok && Array.isArray(d.reviews)) {
+      if (d.ok && Array.isArray(d.reviews) && d.placeId === "ChIJG17BnG_bZiARTsOUc0JlvyE") {
         const live = d.reviews.filter((r) => (r.rating ?? 0) >= 4);
         setGoogleHomeReviews(live);
         if (typeof d.rating === "number") setGoogleRating(d.rating);
         if (typeof d.userRatingCount === "number") setGoogleReviewCount(d.userRatingCount);
       } else {
         setGoogleHomeReviews([]);
+        setGoogleRating(null);
+        setGoogleReviewCount(null);
       }
     }).catch(() => {
       setGoogleHomeReviews([]);
