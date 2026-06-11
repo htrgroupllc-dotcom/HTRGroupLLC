@@ -32564,11 +32564,11 @@ const GALLERY_PHOTOS$1 = [
   { src: new8a, captionEn: "Samsung refrigerator main board replacement – Cypress, TX", captionEs: "Reemplazo tarjeta principal refrigerador Samsung – Cypress, TX" }
 ];
 const SOCIALS$3 = [
-  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaFacebook, { className: "h-4 w-4" }), href: "https://www.facebook.com/profile.php?id=61589369241020", label: "Facebook", bg: "#1877F2" },
-  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaInstagram, { className: "h-4 w-4" }), href: "https://www.instagram.com/htrgroupllc/#", label: "Instagram", bg: "linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)" },
-  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaTiktok, { className: "h-4 w-4" }), href: "https://www.tiktok.com/@htrgroupllc?is_from_webapp=1&sender_device=pc", label: "TikTok", bg: "#010101" },
-  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaLinkedinIn, { className: "h-4 w-4" }), href: "https://www.linkedin.com/in/eivaz-rakhmanov-010013401", label: "LinkedIn", bg: "#0A66C2" },
-  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaYoutube, { className: "h-4 w-4" }), href: "https://youtube.com", label: "YouTube", bg: "#FF0000" }
+  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaFacebook, { className: "h-4 w-4" }), href: "https://www.facebook.com/htrgroupllc", label: "Facebook", bg: "#1877F2" },
+  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaInstagram, { className: "h-4 w-4" }), href: "https://www.instagram.com/htrgrouptx", label: "Instagram", bg: "linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)" },
+  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaTiktok, { className: "h-4 w-4" }), href: "https://www.tiktok.com/@htrgrouptx", label: "TikTok", bg: "#010101" },
+  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaLinkedinIn, { className: "h-4 w-4" }), href: "https://www.linkedin.com/company/htrgrouptx", label: "LinkedIn", bg: "#0A66C2" },
+  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaYoutube, { className: "h-4 w-4" }), href: "https://www.youtube.com/@htrgrouptx", label: "YouTube", bg: "#FF0000" }
 ];
 const CERTS = [
   { img: "/certs/cert1.jpg", label: "R-410A Technician Certification" },
@@ -33892,11 +33892,11 @@ const GALLERY_PHOTOS = [
   { src: new8a, captionEn: "Samsung refrigerator main board replacement – Cypress, TX", captionEs: "Reemplazo tarjeta principal refrigerador Samsung – Cypress, TX" }
 ];
 const SOCIALS$2 = [
-  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaFacebook, { className: "h-4 w-4" }), href: "https://www.facebook.com/profile.php?id=61589369241020", label: "Facebook", bg: "#1877F2" },
-  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaInstagram, { className: "h-4 w-4" }), href: "https://instagram.com", label: "Instagram", bg: "linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)" },
-  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaTiktok, { className: "h-4 w-4" }), href: "https://tiktok.com", label: "TikTok", bg: "#010101" },
-  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaLinkedinIn, { className: "h-4 w-4" }), href: "https://linkedin.com", label: "LinkedIn", bg: "#0A66C2" },
-  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaYoutube, { className: "h-4 w-4" }), href: "https://youtube.com", label: "YouTube", bg: "#FF0000" }
+  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaFacebook, { className: "h-4 w-4" }), href: "https://www.facebook.com/htrgroupllc", label: "Facebook", bg: "#1877F2" },
+  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaInstagram, { className: "h-4 w-4" }), href: "https://www.instagram.com/htrgrouptx", label: "Instagram", bg: "linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)" },
+  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaTiktok, { className: "h-4 w-4" }), href: "https://www.tiktok.com/@htrgrouptx", label: "TikTok", bg: "#010101" },
+  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaLinkedinIn, { className: "h-4 w-4" }), href: "https://www.linkedin.com/company/htrgrouptx", label: "LinkedIn", bg: "#0A66C2" },
+  { icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaYoutube, { className: "h-4 w-4" }), href: "https://www.youtube.com/@htrgrouptx", label: "YouTube", bg: "#FF0000" }
 ];
 const TR$2 = {
   en: {
@@ -35479,7 +35479,7 @@ const FADE_UP$1 = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
 };
 const SOCIALS$1 = [
-  { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61589369241020", bg: "#1877F2", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaFacebook, { size: 14 }) },
+  { label: "Facebook", href: "https://www.facebook.com/htrgroupllc", bg: "#1877F2", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaFacebook, { size: 14 }) },
   { label: "Instagram", href: "https://www.instagram.com/htrgrouptx", bg: "#E1306C", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaInstagram, { size: 14 }) },
   { label: "TikTok", href: "https://www.tiktok.com/@htrgrouptx", bg: "#000", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaTiktok, { size: 14 }) },
   { label: "LinkedIn", href: "https://www.linkedin.com/company/htrgrouptx", bg: "#0A66C2", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaLinkedinIn, { size: 14 }) },
@@ -35718,7 +35718,7 @@ const FADE_UP = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
 };
 const SOCIALS = [
-  { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61589369241020", bg: "#1877F2", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaFacebook, { size: 14 }) },
+  { label: "Facebook", href: "https://www.facebook.com/htrgroupllc", bg: "#1877F2", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaFacebook, { size: 14 }) },
   { label: "Instagram", href: "https://www.instagram.com/htrgrouptx", bg: "#E1306C", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaInstagram, { size: 14 }) },
   { label: "TikTok", href: "https://www.tiktok.com/@htrgrouptx", bg: "#000", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaTiktok, { size: 14 }) },
   { label: "LinkedIn", href: "https://www.linkedin.com/company/htrgrouptx", bg: "#0A66C2", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(FaLinkedinIn, { size: 14 }) },

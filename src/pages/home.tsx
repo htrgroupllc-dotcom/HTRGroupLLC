@@ -811,11 +811,11 @@ const GALLERY_PHOTOS: { src: string; captionEn: string; captionEs: string }[] = 
 const GALLERY_PLACEHOLDER_COUNT = 8;
 
 const SOCIALS = [
-  { icon: <FaFacebook   className="h-4 w-4" />, href: "https://facebook.com",  label: "Facebook",  bg: "#1877F2" },
-  { icon: <FaInstagram  className="h-4 w-4" />, href: "https://www.instagram.com/htrgroupllc/#", label: "Instagram", bg: "linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)" },
-  { icon: <FaTiktok     className="h-4 w-4" />, href: "https://www.tiktok.com/@htrgroupllc?is_from_webapp=1&sender_device=pc", label: "TikTok", bg: "#010101" },
-  { icon: <FaLinkedinIn className="h-4 w-4" />, href: "https://www.linkedin.com/in/eivaz-rakhmanov-010013401", label: "LinkedIn", bg: "#0A66C2" },
-  { icon: <FaYoutube    className="h-4 w-4" />, href: "https://youtube.com",   label: "YouTube",   bg: "#FF0000" },
+  { icon: <FaFacebook   className="h-4 w-4" />, href: "https://www.facebook.com/htrgroupllc",  label: "Facebook",  bg: "#1877F2" },
+  { icon: <FaInstagram  className="h-4 w-4" />, href: "https://www.instagram.com/htrgrouptx", label: "Instagram", bg: "linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)" },
+  { icon: <FaTiktok     className="h-4 w-4" />, href: "https://www.tiktok.com/@htrgrouptx", label: "TikTok", bg: "#010101" },
+  { icon: <FaLinkedinIn className="h-4 w-4" />, href: "https://www.linkedin.com/company/htrgrouptx", label: "LinkedIn", bg: "#0A66C2" },
+  { icon: <FaYoutube    className="h-4 w-4" />, href: "https://www.youtube.com/@htrgrouptx",   label: "YouTube",   bg: "#FF0000" },
 ];
 
 // ALL_REVIEWS imported from ../data/reviews (300 entries, rotated daily)
