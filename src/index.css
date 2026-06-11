@@ -355,13 +355,15 @@
   padding-top: 2mm;
   padding-bottom: 2mm;
 }
-.htr-phone-pair,
 .header-phone-pair {
-  margin-top: 5mm;
-  margin-left: 5mm;
-  margin-right: 10mm;
+  margin: 0;
   position: relative;
   z-index: 3;
+}
+.htr-phone-pair--hero-top {
+  margin: 0;
+  position: relative;
+  z-index: 2;
 }
 .htr-phone-pair--row {
   margin-top: 5mm;
