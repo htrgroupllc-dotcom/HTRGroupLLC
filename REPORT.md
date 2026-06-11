@@ -101,3 +101,15 @@
 - Open `/gallery`, tap any photo ? full-screen image + caption counter.
 - Hard refresh or wait for CF deploy (`?v=37`).
 
+
+## Center marquee (2026-06-11)
+- Исправлен .htr-brand-marquee-center: цветные логотипы (filter: none), полная ширина экрана, CSS-анимация сходятся к центру, дублированная лента без разрывов.
+- Исправлена поломанная строка export default function Home() в home.tsx.
+- Playwright local: desktop+mobile — filter none, anim left+right, stage full width.
+- Push main 7877397, cache index-utf8-v4.js?v=41, index-_bdQPowM.css?v=8.
+
+## Home split photos — без обрезки (2026-06-11)
+- Откат crop из 5e2aac4: убраны max-height, aspect-ratio 4/3, object-fit: cover для Why Us и Our Work.
+- Пропорциональное масштабирование: контейнер max-width, img width 100% height auto, object-fit: contain.
+- Файлы: home.tsx, src/index.css, assets/index-_bdQPowM.css, index-utf8-v4.js; cache ?v=42 / ?v=9.
+
