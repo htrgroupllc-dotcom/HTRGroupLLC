@@ -31325,7 +31325,7 @@ const ALL_REVIEWS = RAW.map(
 );
 const API_BASE$2 = "https://htr-group-llc-appliance-repair.replit.app";
 const PHONE_DISPLAY$4 = "(346) 820-6021";
-const PHONE_HREF$4 = "tel:3468206021";
+const PHONE_HREF$4 = "tel:+13468206021";
 const EMAIL_DISPLAY = "htrgroupllc@gmail.com";
 const EMAIL_HREF = "mailto:htrgroupllc@gmail.com";
 const WELCOME = {
@@ -32009,7 +32009,9 @@ const new7a = "/assets/photo_7_2026-04-10_13-45-35_1775846776371-vWajRF87.jpg";
 const new8a = "/assets/photo_8_2026-04-10_13-45-35_1775846776372-FwLH-xea.jpg";
 const heroImg = "/assets/ChatGPT_Image_12_%D0%B0%D0%BF%D1%80._2026_%D0%B3.__02_07_40_1775977673189-CuW01Jql.png";
 const PHONE_DISPLAY$3 = "(346) 820-6021";
-const PHONE_HREF$3 = "tel:3468206021";
+const PHONE_HREF$3 = "tel:+13468206021";
+const COMPANY_PHONE_DISPLAY$3 = "(606) 660-6067";
+const COMPANY_PHONE_HREF$3 = "tel:+16066606067";
 const BRANDS_BY_APPLIANCE = {
   refrigerator: [
     { brand: "Samsung", models: ["French Door (RF Series)", "Side-by-Side (RS Series)", "Top Freezer (RT Series)", "4-Door Flex", "Bespoke", "Family Hub", "Chef Collection", "Other Samsung"] },
@@ -33024,10 +33026,17 @@ function Home() {
               className: "px-4 py-5",
               style: { background: "rgba(11,26,63,0.92)" },
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { variants: FADE_UP$3, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm mb-4", style: { backgroundColor: K$3.accent }, children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
-                  " ",
-                  PHONE_DISPLAY$3
+                /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { variants: FADE_UP$3, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1.5 mb-4", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+                    " ",
+                    PHONE_DISPLAY$3
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+                    " ",
+                    COMPANY_PHONE_DISPLAY$3
+                  ] })
                 ] }) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.h1, { variants: FADE_UP$3, className: "text-2xl font-extrabold text-white uppercase leading-tight mb-3", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { display: "block", marginBottom: "8px" }, children: T2.heroH1[0] }),
@@ -33062,10 +33071,17 @@ function Home() {
                 backdropFilter: "blur(4px)"
               },
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { variants: FADE_UP$3, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm mb-4", style: { backgroundColor: K$3.accent }, children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
-                  " ",
-                  PHONE_DISPLAY$3
+                /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { variants: FADE_UP$3, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1.5 mb-4", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+                    " ",
+                    PHONE_DISPLAY$3
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+                    " ",
+                    COMPANY_PHONE_DISPLAY$3
+                  ] })
                 ] }) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.h1, { variants: FADE_UP$3, className: "text-2xl sm:text-3xl font-extrabold text-white uppercase leading-tight mb-3", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { display: "block", marginBottom: "8px" }, children: T2.heroH1[0] }),
@@ -33147,7 +33163,7 @@ function Home() {
           ] }, i))
         }
       ) }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-10 bg-white", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid lg:grid-cols-[2fr_3fr] gap-8 items-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-6 text-center bg-white border-y border-stone-100", children: [/* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-sm font-semibold mb-3", children: "Call us anytime" }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), COMPANY_PHONE_DISPLAY$3] })] }) ] }), /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-10 bg-white", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid lg:grid-cols-[2fr_3fr] gap-8 items-center", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { initial: "hidden", whileInView: "visible", viewport: { once: true }, variants: FADE_UP$3, className: "relative", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: whyUsBgImg, alt: "Appliance repair", className: "rounded-xl shadow-lg w-full object-cover aspect-[4/3]" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl md:text-3xl font-extrabold mb-2", children: T2.whyH2 }),
@@ -33206,7 +33222,7 @@ function Home() {
           className: "flex flex-col",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-6", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl md:text-3xl font-extrabold", children: T2.certsH2 }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-6 text-center bg-white border-y border-stone-100", children: [/* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-sm font-semibold mb-3", children: "Call us anytime" }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), COMPANY_PHONE_DISPLAY$3] })] }) ] }),           /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl md:text-3xl font-extrabold", children: T2.certsH2 }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-1 w-12 mt-2 rounded-full", style: { backgroundColor: K$3.accent } }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-500 text-sm leading-relaxed mt-2", children: T2.certsSub })
             ] }),
@@ -33322,7 +33338,10 @@ function Home() {
               /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-start gap-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4 mt-0.5 flex-shrink-0", style: { color: K$3.accent } }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: PHONE_HREF$3, className: "font-bold text-stone-900 hover:opacity-70 transition-opacity", children: PHONE_DISPLAY$3 }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: PHONE_HREF$3, className: "font-bold text-stone-900 hover:opacity-70 transition-opacity block", children: PHONE_DISPLAY$3 }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: COMPANY_PHONE_HREF$3, className: "font-bold text-stone-900 hover:opacity-70 transition-opacity block mt-1", children: COMPANY_PHONE_DISPLAY$3 })
+                  ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-400 text-xs mt-0.5 leading-snug", children: T2.smsHint })
                 ] })
               ] }),
@@ -33616,7 +33635,7 @@ function Home() {
           s.label
         )) })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3 mb-4 text-sm", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity", children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4", style: { color: K$3.accentLight } }), PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity", children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4", style: { color: K$3.accentLight } }), COMPANY_PHONE_DISPLAY$3] })] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3 mb-4 text-sm", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity", children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4", style: { color: K$3.accentLight } }), PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity", children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4", style: { color: K$3.accentLight } }), COMPANY_PHONE_DISPLAY$3] })] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(AdminSecretAccess, { label: `© ${(/* @__PURE__ */ new Date()).getFullYear()} HTRGroupTX. ${T2.allRights}` }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-5 items-center", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { href: "/privacy-policy", className: "hover:text-white transition-colors", children: T2.privacy }),
@@ -33665,7 +33684,9 @@ function Home() {
   ] });
 }
 const PHONE_DISPLAY$2 = "(346) 820-6021";
-const PHONE_HREF$2 = "tel:3468206021";
+const PHONE_HREF$2 = "tel:+13468206021";
+const COMPANY_PHONE_DISPLAY$2 = "(606) 660-6067";
+const COMPANY_PHONE_HREF$2 = "tel:+16066606067";
 const API$3 = "https://htr-group-llc-appliance-repair.replit.app";
 const K$2 = {
   accent: "#1B6FE8",
@@ -34123,11 +34144,12 @@ function Gallery() {
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-500 text-sm max-w-xl", children: T2.pageSub })
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap justify-center gap-3", children: [
-        dynPhotos.map((photo) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        dynPhotos.map((photo, di) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
             className: "rounded-xl overflow-hidden shadow-sm border border-stone-100 group cursor-pointer flex-shrink-0 relative",
             style: { width: "142px" },
+            onClick: () => setGalleryIdx(di),
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "overflow-hidden bg-stone-100 relative", style: { height: "172px" }, children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -34167,7 +34189,7 @@ function Gallery() {
             variants: FADE_UP$2,
             className: "rounded-xl overflow-hidden shadow-sm border border-stone-100 group cursor-pointer flex-shrink-0",
             style: { width: "142px" },
-            onClick: () => setGalleryIdx(i),
+            onClick: () => setGalleryIdx(dynPhotos.length + i),
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "overflow-hidden bg-stone-100 relative", style: { height: "172px" }, children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -34477,7 +34499,7 @@ function Gallery() {
               className: "absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/25 rounded-full p-2 md:p-3 transition-colors",
               onClick: (e) => {
                 e.stopPropagation();
-                setGalleryIdx((galleryIdx - 1 + GALLERY_PHOTOS.length) % GALLERY_PHOTOS.length);
+                setGalleryIdx((galleryIdx - 1 + dynPhotos.length + GALLERY_PHOTOS.length) % (dynPhotos.length + GALLERY_PHOTOS.length));
               },
               children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "h-6 w-6 text-white" })
             }
@@ -34491,16 +34513,16 @@ function Gallery() {
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "img",
                   {
-                    src: GALLERY_PHOTOS[galleryIdx].src,
-                    alt: isEs ? GALLERY_PHOTOS[galleryIdx].captionEs : GALLERY_PHOTOS[galleryIdx].captionEn,
+                    src: galleryIdx < dynPhotos.length ? `${API$3}/api/gallery/file/${dynPhotos[galleryIdx].filename}` : GALLERY_PHOTOS[galleryIdx - dynPhotos.length].src,
+                    alt: isEs ? galleryIdx < dynPhotos.length ? dynPhotos[galleryIdx].caption_es : GALLERY_PHOTOS[galleryIdx - dynPhotos.length].captionEs : galleryIdx < dynPhotos.length ? dynPhotos[galleryIdx].caption_en : GALLERY_PHOTOS[galleryIdx - dynPhotos.length].captionEn,
                     className: "max-h-[75vh] max-w-[90vw] rounded-xl object-contain shadow-2xl"
                   }
                 ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 text-white/80 text-sm font-medium text-center", children: isEs ? GALLERY_PHOTOS[galleryIdx].captionEs : GALLERY_PHOTOS[galleryIdx].captionEn }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-3 text-white/80 text-sm font-medium text-center", children: isEs ? galleryIdx < dynPhotos.length ? dynPhotos[galleryIdx].caption_es : GALLERY_PHOTOS[galleryIdx - dynPhotos.length].captionEs : galleryIdx < dynPhotos.length ? dynPhotos[galleryIdx].caption_en : GALLERY_PHOTOS[galleryIdx - dynPhotos.length].captionEn }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-white/40 text-xs mt-1", children: [
                   galleryIdx + 1,
                   " / ",
-                  GALLERY_PHOTOS.length
+                  dynPhotos.length + GALLERY_PHOTOS.length
                 ] })
               ]
             }
@@ -34511,7 +34533,7 @@ function Gallery() {
               className: "absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/25 rounded-full p-2 md:p-3 transition-colors",
               onClick: (e) => {
                 e.stopPropagation();
-                setGalleryIdx((galleryIdx + 1) % GALLERY_PHOTOS.length);
+                setGalleryIdx((galleryIdx + 1) % (dynPhotos.length + GALLERY_PHOTOS.length));
               },
               children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "h-6 w-6 text-white" })
             }
@@ -35397,7 +35419,7 @@ const BLOG_POSTS = [
   }
 ];
 const PHONE_DISPLAY$1 = "(346) 820-6021";
-const PHONE_HREF$1 = "tel:3468206021";
+const PHONE_HREF$1 = "tel:+13468206021";
 const K$1 = {
   accent: "#1B6FE8",
   accentLight: "#62B6FF",
@@ -35620,7 +35642,7 @@ function Blog() {
   ] });
 }
 const PHONE_DISPLAY = "(346) 820-6021";
-const PHONE_HREF = "tel:3468206021";
+const PHONE_HREF = "tel:+13468206021";
 const K = {
   accent: "#1B6FE8",
   accentLight: "#62B6FF",
@@ -95456,7 +95478,7 @@ function PaymentSuccess() {
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "a",
         {
-          href: "tel:3468206021",
+          href: "tel:+13468206021",
           className: "flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-stone-200 text-stone-700 font-bold text-sm hover:bg-stone-50 transition",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "w-4 h-4" }),

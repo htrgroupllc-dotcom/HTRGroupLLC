@@ -192,10 +192,43 @@ import new8a from "@assets/photo_8_2026-04-10_13-45-35_1775846776372.jpg";
 import ctaBg          from "@assets/photo_18_2026-04-03_01-13-35_1775196883895.jpg";
 import heroImg        from "@assets/ChatGPT_Image_12_апр._2026_г.,_02_07_40_1775977673189.png";
 
-const PHONE_DISPLAY = "(346) 820-6021";
-const PHONE_HREF    = "tel:3468206021";
+import { PHONE_DISPLAY, PHONE_HREF, COMPANY_PHONE_DISPLAY, COMPANY_PHONE_HREF } from "@/lib/sitePhones";
 
 /* ── Brand / Model data ────────────────────────────────────────── */
+
+function PhonePair({ compact = false }: { compact?: boolean }) {
+  const cls = compact
+    ? "inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm"
+    : "flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm";
+  const iconCls = compact ? "h-4 w-4" : "h-3.5 w-3.5";
+  return (
+    <div className="flex flex-col gap-1.5 items-start">
+      <a href={PHONE_HREF} className={cls} style={{ backgroundColor: K.accent }}>
+        <Phone className={iconCls} /> {PHONE_DISPLAY}
+      </a>
+      <a href={COMPANY_PHONE_HREF} className={cls} style={{ backgroundColor: K.accent }}>
+        <Phone className={iconCls} /> {COMPANY_PHONE_DISPLAY}
+      </a>
+    </div>
+  );
+}
+
+function MidPhoneStrip() {
+  return (
+    <div className="py-6 text-center bg-white border-y border-stone-100">
+      <p className="text-stone-600 text-sm font-semibold mb-3">Call us anytime</p>
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a href={PHONE_HREF} className="inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm" style={{ backgroundColor: K.accent }}>
+          <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
+        </a>
+        <a href={COMPANY_PHONE_HREF} className="inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm" style={{ backgroundColor: K.accent }}>
+          <Phone className="h-4 w-4" /> {COMPANY_PHONE_DISPLAY}
+        </a>
+      </div>
+    </div>
+  );
+}
+
 type BrandEntry = { brand: string; models: string[] };
 
 const BRANDS_BY_APPLIANCE: Record<string, BrandEntry[]> = {
@@ -1194,9 +1227,7 @@ export default function Home() {
           </nav>
 
           <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-            <a href={PHONE_HREF} className="flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm" style={{ backgroundColor: K.accent }}>
-              <Phone className="h-3.5 w-3.5" /> {PHONE_DISPLAY}
-            </a>
+            <PhonePair />
             <a href="#contact" className="text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider" style={{ backgroundColor: K.dark }}>
               {T.bookNow}
             </a>
@@ -1213,9 +1244,7 @@ export default function Home() {
               <a key={href} href={href} onClick={() => setMenuOpen(false)} className="py-2 border-b border-stone-100">{T.nav[i]}</a>
             ))}
             <a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/blog`} onClick={() => setMenuOpen(false)} className="py-2 border-b border-stone-100" style={{ color: K.accent }}>Blog</a>
-            <a href={PHONE_HREF} className="flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit mt-1" style={{ backgroundColor: K.accent }}>
-              <Phone className="h-3.5 w-3.5" /> {PHONE_DISPLAY}
-            </a>
+            <div className="mt-1"><PhonePair /></div>
           </div>
         )}
       </header>
@@ -1254,9 +1283,7 @@ export default function Home() {
               style={{ background: "rgba(11,26,63,0.92)" }}
             >
               <motion.div variants={FADE_UP}>
-                <a href={PHONE_HREF} className="inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm mb-4" style={{ backgroundColor: K.accent }}>
-                  <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
-                </a>
+                <div className="mb-4"><PhonePair compact /></div>
               </motion.div>
               <motion.h1 variants={FADE_UP} className="text-2xl font-extrabold text-white uppercase leading-tight mb-3">
                 <span style={{ display: "block", marginBottom: "8px" }}>{T.heroH1[0]}</span>
@@ -1295,9 +1322,7 @@ export default function Home() {
                 }}
               >
                 <motion.div variants={FADE_UP}>
-                  <a href={PHONE_HREF} className="inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm mb-4" style={{ backgroundColor: K.accent }}>
-                    <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
-                  </a>
+                  <div className="mb-4"><PhonePair compact /></div>
                 </motion.div>
                 <motion.h1 variants={FADE_UP} className="text-2xl sm:text-3xl font-extrabold text-white uppercase leading-tight mb-3">
                   <span style={{ display: "block", marginBottom: "8px" }}>{T.heroH1[0]}</span>
@@ -1387,6 +1412,8 @@ export default function Home() {
             </motion.div>
           </div>
         </section>
+
+        <MidPhoneStrip />
 
         {/* ── WHY US ── */}
         <section className="py-10 bg-white">
@@ -1486,6 +1513,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <MidPhoneStrip />
 
         {/* ── OUR CERTIFICATIONS ── */}
         <section className="py-10 bg-white">
@@ -1697,7 +1726,8 @@ export default function Home() {
                   <li className="flex items-start gap-2">
                     <Phone className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: K.accent }} />
                     <div>
-                      <a href={PHONE_HREF} className="font-bold text-stone-900 hover:opacity-70 transition-opacity">{PHONE_DISPLAY}</a>
+                      <a href={PHONE_HREF} className="font-bold text-stone-900 hover:opacity-70 transition-opacity block">{PHONE_DISPLAY}</a>
+                      <a href={COMPANY_PHONE_HREF} className="font-bold text-stone-900 hover:opacity-70 transition-opacity block mt-1">{COMPANY_PHONE_DISPLAY}</a>
                       <p className="text-stone-400 text-xs mt-0.5 leading-snug">{T.smsHint}</p>
                     </div>
                   </li>
@@ -1935,6 +1965,14 @@ export default function Home() {
                   style={{ background: s.bg }}>{s.icon}</a>
               ))}
             </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4 text-sm">
+            <a href={PHONE_HREF} className="inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity">
+              <Phone className="h-4 w-4" style={{ color: K.accentLight }} /> {PHONE_DISPLAY}
+            </a>
+            <a href={COMPANY_PHONE_HREF} className="inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity">
+              <Phone className="h-4 w-4" style={{ color: K.accentLight }} /> {COMPANY_PHONE_DISPLAY}
+            </a>
           </div>
           <div className="border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400">
             <p><AdminSecretAccess label={`© ${new Date().getFullYear()} HTRGroupTX. ${T.allRights}`} /></p>

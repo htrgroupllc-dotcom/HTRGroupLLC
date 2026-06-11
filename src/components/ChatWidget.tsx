@@ -6,8 +6,7 @@ import {
 } from "lucide-react";
 
 const API_BASE = import.meta.env.VITE_API_URL as string ?? "https://htr-group-llc-appliance-repair.replit.app";
-const PHONE_DISPLAY = "(346) 820-6021";
-const PHONE_HREF = "tel:3468206021";
+import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/sitePhones";
 const EMAIL_DISPLAY = "htrgroupllc@gmail.com";
 const EMAIL_HREF = "mailto:htrgroupllc@gmail.com";
 
