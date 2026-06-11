@@ -244,13 +244,22 @@ export default function BlogPost() {
                   <div className="rounded-2xl p-6 text-white" style={{ backgroundColor: K.dark }}>
                     <h3 className="font-extrabold text-lg mb-2">{T.ctaTitle}</h3>
                     <p className="text-white/70 text-sm mb-4">{T.ctaSub}</p>
-                    <a
-                      href={PHONE_HREF}
-                      className="flex items-center justify-center gap-2 font-bold px-4 py-3 rounded text-white w-full"
-                      style={{ backgroundColor: K.accent }}
-                    >
-                      <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
-                    </a>
+                    <div className="htr-phone-pair flex flex-col gap-2">
+                      <a
+                        href={COMPANY_PHONE_HREF}
+                        className="htr-phone-btn flex items-center justify-center gap-2 font-bold px-4 py-3 rounded text-white w-full"
+                        style={{ backgroundColor: K.accent }}
+                      >
+                        <Phone className="h-4 w-4" /> {COMPANY_PHONE_DISPLAY}
+                      </a>
+                      <a
+                        href={PHONE_HREF}
+                        className="htr-phone-btn flex items-center justify-center gap-2 font-bold px-4 py-3 rounded text-white w-full"
+                        style={{ backgroundColor: K.accent }}
+                      >
+                        <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
+                      </a>
+                    </div>
                   </div>
 
                   {/* Related articles */}
