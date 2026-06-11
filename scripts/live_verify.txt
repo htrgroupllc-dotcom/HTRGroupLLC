@@ -1,0 +1,3 @@
+size=4877756
+cyr_schedule=True
+moji_parol=False

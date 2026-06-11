@@ -1,0 +1,2 @@
+﻿line len 55
+match len 29 d0 True cyr False

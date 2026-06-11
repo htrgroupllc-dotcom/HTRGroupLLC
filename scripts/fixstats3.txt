@@ -1,0 +1,3 @@
+fixes=813
+pod_utf8=False
+pod_moji=True

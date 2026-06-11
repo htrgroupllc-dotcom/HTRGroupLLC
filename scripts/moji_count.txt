@@ -1,0 +1,2 @@
+d0_pairs=1500
+cyrillic_chars=10469

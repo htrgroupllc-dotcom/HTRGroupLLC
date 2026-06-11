@@ -1,0 +1,10 @@
+Пароль: utf8=True moji=False
+Войти: utf8=True moji=False
+Управление расписанием: utf8=True moji=False
+Ошибка соединения: utf8=True moji=False
+Подтверждён: utf8=False moji=True
+Пароль: utf8=True moji=False
+Войти: utf8=True moji=False
+Управление расписанием: utf8=True moji=False
+Ошибка соединения: utf8=True moji=False
+Подтверждён: utf8=False moji=True

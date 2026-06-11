@@ -1,0 +1,4 @@
+setError("");
+    try {
+      const res = await fetch(`${API$4}/api/admin/schedule?date=Jan+1,+2026`, {
+        headers:

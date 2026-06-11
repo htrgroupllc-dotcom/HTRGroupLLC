@@ -1,0 +1,4 @@
+setError("");
+  }, []);
+  const rest = label.startsWith("Â©") ? label.slice(1) : label;
+  return /* @__PURE__ */ jsxRu

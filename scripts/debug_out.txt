@@ -1,0 +1,2 @@
+total_moji=401
+unfixed=0

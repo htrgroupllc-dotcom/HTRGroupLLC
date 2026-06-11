@@ -1,0 +1,4 @@
+fixes=813
+moji=0
+utf8=4
+lines=97922

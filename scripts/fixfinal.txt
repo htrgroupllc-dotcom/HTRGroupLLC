@@ -1,0 +1,4 @@
+fixes=946
+pod_utf8=False
+pod_moji=True
+moji_any=2
