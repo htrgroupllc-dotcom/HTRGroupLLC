@@ -33082,56 +33082,24 @@ function Home() {
     /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { className: "h-8 w-8" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Award, { className: "h-8 w-8" })
   ];
-  const _day = Math.floor(
-    (Date.now() - new Date((/* @__PURE__ */ new Date()).getFullYear(), 0, 0).getTime()) / 864e5
-  );
-  const _halfDay = Math.floor(Date.now() / (12 * 36e5));
-  const _fiveStar = ALL_REVIEWS.filter((r2) => r2.category === "5");
-  const _fourStar = ALL_REVIEWS.filter((r2) => r2.category === "4");
-  const _recentRev = ALL_REVIEWS.filter((r2) => r2.category === "recent");
-  _fiveStar[_halfDay % _fiveStar.length];
-  _fiveStar[_day % _fiveStar.length];
-  const _pickN = (pool, n) => {
-    const start = _day * n % pool.length;
-    return [...pool.slice(start, start + n), ...pool.slice(0, Math.max(0, start + n - pool.length))];
-  };
-  const [f5a, f5b, f5c, f5d, f5e, f5f] = _pickN(_fiveStar, 6);
-  const [f4a, f4b] = _pickN(_fourStar, 2);
-  const _dailyMix = [f5a, f5b, f5c, f4a, f5d, f5e, f5f, f4b];
   const GOOGLE_REVIEW_URL_HOME = "https://g.page/r/CU7DlHNCZb8hEAE/review";
-  const GOOGLE_HOME_REVIEWS_STATIC = [
-    { name: "Maksat", initials: "M", avatarColor: "#4285F4", rating: 5, time: "2 weeks ago", textEn: "A specialized company came out and quickly resolved the oven malfunction; they replaced a component on the control panel.", textEs: "Una empresa especializada salió y resolvió rápidamente el mal funcionamiento del horno; reemplazaron un componente del panel de control." },
-    { name: "Mukhtar Quseynov", initials: "MQ", avatarColor: "#1A7A6E", rating: 5, time: "3 weeks ago", textEn: "Great experience with Hitechrepairgroup LLC. Professional technicians and fair pricing.", textEs: "Excelente experiencia con Hitechrepairgroup LLC. Técnicos profesionales y precios justos." },
-    { name: "Brian T.", initials: "B", avatarColor: "#C0392B", rating: 5, time: "2 weeks ago", textEn: "Oven fixed same day I called. Kitchen spotless after they left.", textEs: "Horno arreglado el mismo día que llamé. La cocina impecable después de que se fueron." },
-    { name: "Matthew R.", initials: "M", avatarColor: "#2471A3", rating: 5, time: "1 month ago", textEn: "Oven igniter replaced. Works perfectly on first try. Highly recommend.", textEs: "Encendedor del horno reemplazado. Funciona perfectamente. Muy recomendado." },
-    { name: "Emma L.", initials: "E", avatarColor: "#117A65", rating: 5, time: "3 weeks ago", textEn: "Oven igniters sparking constantly. Fixed same day. Safe and quiet now.", textEs: "Encendedores del horno chispeando. Arreglados ese día. Seguros y silenciosos." },
-    { name: "James W.", initials: "JW", avatarColor: "#7D6608", rating: 5, time: "1 month ago", textEn: "Fixed my fridge same day, no drama. Highly recommend.", textEs: "Arreglaron la nevera el mismo dia. Muy recomendados." },
-    { name: "Sarah J.", initials: "SJ", avatarColor: "#884EA0", rating: 5, time: "2 months ago", textEn: "Tech showed up on time and knew exactly what was wrong. Fair price.", textEs: "El tecnico llego puntual y supo el problema de inmediato. Precio justo." },
-    { name: "David T.", initials: "DT", avatarColor: "#1F618D", rating: 5, time: "7 months ago", textEn: "Called at 8 AM, fixed by noon. Oven works perfectly now.", textEs: "Llame a las 8, arreglado al mediodia. El horno funciona perfecto." },
-    { name: "Lisa M.", initials: "LM", avatarColor: "#D35400", rating: 5, time: "6 months ago", textEn: "Refrigerator back to normal after one visit. No hidden fees at all.", textEs: "La nevera normal despues de una visita. Sin cargos ocultos." },
-    { name: "Maria S.", initials: "MS", avatarColor: "#1E8449", rating: 5, time: "2 months ago", textEn: "Called for dishwasher repair. Fixed same day, no extra fees.", textEs: "Llame por el lavavajillas. Arreglado ese dia, sin cargos extra." },
+  const GOOGLE_HOME_REVIEWS_STATIC = [];
 
-  ];
-
-  const [googleHomeReviews, setGoogleHomeReviews] = reactExports.useState(GOOGLE_HOME_REVIEWS_STATIC);
+  const [googleHomeReviews, setGoogleHomeReviews] = reactExports.useState([]);
   reactExports.useEffect(() => {
     const apiBase = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
     fetch(apiBase + "/api/google-reviews", { cache: "no-store" }).then((r) => r.json()).then((d) => {
-      const live = (d.reviews ?? []).filter((r) => (r.rating ?? 0) >= 4);
-      {
-        const seen = new Set();
-        const merged = [];
-        for (const r of [...live, ...GOOGLE_HOME_REVIEWS_STATIC]) {
-          const k = (r.name + "|" + (r.textEn || "").slice(0, 40)).toLowerCase();
-          if (seen.has(k)) continue;
-          seen.add(k);
-          if ((r.rating ?? 0) >= 4) merged.push(r);
-        }
-        if (merged.length) setGoogleHomeReviews(merged);
+      if (d.ok && Array.isArray(d.reviews)) {
+        const live = d.reviews.filter((r) => (r.rating ?? 0) >= 4);
+        setGoogleHomeReviews(live);
+      } else {
+        setGoogleHomeReviews([]);
       }
       if (typeof d.rating === "number") setGoogleRating(d.rating);
       if (typeof d.userRatingCount === "number") setGoogleReviewCount(d.userRatingCount);
-    }).catch(() => {});
+    }).catch(() => {
+      setGoogleHomeReviews([]);
+    });
   }, []);
   const handleServiceClick = (svc) => {
     setAppliance(isEs ? svc.appEs : svc.appEn);

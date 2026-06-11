@@ -32785,6 +32785,15 @@ function DraggableMarquee({ brands, base, reverse = false }) {
     )
   ] });
 }
+function CenterConvergeMarquee({ brands, base }) {
+  const all = [...brands, ...brands];
+  const cardClass = "htr-brand-marquee-center__card flex-shrink-0 flex items-center justify-center bg-white rounded-xl border border-stone-100 shadow-sm";
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "htr-brand-marquee-center py-6 bg-white border-y border-stone-100", "aria-label": "Brands we service", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__stage relative mx-auto w-full max-w-6xl px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-brand-marquee-center__row relative h-[72px] md:h-[88px] overflow-hidden", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-30 w-20 -ml-10" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute left-0 top-0 bottom-0 w-1/2 overflow-hidden z-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 md:gap-4 w-max h-full justify-end", children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "eager", decoding: "async" }) }, `l-${i}`)) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden z-20", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 md:gap-4 w-max h-full justify-start", children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "eager", decoding: "async" }) }, `r-${i}`)) }) })
+  ] }) }) });
+}
 const SERVICE_AREA_MAP_EMBED = { centerLat: 29.7, centerLng: -95.4, zoom: 9 };
 const SERVICE_AREA_MAP_FILL = "rgba(56, 189, 248, 0.28)";
 const SERVICE_AREA_MAP_STROKE = "#333333";
@@ -33073,50 +33082,24 @@ function Home() {
     /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { className: "h-8 w-8" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Award, { className: "h-8 w-8" })
   ];
-  const _day = Math.floor(
-    (Date.now() - new Date((/* @__PURE__ */ new Date()).getFullYear(), 0, 0).getTime()) / 864e5
-  );
-  const _halfDay = Math.floor(Date.now() / (12 * 36e5));
-  const _fiveStar = ALL_REVIEWS.filter((r2) => r2.category === "5");
-  const _fourStar = ALL_REVIEWS.filter((r2) => r2.category === "4");
-  const _recentRev = ALL_REVIEWS.filter((r2) => r2.category === "recent");
-  _fiveStar[_halfDay % _fiveStar.length];
-  _fiveStar[_day % _fiveStar.length];
-  const _pickN = (pool, n) => {
-    const start = _day * n % pool.length;
-    return [...pool.slice(start, start + n), ...pool.slice(0, Math.max(0, start + n - pool.length))];
-  };
-  const [f5a, f5b, f5c, f5d, f5e, f5f] = _pickN(_fiveStar, 6);
-  const [f4a, f4b] = _pickN(_fourStar, 2);
-  const _dailyMix = [f5a, f5b, f5c, f4a, f5d, f5e, f5f, f4b];
   const GOOGLE_REVIEW_URL_HOME = "https://g.page/r/CU7DlHNCZb8hEAE/review";
-  const GOOGLE_HOME_REVIEWS_STATIC = [
-    { name: "Maksat", initials: "M", avatarColor: "#4285F4", rating: 5, time: "2 weeks ago", textEn: "A specialized company came out and quickly resolved the oven malfunction; they replaced a component on the control panel.", textEs: "Una empresa especializada salió y resolvió rápidamente el mal funcionamiento del horno; reemplazaron un componente del panel de control." },
-    { name: "Mukhtar Quseynov", initials: "MQ", avatarColor: "#1A7A6E", rating: 5, time: "3 weeks ago", textEn: "Great experience with Hitechrepairgroup LLC. Professional technicians and fair pricing.", textEs: "Excelente experiencia con Hitechrepairgroup LLC. Técnicos profesionales y precios justos." },
-    { name: "Brian T.", initials: "B", avatarColor: "#C0392B", rating: 5, time: "2 weeks ago", textEn: "Oven fixed same day I called. Kitchen spotless after they left.", textEs: "Horno arreglado el mismo día que llamé. La cocina impecable después de que se fueron." },
-    { name: "Matthew R.", initials: "M", avatarColor: "#2471A3", rating: 5, time: "1 month ago", textEn: "Oven igniter replaced. Works perfectly on first try. Highly recommend.", textEs: "Encendedor del horno reemplazado. Funciona perfectamente. Muy recomendado." },
-    { name: "Emma L.", initials: "E", avatarColor: "#117A65", rating: 5, time: "3 weeks ago", textEn: "Oven igniters sparking constantly. Fixed same day. Safe and quiet now.", textEs: "Encendedores del horno chispeando. Arreglados ese día. Seguros y silenciosos." }
-  ];
+  const GOOGLE_HOME_REVIEWS_STATIC = [];
 
-  const [googleHomeReviews, setGoogleHomeReviews] = reactExports.useState(GOOGLE_HOME_REVIEWS_STATIC);
+  const [googleHomeReviews, setGoogleHomeReviews] = reactExports.useState([]);
   reactExports.useEffect(() => {
     const apiBase = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
     fetch(apiBase + "/api/google-reviews", { cache: "no-store" }).then((r) => r.json()).then((d) => {
-      const live = (d.reviews ?? []).filter((r) => (r.rating ?? 0) >= 4);
-      if (live.length) {
-        const seen = new Set();
-        const merged = [];
-        for (const r of [...live, ...GOOGLE_HOME_REVIEWS_STATIC]) {
-          const k = (r.name + "|" + (r.textEn || "").slice(0, 40)).toLowerCase();
-          if (seen.has(k)) continue;
-          seen.add(k);
-          if ((r.rating ?? 0) >= 4) merged.push(r);
-        }
-        setGoogleHomeReviews(merged);
+      if (d.ok && Array.isArray(d.reviews)) {
+        const live = d.reviews.filter((r) => (r.rating ?? 0) >= 4);
+        setGoogleHomeReviews(live);
+      } else {
+        setGoogleHomeReviews([]);
       }
       if (typeof d.rating === "number") setGoogleRating(d.rating);
       if (typeof d.userRatingCount === "number") setGoogleReviewCount(d.userRatingCount);
-    }).catch(() => {});
+    }).catch(() => {
+      setGoogleHomeReviews([]);
+    });
   }, []);
   const handleServiceClick = (svc) => {
     setAppliance(isEs ? svc.appEs : svc.appEn);
@@ -33447,6 +33430,7 @@ function Home() {
           i
         )) })
       ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CenterConvergeMarquee, { brands: MARQUEE_BRANDS, base: "/".replace(/\/$/, "") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "about", className: "relative py-12", style: { background: "linear-gradient(135deg, #0B1A3F 0%, #0D47B0 50%, #1B6FE8 100%)" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         motion.div,
         {
@@ -33592,7 +33576,7 @@ function Home() {
         ] })
       ] }) }),
 
-      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "reviews", className: "py-10 md:py-12", style: { backgroundColor: K$3.bg }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "reviews", className: "htr-google-reviews py-10 md:py-12", style: { backgroundColor: K$3.bg }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl md:text-3xl font-extrabold", children: T2.reviewsH2 }),
@@ -33600,7 +33584,7 @@ function Home() {
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-white border border-stone-200 px-3 py-1.5 text-sm font-bold text-stone-800 shadow-sm", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-base font-extrabold text-[#4285F4] leading-none", "aria-hidden": "true", children: "G" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: googleRating.toFixed(1) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex gap-0.5", "aria-label": "5 out of 5 stars", children: [1, 2, 3, 4, 5].map((si) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: si, className: "h-3.5 w-3.5 fill-[#FBBC04] text-[#FBBC04]" })) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex gap-0.5", "aria-label": "5 out of 5 stars", children: [1, 2, 3, 4, 5].map((si) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: si, className: "h-3.5 w-3.5 htr-google-star", style: { color: "#FBBC04", fill: "#FBBC04" } })) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-500 font-semibold", children: "Google" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-600", children: `(${googleReviewCount} reviews)` })
               ] }),
@@ -33612,7 +33596,7 @@ function Home() {
             T2.writeReview
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-2.5", children: googleHomeReviews.slice(reviewPage * 10, reviewPage * 10 + 10).map((r, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-google-reviews-grid gap-2 md:gap-2.5", children: googleHomeReviews.slice(reviewPage * 10, reviewPage * 10 + 10).map((r, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
           {
             key: `${r.name}-${i}`,
@@ -33632,7 +33616,7 @@ function Home() {
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#4285F4] font-extrabold text-lg leading-none flex-shrink-0", "aria-hidden": "true", children: "G" })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-2", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "h-3.5 w-3.5 fill-[#FBBC04] text-[#FBBC04]" })) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-2", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "h-3.5 w-3.5 htr-google-star", style: { color: "#FBBC04", fill: "#FBBC04" } })) }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-[11px] md:text-xs leading-snug flex-1 line-clamp-4", children: isEs ? r.textEs : r.textEn })
             ]
           }

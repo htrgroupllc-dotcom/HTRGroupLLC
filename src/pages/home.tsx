@@ -13,12 +13,8 @@ import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
 
-import { ALL_REVIEWS } from "../data/reviews";
-import {
-  GOOGLE_FEATURED_REVIEWS,
-  GOOGLE_REVIEW_COUNT,
-  GOOGLE_REVIEW_URL,
-} from "../data/googleBusinessReviews";
+import { GOOGLE_REVIEW_URL } from "../data/googleBusinessReviews";
+import type { ReviewData } from "../data/reviews";
 import ChatWidget from "@/components/ChatWidget";
 import ServiceAreaMapOverlay from "@/components/ServiceAreaMapOverlay";
 import { HeroCircuitEffect } from "@/components/HeroCircuitEffect";
@@ -476,7 +472,8 @@ const TR = {
       { title: "Upfront Honest Pricing", desc: "See the full quote before we start. No hidden fees. 90-day parts and labor warranty." },
     ],
     reviewsH2:   "Google Reviews",
-    reviewsBased: "9 reviews on Google",
+    reviewsLoading: "Reviews loading…",
+    reviewsBased: "Reviews on Google",
     writeReview:  "Leave a Google Review",
     refresh:      "Refresh",
     reviewsUpdated: "Reviews updated",
@@ -553,6 +550,7 @@ const TR = {
       { title: "Camiones Equipados",         desc: "Llevamos las piezas mÃ¡s comunes y completamos el 85% de reparaciones en la primera visita." },
       { title: "Precios Honestos y Claros",  desc: "Vea el presupuesto completo antes de empezar. Sin cargos ocultos. GarantÃ­a de 90 dÃ­as en piezas y mano de obra." },
     ],
+    reviewsLoading: "Cargando reseñas…",
     reviewsH2:    "ReseÃ±as en Google",
     reviewsBased: "9 reseÃ±as en Google",
     writeReview:  "Dejar reseÃ±a en Google",
@@ -1144,28 +1142,10 @@ export default function Home() {
   ];
 
   // Show 8 reviews per day (2 rows Ã— 4 cols), rotating daily
-  const _day = Math.floor(
-    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86_400_000
-  );
-  // Hero overlay card: rotates every 12 hours
-  const _halfDay = Math.floor(Date.now() / (12 * 3_600_000));
-  const _fiveStar  = ALL_REVIEWS.filter(r => r.category === "5");
-  const _fourStar  = ALL_REVIEWS.filter(r => r.category === "4");
-  const _recentRev = ALL_REVIEWS.filter(r => r.category === "recent");
-  const _overlayReview = _fiveStar[_halfDay % _fiveStar.length];
-  const _dailyReview   = _fiveStar[_day % _fiveStar.length];
-  const _pickN = (pool: typeof ALL_REVIEWS, n: number) => {
-    const start = (_day * n) % pool.length;
-    return [...pool.slice(start, start + n), ...pool.slice(0, Math.max(0, start + n - pool.length))];
-  };
-  // "all" tab: 6 five-star + 2 four-star interleaved (4â˜… at positions 3 and 7)
-  const [f5a,f5b,f5c,f5d,f5e,f5f] = _pickN(_fiveStar, 6);
-  const [f4a,f4b]                  = _pickN(_fourStar, 2);
-  const _dailyMix = [f5a, f5b, f5c, f4a, f5d, f5e, f5f, f4b];
   const [reviewPage, setReviewPage] = useState(0);
-  const [liveGoogleReviews, setLiveGoogleReviews] = useState<typeof GOOGLE_FEATURED_REVIEWS>([]);
-  const [googleRating, setGoogleRating] = useState(GOOGLE_RATING);
-  const [googleReviewCount, setGoogleReviewCount] = useState(GOOGLE_REVIEW_COUNT);
+  const [liveGoogleReviews, setLiveGoogleReviews] = useState<ReviewData[]>([]);
+  const [googleRating, setGoogleRating] = useState<number | null>(null);
+  const [googleReviewCount, setGoogleReviewCount] = useState<number | null>(null);
   const [loadingGoogleReviews, setLoadingGoogleReviews] = useState(false);
 
   const loadGoogleReviews = useCallback(async () => {
@@ -1173,7 +1153,8 @@ export default function Home() {
     setLoadingGoogleReviews(true);
     try {
       const data = await fetchGoogleReviewsFromApi(apiBase);
-      if (data?.reviews?.length) setLiveGoogleReviews(data.reviews);
+      if (data?.ok && data.reviews) setLiveGoogleReviews(data.reviews);
+      else setLiveGoogleReviews([]);
       if (typeof data?.rating === "number") setGoogleRating(data.rating);
       if (typeof data?.userRatingCount === "number") setGoogleReviewCount(data.userRatingCount);
     } finally {
@@ -1185,14 +1166,17 @@ export default function Home() {
     void loadGoogleReviews();
   }, [loadGoogleReviews]);
 
-  const mergedGoogleReviews = mergePositiveGoogleReviews(liveGoogleReviews);
+  const mergedGoogleReviews = filterPositiveGoogleReviews(liveGoogleReviews);
   const totalReviewPages = Math.max(1, Math.ceil(mergedGoogleReviews.length / REVIEWS_PER_PAGE));
   const safeReviewPage = Math.min(reviewPage, totalReviewPages - 1);
   const pagedGoogleReviews = mergedGoogleReviews.slice(
     safeReviewPage * REVIEWS_PER_PAGE,
     safeReviewPage * REVIEWS_PER_PAGE + REVIEWS_PER_PAGE,
   );
-  const googleRatingLabel = googleRating.toFixed(1);
+  const googleRatingLabel = googleRating != null ? googleRating.toFixed(1) : "—";
+  const overlayReview = mergedGoogleReviews.length
+    ? mergedGoogleReviews[Math.floor(Date.now() / (12 * 36e5)) % mergedGoogleReviews.length]
+    : null;
 
   const handleServiceClick = (svc: typeof SERVICES[0]) => {
     setAppliance(isEs ? svc.appEs : svc.appEn);
@@ -1559,15 +1543,16 @@ export default function Home() {
                 <img src={whyUsBgImg} alt="Appliance repair" className="rounded-xl shadow-lg w-full object-cover aspect-[4/3]" />
 
                 {/* Google review overlay card â€” rotates every 12 h */}
+                {overlayReview && (
                 <div className="absolute bottom-4 right-4 max-w-[260px] bg-transparent border-0 p-3">
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className="h-8 w-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 drop-shadow"
-                      style={{ backgroundColor: _overlayReview.avatarColor }}>
-                      {_overlayReview.initials}
+                      style={{ backgroundColor: overlayReview?.avatarColor }}>
+                      {overlayReview?.initials}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-white leading-tight drop-shadow">{_overlayReview.name}</p>
-                      <p className="text-[10px] text-white/80 leading-tight drop-shadow">{_overlayReview.time}</p>
+                      <p className="text-xs font-bold text-white leading-tight drop-shadow">{overlayReview?.name}</p>
+                      <p className="text-[10px] text-white/80 leading-tight drop-shadow">{overlayReview?.time}</p>
                     </div>
                   </div>
                   <div className="flex gap-0.5 mb-1.5">
@@ -1576,9 +1561,10 @@ export default function Home() {
                     ))}
                   </div>
                   <p className="text-[11px] text-white leading-relaxed line-clamp-2 drop-shadow">
-                    "{isEs ? _overlayReview.textEs : _overlayReview.textEn}"
+                    "{isEs ? overlayReview?.textEs : overlayReview?.textEn}"
                   </p>
                 </div>
+                )}
               </motion.div>
               <div>
                 <h2 className="text-2xl md:text-3xl font-extrabold mb-2">{T.whyH2}</h2>
@@ -1618,25 +1604,26 @@ export default function Home() {
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                 </a>
-                {/* review overlay */}
+                {overlayReview && (
                 <div className="absolute bottom-4 right-4 max-w-[220px] bg-transparent border-0 p-3">
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className="h-8 w-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 drop-shadow"
-                      style={{ backgroundColor: _dailyReview.avatarColor }}>
-                      {_dailyReview.initials}
+                      style={{ backgroundColor: overlayReview.avatarColor }}>
+                      {overlayReview.initials}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-white leading-tight drop-shadow">{_dailyReview.name}</p>
-                      <p className="text-[10px] text-white/80 leading-tight drop-shadow">{_dailyReview.time}</p>
+                      <p className="text-xs font-bold text-white leading-tight drop-shadow">{overlayReview.name}</p>
+                      <p className="text-[10px] text-white/80 leading-tight drop-shadow">{overlayReview.time}</p>
                     </div>
                   </div>
                   <div className="flex gap-0.5 mb-1.5">
                     {[1,2,3,4,5].map(s => <Star key={s} className="h-3 w-3 drop-shadow" style={{ color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR }} />)}
                   </div>
                   <p className="text-[11px] text-white leading-relaxed line-clamp-2 drop-shadow">
-                    "{isEs ? _dailyReview.textEs : _dailyReview.textEn}"
+                    "{isEs ? overlayReview.textEs : overlayReview.textEn}"
                   </p>
                 </div>
+                )}
               </motion.div>
 
               {/* RIGHT â€” content */}
@@ -1758,9 +1745,9 @@ export default function Home() {
                       ))}
                     </span>
                     <span className="text-stone-500 font-semibold">Google</span>
-                    <span className="text-stone-600">({googleReviewCount} reviews)</span>
+                    <span className="text-stone-600">({googleReviewCount ?? 0} reviews)</span>
                   </span>
-                  <span className="text-xs text-stone-500 font-medium">{T.reviewsBased}</span>
+                  <span className="text-xs text-stone-500 font-medium">{googleReviewCount != null ? `${googleReviewCount} ${isEs ? "reseñas en Google" : "reviews on Google"}` : (loadingGoogleReviews ? T.reviewsLoading : "")}</span>
                 </div>
               </div>
               <a
@@ -1775,6 +1762,12 @@ export default function Home() {
               </a>
             </div>
 
+            {loadingGoogleReviews && !mergedGoogleReviews.length && (
+              <p className="text-sm text-stone-500 font-medium py-6 text-center col-span-full">{T.reviewsLoading}</p>
+            )}
+            {!loadingGoogleReviews && mergedGoogleReviews.length === 0 && (
+              <p className="text-sm text-stone-500 font-medium py-6 text-center col-span-full sr-only">{T.reviewsLoading}</p>
+            )}
             <div className="relative"><div className="htr-google-reviews-grid gap-2 md:gap-2.5">{pagedGoogleReviews.map((r, i) => (
                 <motion.div
                   key={`${r.name}-${i}`}

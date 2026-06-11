@@ -1,9 +1,4 @@
 import type { ReviewData } from "../data/reviews";
-import {
-  GOOGLE_FEATURED_REVIEWS,
-  GOOGLE_RATING,
-  GOOGLE_REVIEW_COUNT,
-} from "../data/googleBusinessReviews";
 
 export const GOOGLE_STAR_COLOR = "#FBBC04";
 export const REVIEWS_PER_PAGE = 10;
@@ -16,24 +11,13 @@ export type GoogleReviewsApiResponse = {
   reviews?: ReviewData[];
 };
 
-function reviewKey(r: ReviewData): string {
-  return `${r.name.toLowerCase()}|${(r.textEn || "").slice(0, 48)}`;
+export function filterPositiveGoogleReviews(live: ReviewData[]): ReviewData[] {
+  return live.filter((r) => r.rating >= 4);
 }
 
-export function mergePositiveGoogleReviews(
-  live: ReviewData[],
-  fallback: ReviewData[] = GOOGLE_FEATURED_REVIEWS,
-): ReviewData[] {
-  const seen = new Set<string>();
-  const out: ReviewData[] = [];
-  for (const r of [...live, ...fallback]) {
-    if (r.rating < 4) continue;
-    const k = reviewKey(r);
-    if (seen.has(k)) continue;
-    seen.add(k);
-    out.push(r);
-  }
-  return out;
+/** @deprecated use filterPositiveGoogleReviews */
+export function mergePositiveGoogleReviews(live: ReviewData[]): ReviewData[] {
+  return filterPositiveGoogleReviews(live);
 }
 
 export async function fetchGoogleReviewsFromApi(
@@ -48,8 +32,4 @@ export async function fetchGoogleReviewsFromApi(
   } catch {
     return null;
   }
-}
-
-export function defaultGoogleMeta(): { rating: number; count: number } {
-  return { rating: GOOGLE_RATING, count: GOOGLE_REVIEW_COUNT };
 }
