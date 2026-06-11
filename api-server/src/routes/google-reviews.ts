@@ -1,13 +1,13 @@
 import { Router, type IRouter } from "express";
 
 const CACHE_TTL_MS = 3 * 60 * 60 * 1000;
-const CACHE_VERSION = 2;
+const CACHE_VERSION = 3;
 
 /** Verified via g.page/r/CU7DlHNCZb8hEAE (Maps feature 0x2066db6f9cc15e1b:0x21bf65427394c34e). */
 const BUSINESS_LOCATION = { lat: 29.7463431, lng: -95.7612032 };
 
 /** Override with Replit Secret GOOGLE_PLACE_ID when needed. Filled by Places search when empty. */
-const DEFAULT_GOOGLE_PLACE_ID = "";
+const DEFAULT_GOOGLE_PLACE_ID = "ChIJG17BnG_bZiARTsOUc0JlvyE";
 
 const SEARCH_QUERIES = [
   "Hitechrepairgroup LLC appliance repair Katy TX",
@@ -126,14 +126,18 @@ async function searchPlaceIdLegacy(key: string): Promise<string | null> {
     const url = new URL("https://maps.googleapis.com/maps/api/place/findplacefromtext/json");
     url.searchParams.set("input", input);
     url.searchParams.set("inputtype", "textquery");
-    url.searchParams.set("fields", "place_id");
+    url.searchParams.set("fields", "place_id,name,formatted_address");
     url.searchParams.set("locationbias", `circle:80000@${BUSINESS_LOCATION.lat},${BUSINESS_LOCATION.lng}`);
     url.searchParams.set("key", key);
     const res = await fetch(url.toString());
     if (!res.ok) continue;
-    const data = (await res.json()) as { candidates?: { place_id?: string }[] };
-    const pid = data.candidates?.[0]?.place_id;
-    if (pid) return pid;
+    const data = (await res.json()) as {
+      candidates?: { place_id?: string; name?: string; formatted_address?: string }[];
+    };
+    for (const c of data.candidates ?? []) {
+      const score = scoreBusinessCandidate(c.name ?? "", c.formatted_address ?? "");
+      if (score >= 10 && c.place_id) return c.place_id;
+    }
   }
   return null;
 }
@@ -260,9 +264,15 @@ router.get("/google-reviews", async (_req, res) => {
     return;
   }
 
+  const expectedPlaceId = (process.env["GOOGLE_PLACE_ID"] ?? "").trim() || DEFAULT_GOOGLE_PLACE_ID.trim();
   if (cache && cache.version === CACHE_VERSION && Date.now() - cache.fetchedAt < CACHE_TTL_MS) {
-    res.json({ ...cache.payload, source: "cache" });
-    return;
+    const cachedPlaceId = typeof cache.payload.placeId === "string" ? cache.payload.placeId : "";
+    if (expectedPlaceId && cachedPlaceId && cachedPlaceId !== expectedPlaceId) {
+      cache = null;
+    } else {
+      res.json({ ...cache.payload, source: "cache" });
+      return;
+    }
   }
 
   try {
