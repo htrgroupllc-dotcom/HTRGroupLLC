@@ -19,5 +19,5 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          accountId: 1f3039d6832ffd0d9b8ab3fb2c8b6788
           command: pages deploy . --project-name=htrgrouptx --branch=main
