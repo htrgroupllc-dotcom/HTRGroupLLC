@@ -10,8 +10,56 @@ EXCLUDED = {
     "77414", "77419", "77426", "77430", "77434", "77437", "77442", "77448",
     "77455", "77456", "77457", "77458", "77460", "77470", "77485", "77488",
 }
+# Far-south / coastal zips outside trimmed metro (Alvin, Angleton, Lake Jackson, etc.)
+SOUTHERN_EXCLUDED = {
+    "77415", "77417", "77420", "77422", "77432", "77435", "77436", "77440",
+    "77443", "77444", "77451", "77453", "77461", "77465", "77467", "77468",
+    "77469", "77480", "77481", "77482", "77486", "77510", "77511", "77515",
+    "77517", "77531", "77534", "77539", "77541", "77550", "77551", "77554",
+    "77563", "77566", "77568", "77573", "77577", "77590", "77591",
+}
+# Southern trim arc (lng -> min lat); matches user red line on service map
+SOUTHERN_CUTOFF = (
+    (-96.0, 29.48),
+    (-95.7, 29.49),
+    (-95.4, 29.51),
+    (-95.1, 29.53),
+    (-94.7, 29.54),
+    (-94.45, 29.55),
+)
 BBOX = (-96.35, 28.85, -94.45, 30.55)
 MAX_PTS = 22
+
+
+def southern_cutoff_lat(lng: float) -> float:
+    pts = SOUTHERN_CUTOFF
+    if lng <= pts[0][0]:
+        return pts[0][1]
+    if lng >= pts[-1][0]:
+        return pts[-1][1]
+    for i in range(len(pts) - 1):
+        lng0, lat0 = pts[i]
+        lng1, lat1 = pts[i + 1]
+        if lng0 <= lng <= lng1:
+            t = (lng - lng0) / (lng1 - lng0)
+            return lat0 + t * (lat1 - lat0)
+    return 29.52
+
+
+def ring_centroid(ring):
+    lngs = [p[0] for p in ring]
+    lats = [p[1] for p in ring]
+    return sum(lngs) / len(lngs), sum(lats) / len(lats), min(lats), max(lats)
+
+
+def south_of_trim_line(ring) -> bool:
+    clng, clat, min_lat, _max_lat = ring_centroid(ring)
+    cut = southern_cutoff_lat(clng)
+    if clat < cut - 0.01:
+        return True
+    if min_lat < cut - 0.025:
+        return True
+    return False
 
 
 def in_bbox_ring(ring):
@@ -39,10 +87,11 @@ def simplify_ring(ring):
 def collect():
     data = json.loads((ROOT / "scripts/_tx_zips.geojson").read_text(encoding="utf-8"))
     polys = []
+    skipped_south = []
     for feat in data["features"]:
         props = feat.get("properties") or {}
         z = str(props.get("ZCTA5CE10") or props.get("ZIP") or "")
-        if len(z) != 5 or not z.startswith(PREFIXES) or z in EXCLUDED:
+        if len(z) != 5 or not z.startswith(PREFIXES) or z in EXCLUDED or z in SOUTHERN_EXCLUDED:
             continue
         geom = feat["geometry"]
         rings = []
@@ -53,43 +102,41 @@ def collect():
         for ring in rings:
             if len(ring) < 4 or not in_bbox_ring(ring):
                 continue
+            if south_of_trim_line(ring):
+                skipped_south.append(z)
+                break
             polys.append({"z": z, "r": simplify_ring(ring)})
             break
     polys.sort(key=lambda p: p["z"])
+    if skipped_south:
+        print("south_of_line:", ", ".join(sorted(set(skipped_south))))
     return polys
 
 
-def map_view(polys):
-    lngs, lats = [], []
-    for p in polys:
-        for lng, lat in p["r"]:
-            lngs.append(lng)
-            lats.append(lat)
-    pad_lng = (max(lngs) - min(lngs)) * 0.04
-    pad_lat = (max(lats) - min(lats)) * 0.04
-    return {
-        "west": round(min(lngs) - pad_lng, 3),
-        "east": round(max(lngs) + pad_lng, 3),
-        "north": round(max(lats) + pad_lat, 3),
-        "south": round(min(lats) - pad_lat, 3),
-    }
-
-
-def emit_ts(polys, view):
+def emit_ts(polys):
     lines = [
         "/** Houston-metro ZIP boundaries (ZCTA, simplified) for z=9 map embed. */",
-        "export const MAP_VIEW = {",
-        f"  west: {view['west']},",
-        f"  east: {view['east']},",
-        f"  north: {view['north']},",
-        f"  south: {view['south']},",
+        "/** Matches Google embed: Houston Metropolitan Area @29.7,-95.4 z=9 */",
+        "export const MAP_EMBED = {",
+        "  centerLat: 29.7,",
+        "  centerLng: -95.4,",
+        "  zoom: 9,",
         "} as const;",
+        "",
+        "function latLngToWorld(lat: number, lng: number): { x: number; y: number } {",
+        "  const sinY = Math.sin((lat * Math.PI) / 180);",
+        "  const clamped = Math.min(Math.max(sinY, -0.9999), 0.9999);",
+        "  return {",
+        "    x: (lng + 180) / 360,",
+        "    y: 0.5 - Math.log((1 + clamped) / (1 - clamped)) / (4 * Math.PI),",
+        "  };",
+        "}",
         "",
         "export type LngLat = readonly [number, number];",
         "",
         "export type ZipPolygon = { zip: string; ring: LngLat[] };",
         "",
-        "/** Allowed metro ZIPs (770/772/773/774/775 minus rural exclusions). */",
+        "/** Allowed metro ZIPs (770/772/773/774/775 minus rural + southern trim). */",
         "export const SERVICE_ZIP_POLYGONS: ZipPolygon[] = [",
     ]
     for p in polys:
@@ -99,9 +146,12 @@ def emit_ts(polys, view):
         "];",
         "",
         "export function projectPoint(lng: number, lat: number, width: number, height: number): string {",
-        "  const { west, east, north, south } = MAP_VIEW;",
-        "  const x = ((lng - west) / (east - west)) * width;",
-        "  const y = ((north - lat) / (north - south)) * height;",
+        "  const { centerLat, centerLng, zoom } = MAP_EMBED;",
+        "  const scale = 256 * Math.pow(2, zoom);",
+        "  const center = latLngToWorld(centerLat, centerLng);",
+        "  const point = latLngToWorld(lat, lng);",
+        "  const x = (point.x - center.x) * scale + width / 2;",
+        "  const y = (point.y - center.y) * scale + height / 2;",
         "  return `${x.toFixed(2)},${y.toFixed(2)}`;",
         "}",
         "",
@@ -116,54 +166,26 @@ def emit_ts(polys, view):
     print(f"wrote {out} ({len(polys)} zips)")
 
 
-def emit_bundle_snippet(polys, view):
+def patch_bundle(polys):
+    bp = ROOT / "assets/index-utf8-v4.js"
+    b = bp.read_text(encoding="utf-8")
+    poly_start = b.find("const SERVICE_AREA_ZIP_POLYGONS = [")
+    poly_end = b.find("];\nfunction serviceAreaLatLngToWorld")
+    if poly_end < 0:
+        poly_end = b.find("];\r\nfunction serviceAreaLatLngToWorld")
+    if poly_start < 0 or poly_end < 0:
+        raise SystemExit("bundle polygon markers not found")
     rings_js = ",\n  ".join(
         '{ z: "' + p["z"] + '", r: ' + json.dumps(p["r"], separators=(",", ":")) + " }"
         for p in polys
     )
-    snippet = f'''const SERVICE_AREA_MAP_VB = {{ w: 1e3, h: 300 }};
-const SERVICE_AREA_MAP_VIEW = {{ west: {view["west"]}, east: {view["east"]}, north: {view["north"]}, south: {view["south"]} }};
-const SERVICE_AREA_MAP_FILL = "rgba(56, 189, 248, 0.28)";
-const SERVICE_AREA_MAP_STROKE = "#333333";
-const SERVICE_AREA_ZIP_POLYGONS = [
-  {rings_js}
-];
-function serviceAreaProject(lng, lat) {{
-  const {{ west, east, north, south }} = SERVICE_AREA_MAP_VIEW;
-  const {{ w, h }} = SERVICE_AREA_MAP_VB;
-  const x = (lng - west) / (east - west) * w;
-  const y = (north - lat) / (north - south) * h;
-  return `${{x.toFixed(2)}},${{y.toFixed(2)}}`;
-}}
-function serviceAreaRingPath(ring) {{
-  const pts = ring.map(([lng, lat]) => serviceAreaProject(lng, lat));
-  return `M ${{pts.join(" L ")}} Z`;
-}}
-function ServiceAreaMapOverlay() {{
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("svg", {{
-    className: "absolute inset-0 w-full h-full pointer-events-none z-[1]",
-    viewBox: `0 0 ${{SERVICE_AREA_MAP_VB.w}} ${{SERVICE_AREA_MAP_VB.h}}`,
-    preserveAspectRatio: "none",
-    "aria-hidden": true,
-    children: SERVICE_AREA_ZIP_POLYGONS.map((z) => /* @__PURE__ */ jsxRuntimeExports.jsx("path", {{
-      d: serviceAreaRingPath(z.r),
-      fill: SERVICE_AREA_MAP_FILL,
-      stroke: SERVICE_AREA_MAP_STROKE,
-      strokeWidth: 1.25,
-      vectorEffect: "non-scaling-stroke"
-    }}, z.z))
-  }});
-}}
-/* SERVICE_AREA_MAP_OVERLAY */
-'''
-    out = ROOT / "scripts/_map_overlay_bundle_snippet.js"
-    out.write_text(snippet, encoding="utf-8", newline="\n")
-    print(f"wrote {out}")
+    new_polys = "const SERVICE_AREA_ZIP_POLYGONS = [\n  " + rings_js + "\n];"
+    b = b[:poly_start] + new_polys + b[poly_end + 2 :]
+    bp.write_text(b, encoding="utf-8", newline="\n")
+    print(f"patched {bp}")
 
 
 if __name__ == "__main__":
     polys = collect()
-    view = map_view(polys)
-    print("MAP_VIEW", view)
-    emit_ts(polys, view)
-    emit_bundle_snippet(polys, view)
+    emit_ts(polys)
+    patch_bundle(polys)
