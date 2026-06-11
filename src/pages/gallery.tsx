@@ -416,6 +416,13 @@ export default function Gallery() {
 
   useEffect(() => { void loadDynPhotos(); }, [loadDynPhotos]);
 
+  useEffect(() => {
+    if (galleryIdx === null) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [galleryIdx]);
+
   const openGalleryAdmin = useCallback(() => {
     setAdminOpen(true);
     setAdminPin("");
@@ -570,7 +577,7 @@ export default function Gallery() {
                       alt={isEs ? photo.caption_es : photo.caption_en}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                    <div className="absolute inset-0 pointer-events-none bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                       <svg className="h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.15 10.15z" />
                       </svg>
@@ -613,7 +620,7 @@ export default function Gallery() {
                       alt={isEs ? photo.captionEs : photo.captionEn}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                    <div className="absolute inset-0 pointer-events-none bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                       <svg className="h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.15 10.15z" />
                       </svg>
@@ -725,7 +732,7 @@ export default function Gallery() {
       {/* ── LIGHTBOX ── */}
       {galleryIdx !== null && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-black/90"
           onClick={() => setGalleryIdx(null)}
         >
           <button

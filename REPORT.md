@@ -53,3 +53,51 @@
 ### Риски
 - Кэш API 3 ч — после первого успешного ответа подождите или перезапустите repl.
 - Google отдаёт ограниченное число отзывов в Place Details (обычно до 5).
+# REPORT — 2026-06-11 (marquee + Google reviews)
+
+## Найденные ошибки
+1. **Center marquee «невидим» на prod:** в DOM секция `.htr-brand-marquee-center` есть, но `.__row` имел **height: 0** — классы `h-[72px]` / `md:h-[88px]` не попали в собранный CSS (только JS-бандл). Логотипы анимировались вне видимой области.
+2. **Google Reviews:** API отдавал **чужой бизнес** (Liz Kent / brakes) — `findplacefromtext` брал **первого кандидата** без scoring; кэш TTL 3ч держал неверные данные. Рейтинг 4.2 / 57 vs 1 карточка.
+
+## Исправления
+- CSS: `min-height: 80px` для секции, фиксированная высота row 72/88px, `height: 100%` для wings — `src/index.css` + `assets/index-_bdQPowM.css`.
+- `index.html` cache bust **v=36**.
+- API: `DEFAULT_GOOGLE_PLACE_ID=ChIJG17BnG_bZiARTsOUc0JlvyE` (из g.page/r/CU7DlHNCZb8hEAE), `CACHE_VERSION=3`, scoring для Find Place, сброс кэша при несовпадении placeId.
+- Push: HTRGroupLLC `10b1b9e`, HTRGroupLLC1 (api-server artifact).
+
+## Проверка (Playwright, prod до деплоя CSS)
+- Без фикса: `rowH: 0`, `visibleImgs: 0`.
+- С инжектом CSS: `rowH: 88`, `visibleImgs: 73+` при анимации.
+
+## Действие пользователя
+1. **Cloudflare Pages** — подождать деплой после push (2–5 мин), проверить https://htrgrouptx.com/?v=36
+2. **Replit → Publish** — обязательно после push API (reviews не обновятся без redeploy backend).
+
+## Gallery (c58c10f)
+- В бандле `index-utf8-v4.js` есть `galleryIdx` / lightbox onClick — **не проверено** кликом на prod после деплоя.
+
+## Риски
+- До Replit Publish reviews могут оставаться из старого кэша (до 3ч) — после deploy + CACHE_VERSION=3 должны подтянуться реальные отзывы Hitechrepairgroup.
+
+## Gallery fix (2026-06-11)
+
+### Findings (prod htrgrouptx.com/gallery)
+- Playwright: click on tile opens lightbox (`1 / 248`); no `pageerror`.
+- `node --check` on `assets/index-utf8-v4.js` ? OK.
+- 158 static JPG URLs from bundle ? all HTTP 200 `image/jpeg`.
+- Commits `3b51679` / `6f5a978` changed home marquee/reviews bundle, not gallery route logic.
+- Intermittent Replit `429` on many `/api/gallery/file/*` during burst loads (thumbnails); after idle, 0 broken images in test.
+
+### Fix applied
+- Gallery hover overlay: `pointer-events-none` so taps reach tile `onClick`.
+- Lightbox `z-[120]` (above header/chat `z-50`).
+- Lock `document.body` scroll while lightbox open.
+- Cache bust `index.html` ? `v=37`.
+
+### Risks
+- Dynamic photos still depend on Replit API; rate limits can blank NEW tiles temporarily.
+
+### Verify after deploy
+- Open `/gallery`, tap any photo ? full-screen image + caption counter.
+- Hard refresh or wait for CF deploy (`?v=37`).
+

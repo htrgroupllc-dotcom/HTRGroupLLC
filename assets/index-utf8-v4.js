@@ -34269,6 +34269,14 @@ function Gallery() {
   reactExports.useEffect(() => {
     void loadDynPhotos();
   }, [loadDynPhotos]);
+  reactExports.useEffect(() => {
+    if (galleryIdx === null) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [galleryIdx]);
   const clearGlobeTimers = () => {
     [gT1, gT2, gT3].forEach((r2) => {
       if (r2.current) clearTimeout(r2.current);
@@ -34529,7 +34537,7 @@ function Gallery() {
                     className: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   }
                 ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow", fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.15 10.15z" }) }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow", fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.15 10.15z" }) }) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute top-1.5 left-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white", style: { background: K$2.accent }, children: "NEW" }),
                 adminAuthed && /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "button",
@@ -34569,7 +34577,7 @@ function Gallery() {
                     className: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   }
                 ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow", fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.15 10.15z" }) }) })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "h-7 w-7 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow", fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.15 10.15z" }) }) })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-2 py-1.5 text-center", style: { backgroundColor: K$2.bg, height: "27px" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-medium text-stone-600 truncate leading-tight", children: isEs ? photo.captionEs : photo.captionEn }) })
             ]
@@ -34858,7 +34866,7 @@ function Gallery() {
     galleryIdx !== null && /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: "fixed inset-0 z-50 flex items-center justify-center bg-black/90",
+        className: "fixed inset-0 z-[120] flex items-center justify-center bg-black/90",
         onClick: () => setGalleryIdx(null),
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
