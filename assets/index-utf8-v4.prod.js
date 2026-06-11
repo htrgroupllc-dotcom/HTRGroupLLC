@@ -32992,6 +32992,9 @@ function Home() {
   const [lang, setLang] = reactExports.useState("en");
   const [menuOpen, setMenuOpen] = reactExports.useState(false);
   const [reviewTab, setReviewTab] = reactExports.useState("all");
+  const [reviewPage, setReviewPage] = reactExports.useState(0);
+  const [googleRating, setGoogleRating] = reactExports.useState(5);
+  const [googleReviewCount, setGoogleReviewCount] = reactExports.useState(9);
   const [refreshing, setRefreshing] = reactExports.useState(false);
   const [appliance, setAppliance] = reactExports.useState("");
   const [brandModel, setBrandModel] = reactExports.useState("");
@@ -33087,13 +33090,34 @@ function Home() {
   const [f4a, f4b] = _pickN(_fourStar, 2);
   const _dailyMix = [f5a, f5b, f5c, f4a, f5d, f5e, f5f, f4b];
   const GOOGLE_REVIEW_URL_HOME = "https://g.page/r/CU7DlHNCZb8hEAE/review";
-  const googleHomeReviews = [
+  const GOOGLE_HOME_REVIEWS_STATIC = [
     { name: "Maksat", initials: "M", avatarColor: "#4285F4", rating: 5, time: "2 weeks ago", textEn: "A specialized company came out and quickly resolved the oven malfunction; they replaced a component on the control panel.", textEs: "Una empresa especializada salió y resolvió rápidamente el mal funcionamiento del horno; reemplazaron un componente del panel de control." },
     { name: "Mukhtar Quseynov", initials: "MQ", avatarColor: "#1A7A6E", rating: 5, time: "3 weeks ago", textEn: "Great experience with Hitechrepairgroup LLC. Professional technicians and fair pricing.", textEs: "Excelente experiencia con Hitechrepairgroup LLC. Técnicos profesionales y precios justos." },
     { name: "Brian T.", initials: "B", avatarColor: "#C0392B", rating: 5, time: "2 weeks ago", textEn: "Oven fixed same day I called. Kitchen spotless after they left.", textEs: "Horno arreglado el mismo día que llamé. La cocina impecable después de que se fueron." },
     { name: "Matthew R.", initials: "M", avatarColor: "#2471A3", rating: 5, time: "1 month ago", textEn: "Oven igniter replaced. Works perfectly on first try. Highly recommend.", textEs: "Encendedor del horno reemplazado. Funciona perfectamente. Muy recomendado." },
     { name: "Emma L.", initials: "E", avatarColor: "#117A65", rating: 5, time: "3 weeks ago", textEn: "Oven igniters sparking constantly. Fixed same day. Safe and quiet now.", textEs: "Encendedores del horno chispeando. Arreglados ese día. Seguros y silenciosos." }
   ];
+
+  const [googleHomeReviews, setGoogleHomeReviews] = reactExports.useState(GOOGLE_HOME_REVIEWS_STATIC);
+  reactExports.useEffect(() => {
+    const apiBase = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
+    fetch(apiBase + "/api/google-reviews", { cache: "no-store" }).then((r) => r.json()).then((d) => {
+      const live = (d.reviews ?? []).filter((r) => (r.rating ?? 0) >= 4);
+      if (live.length) {
+        const seen = new Set();
+        const merged = [];
+        for (const r of [...live, ...GOOGLE_HOME_REVIEWS_STATIC]) {
+          const k = (r.name + "|" + (r.textEn || "").slice(0, 40)).toLowerCase();
+          if (seen.has(k)) continue;
+          seen.add(k);
+          if ((r.rating ?? 0) >= 4) merged.push(r);
+        }
+        setGoogleHomeReviews(merged);
+      }
+      if (typeof d.rating === "number") setGoogleRating(d.rating);
+      if (typeof d.userRatingCount === "number") setGoogleReviewCount(d.userRatingCount);
+    }).catch(() => {});
+  }, []);
   const handleServiceClick = (svc) => {
     setAppliance(isEs ? svc.appEs : svc.appEn);
     setTimeout(() => {
@@ -33575,10 +33599,10 @@ function Home() {
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2 mt-3", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-white border border-stone-200 px-3 py-1.5 text-sm font-bold text-stone-800 shadow-sm", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-base font-extrabold text-[#4285F4] leading-none", "aria-hidden": "true", children: "G" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "5.0" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex gap-0.5", "aria-label": "5 out of 5 stars", children: [1, 2, 3, 4, 5].map((si) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: si, className: "h-3.5 w-3.5 fill-yellow-400 text-yellow-400" })) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: googleRating.toFixed(1) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex gap-0.5", "aria-label": "5 out of 5 stars", children: [1, 2, 3, 4, 5].map((si) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: si, className: "h-3.5 w-3.5 fill-[#FBBC04] text-[#FBBC04]" })) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-500 font-semibold", children: "Google" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-600", children: "(9 reviews)" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-600", children: `(${googleReviewCount} reviews)` })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-stone-500 font-medium", children: T2.reviewsBased })
             ] })
@@ -33588,7 +33612,7 @@ function Home() {
             T2.writeReview
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4", children: googleHomeReviews.map((r, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-2.5", children: googleHomeReviews.slice(reviewPage * 10, reviewPage * 10 + 10).map((r, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
           {
             key: `${r.name}-${i}`,
@@ -33596,23 +33620,28 @@ function Home() {
             whileInView: "visible",
             viewport: { once: true },
             variants: FADE_UP$3,
-            className: "bg-white rounded-xl p-4 shadow-sm border border-stone-100 flex flex-col h-full",
+            className: "bg-white rounded-lg p-2.5 md:p-3 shadow-sm border border-stone-100 flex flex-col h-full min-h-0",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 min-w-0", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-9 w-9 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0", style: { backgroundColor: r.avatarColor }, children: r.initials }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold text-sm text-stone-900 truncate", children: r.name }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold text-xs text-stone-900 truncate", children: r.name }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-stone-400 leading-none", children: r.time })
                   ] })
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#4285F4] font-extrabold text-lg leading-none flex-shrink-0", "aria-hidden": "true", children: "G" })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-2", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "h-3.5 w-3.5 fill-yellow-400 text-yellow-400" })) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-sm leading-relaxed flex-1", children: isEs ? r.textEs : r.textEn })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-2", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "h-3.5 w-3.5 fill-[#FBBC04] text-[#FBBC04]" })) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-[11px] md:text-xs leading-snug flex-1 line-clamp-4", children: isEs ? r.textEs : r.textEn })
             ]
           }
-        )) })
+        )) }),
+        Math.ceil(googleHomeReviews.length / 10) > 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-3 mt-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", "aria-label": "Previous reviews", disabled: reviewPage <= 0, onClick: () => setReviewPage((p) => Math.max(0, p - 1)), className: "inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm disabled:opacity-40 hover:opacity-80", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "h-5 w-5" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-semibold text-stone-500 tabular-nums", children: [reviewPage + 1, " / ", Math.max(1, Math.ceil(googleHomeReviews.length / 10))] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", "aria-label": "Next reviews", disabled: reviewPage >= Math.ceil(googleHomeReviews.length / 10) - 1, onClick: () => setReviewPage((p) => Math.min(Math.ceil(googleHomeReviews.length / 10) - 1, p + 1)), className: "inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm disabled:opacity-40 hover:opacity-80", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "h-5 w-5" }) })
+        ] })
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "faq", className: "py-16 bg-white", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 max-w-4xl", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center mb-10", children: [

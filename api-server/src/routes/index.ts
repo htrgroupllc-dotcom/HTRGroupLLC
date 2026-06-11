@@ -1,4 +1,4 @@
-import { Router, type IRouter } from "express";
+﻿import { Router, type IRouter } from "express";
 import healthRouter from "./health";
 import contactRouter from "./contact";
 import bookingRouter from "./booking";
@@ -7,6 +7,7 @@ import chatLeadRouter from "./chat-lead";
 import waRouter from "./whatsapp";
 import voiceStubRouter from "./voice-stub";
 import galleryRouter from "./gallery";
+import googleReviewsRouter from "./google-reviews";
 import { authRouter } from "./auth";
 import { watchdogRouter } from "../watchdog.js";
 
@@ -20,6 +21,7 @@ router.use(chatLeadRouter);
 router.use(waRouter);
 router.use(voiceStubRouter);
 router.use(galleryRouter);
+router.use(googleReviewsRouter);
 router.use(authRouter);
 router.use(watchdogRouter);
 
