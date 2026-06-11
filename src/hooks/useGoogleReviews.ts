@@ -27,7 +27,11 @@ export function useGoogleReviews() {
         isVerifiedGooglePlace(data.placeId);
 
       if (accept) {
-        setReviews(sortGoogleReviewsNewest(filterPositiveGoogleReviews(data.reviews!)));
+        const next = sortGoogleReviewsNewest(filterPositiveGoogleReviews(data.reviews!));
+        if (import.meta.env.DEV) {
+          console.log("[google-reviews] count:", next.length);
+        }
+        setReviews(next);
         if (typeof data.rating === "number") setRating(data.rating);
         if (typeof data.userRatingCount === "number") setReviewCount(data.userRatingCount);
         setSource(data.source ?? null);

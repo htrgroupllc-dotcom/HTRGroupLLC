@@ -1024,7 +1024,7 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
   );
 }
 
-﻿function CenterConvergeMarquee({ brands, base }: { brands: [string, string][]; base: string }) {
+function CenterConvergeMarquee({ brands, base }: { brands: [string, string][]; base: string }) {
   const cardClass =
     "htr-brand-marquee-center__card flex-shrink-0 flex items-center justify-center bg-white rounded-xl border border-stone-100 shadow-sm p-2";
   const renderStrip = (prefix: string) =>
