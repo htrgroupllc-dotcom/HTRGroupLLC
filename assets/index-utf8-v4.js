@@ -35539,7 +35539,7 @@ function Blog() {
   const navHrefs = [`${base}/`, ...["#services", "#about", "#reviews", "#faq", "#contact"].map((h) => `${base}/${h}`)];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col font-sans", style: { backgroundColor: K$1.bg, color: K$1.dark }, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "sticky top-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 h-14 flex items-center justify-between gap-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 htr-site-header-bar htr-blog-header-bar flex flex-wrap items-center justify-between gap-x-3 gap-y-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 flex-shrink-0", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "h-3.5 w-3.5 text-stone-400" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -35569,12 +35569,12 @@ function Blog() {
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: K$1.accent }, children: "GroupTX" })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "htr-blog-header-nav hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600", children: [
           T2.nav.map((label, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: navHrefs[i], className: "hover:opacity-70 transition-opacity", children: label }, label)),
           /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${base}/blog`, className: "hover:opacity-70 transition-opacity", style: { color: K$1.accent }, children: T2.blog })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden md:flex items-center gap-2 flex-shrink-0", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair htr-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-blog-header-actions hidden md:flex items-center gap-2 flex-shrink-0 flex-wrap justify-end min-w-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair htr-phone-pair htr-blog-header-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end min-w-0 max-w-full", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$5, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$1.accent }, children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
               " ",
@@ -35586,7 +35586,7 @@ function Blog() {
               PHONE_DISPLAY$1
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${base}/#contact`, className: "text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K$1.dark }, children: T2.bookNow })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${base}/#contact`, className: "htr-blog-book-now shrink-0 whitespace-nowrap text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K$1.dark }, children: T2.bookNow })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "md:hidden p-2 rounded", onClick: () => setMenuOpen(!menuOpen), children: menuOpen ? /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "h-5 w-5" }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "block w-5 space-y-1", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "block h-0.5 bg-stone-700" }),
@@ -35781,7 +35781,7 @@ function BlogPost() {
   const relatedPosts = post ? BLOG_POSTS.filter((p) => p.slug !== post.slug).slice(0, 3) : [];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col font-sans", style: { backgroundColor: K.bg, color: K.dark }, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "sticky top-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 h-14 flex items-center justify-between gap-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 htr-site-header-bar htr-blog-header-bar flex flex-wrap items-center justify-between gap-x-3 gap-y-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 flex-shrink-0", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "h-3.5 w-3.5 text-stone-400" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -35811,12 +35811,12 @@ function BlogPost() {
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: K.accent }, children: "GroupTX" })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "htr-blog-header-nav hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600", children: [
           T2.nav.map((label, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: navHrefs[i], className: "hover:opacity-70 transition-opacity", children: label }, label)),
           /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${base}/blog`, className: "hover:opacity-70 transition-opacity", style: { color: K.accent }, children: T2.blog })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden md:flex items-center gap-2 flex-shrink-0", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair htr-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-blog-header-actions hidden md:flex items-center gap-2 flex-shrink-0 flex-wrap justify-end min-w-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair htr-phone-pair htr-blog-header-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end min-w-0 max-w-full", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$6, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K.accent }, children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
               " ",
@@ -35828,7 +35828,7 @@ function BlogPost() {
               PHONE_DISPLAY
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${base}/#contact`, className: "text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K.dark }, children: T2.bookNow })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${base}/#contact`, className: "htr-blog-book-now shrink-0 whitespace-nowrap text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K.dark }, children: T2.bookNow })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "md:hidden p-2 rounded", onClick: () => setMenuOpen(!menuOpen), children: menuOpen ? /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "h-5 w-5" }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "block w-5 space-y-1", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "block h-0.5 bg-stone-700" }),
@@ -35911,13 +35911,13 @@ function BlogPost() {
               /* @__PURE__ */ jsxRuntimeExports.jsxs(
                 "a",
                 {
-                  href: COMPANY_PHONE_HREF,
+                  href: COMPANY_PHONE_HREF$6,
                   className: "htr-phone-btn flex items-center justify-center gap-2 font-bold px-4 py-3 rounded text-white w-full",
                   style: { backgroundColor: K.accent },
                   children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
                     " ",
-                    COMPANY_PHONE_DISPLAY
+                    COMPANY_PHONE_DISPLAY$6
                   ]
                 }
               ),

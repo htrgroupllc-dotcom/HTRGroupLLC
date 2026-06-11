@@ -27,7 +27,7 @@ import { PHONE_DISPLAY, PHONE_HREF, COMPANY_PHONE_DISPLAY, COMPANY_PHONE_HREF } 
 
 function BlogHeaderPhones() {
   return (
-    <div className="header-phone-pair htr-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end">
+    <div className="header-phone-pair htr-phone-pair htr-blog-header-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end min-w-0 max-w-full">
       <a href={COMPANY_PHONE_HREF} className="header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm" style={{ backgroundColor: K.accent }}>
         <Phone className="h-3.5 w-3.5" /> {COMPANY_PHONE_DISPLAY}
       </a>
@@ -143,7 +143,7 @@ export default function BlogPost() {
 
       {/* ── NAV ── */}
       <header className="sticky top-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm">
-        <div className="container mx-auto px-4 h-14 flex items-center justify-between gap-3">
+        <div className="container mx-auto px-4 htr-site-header-bar htr-blog-header-bar flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
 
           <div className="flex items-center gap-1.5 flex-shrink-0">
             <Globe className="h-3.5 w-3.5 text-stone-400" />
@@ -161,16 +161,16 @@ export default function BlogPost() {
             </span>
           </a>
 
-          <nav className="hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600">
+          <nav className="htr-blog-header-nav hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600">
             {T.nav.map((label, i) => (
               <a key={label} href={navHrefs[i]} className="hover:opacity-70 transition-opacity">{label}</a>
             ))}
             <a href={`${base}/blog`} className="hover:opacity-70 transition-opacity" style={{ color: K.accent }}>{T.blog}</a>
           </nav>
 
-          <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+          <div className="htr-blog-header-actions hidden md:flex items-center gap-2 flex-shrink-0 flex-wrap justify-end min-w-0">
             <BlogHeaderPhones />
-            <a href={`${base}/#contact`} className="text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider" style={{ backgroundColor: K.dark }}>
+            <a href={`${base}/#contact`} className="htr-blog-book-now shrink-0 whitespace-nowrap text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider" style={{ backgroundColor: K.dark }}>
               {T.bookNow}
             </a>
           </div>
