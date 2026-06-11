@@ -15,6 +15,7 @@ import {
 
 import { ALL_REVIEWS } from "../data/reviews";
 import ChatWidget from "@/components/ChatWidget";
+import ServiceAreaMapOverlay from "@/components/ServiceAreaMapOverlay";
 import { HeroCircuitEffect } from "@/components/HeroCircuitEffect";
 import svcDryerImg    from "@assets/svc_dryer_nobrand.png";
 import svcWasherImg   from "@assets/ChatGPT_Image_3_апр._2026_г.,_21_04_57_1775269648058.png";
@@ -1988,7 +1989,8 @@ export default function Home() {
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                 />
-                <div className="absolute inset-0 bg-transparent group-hover:bg-black/10 transition-colors duration-200 flex items-end justify-center pb-4">
+                <ServiceAreaMapOverlay />
+                <div className="absolute inset-0 z-[2] bg-transparent group-hover:bg-black/10 transition-colors duration-200 flex items-end justify-center pb-4">
                   <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/95 text-stone-800 text-xs font-semibold px-4 py-1.5 rounded-full shadow-md flex items-center gap-1.5">
                     <ExternalLink className="h-3 w-3" />
                     {T.openInMaps}

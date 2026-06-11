@@ -32765,6 +32765,77 @@ function DraggableMarquee({ brands, base, reverse = false }) {
     )
   ] });
 }
+const SERVICE_AREA_MAP_VB = { w: 1e3, h: 300 };
+const SERVICE_AREA_MAP_VIEW = { west: -96.28, east: -94.52, north: 30.48, south: 28.92 };
+const SERVICE_AREA_MAP_FILL = "rgba(92, 58, 33, 0.32)";
+const SERVICE_AREA_MAP_STROKE = "#6B4423";
+const SERVICE_AREA_MAP_STROKE_OUTER = "#5C3D1E";
+function serviceAreaRingAround(lng, lat, dLng = 0.11, dLat = 0.09) {
+  return [
+    [lng - dLng, lat + dLat * 0.7],
+    [lng + dLng * 0.35, lat + dLat],
+    [lng + dLng, lat],
+    [lng + dLng * 0.55, lat - dLat],
+    [lng - dLng * 0.25, lat - dLat],
+    [lng - dLng, lat - dLat * 0.35],
+    [lng - dLng, lat + dLat * 0.7]
+  ];
+}
+const SERVICE_AREA_METRO_OUTLINE = [
+  [-96.05, 30.42], [-95.15, 30.44], [-94.62, 30.12], [-94.58, 29.72], [-94.72, 29.38],
+  [-95.05, 29.22], [-95.55, 29.28], [-95.95, 29.45], [-96.12, 29.85], [-96.05, 30.42]
+];
+const SERVICE_AREA_ZONES = [
+  { id: "houston", ring: serviceAreaRingAround(-95.37, 29.76, 0.14, 0.11) },
+  { id: "katy", ring: serviceAreaRingAround(-95.82, 29.79, 0.1, 0.08) },
+  { id: "sugar-land", ring: serviceAreaRingAround(-95.63, 29.62, 0.09, 0.08) },
+  { id: "pearland", ring: serviceAreaRingAround(-95.29, 29.56, 0.09, 0.08) },
+  { id: "woodlands", ring: serviceAreaRingAround(-95.49, 30.17, 0.1, 0.09) },
+  { id: "pasadena", ring: serviceAreaRingAround(-95.21, 29.69, 0.09, 0.08) },
+  { id: "baytown", ring: serviceAreaRingAround(-94.98, 29.74, 0.1, 0.08) },
+  { id: "league-city", ring: serviceAreaRingAround(-95.09, 29.51, 0.09, 0.08) },
+  { id: "missouri-city", ring: serviceAreaRingAround(-95.54, 29.62, 0.08, 0.08) },
+  { id: "conroe", ring: serviceAreaRingAround(-95.46, 30.31, 0.1, 0.09) },
+  { id: "friendswood", ring: serviceAreaRingAround(-95.2, 29.53, 0.08, 0.07) },
+  { id: "rosenberg", ring: serviceAreaRingAround(-95.81, 29.55, 0.08, 0.08) }
+];
+function serviceAreaProject(lng, lat) {
+  const { west, east, north, south } = SERVICE_AREA_MAP_VIEW;
+  const { w, h } = SERVICE_AREA_MAP_VB;
+  const x = (lng - west) / (east - west) * w;
+  const y = (north - lat) / (north - south) * h;
+  return `${x.toFixed(2)},${y.toFixed(2)}`;
+}
+function serviceAreaRingPath(ring) {
+  const pts = ring.map(([lng, lat]) => serviceAreaProject(lng, lat));
+  return `M ${pts.join(" L ")} Z`;
+}
+function ServiceAreaMapOverlay() {
+  const outer = serviceAreaRingPath(SERVICE_AREA_METRO_OUTLINE);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", {
+    className: "absolute inset-0 w-full h-full pointer-events-none z-[1]",
+    viewBox: `0 0 ${SERVICE_AREA_MAP_VB.w} ${SERVICE_AREA_MAP_VB.h}`,
+    preserveAspectRatio: "none",
+    "aria-hidden": true,
+    children: [
+      ...SERVICE_AREA_ZONES.map((z) => /* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+        d: serviceAreaRingPath(z.ring),
+        fill: SERVICE_AREA_MAP_FILL,
+        stroke: SERVICE_AREA_MAP_STROKE,
+        strokeWidth: 2,
+        vectorEffect: "non-scaling-stroke"
+      }, z.id)),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+        d: outer,
+        fill: "none",
+        stroke: SERVICE_AREA_MAP_STROKE_OUTER,
+        strokeWidth: 2.5,
+        vectorEffect: "non-scaling-stroke"
+      })
+    ]
+  });
+}
+/* SERVICE_AREA_MAP_OVERLAY */
 function Home() {
   const { toast: toast2 } = useToast();
   const contactRef = reactExports.useRef(null);
@@ -33003,15 +33074,6 @@ function Home() {
           /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#contact", className: "text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K$3.dark }, children: T2.bookNow })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "md:hidden p-2 rounded", onClick: () => setMenuOpen(!menuOpen), children: menuOpen ? /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "h-5 w-5" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Menu, { className: "h-5 w-5" }) })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-header-mobile-strip md:hidden", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 py-2 flex flex-col gap-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }), " ", COMPANY_PHONE_DISPLAY$3] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }), " ", PHONE_DISPLAY$3] })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#contact", className: "htr-header-mobile-book text-white font-bold px-3 py-2 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K$3.dark }, children: T2.bookNow })
-        ] })
       ] }),
       menuOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:hidden bg-white border-t border-stone-100 px-4 pb-3 flex flex-col gap-2 text-sm font-semibold text-stone-700", children: [
         ["/", "#services", "#about", "#faq", "#contact"].map((href, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href, onClick: () => setMenuOpen(false), className: "py-2 border-b border-stone-100", children: T2.nav[i] }, href)),
@@ -33660,7 +33722,8 @@ function Home() {
                     referrerPolicy: "no-referrer-when-downgrade"
                   }
                 ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-transparent group-hover:bg-black/10 transition-colors duration-200 flex items-end justify-center pb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/95 text-stone-800 text-xs font-semibold px-4 py-1.5 rounded-full shadow-md flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ServiceAreaMapOverlay, {}),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-[2] bg-transparent group-hover:bg-black/10 transition-colors duration-200 flex items-end justify-center pb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/95 text-stone-800 text-xs font-semibold px-4 py-1.5 rounded-full shadow-md flex items-center gap-1.5", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(ExternalLink, { className: "h-3 w-3" }),
                   T2.openInMaps
                 ] }) })
