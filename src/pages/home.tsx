@@ -850,8 +850,6 @@ const SOCIALS = [
   { icon: <FaYoutube    className="h-4 w-4" />, href: "https://www.youtube.com/",   label: "YouTube",   bg: "#FF0000" },
 ];
 
-// ALL_REVIEWS imported from ../data/reviews (300 entries, rotated daily)
-
 /* â”€â”€ Certifications (pre-processed images with name redacted) â”€â”€â”€â”€â”€â”€ */
 const CERTS: { img: string; label: string }[] = [
   { img: "/certs/cert1.jpg", label: "R-410A Technician Certification" },
@@ -1779,31 +1777,33 @@ export default function Home() {
               <p className="text-sm text-stone-500 font-medium py-6 text-center col-span-full">{T.reviewsLoading}</p>
             )}
             {!loadingGoogleReviews && mergedGoogleReviews.length === 0 && (
-              <p className="text-sm text-stone-500 font-medium py-6 text-center col-span-full sr-only">{T.reviewsLoading}</p>
+              <p className="text-sm text-stone-500 font-medium py-6 text-center col-span-full">
+                {isEs ? "No hay reseñas de Google disponibles en este momento." : "No Google reviews available right now. Please try again later."}
+              </p>
             )}
             <div className="relative"><div className="htr-google-reviews-grid gap-2 md:gap-2.5">{pagedGoogleReviews.map((r, i) => (
-                <div key={`${r.name}-${i}`} className="bg-white rounded-lg p-2 md:p-2.5 shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2 min-w-0">
+                <div key={`${r.name}-${i}`} className="bg-white rounded-lg shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-1.5 min-w-0">
                       <div
-                        className="h-8 w-8 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0"
+                        className="htr-google-review-avatar rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
                         style={{ backgroundColor: r.avatarColor }}
                       >
                         {r.initials}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-semibold text-xs text-stone-900 truncate">{r.name}</p>
-                        <p className="text-[11px] text-stone-400 leading-none">{r.time}</p>
+                        <p className="htr-google-review-name font-semibold text-stone-900 truncate">{r.name}</p>
+                        <p className="htr-google-review-time text-stone-400 leading-none">{r.time}</p>
                       </div>
                     </div>
-                    <span className="text-[#4285F4] font-extrabold text-lg leading-none flex-shrink-0" aria-hidden="true">G</span>
+                    <span className="text-[#4285F4] font-extrabold text-sm leading-none flex-shrink-0" aria-hidden="true">G</span>
                   </div>
-                  <div className="flex items-center gap-0.5 mb-2">
+                  <div className="flex items-center gap-0.5 mb-1.5">
                     {Array.from({ length: r.rating }).map((_, j) => (
-                      <Star key={j} className="h-3 w-3 htr-google-star" style={{ color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR }} />
+                      <Star key={j} className="htr-google-star htr-google-review-star" style={{ color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR }} />
                     ))}
                   </div>
-                  <p className="text-stone-600 text-[11px] md:text-xs leading-snug flex-1 line-clamp-3">{isEs ? r.textEs : r.textEn}</p>
+                  <p className="htr-google-review-body text-stone-600 flex-1 line-clamp-3">{isEs ? r.textEs : r.textEn}</p>
                 </div>
               ))}
               </div>

@@ -31054,275 +31054,8 @@ const AccordionContent = reactExports.forwardRef(({ className, children, ...prop
   }
 ));
 AccordionContent.displayName = Content2.displayName;
-const C = [
-  "#7B3F9E",
-  "#1A7A6E",
-  "#C0392B",
-  "#2471A3",
-  "#117A65",
-  "#7D6608",
-  "#884EA0",
-  "#1F618D",
-  "#D35400",
-  "#1E8449",
-  "#1A5276",
-  "#6E2F8B",
-  "#148F77",
-  "#B7950B",
-  "#2E86C1",
-  "#A93226",
-  "#0E6655",
-  "#9B59B6",
-  "#2980B9",
-  "#E67E22",
-  "#5D4037",
-  "#00695C",
-  "#283593",
-  "#6A1B9A",
-  "#558B2F"
-];
-const RAW = [
-  // ── 5-STAR ──────────────────────────────────────────────────────────────────
-  // American
-  ["James W.", 5, "1 month ago", "5", "Fixed my fridge same day, no drama. Highly recommend.", "Arreglaron la nevera el mismo día. Muy recomendados."],
-  ["Sarah J.", 5, "2 months ago", "5", "Tech showed up on time and knew exactly what was wrong. Fair price.", "El técnico llegó puntual y supo el problema de inmediato. Precio justo."],
-  ["Michael D.", 5, "3 months ago", "5", "Washer leaked and they had it fixed in 45 minutes. Great job.", "La lavadora goteaba y la arreglaron en 45 minutos. Excelente trabajo."],
-  ["Jennifer B.", 5, "4 months ago", "5", "Dryer stopped heating — they fixed it fast and cheap. Will call again.", "La secadora no calentaba — la arreglaron rápido y barato."],
-  ["Robert W.", 5, "5 months ago", "5", "Honest guys. Told me the repair was worth it and they were right.", "Honestos. Me dijeron que valía la pena reparar y tenían razón."],
-  ["Lisa M.", 5, "6 months ago", "5", "Refrigerator back to normal after one visit. No hidden fees at all.", "La nevera normal después de una visita. Sin cargos ocultos."],
-  ["David T.", 5, "7 months ago", "5", "Called at 8 AM, fixed by noon. Oven works perfectly now.", "Llamé a las 8, arreglado al mediodía. El horno funciona perfecto."],
-  ["Amanda H.", 5, "8 months ago", "5", "Dishwasher drain was clogged. Cleared and tested — perfect service.", "El drenaje del lavavajillas estaba tapado. Limpiado y probado. Perfecto."],
-  ["Christopher N.", 5, "9 months ago", "5", "Second time using them. Always on time and prices never change.", "Segunda vez que los uso. Siempre puntuales y precios estables."],
-  ["Jessica P.", 5, "10 months ago", "5", "They gave me a 90-day warranty. That kind of confidence says a lot.", "Me dieron garantía de 90 días. Esa confianza dice mucho."],
-  ["Kevin S.", 5, "1 year ago", "5", "Freezer down on a hot day. They came fast and saved all my food.", "Congelador apagado en día caluroso. Vinieron rápido y salvaron la comida."],
-  ["Ashley F.", 5, "11 months ago", "5", "Tech cleaned up after himself and explained everything. Five stars.", "El técnico limpió todo y explicó cada paso. Cinco estrellas."],
-  // Chinese
-  ["Wei Z.", 5, "1 month ago", "5", "Very fast service. Refrigerator repaired the same afternoon. Impressed.", "Servicio muy rápido. Nevera reparada esa misma tarde. Impresionado."],
-  ["Mei L.", 5, "2 months ago", "5", "Washing machine fixed in one visit. Technician was polite and efficient.", "Lavadora arreglada en una visita. El técnico fue amable y eficiente."],
-  ["Xiao C.", 5, "3 months ago", "5", "Called for oven repair. Done in 30 minutes, price was fair.", "Llamé por el horno. Arreglado en 30 minutos, precio justo."],
-  ["Jing W.", 5, "4 months ago", "5", "Dryer belt was broken. Fixed next day with warranty. Very good.", "La correa de la secadora rota. Arreglada al día siguiente con garantía."],
-  ["Fang L.", 5, "5 months ago", "5", "Honest diagnosis. They didn't charge for parts I didn't need.", "Diagnóstico honesto. No cobraron por repuestos que no necesitaba."],
-  ["Yong H.", 5, "6 months ago", "5", "Fridge compressor issue. Handled professionally, no extra charges.", "Problema del compresor. Manejado profesionalmente, sin cargos extra."],
-  ["Ling Z.", 5, "7 months ago", "5", "Technician was punctual and fixed the dishwasher quickly. Recommended.", "El técnico fue puntual y arregló el lavavajillas rápido. Recomendado."],
-  ["Ming W.", 5, "8 months ago", "5", "Good service. My washer spins properly now. Reasonable price.", "Buen servicio. Mi lavadora centrifuga bien ahora. Precio razonable."],
-  ["Yan X.", 5, "9 months ago", "5", "Fast and professional. Refrigerator is cold again. Very satisfied.", "Rápido y profesional. La nevera está fría de nuevo. Muy satisfecho."],
-  ["Ping M.", 5, "10 months ago", "5", "Oven repaired in one visit. Technician explained the problem clearly.", "Horno reparado en una visita. El técnico explicó el problema claramente."],
-  ["Bo Y.", 5, "11 months ago", "5", "Excellent experience. Dryer heating again after their visit. Thank you!", "Excelente experiencia. La secadora calienta de nuevo. ¡Gracias!"],
-  ["Hui T.", 5, "1 year ago", "5", "My dishwasher leaked. Fixed the door seal same day. Great work.", "Mi lavavajillas goteaba. Arreglaron el sello ese día. Gran trabajo."],
-  // Indian
-  ["Raj P.", 5, "1 month ago", "5", "Technician arrived on time and solved the fridge issue in 20 minutes.", "El técnico llegó a tiempo y resolvió el problema de la nevera en 20 minutos."],
-  ["Priya S.", 5, "2 months ago", "5", "Washer wouldn't spin. Fixed it same day. Very professional team.", "La lavadora no centrifugaba. La arreglaron ese día. Equipo muy profesional."],
-  ["Arjun S.", 5, "3 months ago", "5", "Great service. Dishwasher drain fixed quickly and no mess left behind.", "Gran servicio. Drenaje del lavavajillas arreglado rápido y sin desorden."],
-  ["Anita K.", 5, "4 months ago", "5", "Called them for dryer repair. Honest quote, finished on time. Excellent.", "Los llamé para la secadora. Cotización honesta, terminado a tiempo. Excelente."],
-  ["Rahul V.", 5, "5 months ago", "5", "Refrigerator not cooling. Replaced the relay — works perfectly now.", "Nevera no enfriaba. Reemplazaron el relé — funciona perfectamente."],
-  ["Deepa N.", 5, "6 months ago", "5", "Very happy with the oven repair. Quick, clean, and affordable.", "Muy contenta con la reparación del horno. Rápida, limpia y asequible."],
-  ["Suresh R.", 5, "7 months ago", "5", "Fixed the washer pump. Came with parts ready. Very efficient.", "Arreglaron la bomba de la lavadora. Vinieron con repuestos listos. Eficiente."],
-  ["Kavita I.", 5, "8 months ago", "5", "Dryer heating element replaced. Works like new. Good value for money.", "Elemento calefactor de la secadora reemplazado. Funciona como nuevo."],
-  ["Amit G.", 5, "9 months ago", "5", "Same-day service for my fridge. Technician knew the brand well.", "Servicio el mismo día para mi nevera. El técnico conocía bien la marca."],
-  ["Sunita J.", 5, "10 months ago", "5", "Dishwasher control board replaced. Everything works again. Thank you!", "Tarjeta de control del lavavajillas reemplazada. Todo funciona. ¡Gracias!"],
-  ["Vikram M.", 5, "11 months ago", "5", "AC fixed in one visit. Technician was knowledgeable and friendly.", "AC arreglado en una visita. El técnico fue experto y amable."],
-  ["Pooja A.", 5, "1 year ago", "5", "Washer filling issue — inlet valve replaced. Fast and fair service.", "Problema de llenado de lavadora — válvula de entrada reemplazada. Rápido."],
-  // Pakistani
-  ["Ali K.", 5, "1 month ago", "5", "Fridge water dispenser fixed same day. Professional and affordable.", "El dispensador de agua de la nevera arreglado ese día. Asequible."],
-  ["Fatima A.", 5, "2 months ago", "5", "Called for washer repair. Tech arrived in 2 hours. Great response.", "Llamé por la lavadora. El técnico llegó en 2 horas. Gran respuesta."],
-  ["Omar S.", 5, "3 months ago", "5", "Gas range igniter replaced. Safe and efficient repair. Very happy.", "Encendedor de la estufa de gas reemplazado. Reparación segura y eficiente."],
-  ["Zara H.", 5, "4 months ago", "5", "Dryer fixed on first visit. Tech had the part on the truck. 5 stars.", "Secadora arreglada en la primera visita. El técnico tenía el repuesto. 5 estrellas."],
-  ["Bilal M.", 5, "5 months ago", "5", "Refrigerator compressor diagnosed and fixed. Honest and transparent pricing.", "Compresor de nevera diagnosticado y arreglado. Precios honestos y transparentes."],
-  ["Ayesha Q.", 5, "6 months ago", "5", "Dishwasher pump replaced. No mess left behind. Very professional team.", "Bomba de lavavajillas reemplazada. Sin desorden. Equipo muy profesional."],
-  ["Imran C.", 5, "7 months ago", "5", "Oven element replaced in 30 minutes. Clear quote before starting. Excellent.", "Elemento del horno reemplazado en 30 minutos. Cotización clara. Excelente."],
-  ["Hassan R.", 5, "8 months ago", "5", "Washer door seal replaced. Leak stopped. Good price and fast service.", "Sello de la puerta de la lavadora reemplazado. Sin fugas. Servicio rápido."],
-  // Korean / Japanese
-  ["Ji-Woo K.", 5, "1 month ago", "5", "Fridge ice maker fixed same day. Tech was fast and professional.", "Máquina de hielo de la nevera arreglada ese día. Técnico rápido."],
-  ["Yuki T.", 5, "2 months ago", "5", "Washing machine vibrated badly. Tech fixed the balance. Quiet now.", "La lavadora vibraba mucho. El técnico la balanceó. Silenciosa ahora."],
-  ["Soo-Jin L.", 5, "3 months ago", "5", "Dishwasher not draining. Fixed quickly. Technician was very polite.", "El lavavajillas no drenaba. Arreglado rápidamente. Técnico muy amable."],
-  ["Akira S.", 5, "4 months ago", "5", "Dryer squeaking. Replaced drum rollers — quiet again. Fair price.", "La secadora chirriaba. Reemplazaron los rodillos. Silenciosa. Precio justo."],
-  ["Min-Ji P.", 5, "5 months ago", "5", "Refrigerator fixed in one visit. Technician explained the issue well.", "Nevera arreglada en una visita. El técnico explicó bien el problema."],
-  ["Hiroshi N.", 5, "6 months ago", "5", "Oven not heating properly. Sensor replaced. Now bakes perfectly.", "El horno no calentaba bien. Sensor reemplazado. Ahora hornea perfectamente."],
-  ["Jae-Young C.", 5, "7 months ago", "5", "Washer pump replaced. Machine drains properly now. Very happy.", "Bomba de lavadora reemplazada. La máquina drena correctamente. Muy feliz."],
-  ["Yoko A.", 5, "8 months ago", "5", "Fast and clean repair. Fridge is cold again. Will recommend to friends.", "Reparación rápida y limpia. La nevera está fría. Lo recomendaré a amigos."],
-  // Vietnamese / Filipino
-  ["Nguyen V.", 5, "1 month ago", "5", "Refrigerator repaired quickly and price was right. Very satisfied.", "Nevera reparada rápidamente y el precio fue justo. Muy satisfecho."],
-  ["Maria S.", 5, "2 months ago", "5", "Called for dishwasher repair. Fixed same day, no extra fees.", "Llamé por el lavavajillas. Arreglado ese día, sin cargos extra."],
-  ["Linh T.", 5, "3 months ago", "5", "Dryer not drying well. Tech cleaned the vent and replaced a fuse. Works great.", "La secadora no secaba bien. Limpiaron la ventilación y reemplazaron un fusible."],
-  ["Angelo C.", 5, "4 months ago", "5", "Washer wouldn't start. Fixed in 20 minutes. Excellent service!", "La lavadora no arrancaba. Arreglada en 20 minutos. ¡Excelente servicio!"],
-  ["Thanh N.", 5, "5 months ago", "5", "Fridge leaking water. Drain tube cleared and sealed. No more leaks.", "Nevera goteando agua. Tubo de drenaje limpiado y sellado. Sin fugas."],
-  // European
-  ["Emma M.", 5, "1 month ago", "5", "Bosch dishwasher fixed in one visit. Tech knew the brand perfectly.", "Lavavajillas Bosch arreglado en una visita. El técnico conocía la marca."],
-  ["Pierre D.", 5, "2 months ago", "5", "Oven repaired quickly. Tech was professional and price was fair.", "Horno reparado rápidamente. Técnico profesional y precio justo."],
-  ["Anna K.", 5, "3 months ago", "5", "Washing machine bearing replaced. Quiet now. Happy with the result.", "Rodamiento de la lavadora reemplazado. Silenciosa ahora. Feliz con el resultado."],
-  ["Luca F.", 5, "4 months ago", "5", "Fridge temperature sensor replaced. Works perfectly now. Good team.", "Sensor de temperatura de nevera reemplazado. Funciona perfectamente. Buen equipo."],
-  ["Sophie M.", 5, "5 months ago", "5", "Dryer heating element fixed. Clothes dry fast now. Very professional.", "Elemento calefactor de secadora arreglado. La ropa seca rápido. Muy profesional."],
-  ["Alexei P.", 5, "6 months ago", "5", "Refrigerator compressor relay replaced. Fast and honest service.", "Relé del compresor de nevera reemplazado. Servicio rápido y honesto."],
-  ["Ingrid H.", 5, "7 months ago", "5", "Dishwasher drain pump fixed. No mess, no fuss. Will use again.", "Bomba de drenaje de lavavajillas arreglada. Sin desorden. Los usaré de nuevo."],
-  ["Marco B.", 5, "8 months ago", "5", "Washer door lock replaced. Works fine now. Reasonable price.", "Cerradura de puerta de lavadora reemplazada. Funciona bien. Precio razonable."],
-  ["Elena I.", 5, "9 months ago", "5", "Gas stove igniter fixed. Tech was knowledgeable about European brands.", "Encendedor de estufa de gas arreglado. Técnico conocía las marcas europeas."],
-  ["Katja W.", 5, "10 months ago", "5", "Refrigerator ice maker repaired. Quick visit, honest price. Five stars.", "Máquina de hielo de nevera reparada. Visita rápida, precio honesto. Cinco estrellas."],
-  ["Hans S.", 5, "11 months ago", "5", "Dryer drum replaced. Technician was punctual and efficient. Good job.", "Tambor de secadora reemplazado. El técnico fue puntual y eficiente. Buen trabajo."],
-  ["Giulia R.", 5, "1 year ago", "5", "Oven control board replaced. Everything works perfectly. Thank you!", "Tarjeta de control del horno reemplazada. Todo funciona perfectamente. ¡Gracias!"],
-  // Middle Eastern
-  ["Omar A.", 5, "1 month ago", "5", "Called for fridge repair. Technician arrived on time and fixed it. Great.", "Llamé por la nevera. El técnico llegó a tiempo y la arregló. Excelente."],
-  ["Sara M.", 5, "2 months ago", "5", "Washer fixed in 30 minutes. Tech had the part ready. Excellent service.", "Lavadora arreglada en 30 minutos. El técnico tenía el repuesto. Excelente servicio."],
-  ["Ahmed H.", 5, "3 months ago", "5", "Dishwasher not filling. Inlet valve replaced. Simple fix, great result.", "Lavavajillas no se llenaba. Válvula de entrada reemplazada. Arreglo simple."],
-  ["Layla K.", 5, "4 months ago", "5", "Refrigerator making noise. Fan replaced. Quiet and cold again. Happy!", "Nevera hacía ruido. Ventilador reemplazado. Silenciosa y fría. ¡Feliz!"],
-  ["Khalid N.", 5, "5 months ago", "5", "AC fixed on a hot day. They came quickly. Professional and fair.", "AC arreglado en un día caluroso. Vinieron rápido. Profesional y justo."],
-  // African / African-American
-  ["Kwame A.", 5, "1 month ago", "5", "Fridge wasn't cooling. Same-day repair. Technician was excellent.", "La nevera no enfriaba. Reparación el mismo día. El técnico fue excelente."],
-  ["Amara D.", 5, "2 months ago", "5", "Washing machine fixed quickly. Very happy with the service and price.", "Lavadora arreglada rápidamente. Muy contento con el servicio y precio."],
-  ["Chidi O.", 5, "3 months ago", "5", "Dryer drum belt replaced. Runs great now. Will definitely use again.", "Correa del tambor de secadora reemplazada. Funciona genial. Los usaré de nuevo."],
-  ["Fatou B.", 5, "4 months ago", "5", "Dishwasher spray arm replaced. Dishes come out clean now. Good job.", "Brazo rociador de lavavajillas reemplazado. Los platos salen limpios. Buen trabajo."],
-  // Latin American
-  ["Carlos M.", 5, "1 month ago", "5", "Quick and professional. Gave us a written warranty on parts and labor.", "Rápidos y profesionales. Nos dieron garantía escrita en piezas y mano de obra."],
-  ["Maria J.", 5, "2 months ago", "5", "My refrigerator works great after their visit. Honest and punctual team.", "Mi nevera funciona genial después de su visita. Equipo honesto y puntual."],
-  ["Luis R.", 5, "3 months ago", "5", "Washer drum bearing replaced. Machine is quiet now. Good price.", "Rodamiento del tambor de lavadora reemplazado. Silenciosa ahora. Buen precio."],
-  ["Ana P.", 5, "4 months ago", "5", "Oven sensor fixed. Now it heats to the right temperature. Excellent!", "Sensor del horno arreglado. Ahora calienta a la temperatura correcta. ¡Excelente!"],
-  ["Roberto S.", 5, "5 months ago", "5", "Freezer repaired same day. Tech was fast and the price was fair.", "Congelador reparado ese día. El técnico fue rápido y el precio justo."],
-  ["Sofia V.", 5, "6 months ago", "5", "Dishwasher leak fixed. They replaced the door seal and checked everything.", "Fuga del lavavajillas arreglada. Reemplazaron el sello y verificaron todo."],
-  // More 5-star diverse names
-  ["Jun Q.", 5, "1 month ago", "5", "Refrigerator fixed fast. Tech was polite and left no mess. 5 stars.", "Nevera arreglada rápido. Técnico amable y sin desorden. 5 estrellas."],
-  ["Lan S.", 5, "2 months ago", "5", "Washer noise issue fixed. New bearings. Very quiet now. Great team.", "Problema de ruido de lavadora. Rodamientos nuevos. Silenciosa. Gran equipo."],
-  ["Kiran B.", 5, "3 months ago", "5", "Dryer not drying. Element replaced. Works perfectly. Recommended!", "La secadora no secaba. Elemento reemplazado. Funciona perfectamente. ¡Recomendado!"],
-  ["Ravi C.", 5, "4 months ago", "5", "Fridge ice maker stopped. Fixed in one visit. Very happy with service.", "La máquina de hielo paró. Arreglada en una visita. Muy contento."],
-  ["Neha D.", 5, "5 months ago", "5", "Oven door hinge replaced. Closes properly now. Good price, fast work.", "Bisagra de puerta de horno reemplazada. Cierra bien. Buen precio, trabajo rápido."],
-  ["Sana B.", 5, "6 months ago", "5", "Refrigerator thermostat replaced. Holds temperature now. Excellent service.", "Termostato de nevera reemplazado. Mantiene la temperatura. Excelente servicio."],
-  ["Rosa D.", 5, "7 months ago", "5", "Washing machine pump replaced. No more flooding. Very professional.", "Bomba de lavadora reemplazada. Sin más inundaciones. Muy profesional."],
-  ["Nadia F.", 5, "8 months ago", "5", "Dishwasher control board issue. Repaired same day. Fair price.", "Problema de tarjeta de control del lavavajillas. Reparado ese día. Precio justo."],
-  ["Brian L.", 5, "9 months ago", "5", "Tech showed up within the window. Dryer fixed fast. Great experience.", "El técnico llegó dentro de la ventana. Secadora arreglada rápido. Gran experiencia."],
-  ["Rachel C.", 5, "10 months ago", "5", "Freezer making weird sounds. Fan replaced. Quiet and working great.", "El congelador hacía ruidos extraños. Ventilador reemplazado. Silencioso."],
-  ["Daniel G.", 5, "11 months ago", "5", "Washer leaking. Door seal replaced same day. No more leaks. Excellent.", "Lavadora goteaba. Sello de puerta reemplazado ese día. Sin fugas. Excelente."],
-  ["Stephanie K.", 5, "1 year ago", "5", "Refrigerator wasn't cooling. Fixed quickly and correctly. Will use again.", "Nevera no enfriaba. Arreglada rápido y correctamente. Los usaré de nuevo."],
-  ["Matthew R.", 5, "1 month ago", "5", "Oven igniter replaced. Works perfectly on first try. Highly recommend.", "Encendedor del horno reemplazado. Funciona perfectamente. Muy recomendado."],
-  ["Nicole V.", 5, "2 months ago", "5", "Dishwasher spray arm was broken. Replaced quickly. Dishes clean again.", "El brazo rociador del lavavajillas estaba roto. Reemplazado rápido. Platos limpios."],
-  ["Anthony E.", 5, "3 months ago", "5", "They fixed the dryer in one visit and gave a 90-day warranty. Perfect.", "Arreglaron la secadora en una visita y dieron garantía de 90 días. Perfecto."],
-  ["Patricia O.", 5, "4 months ago", "5", "Refrigerator water line repaired. No more leaks on the floor. Great work.", "Línea de agua de nevera reparada. Sin más fugas. Gran trabajo."],
-  ["Hao N.", 5, "5 months ago", "5", "Washing machine door lock fixed. Now starts every time. Good service.", "Cerradura de puerta de lavadora arreglada. Arranca siempre. Buen servicio."],
-  ["Oluwaseun A.", 5, "6 months ago", "5", "Called on a weekend. They came and fixed the fridge. Amazing response.", "Llamé un fin de semana. Vinieron y arreglaron la nevera. Respuesta increíble."],
-  ["Hector G.", 5, "7 months ago", "5", "Oven element replaced. Heats evenly now. Tech was fast and polite.", "Elemento del horno reemplazado. Calienta uniformemente. Técnico rápido y amable."],
-  ["Valeria C.", 5, "8 months ago", "5", "Dryer drum bearing fixed. No more squeaking. Great team.", "Rodamiento del tambor de secadora arreglado. Sin más chirridos. Gran equipo."],
-  ["Diego F.", 5, "9 months ago", "5", "Refrigerator fixed in under an hour. Technician was very professional.", "Nevera arreglada en menos de una hora. El técnico fue muy profesional."],
-  ["Alejandro V.", 5, "10 months ago", "5", "Dishwasher drain pump replaced. Works like new. No mess left behind.", "Bomba de drenaje de lavavajillas reemplazada. Funciona como nuevo. Sin desorden."],
-  ["Emily R.", 5, "11 months ago", "5", "Washer vibrating badly. Tech balanced drum and replaced shock absorbers.", "Lavadora vibraba mucho. El técnico balanceó el tambor y reemplazó amortiguadores."],
-  ["Ricardo M.", 5, "1 year ago", "5", "Fridge thermostat replaced. Temperature is stable now. Good price.", "Termostato de nevera reemplazado. Temperatura estable ahora. Buen precio."],
-  ["Gabriela S.", 5, "1 month ago", "5", "Oven fixed in 30 minutes. Same-day service and no surprise fees.", "Horno arreglado en 30 minutos. Servicio el mismo día y sin sorpresas."],
-  ["Adrian W.", 5, "2 months ago", "5", "Gas range burner cleaned and igniter replaced. All burners work now.", "Quemador limpiado y encendedor reemplazado. Todos los quemadores funcionan."],
-  ["Daniela H.", 5, "3 months ago", "5", "Freezer stopped freezing. Start relay replaced — problem solved fast.", "El congelador paró de congelar. Relé de arranque reemplazado. Rápido."],
-  ["Isabelle C.", 5, "4 months ago", "5", "Fridge defrost heater replaced. No more frost buildup. Excellent!", "Calefactor de descongelación de nevera reemplazado. Sin acumulación de escarcha."],
-  ["Samuel E.", 5, "5 months ago", "5", "Tech diagnosed and fixed my dryer in 40 minutes. Couldn't ask for more.", "El técnico diagnosticó y arregló la secadora en 40 minutos. No puedo pedir más."],
-  ["Marcus L.", 5, "6 months ago", "5", "Refrigerator evaporator fan replaced. Cold and quiet again. 5 stars.", "Ventilador del evaporador de nevera reemplazado. Fría y silenciosa. 5 estrellas."],
-  ["Tobias W.", 5, "7 months ago", "5", "Washing machine timer replaced. Full cycles now. Quick and affordable.", "Temporizador de lavadora reemplazado. Ciclos completos. Rápido y asequible."],
-  ["Miriam B.", 5, "8 months ago", "5", "Dryer vent was blocked. Cleaned and tested. Now dries in one cycle.", "Ventilación de secadora bloqueada. Limpiada y probada. Seca en un ciclo."],
-  ["Darius M.", 5, "9 months ago", "5", "Dishwasher float switch replaced. No more overflow. Good team!", "Interruptor flotante de lavavajillas reemplazado. Sin desbordamiento. ¡Buen equipo!"],
-  ["Elena R.", 5, "10 months ago", "5", "Professional from start to finish. Repair done right the first time.", "Profesional de principio a fin. La reparación se hizo bien a la primera."],
-  ["Clarence H.", 5, "11 months ago", "5", "Dryer motor replaced. Machine runs smooth now. Very happy customer.", "Motor de secadora reemplazado. La máquina funciona suave. Cliente muy feliz."],
-  ["Alondra S.", 5, "1 year ago", "5", "Bosch dishwasher inlet valve replaced. Works great. Fair price.", "Válvula de entrada del lavavajillas Bosch reemplazada. Funciona genial."],
-  ["Priscilla T.", 5, "1 month ago", "5", "Refrigerator door seal replaced. Energy bill dropped right away.", "Sello de puerta de nevera reemplazado. La factura de energía bajó de inmediato."],
-  ["Terrence W.", 5, "2 months ago", "5", "Garbage disposal unjammed and reset. Done in 15 minutes. Good service.", "Triturador de basura desatascado y reiniciado. Hecho en 15 minutos."],
-  ["Reginald T.", 5, "3 months ago", "5", "Washer mold smell fixed. Tech cleaned drum and replaced boot seal.", "Olor a moho de lavadora arreglado. Técnico limpió el tambor y reemplazó el sello."],
-  ["Priya N.", 5, "4 months ago", "5", "Same-day fridge repair. Tech had parts on the truck. Very efficient.", "Reparación de nevera el mismo día. El técnico tenía repuestos. Muy eficiente."],
-  ["Stefan B.", 5, "5 months ago", "5", "Dryer checked out, vent cleaned, element replaced. Perfect outcome.", "Secadora revisada, ventilación limpiada, elemento reemplazado. Resultado perfecto."],
-  ["Carmelita R.", 5, "6 months ago", "5", "Fridge water line had a small leak. Fixed fast. No more puddles.", "La línea de agua de la nevera tenía una pequeña fuga. Arreglado rápido."],
-  ["Franklin P.", 5, "7 months ago", "5", "Dishwasher float switch cleared. Fills correctly now. Quick service.", "Interruptor flotante del lavavajillas limpiado. Se llena correctamente."],
-  ["Isadora T.", 5, "8 months ago", "5", "Freezer evaporator fan replaced. Running cold and quiet now.", "Ventilador del evaporador del congelador reemplazado. Frío y silencioso."],
-  ["Derrick M.", 5, "9 months ago", "5", "Washer drum belt replaced. Full cycles now. Great affordable service.", "Correa del tambor de lavadora reemplazada. Ciclos completos. Servicio asequible."],
-  ["Vanessa G.", 5, "10 months ago", "5", "Fridge compressor relay replaced. Cooling properly. Honest team.", "Relé del compresor de nevera reemplazado. Enfría correctamente. Equipo honesto."],
-  ["Walter B.", 5, "11 months ago", "5", "Dryer runs on first try now. Heating element replaced. Good work.", "La secadora arranca al primer intento. Elemento calefactor reemplazado."],
-  ["Victoria T.", 5, "1 year ago", "5", "Dishwasher inlet valve replaced. Tech ran a test cycle before leaving.", "Válvula de entrada de lavavajillas reemplazada. Técnico corrió ciclo de prueba."],
-  ["Beatrice M.", 5, "1 month ago", "5", "Washer overflow fixed. Water level sensor replaced. No more flooding.", "Desbordamiento de lavadora arreglado. Sensor de nivel de agua reemplazado."],
-  ["Lionel C.", 5, "2 months ago", "5", "Old washer pump replaced. Machine running again. Saved from buying new.", "Bomba de lavadora vieja reemplazada. Máquina funcionando. Se salvó de comprar nueva."],
-  ["Gerald T.", 5, "3 months ago", "5", "Washer lid switch replaced. Now starts and completes full cycles.", "Switch de tapa de lavadora reemplazado. Ahora arranca y completa ciclos."],
-  ["Donna F.", 5, "4 months ago", "5", "Dryer vent blocked with lint — fire risk. Cleared and all good now.", "Ventilación de secadora bloqueada con pelusa. Riesgo de incendio. Limpiada."],
-  ["Philip N.", 5, "5 months ago", "5", "Washer F21 error fixed. Drain hose cleared and pump replaced. Perfect.", "Error F21 de lavadora arreglado. Manguera de drenaje limpiada y bomba reemplazada."],
-  ["Rosario G.", 5, "6 months ago", "5", "Samsung washer calibrated and sensor replaced. No more errors. Great.", "Lavadora Samsung calibrada y sensor reemplazado. Sin más errores. Genial."],
-  ["Faith H.", 5, "7 months ago", "5", "Dryer was shutting off early. Vent cleaned. Problem solved. Quick fix.", "La secadora se apagaba pronto. Ventilación limpiada. Problema resuelto. Rápido."],
-  ["Lorenzo B.", 5, "8 months ago", "5", "Gas dryer igniter replaced. Dries perfectly now. Knowledgeable tech.", "Encendedor de secadora de gas reemplazado. Seca perfectamente. Técnico experto."],
-  ["Christine W.", 5, "9 months ago", "5", "Tech wore shoe covers and cleaned up. Respectful of my home. 5 stars.", "El técnico usó cubre zapatos y limpió. Respetuoso con mi hogar. 5 estrellas."],
-  ["Jose A.", 5, "10 months ago", "5", "Quoted $180, paid $180. No surprises. That's rare. Highly recommend.", "Cotizaron $180, pagué $180. Sin sorpresas. Es raro. Muy recomendado."],
-  ["Omar K.", 5, "11 months ago", "5", "Was about to buy a new fridge. They fixed mine for $200. Smart choice.", "Iba a comprar nevera nueva. La arreglaron por $200. Decisión inteligente."],
-  ["Hassan T.", 5, "1 year ago", "5", "Called on Sunday. Small extra fee but totally worth it. Fridge fixed.", "Llamé el domingo. Pequeño cargo extra pero totalmente vale la pena. Nevera arreglada."],
-  ["Derek C.", 5, "1 month ago", "5", "Found fridge noise in 15 minutes that 2 other companies missed. Impressed.", "Encontraron el ruido de la nevera en 15 minutos que otras empresas no encontraron."],
-  ["Ernest M.", 5, "2 months ago", "5", "Frigidaire start relay replaced. Clicks stopped. Cooling great now.", "Relé de arranque de Frigidaire reemplazado. Sin más clics. Enfría bien."],
-  ["Ronald P.", 5, "3 months ago", "5", "French door fridge ice level sensor replaced. Perfect ice now.", "Sensor de nivel de hielo de nevera francesa reemplazado. Hielo perfecto."],
-  ["Fatima N.", 5, "4 months ago", "5", "Fridge temperature sensor fixed. Food stays fresh. Very professional.", "Sensor de temperatura de nevera arreglado. La comida se mantiene fresca."],
-  ["Luz N.", 5, "5 months ago", "5", "Used them for years. Never a bad experience. Consistent and reliable.", "Los he usado por años. Nunca una mala experiencia. Consistentes y confiables."],
-  ["Carmen B.", 5, "6 months ago", "5", "They were patient with my elderly mother. Great service and kind team.", "Fueron pacientes con mi madre anciana. Gran servicio y equipo amable."],
-  ["Mirna A.", 5, "7 months ago", "5", "AC unit fixed on a hot Houston day. Came fast. Saved the day!", "Unidad de AC arreglada en día caluroso de Houston. Vinieron rápido. ¡Salvaron el día!"],
-  ["Leon T.", 5, "8 months ago", "5", "Ice dispenser motor replaced. No more jams. Perfect ice every time.", "Motor del dispensador de hielo reemplazado. Sin atascos. Hielo perfecto."],
-  ["Tanya S.", 5, "9 months ago", "5", "Fridge water line frozen. Thawed and rerouted. Problem fully solved.", "Línea de agua de nevera congelada. Descongelada y reencaminada. Problema resuelto."],
-  ["Calvin T.", 5, "10 months ago", "5", "Washer dispensers cleaned and boot seal replaced. No more mold smell.", "Dispensadores de lavadora limpiados y sello reemplazado. Sin olor a moho."],
-  ["Pauline H.", 5, "11 months ago", "5", "Pre-purchase appliance inspection. Found blocked dryer vent. Very helpful.", "Inspección de electrodomésticos pre-compra. Encontraron ventilación bloqueada."],
-  ["Marcus W.", 5, "1 year ago", "5", "Fridge fixed on first visit. 90-day warranty. Came on time. Excellent.", "Nevera arreglada en la primera visita. Garantía de 90 días. Llegaron a tiempo."],
-  // ── RECENT ──────────────────────────────────────────────────────────────────
-  ["Xin L.", 5, "1 day ago", "recent", "Called this morning, fridge fixed by afternoon. Incredible same-day service!", "Llamé esta mañana, nevera arreglada por la tarde. ¡Servicio increíble el mismo día!"],
-  ["Aisha M.", 5, "2 days ago", "recent", "Washer flooded the laundry room. Hi-Tech came in 90 minutes. Amazing!", "La lavadora inundó el cuarto. Hi-Tech llegó en 90 minutos. ¡Increíble!"],
-  ["Park S.", 5, "3 days ago", "recent", "Fridge stopped cooling overnight. Fixed before lunch. Great response.", "La nevera paró de enfriar de noche. Arreglada antes del almuerzo. Gran respuesta."],
-  ["James D.", 5, "4 days ago", "recent", "Called at 8 AM, tech here by 10, fridge fixed by 11. Perfect!", "Llamé a las 8, técnico a las 10, nevera arreglada a las 11. ¡Perfecto!"],
-  ["Preethi K.", 5, "5 days ago", "recent", "Dryer fixed same day I called. Technician was fast and professional.", "Secadora arreglada el mismo día que llamé. Técnico rápido y profesional."],
-  ["Kevin R.", 5, "6 days ago", "recent", "Emergency dishwasher call on weekend. They came in 3 hours. 5 stars.", "Llamada de emergencia del lavavajillas el fin de semana. Vinieron en 3 horas. 5 estrellas."],
-  ["Yuna S.", 5, "1 week ago", "recent", "Washer door stuck. Tech came same day and fixed the lock. Excellent!", "Puerta de lavadora atascada. El técnico vino ese día y arregló la cerradura. ¡Excelente!"],
-  ["Roberto M.", 5, "1 week ago", "recent", "Best repair experience ever. Called, they came, fixed. Simple and great.", "La mejor experiencia de reparación. Llamé, vinieron, arreglaron. Simple y genial."],
-  ["Maria K.", 5, "2 weeks ago", "recent", "Washer stopped draining. Fixed same visit. Punctual and fair price.", "Lavadora dejó de drenar. Arreglada en la misma visita. Puntual y precio justo."],
-  ["Brian T.", 5, "2 weeks ago", "recent", "Oven fixed same day I called. Kitchen spotless after they left.", "Horno arreglado el mismo día. La cocina impecable después de que se fueron."],
-  ["Lucia V.", 5, "3 weeks ago", "recent", "Hi-Tech at my door in 90 minutes. Dryer fixed in 30. 10 out of 10.", "Hi-Tech en mi puerta en 90 minutos. Secadora arreglada en 30. 10 de 10."],
-  ["Tyler G.", 5, "3 weeks ago", "recent", "Fridge water dispenser fixed next morning. Works perfectly now.", "Dispensador de agua de nevera arreglado a la mañana siguiente. Funciona perfecto."],
-  ["Emma L.", 5, "3 weeks ago", "recent", "Oven igniters sparking constantly. Fixed same day. Safe and quiet now.", "Encendedores del horno chispeando. Arreglados ese día. Seguros y silenciosos."],
-  ["Hector S.", 5, "4 weeks ago", "recent", "AC fixed on a Sunday. Quick and efficient. Cool house again!", "AC arreglado un domingo. Rápido y eficiente. ¡Casa fresca de nuevo!"],
-  ["Isabella W.", 5, "4 weeks ago", "recent", "Dishwasher wasn't washing. Fixed same day. Very happy with service.", "El lavavajillas no lavaba. Arreglado ese día. Muy contenta con el servicio."],
-  ["Nathan K.", 5, "1 week ago", "recent", "Freezer down on hot day. Tech came fast and saved all my groceries!", "Congelador apagado en día caluroso. Técnico vino rápido y salvó la comida."],
-  ["Camila B.", 5, "2 weeks ago", "recent", "Microwave motor replaced for $60. Thought I needed new one. Smart fix!", "Motor de microondas reemplazado por $60. Creí que necesitaba uno nuevo. ¡Inteligente!"],
-  ["Jerome T.", 5, "3 weeks ago", "recent", "Emergency dryer repair. Tech here within 2 hours. Fixed before laundry day.", "Reparación de emergencia de secadora. Técnico en 2 horas. Arreglada antes del día de lavado."],
-  ["Amanda F.", 5, "4 weeks ago", "recent", "Washer leaked everywhere. Hi-Tech came fast, fixed pump seal. Very professional.", "La lavadora goteaba. Hi-Tech vino rápido, arregló el sello. Muy profesional."],
-  ["Ana G.", 5, "1 week ago", "recent", "Refrigerator fixed same morning I called. Tech knew exactly what to do.", "Nevera arreglada esa mañana. El técnico sabía exactamente qué hacer."],
-  ["Soo-Ah J.", 5, "2 days ago", "recent", "Dryer stopped mid-cycle. Tech came same day, replaced thermal fuse. 5 stars!", "Secadora paró. El técnico vino ese día, reemplazó el fusible térmico. ¡5 estrellas!"],
-  ["Rodrigo M.", 5, "3 weeks ago", "recent", "Fridge ice maker fixed next morning. Price was fair, tech was great.", "Máquina de hielo de nevera arreglada a la mañana siguiente. Técnico genial."],
-  ["Yemi A.", 5, "1 week ago", "recent", "Called Sunday night, tech came Monday morning. Fridge saved. Thank you!", "Llamé el domingo por la noche, técnico el lunes por la mañana. ¡Nevera salvada!"],
-  // ── 4-STAR ──────────────────────────────────────────────────────────────────
-  ["Lisa L.", 4, "2 months ago", "4", "Good service, fixed the dishwasher. Had to wait 2 days for appointment.", "Buen servicio, arreglaron el lavavajillas. Tuve que esperar 2 días para cita."],
-  ["Sofia P.", 4, "1 month ago", "4", "Dryer fixed correctly. Minor scheduling issue but the repair was perfect.", "Secadora arreglada correctamente. Pequeño problema de horario pero reparación perfecta."],
-  ["Kevin F.", 4, "3 months ago", "4", "Fridge fixed well. Wish they'd communicated better during the process.", "Nevera arreglada bien. Quisiera que hubieran comunicado mejor durante el proceso."],
-  ["Paula M.", 4, "4 months ago", "4", "Washer repaired same day. Appointment window was wide but work was great.", "Lavadora reparada ese día. Ventana de cita amplia pero el trabajo fue genial."],
-  ["Curtis J.", 4, "5 months ago", "4", "Oven repair took longer than expected but the result was perfect.", "La reparación del horno tomó más de lo esperado pero el resultado fue perfecto."],
-  ["Anita G.", 4, "6 months ago", "4", "Dryer repaired efficiently. Had to come back once, but honored the warranty.", "Secadora reparada eficientemente. Tuvieron que volver una vez, pero honraron garantía."],
-  ["Raymond T.", 4, "7 months ago", "4", "Fridge repair done well. Scheduling could be more flexible.", "Reparación de nevera bien hecha. La programación podría ser más flexible."],
-  ["Veronica H.", 4, "8 months ago", "4", "Dishwasher works well now. Small communication delay on parts arrival.", "El lavavajillas funciona bien ahora. Pequeño retraso de comunicación en llegada de repuestos."],
-  ["Simon A.", 4, "9 months ago", "4", "LG washer fixed correctly. Lost one star for arriving 45 min late.", "Lavadora LG arreglada correctamente. Perdí una estrella por llegar 45 min tarde."],
-  ["Natasha B.", 4, "10 months ago", "4", "Oven thermostat fixed quickly. Final price slightly higher than quote.", "Termostato del horno arreglado rápido. Precio final ligeramente mayor a la cotización."],
-  ["Douglas M.", 4, "1 month ago", "4", "Dryer motor fixed correctly. Good warranty on the work done.", "Motor de secadora arreglado correctamente. Buena garantía en el trabajo realizado."],
-  ["Brenda C.", 4, "2 months ago", "4", "Dishwasher fixed — no more pooling water. Had to call for status update.", "Lavavajillas arreglado — sin más agua acumulada. Tuve que llamar para actualización."],
-  ["Heidi W.", 4, "3 months ago", "4", "Washer fixed after 2-day wait. Repair quality was excellent.", "Lavadora arreglada después de 2 días de espera. Calidad de reparación fue excelente."],
-  ["George T.", 4, "4 months ago", "4", "Oven igniter fixed. Good tips given. 4-hour window was inconvenient.", "Encendedor del horno arreglado. Buen consejo dado. Ventana de 4 horas fue inconveniente."],
-  ["Francesca V.", 4, "5 months ago", "4", "Dryer fixed on first visit. Lost one star — original appointment rescheduled.", "Secadora arreglada en primera visita. Menos una estrella — cita reprogramada."],
-  ["Bernard K.", 4, "6 months ago", "4", "Fridge perfect since repair. Slight delay getting replacement part.", "Nevera perfecta desde la reparación. Pequeño retraso obteniendo el repuesto."],
-  ["Audrey L.", 4, "7 months ago", "4", "Washer bearing fixed. Tech wore shoe covers. Minor scheduling delay.", "Rodamiento de lavadora arreglado. Técnico usó cubre zapatos. Pequeño retraso."],
-  ["Phillip N.", 4, "8 months ago", "4", "Dishwasher works great now. Price slightly higher than quoted for extra part.", "Lavavajillas funciona genial. Precio ligeramente mayor por repuesto adicional."],
-  ["Regina T.", 4, "9 months ago", "4", "AC repair professional. Diagnostic fee wasn't mentioned upfront.", "Reparación de AC profesional. La tarifa de diagnóstico no se mencionó de antemano."],
-  ["Paulette M.", 4, "10 months ago", "4", "Dryer works perfectly. One reschedule due to part availability.", "Secadora funciona perfectamente. Una reprogramación por disponibilidad de repuesto."],
-  ["Arthur S.", 4, "11 months ago", "4", "Washer pump fixed correctly. Small communication gap during sourcing.", "Bomba de lavadora arreglada correctamente. Pequeña brecha de comunicación."],
-  ["Sylvia B.", 4, "1 year ago", "4", "Oven igniter and burners serviced. 4-hour window was hard to plan around.", "Encendedor del horno y quemadores revisados. Ventana de 4 horas difícil de planear."],
-  ["Gordon F.", 4, "9 months ago", "4", "Dryer motor fixed well. Follow-up call to check satisfaction was a nice touch.", "Motor de secadora arreglado bien. Llamada de seguimiento fue un buen detalle."],
-  ["Nadine C.", 4, "10 months ago", "4", "Fridge cooling fine now. Tech was great, arrived about an hour late.", "Nevera enfría bien ahora. Técnico fue genial, llegó una hora tarde."],
-  ["Terry W.", 4, "11 months ago", "4", "LG washer bearings replaced. Parts took one extra day to arrive.", "Rodamientos de lavadora LG reemplazados. Los repuestos tardaron un día extra."],
-  ["Deborah R.", 4, "1 year ago", "4", "Dishwasher float switch fixed. Good service, would prefer tighter window.", "Interruptor flotante de lavavajillas arreglado. Buen servicio, preferiría ventana más ajustada."],
-  ["Stanley P.", 4, "1 month ago", "4", "Fridge temperature consistent now. Waited 3 days during peak season.", "Temperatura de nevera consistente ahora. Esperé 3 días en temporada alta."],
-  ["Wanda T.", 4, "2 months ago", "4", "Gas dryer igniter fixed. 90-day warranty appreciated. Final price slightly over.", "Encendedor de secadora de gas arreglado. Garantía apreciada. Precio final ligeramente mayor."],
-  ["Harold M.", 4, "3 months ago", "4", "Fridge repair took two visits due to part. Second visit was under warranty.", "Reparación de nevera tomó dos visitas por el repuesto. Segunda bajo garantía."],
-  ["Marcus B.", 4, "4 months ago", "4", "Dishwasher control panel fixed. Full cycles complete now. Very good.", "Panel de control de lavavajillas arreglado. Ciclos completos. Muy bueno."],
-  ["Pedro A.", 4, "5 months ago", "4", "Wolf range burner serviced. Tech was knowledgeable. Parts slightly delayed.", "Quemador de estufa Wolf revisado. Técnico experto. Repuestos ligeramente retrasados."],
-  ["Nicole S.", 4, "6 months ago", "4", "Oven control board replaced. Works great now. Small delay ordering parts.", "Tarjeta de control del horno reemplazada. Funciona genial. Pequeño retraso en pedido."],
-  ["Carlos R.", 4, "7 months ago", "4", "Washer fixed correctly on first visit. Scheduling could be tighter.", "Lavadora arreglada correctamente en primera visita. Programación podría ser más ajustada."],
-  ["Tanya M.", 4, "8 months ago", "4", "Fridge water dispenser fixed. Tech was professional. Window was 4 hours.", "Dispensador de agua de nevera arreglado. Técnico profesional. Ventana fue de 4 horas."],
-  ["Billy J.", 4, "9 months ago", "4", "Dryer heating element replaced. Works great. Price was fair and transparent.", "Elemento calefactor de secadora reemplazado. Funciona genial. Precio justo y transparente."]
-];
-const ALL_REVIEWS = RAW.map(
-  ([name, rating, time2, category, textEn, textEs], i) => ({
-    name,
-    initials: name[0],
-    avatarColor: C[i % C.length],
-    rating,
-    time: time2,
-    textEn,
-    textEs,
-    category
-  })
-);
+/** NO fake reviews — API only. */
+const ALL_REVIEWS = [];
 const API_BASE$2 = "https://htr-group-llc-appliance-repair.replit.app";
 const PHONE_DISPLAY$4 = "(346) 820-6021";
 const PHONE_HREF$4 = "tel:+13468206021";
@@ -31850,7 +31583,7 @@ const svcFreezerImg = "/assets/svc_freezer-D1N0rAED.png";
 const svcDisposalImg = "/assets/svc_disposal-CPvrcFHc.png";
 const svcWarmerImg = "/assets/svc_warmer-KjhJaYYR.png";
 const g62 = "/assets/photo_62_2026-04-02_02-47-29_1775273301589-Ds2r63q0.jpg";
-const ourWorkSectionImg = "/assets/our-work-section-65084024.png";
+const ourWorkSectionImg = "/assets/our-work-hero.webp";
 const g67 = "/assets/photo_67_2026-04-02_02-42-16_1775273301590-CBuZeJBF.jpg";
 const g73 = "/assets/photo_73_2026-04-02_02-42-16_1775273301591-Wo_zxND6.jpg";
 const g75 = "/assets/photo_75_2026-04-02_02-42-16_1775273301591-EdwvpMS-.jpg";
@@ -32790,8 +32523,8 @@ function CenterConvergeMarquee({ brands, base }) {
   const cardClass = "htr-brand-marquee-center__card flex-shrink-0 flex items-center justify-center bg-white rounded-xl border border-stone-100 shadow-sm p-2";
   return /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "htr-brand-marquee-center relative w-full py-6 bg-stone-50 border-y border-stone-200 overflow-hidden", "aria-label": "Brands we service", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__bleed w-screen relative left-1/2 -translate-x-1/2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__stage relative w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-brand-marquee-center__row relative w-full min-h-[88px] h-[88px] overflow-hidden", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-20", "aria-hidden": "true" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 w-max h-full justify-end", children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "lazy" }) }, `l-${i}`)) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute inset-y-0 right-0 w-1/2 overflow-hidden z-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 w-max h-full justify-start", children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "lazy" }) }, `r-${i}`)) }) })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 w-max h-full justify-start", children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "lazy" }) }, `l-${i}`)) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute inset-y-0 right-0 w-1/2 overflow-hidden z-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 w-max h-full justify-end", children: all.map(([name, file], i) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: cardClass, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: `${base}/logos/${file}.png`, alt: name, className: "w-full h-full object-contain", draggable: false, loading: "lazy" }) }, `r-${i}`)) }) })
   ] }) }) }) });
 }
 const SERVICE_AREA_MAP_EMBED = { centerLat: 29.7, centerLng: -95.4, zoom: 9 };
@@ -33002,8 +32735,8 @@ function Home() {
   const [menuOpen, setMenuOpen] = reactExports.useState(false);
   const [reviewTab, setReviewTab] = reactExports.useState("all");
   const [reviewPage, setReviewPage] = reactExports.useState(0);
-  const [googleRating, setGoogleRating] = reactExports.useState(5);
-  const [googleReviewCount, setGoogleReviewCount] = reactExports.useState(9);
+  const [googleRating, setGoogleRating] = reactExports.useState(null);
+  const [googleReviewCount, setGoogleReviewCount] = reactExports.useState(null);
   const [refreshing, setRefreshing] = reactExports.useState(false);
   const [appliance, setAppliance] = reactExports.useState("");
   const [brandModel, setBrandModel] = reactExports.useState("");
@@ -33083,7 +32816,7 @@ function Home() {
     /* @__PURE__ */ jsxRuntimeExports.jsx(Award, { className: "h-8 w-8" })
   ];
   const GOOGLE_REVIEW_URL_HOME = "https://g.page/r/CU7DlHNCZb8hEAE/review";
-  const GOOGLE_HOME_REVIEWS_STATIC = [];
+  /* reviews: API only, no static fallback */
 
   const [googleHomeReviews, setGoogleHomeReviews] = reactExports.useState([]);
   reactExports.useEffect(() => {
@@ -33092,11 +32825,11 @@ function Home() {
       if (d.ok && Array.isArray(d.reviews)) {
         const live = d.reviews.filter((r) => (r.rating ?? 0) >= 4);
         setGoogleHomeReviews(live);
+        if (typeof d.rating === "number") setGoogleRating(d.rating);
+        if (typeof d.userRatingCount === "number") setGoogleReviewCount(d.userRatingCount);
       } else {
         setGoogleHomeReviews([]);
       }
-      if (typeof d.rating === "number") setGoogleRating(d.rating);
-      if (typeof d.userRatingCount === "number") setGoogleReviewCount(d.userRatingCount);
     }).catch(() => {
       setGoogleHomeReviews([]);
     });
@@ -33583,10 +33316,10 @@ function Home() {
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2 mt-3", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 rounded-full bg-white border border-stone-200 px-3 py-1.5 text-sm font-bold text-stone-800 shadow-sm", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-base font-extrabold text-[#4285F4] leading-none", "aria-hidden": "true", children: "G" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: googleRating.toFixed(1) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: googleRating != null ? googleRating.toFixed(1) : "—" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex gap-0.5", "aria-label": "5 out of 5 stars", children: [1, 2, 3, 4, 5].map((si) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: si, className: "h-3.5 w-3.5 htr-google-star", style: { color: "#FBBC04", fill: "#FBBC04" } })) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-500 font-semibold", children: "Google" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-600", children: `(${googleReviewCount} reviews)` })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-600", children: `(${googleReviewCount ?? 0} reviews)` })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-stone-500 font-medium", children: T2.reviewsBased })
             ] })
@@ -33596,21 +33329,22 @@ function Home() {
             T2.writeReview
           ] })
         ] }),
+        !googleHomeReviews.length && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-500 font-medium py-6 text-center col-span-full", children: isEs ? "No hay reseñas de Google disponibles en este momento." : "No Google reviews available right now. Please try again later." }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-google-reviews-grid gap-2 md:gap-2.5", children: googleHomeReviews.slice(reviewPage * 10, reviewPage * 10 + 10).map((r, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div", { key: `${r.name}-${i}`, className: "bg-white rounded-lg p-2 md:p-2.5 shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card",
+          "div", { key: `${r.name}-${i}`, className: "bg-white rounded-lg shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card",
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 min-w-0", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-8 w-8 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0", style: { backgroundColor: r.avatarColor }, children: r.initials }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-1.5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 min-w-0", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-google-review-avatar rounded-full flex items-center justify-center text-white font-bold flex-shrink-0", style: { backgroundColor: r.avatarColor }, children: r.initials }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold text-xs text-stone-900 truncate", children: r.name }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-stone-400 leading-none", children: r.time })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "htr-google-review-name font-semibold text-stone-900 truncate", children: r.name }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "htr-google-review-time text-stone-400 leading-none", children: r.time })
                   ] })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#4285F4] font-extrabold text-lg leading-none flex-shrink-0", "aria-hidden": "true", children: "G" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#4285F4] font-extrabold text-sm leading-none flex-shrink-0", "aria-hidden": "true", children: "G" })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-2", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "h-3.5 w-3.5 htr-google-star", style: { color: "#FBBC04", fill: "#FBBC04" } })) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-[11px] md:text-xs leading-snug flex-1 line-clamp-3", children: isEs ? r.textEs : r.textEn })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-1.5", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "htr-google-star htr-google-review-star", style: { color: "#FBBC04", fill: "#FBBC04" } })) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "htr-google-review-body text-stone-600 flex-1 line-clamp-3", children: isEs ? r.textEs : r.textEn })
             ]
           }
         )) }),

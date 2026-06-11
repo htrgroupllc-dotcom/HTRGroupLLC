@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 
 const CACHE_TTL_MS = 3 * 60 * 60 * 1000;
-const CACHE_VERSION = 5;
+const CACHE_VERSION = 6;
 
 /** Verified via g.page/r/CU7DlHNCZb8hEAE (Maps feature 0x2066db6f9cc15e1b:0x21bf65427394c34e). */
 const BUSINESS_LOCATION = { lat: 29.7463431, lng: -95.7612032 };

@@ -1,0 +1,18 @@
+# NEVER add fake Google reviews
+
+## Forbidden
+
+- Hardcoded review arrays (RAW, ALL_REVIEWS, GOOGLE_FEATURED_REVIEWS with static entries)
+- Fallback to static reviews when API fails or returns empty
+- Merging API reviews with static seed data in bundle or frontend
+- Playwright mock review data in production bundles
+
+## Required
+
+- Reviews section: **only** `GET /api/google-reviews` (Place ID `ChIJG17BnG_bZiARTsOUc0JlvyE`)
+- API error or empty → show empty-state message, never substitute fake names
+- After bundle edits: `node --check assets/index-utf8-v4.js` and grep for fake names (`James W.`, `Sarah J.`, etc.)
+
+## Prod files
+
+- `src/pages/home.tsx`, `src/data/reviews.ts` (empty array), `assets/index-utf8-v4.js`, `index.html` cache bump
