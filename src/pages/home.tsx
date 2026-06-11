@@ -917,25 +917,33 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
   const drag      = useRef({ active: false, startX: 0, startOffset: 0 });
   const [grabbing, setGrabbing] = useState(false);
 
+  const reverseInitRef = useRef(false);
+
+  const wrapOffset = (offset: number, half: number) => {
+    if (half <= 0) return offset;
+    while (offset > 0) offset -= half;
+    while (offset <= -half) offset += half;
+    return offset;
+  };
+
   useEffect(() => {
+    reverseInitRef.current = false;
     const DURATION_MS = 160_000;
     const tick = (ts: number) => {
       const track = trackRef.current;
       if (track) {
-        if (!speedRef.current && track.scrollWidth > 0) {
-          speedRef.current = (track.scrollWidth / 2) / DURATION_MS;
+        const half = track.scrollWidth / 2;
+        if (half > 0) {
+          speedRef.current = half / DURATION_MS;
+          if (reverse && !reverseInitRef.current) {
+            offsetRef.current = -half;
+            reverseInitRef.current = true;
+          }
         }
         if (!drag.current.active) {
           const dt = lastTsRef.current ? ts - lastTsRef.current : 0;
           offsetRef.current += (reverse ? 1 : -1) * speedRef.current * dt;
-          const half = track.scrollWidth / 2;
-          if (half > 0) {
-            if (reverse) {
-              if (offsetRef.current >= half) offsetRef.current -= half;
-            } else if (-offsetRef.current >= half) {
-              offsetRef.current += half;
-            }
-          }
+          offsetRef.current = wrapOffset(offsetRef.current, half);
           track.style.transform = `translateX(${offsetRef.current}px)`;
         }
       }
@@ -958,10 +966,7 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
     const track = trackRef.current;
     if (track) {
       const half = track.scrollWidth / 2;
-      if (half > 0) {
-        while (-next >= half) next += half;
-        while (next > 0) next -= half;
-      }
+      if (half > 0) next = wrapOffset(next, half);
     }
     offsetRef.current = next;
     if (track) track.style.transform = `translateX(${next}px)`;
