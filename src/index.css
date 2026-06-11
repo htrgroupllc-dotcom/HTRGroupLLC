@@ -551,21 +551,27 @@
   color: #FBBC04 !important;
   stroke: #FBBC04 !important;
 }
+.htr-google-reviews-grid-wrap {
+  overflow: visible !important;
+}
 .htr-google-reviews-grid {
   display: grid !important;
   gap: 0.375rem;
+  grid-auto-flow: row;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 @media (min-width: 768px) {
   .htr-google-reviews-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-rows: none;
   }
 }
 @media (min-width: 1024px) {
   .htr-google-reviews-grid {
     grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-    grid-template-rows: repeat(2, auto) !important;
+    grid-template-rows: repeat(2, minmax(0, auto)) !important;
+    grid-auto-flow: row !important;
+    grid-auto-rows: minmax(0, auto);
+    overflow: visible !important;
   }
 }
 .htr-google-reviews-grid > * {
@@ -610,13 +616,13 @@
 }
 .htr-brand-marquee-center__wing--left {
   height: 100%;
-  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 52%, transparent 96%, transparent 100%);
-  mask-image: linear-gradient(to right, #000 0%, #000 52%, transparent 96%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 38%, transparent 88%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 0%, #000 38%, transparent 88%, transparent 100%);
 }
 .htr-brand-marquee-center__wing--right {
   height: 100%;
-  -webkit-mask-image: linear-gradient(to left, #000 0%, #000 52%, transparent 96%, transparent 100%);
-  mask-image: linear-gradient(to left, #000 0%, #000 52%, transparent 96%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, #000 0%, #000 38%, transparent 88%, transparent 100%);
+  mask-image: linear-gradient(to left, #000 0%, #000 38%, transparent 88%, transparent 100%);
 }
 .htr-brand-marquee-center__seam {
   width: min(32vw, 220px);
@@ -634,18 +640,18 @@
   right: 0; background: linear-gradient(to left, #f9fafb, transparent);
 }
 .htr-brand-marquee-center__track--left {
-  animation: htr-marquee-center-left 90s linear infinite; will-change: transform;
+  animation: htr-marquee-center-left 48s linear infinite; will-change: transform;
 }
 .htr-brand-marquee-center__track--right {
-  animation: htr-marquee-center-right 90s linear infinite; will-change: transform;
+  animation: htr-marquee-center-right 48s linear infinite; will-change: transform;
 }
 @keyframes htr-marquee-center-left {
-  from { transform: translateX(-50%); }
-  to { transform: translateX(0); }
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
 }
 @keyframes htr-marquee-center-right {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* Home: Why Us + Our Work split photos (smaller, proportional) */

@@ -100,8 +100,8 @@ function serve(dir, port) {
     return {
       sectionVisible: !!section && section.getBoundingClientRect().height > 40,
       stageFullWidth: Math.abs(stageW - window.innerWidth) < 16,
-      leftJustify: leftTrack?.className.includes("justify-end"),
-      rightJustify: rightTrack?.className.includes("justify-start"),
+      leftJustify: leftTrack?.className.includes("justify-start"),
+      rightJustify: rightTrack?.className.includes("justify-end"),
       animLeft: transform0.left !== transform1.left,
       animRight: transform0.right !== transform1.right,
       animationNames: {

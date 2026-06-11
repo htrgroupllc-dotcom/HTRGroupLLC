@@ -1044,7 +1044,7 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
           <div className="htr-brand-marquee-center__row relative w-full min-h-[88px] h-[88px] overflow-hidden">
             <div className="htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-20" aria-hidden="true" />
             <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
-              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 w-max h-full justify-end">
+              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 w-max h-full justify-start">
                 {all.map(([name, file], i) => (
                   <div key={`l-${i}`} className={cardClass}>
                     <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
@@ -1053,7 +1053,7 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
               </div>
             </div>
             <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute inset-y-0 right-0 w-1/2 overflow-hidden z-10">
-              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 w-max h-full justify-start">
+              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 w-max h-full justify-end">
                 {all.map(([name, file], i) => (
                   <div key={`r-${i}`} className={cardClass}>
                     <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
@@ -1784,7 +1784,7 @@ export default function Home() {
                 {isEs ? "No hay reseñas de Google disponibles en este momento." : "No Google reviews available right now. Please try again later."}
               </p>
             )}
-            <div className="relative"><div className="htr-google-reviews-grid gap-2 md:gap-2.5">{pagedGoogleReviews.map((r, i) => (
+            <div className="relative htr-google-reviews-grid-wrap"><div className="htr-google-reviews-grid grid gap-2 md:gap-2.5 lg:grid-cols-5 lg:grid-rows-2 lg:grid-flow-row">{pagedGoogleReviews.map((r, i) => (
                 <div key={`${r.name}-${i}`} className="bg-white rounded-lg shadow-sm border border-stone-100 flex flex-col h-full min-h-0 htr-google-review-card">
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-1.5 min-w-0">
