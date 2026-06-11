@@ -1,0 +1,23 @@
+33363:               /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-start gap-2", children: [
+33364:                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: K$3.accent }, children: "📍" }),
+33365:                 " ",
+33366:                 T2.address
+33367:               ] }),
+33368:               /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-start gap-2", children: [
+33369:                 /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4 mt-0.5 flex-shrink-0", style: { color: K$3.accent } }),
+33370:                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+33371:                   /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+33372:                     $3
+33373:                     /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--contact font-bold text-stone-900 hover:opacity-70 transition-opacity block", children: PHONE_DISPLAY$3 }),
+33374:                   ] }),
+33375:                   /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-400 text-xs mt-0.5 leading-snug", children: T2.smsHint })
+33376:                 ] })
+33377:               ] }),
+33378:               /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-start gap-2", children: [
+33379:                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: K$3.accent }, children: "@" }),
+33380:                 /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "mailto:htrgroupllc@gmail.com", className: "hover:opacity-70 transition-opacity", children: "htrgroupllc@gmail.com" })
+33381:               ] }),
+33382:               /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex items-start gap-2", children: [
+33383:                 /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { className: "h-4 w-4 mt-0.5 flex-shrink-0", style: { color: K$3.accent } }),
+33384:                 " ",
+33385:                 T2.hours1
