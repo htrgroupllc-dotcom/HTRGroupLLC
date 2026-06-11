@@ -617,3 +617,44 @@
 .htr-brand-marquee-center__wing--right .htr-brand-marquee-center__track > *:nth-child(even) {
   z-index: 2;
 }
+
+/* Home: Why Us + Our Work split photos (smaller, proportional) */
+.htr-home-why-section .htr-home-split-photo,
+.htr-home-our-work-section .htr-home-split-photo {
+  width: 100%;
+  max-width: min(100%, 20rem);
+  margin-inline: auto;
+}
+@media (min-width: 768px) {
+  .htr-home-why-section .htr-home-split-photo,
+  .htr-home-our-work-section .htr-home-split-photo {
+    max-width: min(100%, 24rem);
+  }
+}
+@media (min-width: 1024px) {
+  .htr-home-why-section .htr-home-split-photo,
+  .htr-home-our-work-section .htr-home-split-photo {
+    max-width: 100%;
+    margin-inline: 0;
+  }
+}
+.htr-home-split-photo__img,
+.htr-home-split-photo__frame .htr-home-split-photo__img {
+  display: block;
+  width: 100%;
+  max-height: 11.5rem;
+  object-fit: cover;
+  aspect-ratio: 4 / 3;
+}
+@media (min-width: 768px) {
+  .htr-home-split-photo__img,
+  .htr-home-split-photo__frame .htr-home-split-photo__img {
+    max-height: 13rem;
+  }
+}
+@media (min-width: 1024px) {
+  .htr-home-split-photo__img,
+  .htr-home-split-photo__frame .htr-home-split-photo__img {
+    max-height: 14.5rem;
+  }
+}

@@ -1601,11 +1601,11 @@ export default function Homeexport default function Homeexport default function 
         <MidPhoneStrip />
 
         {/* â”€â”€ WHY US â”€â”€ */}
-        <section className="py-10 bg-white">
+        <section className="py-10 bg-white htr-home-why-section">
           <div className="container mx-auto px-4">
             <div className="grid lg:grid-cols-[2fr_3fr] gap-8 items-center">
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={FADE_UP} className="relative">
-                <img src={whyUsBgImg} alt="Appliance repair" className="rounded-xl shadow-lg w-full object-cover aspect-[4/3]" />
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={FADE_UP} className="relative htr-home-split-photo">
+                <img src={whyUsBgImg} alt="Appliance repair" className="htr-home-split-photo__img rounded-xl shadow-lg w-full object-cover aspect-[4/3]" />
 
                 {/* Google review overlay card â€” rotates every 12 h */}
                 {overlayReview && (
@@ -1655,17 +1655,17 @@ export default function Homeexport default function Homeexport default function 
         </section>
 
         {/* â”€â”€ OUR WORK â”€â”€ */}
-        <section id="gallery" className="py-10 bg-white">
+        <section id="gallery" className="py-10 bg-white htr-home-our-work-section">
           <div className="container mx-auto px-4">
             <div className="grid lg:grid-cols-[2fr_3fr] gap-8 items-center">
 
               {/* LEFT â€” photo */}
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={FADE_UP} className="relative">
-                <a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/gallery`} className="block rounded-xl overflow-hidden shadow-lg group">
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={FADE_UP} className="relative htr-home-split-photo">
+                <a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/gallery`} className="block rounded-xl overflow-hidden shadow-lg group htr-home-split-photo__frame">
                   <img
                     src={GALLERY_PHOTOS[0].src}
                     alt={isEs ? GALLERY_PHOTOS[0].captionEs : GALLERY_PHOTOS[0].captionEn}
-                    className="w-full object-cover aspect-[4/3] group-hover:scale-105 transition-transform duration-500"
+                    className="htr-home-split-photo__img w-full object-cover aspect-[4/3] group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                 </a>
