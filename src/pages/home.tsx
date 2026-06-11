@@ -1191,7 +1191,7 @@ export default function Home() {
 
       {/* ── NAV ── */}
       <div className="htr-header-spacer w-full flex-shrink-0" aria-hidden="true" />
-      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm">
+      <header className="htr-site-header-root fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm">
         <div className="container mx-auto px-4 htr-site-header-bar flex items-center justify-between gap-3">
 
           {/* Language switcher — left side */}
@@ -1269,7 +1269,7 @@ export default function Home() {
 
 
       {/* ── PROMO BAR ── */}
-      <div className="w-full text-center text-xs sm:text-sm md:text-lg font-semibold text-white py-1.5 px-3 leading-snug" style={{ backgroundColor: "#D97706" }}>
+      <div className="htr-promo-bar w-full text-center text-xs sm:text-sm md:text-lg font-semibold text-white py-1.5 px-3 leading-snug" style={{ backgroundColor: "#D97706" }}>
         {T.promoBar}
       </div>
 
@@ -1281,7 +1281,7 @@ export default function Home() {
           {/* ════ MOBILE layout (< md): image on top, text below ════ */}
           <div className="block md:hidden">
             {/* Hero image — right-aligned so logo is visible */}
-            <div className="relative overflow-hidden" style={{ height: "220px" }}>
+            <div className="relative htr-home-hero-mobile overflow-x-hidden" style={{ height: "220px" }}>
               <img
                 src={heroImg}
                 alt="Appliance repair"
@@ -1289,9 +1289,17 @@ export default function Home() {
                 style={{ objectFit: "cover", objectPosition: "right center" }}
               />
               <div className="absolute inset-0" style={{ background: "rgba(11,26,63,0.18)" }} />
-              <HeroCircuitEffect />
-              <div className="hero-pulse-ring" />
-              <div className="hero-pulse-ring-2" />
+              <div className="htr-home-hero-effects absolute inset-0 overflow-visible pointer-events-none" aria-hidden>
+                <HeroCircuitEffect />
+                <div className="hero-pulse-ring" />
+                <div className="hero-pulse-ring-2" />
+                <div className="hero-rotate-glow" />
+                <span className="hero-sparkle hero-sparkle-1" aria-hidden>✦</span>
+                <span className="hero-sparkle hero-sparkle-2" aria-hidden>✦</span>
+                <span className="hero-sparkle hero-sparkle-3" aria-hidden>✦</span>
+                <span className="hero-sparkle hero-sparkle-4" aria-hidden>✦</span>
+                <span className="hero-sparkle hero-sparkle-5" aria-hidden>✦</span>
+              </div>
             </div>
 
             {/* Text content below the image */}
@@ -1325,9 +1333,17 @@ export default function Home() {
           <div className="hidden md:block relative htr-home-hero-desktop">
             <img src={heroImg} alt="Appliance repair" className="w-full block" style={{ display: "block" }} />
             <div className="absolute inset-0" style={{ background: "rgba(11,26,63,0.10)" }} />
-            <HeroCircuitEffect />
-            <div className="hero-pulse-ring" />
-            <div className="hero-pulse-ring-2" />
+            <div className="htr-home-hero-effects absolute inset-0 overflow-visible pointer-events-none" aria-hidden>
+              <HeroCircuitEffect />
+              <div className="hero-pulse-ring" />
+              <div className="hero-pulse-ring-2" />
+              <div className="hero-rotate-glow" />
+              <span className="hero-sparkle hero-sparkle-1" aria-hidden>✦</span>
+              <span className="hero-sparkle hero-sparkle-2" aria-hidden>✦</span>
+              <span className="hero-sparkle hero-sparkle-3" aria-hidden>✦</span>
+              <span className="hero-sparkle hero-sparkle-4" aria-hidden>✦</span>
+              <span className="hero-sparkle hero-sparkle-5" aria-hidden>✦</span>
+            </div>
             <div className="absolute top-0 left-0 z-10 htr-hero-banner">
               <motion.div
                 initial="hidden" animate="visible" variants={STAGGER}

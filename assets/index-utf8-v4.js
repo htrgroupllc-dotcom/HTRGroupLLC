@@ -32952,7 +32952,7 @@ function Home() {
       )
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-header-spacer w-full flex-shrink-0", "aria-hidden": "true" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "htr-site-header-root fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 htr-site-header-bar flex items-center justify-between gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 flex-shrink-0", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "h-3.5 w-3.5 text-stone-400" }),
@@ -33021,11 +33021,11 @@ function Home() {
         ] })
       ] })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full text-center text-xs sm:text-sm md:text-lg font-semibold text-white py-1.5 px-3 leading-snug", style: { backgroundColor: "#D97706" }, children: T2.promoBar }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-promo-bar w-full text-center text-xs sm:text-sm md:text-lg font-semibold text-white py-1.5 px-3 leading-snug", style: { backgroundColor: "#D97706" }, children: T2.promoBar }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "flex-grow", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "block md:hidden", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative overflow-hidden", style: { height: "220px" }, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative htr-home-hero-mobile overflow-x-hidden", style: { height: "220px" }, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "img",
               {
@@ -33036,9 +33036,17 @@ function Home() {
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0", style: { background: "rgba(11,26,63,0.18)" } }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(HeroCircuitEffect, {}),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-pulse-ring" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-pulse-ring-2" })
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-home-hero-effects absolute inset-0 overflow-visible pointer-events-none", "aria-hidden": true, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(HeroCircuitEffect, {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-pulse-ring" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-pulse-ring-2" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-rotate-glow" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-1", "aria-hidden": true, children: "\u2726" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-2", "aria-hidden": true, children: "\u2726" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-3", "aria-hidden": true, children: "\u2726" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-4", "aria-hidden": true, children: "\u2726" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-5", "aria-hidden": true, children: "\u2726" })
+            ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             motion.div,
@@ -33077,9 +33085,17 @@ function Home() {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden md:block relative htr-home-hero-desktop", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: heroImg, alt: "Appliance repair", className: "w-full block", style: { display: "block" } }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0", style: { background: "rgba(11,26,63,0.10)" } }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(HeroCircuitEffect, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-pulse-ring" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-pulse-ring-2" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-home-hero-effects absolute inset-0 overflow-visible pointer-events-none", "aria-hidden": true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(HeroCircuitEffect, {}),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-pulse-ring" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-pulse-ring-2" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-rotate-glow" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-1", "aria-hidden": true, children: "\u2726" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-2", "aria-hidden": true, children: "\u2726" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-3", "aria-hidden": true, children: "\u2726" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-4", "aria-hidden": true, children: "\u2726" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-5", "aria-hidden": true, children: "\u2726" })
+          ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 z-10 htr-hero-banner", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
             motion.div,
             {

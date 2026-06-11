@@ -7690,10 +7690,14 @@
 .htr-header-spacer {
   min-height: 3.5rem;
 }
+.htr-site-header-root {
+  overflow: visible;
+}
 .htr-site-header-bar {
   min-height: 3.5rem;
   padding-top: 2mm;
   padding-bottom: 2mm;
+  overflow: visible;
 }
 .header-phone-pair {
   margin: 0;
@@ -7737,12 +7741,25 @@
 
 /* Home hero: keep blue banner from overlapping services grid */
 .htr-home-hero-desktop {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
   isolation: isolate;
+}
+.htr-home-hero-mobile {
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+.htr-home-hero-effects {
+  overflow: visible;
+  z-index: 6;
 }
 .htr-home-hero-desktop .htr-hero-banner {
   max-height: 100%;
   overflow: auto;
+}
+.htr-promo-bar {
+  position: relative;
+  z-index: 2;
 }
 #services {
   position: relative;
