@@ -240,9 +240,14 @@ export default function Blog() {
         {/* ── CTA BAND ── */}
         <div className="py-8 text-center" style={{ backgroundColor: K.dark }}>
           <p className="text-white font-bold text-lg mb-3">{T.ctaText}</p>
-          <a href={PHONE_HREF} className="inline-flex items-center gap-2 font-bold px-6 py-3 rounded text-white text-base" style={{ backgroundColor: K.accent }}>
-            <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
-          </a>
+          <div className="htr-phone-pair--row flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href={COMPANY_PHONE_HREF} className="htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm" style={{ backgroundColor: K.accent }}>
+              <Phone className="h-4 w-4" /> {COMPANY_PHONE_DISPLAY}
+            </a>
+            <a href={PHONE_HREF} className="htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm" style={{ backgroundColor: K.accent }}>
+              <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
+            </a>
+          </div>
         </div>
       </main>
 

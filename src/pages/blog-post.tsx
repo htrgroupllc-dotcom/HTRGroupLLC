@@ -314,6 +314,15 @@ export default function BlogPost() {
               ))}
             </div>
           </div>
+
+          <div className="htr-phone-pair--row flex flex-col sm:flex-row items-center justify-center gap-3 mb-4 text-sm">
+            <a href={COMPANY_PHONE_HREF} className="htr-phone-btn inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity">
+              <Phone className="h-4 w-4" style={{ color: K.accentLight }} /> {COMPANY_PHONE_DISPLAY}
+            </a>
+            <a href={PHONE_HREF} className="htr-phone-btn inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity">
+              <Phone className="h-4 w-4" style={{ color: K.accentLight }} /> {PHONE_DISPLAY}
+            </a>
+          </div>
           <div className="border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400">
             <p><AdminSecretAccess label={`© ${new Date().getFullYear()} HTRGroupTX. ${T.allRights}`} /></p>
             <div className="flex gap-5 items-center">
