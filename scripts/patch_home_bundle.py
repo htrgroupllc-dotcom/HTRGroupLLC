@@ -5,16 +5,16 @@ t = p.read_text(encoding="utf-8")
 
 if "COMPANY_PHONE_HREF$3" not in t:
     t = t.replace(
-        'const PHONE_HREF$3 = "tel:+13468206021";',
-        'const PHONE_HREF$3 = "tel:+13468206021";\nconst COMPANY_PHONE_DISPLAY$3 = "(606) 660-6067";\nconst COMPANY_PHONE_HREF$3 = "tel:+16066606067";',
+        'const PHONE_HREF$3 = "tel:+13466968751";',
+        'const PHONE_HREF$3 = "tel:+13466968751";\nconst COMPANY_PHONE_DISPLAY$3 = "(606) 660-6067";\nconst COMPANY_PHONE_HREF$3 = "tel:+16066606067";',
         1,
     )
 
 # Gallery page constants PHONE_HREF$2 or similar
-if "COMPANY_PHONE_HREF$2" not in t and 'const PHONE_HREF$2 = "tel:+13468206021";' in t:
+if "COMPANY_PHONE_HREF$2" not in t and 'const PHONE_HREF$2 = "tel:+13466968751";' in t:
     t = t.replace(
-        'const PHONE_HREF$2 = "tel:+13468206021";',
-        'const PHONE_HREF$2 = "tel:+13468206021";\nconst COMPANY_PHONE_DISPLAY$2 = "(606) 660-6067";\nconst COMPANY_PHONE_HREF$2 = "tel:+16066606067";',
+        'const PHONE_HREF$2 = "tel:+13466968751";',
+        'const PHONE_HREF$2 = "tel:+13466968751";\nconst COMPANY_PHONE_DISPLAY$2 = "(606) 660-6067";\nconst COMPANY_PHONE_HREF$2 = "tel:+16066606067";',
         1,
     )
 

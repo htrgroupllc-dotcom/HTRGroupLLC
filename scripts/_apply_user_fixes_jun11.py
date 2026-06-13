@@ -115,7 +115,7 @@ function BlogHeaderPhonesMobile() {
 
 def patch_blog_page(path: Path):
     h = path.read_text(encoding="utf-8")
-    old_const = 'const PHONE_DISPLAY = "(346) 820-6021";\nconst PHONE_HREF    = "tel:3468206021";'
+    old_const = 'const PHONE_DISPLAY = "(346) 696-8751";\nconst PHONE_HREF    = "tel:3466968751";'
     new_const = 'import { PHONE_DISPLAY, PHONE_HREF, COMPANY_PHONE_DISPLAY, COMPANY_PHONE_HREF } from "@/lib/sitePhones";'
     if old_const in h:
         h = h.replace(old_const, new_const, 1)
@@ -147,8 +147,8 @@ patch_blog_page(ROOT / "src" / "pages" / "blog-post.tsx")
 j = BUNDLE.read_text(encoding="utf-8")
 if 'const COMPANY_PHONE_DISPLAY$5' not in j:
     j = j.replace(
-        'const PHONE_HREF$1 = "tel:+13468206021";',
-        'const PHONE_HREF$1 = "tel:+13468206021";\nconst COMPANY_PHONE_DISPLAY$5 = "(606) 660-6067";\nconst COMPANY_PHONE_HREF$5 = "tel:+16066606067";',
+        'const PHONE_HREF$1 = "tel:+13466968751";',
+        'const PHONE_HREF$1 = "tel:+13466968751";\nconst COMPANY_PHONE_DISPLAY$5 = "(606) 660-6067";\nconst COMPANY_PHONE_HREF$5 = "tel:+16066606067";',
         1,
     )
 
@@ -204,8 +204,8 @@ j = j.replace(BLOG_MOB_OLD, BLOG_MOB_NEW, 1)
 # BlogPost uses PHONE_HREF without suffix in header - add company constants if missing
 if 'const COMPANY_PHONE_DISPLAY$6' not in j:
     j = j.replace(
-        'const PHONE_HREF = "tel:+13468206021";',
-        'const PHONE_HREF = "tel:+13468206021";\nconst COMPANY_PHONE_DISPLAY$6 = "(606) 660-6067";\nconst COMPANY_PHONE_HREF$6 = "tel:+16066606067";',
+        'const PHONE_HREF = "tel:+13466968751";',
+        'const PHONE_HREF = "tel:+13466968751";\nconst COMPANY_PHONE_DISPLAY$6 = "(606) 660-6067";\nconst COMPANY_PHONE_HREF$6 = "tel:+16066606067";',
         1,
     )
 

@@ -4,7 +4,7 @@ p = Path(r"C:\Projects\HTRGroupLLC\assets\index-utf8-v4.js")
 t = p.read_text(encoding="utf-8")
 orig_len = len(t)
 
-t = t.replace("tel:3468206021", "tel:+13468206021")
+t = t.replace("tel:3466968751", "tel:+13466968751")
 
 # Gallery: dyn photo click
 old_dyn = "dynPhotos.map((photo) => /* @__PURE__ */ jsxRuntimeExports.jsxs(\n          \"div\",\n          {\n            className: \"rounded-xl overflow-hidden shadow-sm border border-stone-100 group cursor-pointer flex-shrink-0 relative\",\n            style: { width: \"142px\" },"
@@ -42,7 +42,7 @@ t = t.replace(
 
 # Inject company phone constants after first PHONE_HREF in home bundle - too hard; patch strings for display
 # Add COMPANY constants near sitePhones - inject after PHONE_DISPLAY in home component
-marker = 'const PHONE_HREF$5 = "tel:+13468206021";'
+marker = 'const PHONE_HREF$5 = "tel:+13466968751";'
 if marker in t and "COMPANY_PHONE_HREF" not in t:
     t = t.replace(marker, marker + '\nconst COMPANY_PHONE_DISPLAY$1 = "(606) 660-6067";\nconst COMPANY_PHONE_HREF$1 = "tel:+16066606067";', 1)
 

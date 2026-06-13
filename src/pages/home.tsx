@@ -526,7 +526,7 @@ const TR = {
     processH2:  "How We Work",
     processSub: "Simple, transparent, and stress-free from first call to final check.",
     processSteps: [
-      { title: "Book Online or Call",     desc: "Request service online or call (346) 820-6021. We confirm within 15 minutes." },
+      { title: "Book Online or Call",     desc: "Request service online or call (346) 696-8751. We confirm within 15 minutes." },
       { title: "Same-Day Dispatch",       desc: "A certified technician is dispatched to your home â€” often the same day you call." },
       { title: "Diagnosis & Estimate",    desc: "We diagnose the issue and provide an upfront, honest quote before any work begins." },
       { title: "Repair & Parts",          desc: "Most repairs are completed on the first visit using parts we carry in our fully-stocked trucks." },
@@ -605,7 +605,7 @@ const TR = {
     processH2:  "CÃ³mo Trabajamos",
     processSub: "Simple, transparente y sin estrÃ©s desde la primera llamada hasta la revisiÃ³n final.",
     processSteps: [
-      { title: "Reserve en LÃ­nea o Llame",    desc: "Solicite el servicio en lÃ­nea o llame al (346) 820-6021. Confirmamos en 15 minutos." },
+      { title: "Reserve en LÃ­nea o Llame",    desc: "Solicite el servicio en lÃ­nea o llame al (346) 696-8751. Confirmamos en 15 minutos." },
       { title: "Despacho el Mismo DÃ­a",        desc: "Un tÃ©cnico certificado se envÃ­a a su hogar â€” a menudo el mismo dÃ­a que llama." },
       { title: "DiagnÃ³stico y Presupuesto",    desc: "Diagnosticamos el problema y le damos un presupuesto claro antes de comenzar cualquier trabajo." },
       { title: "ReparaciÃ³n con Repuestos",     desc: "La mayorÃ­a de las reparaciones se completan en la primera visita con piezas que llevamos en nuestros camiones." },
@@ -1219,8 +1219,8 @@ export default function Home() {
       toast({
         title: isEs ? "Error al enviar" : "Submission error",
         description: isEs
-          ? "OcurriÃ³ un error. LlÃ¡menos al (346) 820-6021."
-          : "Something went wrong. Please call us at (346) 820-6021.",
+          ? "OcurriÃ³ un error. LlÃ¡menos al (346) 696-8751."
+          : "Something went wrong. Please call us at (346) 696-8751.",
         variant: "destructive",
       });
     } finally {

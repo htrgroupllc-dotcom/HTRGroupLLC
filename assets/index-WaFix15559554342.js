@@ -83645,7 +83645,7 @@ const DEFAULTS = {
   auto_payroll_enabled: "false",
   payroll_split_employee: "70",
   payroll_split_company: "30",
-  owner_whatsapp_number: "+13468206021",
+  owner_whatsapp_number: "+13466968751",
   visit_fee: "50"
 };
 function SettingsTab({ apiBase, adminAuthH }) {
@@ -83883,7 +83883,7 @@ function SettingsTab({ apiBase, adminAuthH }) {
             type: "tel",
             value: data.owner_whatsapp_number,
             onChange: set("owner_whatsapp_number"),
-            placeholder: "+13468206021",
+            placeholder: "+13466968751",
             className: inputCls
           }
         ),

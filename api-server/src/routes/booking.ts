@@ -6,7 +6,7 @@ import { verifyAdminToken } from "../admin-auth.js";
 import twilio from "twilio";
 import { syncBookingToHubSpot, cancelDealInHubSpot, updateDealStageInHubSpot, updateDealDateInHubSpot, type HsBooking } from "../hubspot.js";
 
-const OWNER_WA  = "whatsapp:+13468206021";
+const OWNER_WA  = "whatsapp:+13466968751";
 const WA_FROM   = process.env["TWILIO_WHATSAPP_NUMBER"] ?? "whatsapp:+15559554342";
 
 type NotifyLog = { info: (msg: string) => void; warn: (obj: unknown, msg: string) => void };
@@ -437,7 +437,7 @@ bookingRouter.post("/booking", async (req, res) => {
     </div>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 820-6021<br>
+    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
     Received: ${new Date(booking.createdAt).toLocaleString("en-US", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`;
@@ -810,7 +810,7 @@ bookingRouter.post("/admin/complete-booking", requireAdminPin, async (req, res) 
     </table>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 820-6021<br>
+    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
     Завершено: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`,
@@ -927,12 +927,12 @@ bookingRouter.post("/admin/approve-booking", requireAdminPin, async (req, res) =
       <strong>🐾 Aviso importante — Seguridad de mascotas y técnico:</strong><br>
       Por razones de seguridad, tanto para nuestro técnico como para sus mascotas, le pedimos que <strong>aísle en una habitación separada</strong> a todos los animales grandes, reptiles, animales exóticos y gatos antes de la llegada del técnico.
     </div>
-    <p style="margin-top:24px;font-size:14px;color:#444;">Preguntas: <a href="tel:3468206021" style="color:#1B6FE8;font-weight:600;">(346) 820-6021</a></p>
+    <p style="margin-top:24px;font-size:14px;color:#444;">Preguntas: <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a></p>
     <div style="margin-top:20px;padding:14px 18px;background:#fef2f2;border-radius:8px;font-size:13px;color:#666;text-align:center;">
       ¿Necesita cancelar? <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">Cancelar mi cita</a>
     </div>
   </div>
-  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group · Houston · (346) 820-6021</div>
+  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group · Houston · (346) 696-8751</div>
 </div>` : `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#1B6FE8;padding:22px 24px;">
@@ -954,12 +954,12 @@ bookingRouter.post("/admin/approve-booking", requireAdminPin, async (req, res) =
       <strong>🐾 Important — Pet & Technician Safety Notice:</strong><br>
       For the safety of both our technician and your pets, please <strong>isolate in a separate room</strong> all large animals, reptiles, exotic animals, and cats before our technician arrives.
     </div>
-    <p style="margin-top:24px;font-size:14px;color:#444;">Questions: <a href="tel:3468206021" style="color:#1B6FE8;font-weight:600;">(346) 820-6021</a></p>
+    <p style="margin-top:24px;font-size:14px;color:#444;">Questions: <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a></p>
     <div style="margin-top:20px;padding:14px 18px;background:#fef2f2;border-radius:8px;font-size:13px;color:#666;text-align:center;">
       Need to cancel? <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">Cancel my appointment</a>
     </div>
   </div>
-  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group · Houston Metropolitan Area · (346) 820-6021</div>
+  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751</div>
 </div>`;
 
   let emailSent = false;
@@ -1040,7 +1040,7 @@ bookingRouter.post("/admin/block", requireAdminPin, async (req, res) => {
     </p>
   </div>
   <div style="background:#f5f5f5;padding:12px 24px;font-size:11px;color:#aaa;text-align:center;">
-    HTRGroup · (346) 820-6021 · htrgrouptx.com
+    HTRGroup · (346) 696-8751 · htrgrouptx.com
   </div>
 </div>`;
         await transporter.sendMail({ from: `"HTRGroup Admin" <${emailUser}>`, to: emailTo, subject, html });
@@ -1101,7 +1101,7 @@ bookingRouter.delete("/admin/block", requireAdminPin, async (req, res) => {
     </p>
   </div>
   <div style="background:#f5f5f5;padding:12px 24px;font-size:11px;color:#aaa;text-align:center;">
-    HTRGroup · (346) 820-6021 · htrgrouptx.com
+    HTRGroup · (346) 696-8751 · htrgrouptx.com
   </div>
 </div>`;
         await transporter.sendMail({ from: `"HTRGroup Admin" <${emailUser}>`, to: emailTo, subject, html });
@@ -1242,7 +1242,7 @@ bookingRouter.post("/admin/booking", requireAdminPin, async (req, res) => {
     </div>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 820-6021<br>
+    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
     Создано: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`;
@@ -1405,7 +1405,7 @@ bookingRouter.post("/admin/edit-booking", requireAdminPin, async (req, res) => {
     </table>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 820-6021<br>
+    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
     Изменено: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`,
@@ -1535,7 +1535,7 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
     </table>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 820-6021<br>
+    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
     Отменено: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`;
@@ -1579,7 +1579,7 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
         : `If you have any questions or would like to reschedule, please don't hesitate to contact us:`}
     </p>
     <div style="background:#eff6ff;border-radius:8px;padding:14px 18px;margin:16px 0;font-size:14px;">
-      📞 <a href="tel:3468206021" style="color:#1B6FE8;font-weight:600;">(346) 820-6021</a><br>
+      📞 <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a><br>
       ✉️ <a href="mailto:htrgroupllc@gmail.com" style="color:#1B6FE8;">htrgroupllc@gmail.com</a>
     </div>
     <p style="font-size:13px;color:#666;">
@@ -1587,7 +1587,7 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
     </p>
   </div>
   <div style="background:#f8fafc;padding:12px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 820-6021
+    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751
   </div>
 </div>`;
 
@@ -1597,8 +1597,8 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
           subject: clientSubject,
           html:    clientHtml,
           text: isEs
-            ? `Estimado/a ${booking.name},\n\nSu cita del ${booking.preferredDate} a las ${booking.preferredTime} ha sido cancelada.\n\nPara reagendar: (346) 820-6021\n\nHTRGroup`
-            : `Dear ${booking.name},\n\nYour appointment on ${booking.preferredDate} at ${booking.preferredTime} has been cancelled.\n\nTo reschedule: (346) 820-6021\n\nHTRGroup`,        });
+            ? `Estimado/a ${booking.name},\n\nSu cita del ${booking.preferredDate} a las ${booking.preferredTime} ha sido cancelada.\n\nPara reagendar: (346) 696-8751\n\nHTRGroup`
+            : `Dear ${booking.name},\n\nYour appointment on ${booking.preferredDate} at ${booking.preferredTime} has been cancelled.\n\nTo reschedule: (346) 696-8751\n\nHTRGroup`,        });
         req.log.info({ bookingId: id, clientEmail }, "Cancellation email sent to client");
       }
     } catch (err) {
@@ -1868,7 +1868,7 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
     </table>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 820-6021<br>
+    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
     Восстановлено: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`;
@@ -1908,13 +1908,13 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
       <tr style="border-bottom:1px solid #eee;"><td style="padding:8px;color:#666;">${isEs ? "Hora" : "Time"}</td><td style="padding:8px;font-weight:600;">${restoreTime}</td></tr>
       <tr style="border-bottom:1px solid #eee;"><td style="padding:8px;color:#666;">${isEs ? "Servicio" : "Service"}</td><td style="padding:8px;font-weight:600;">${effectiveBooking.appliance}</td></tr>
     </table>
-    <p style="margin-top:20px;">${isEs ? "Preguntas:" : "Questions:"} <a href="tel:3468206021" style="color:#1B6FE8;font-weight:600;">(346) 820-6021</a></p>
+    <p style="margin-top:20px;">${isEs ? "Preguntas:" : "Questions:"} <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a></p>
     <div style="margin-top:16px;padding:12px 16px;background:#fef2f2;border-radius:8px;font-size:13px;color:#666;text-align:center;">
       ${isEs ? "¿Necesita cancelar?" : "Need to cancel?"} <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">${isEs ? "Cancelar mi cita" : "Cancel my appointment"}</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 820-6021
+    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751
   </div>
 </div>`;
           await transporter.sendMail({
@@ -1923,8 +1923,8 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
             subject: isEs ? "♻️ Su cita ha sido restaurada — HTRGroup" : "♻️ Your appointment has been restored — HTRGroup",
             html:    clientHtml,
             text:    isEs
-              ? `Su cita ha sido restaurada. Fecha: ${restoreDate} · ${restoreTime}. Servicio: ${effectiveBooking.appliance}. Preguntas: (346) 820-6021`
-              : `Your appointment has been restored. Date: ${restoreDate} · ${restoreTime}. Service: ${effectiveBooking.appliance}. Questions: (346) 820-6021`,
+              ? `Su cita ha sido restaurada. Fecha: ${restoreDate} · ${restoreTime}. Servicio: ${effectiveBooking.appliance}. Preguntas: (346) 696-8751`
+              : `Your appointment has been restored. Date: ${restoreDate} · ${restoreTime}. Service: ${effectiveBooking.appliance}. Questions: (346) 696-8751`,
           });
           req.log.info({ bookingId: id, clientEmail }, "Restore email sent to client");
         }
@@ -2054,7 +2054,7 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
     ${rowHtml("Новое время", rsTime)}
   </table></div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 820-6021<br>
+    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
     Перенесено: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div></div>`,
           text: `Заявка перенесена.\nID: ${shortId}\nКлиент: ${updatedBooking.name}\nБыло: ${oldDate} · ${oldTime}\nСтало: ${rsDate} · ${rsTime}`,
@@ -2087,13 +2087,13 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
       <p style="margin:8px 0 4px;font-size:16px;color:#1B6FE8;font-weight:700;">📅 ${rsDate} · ${rsTime}</p>
     </div>
     <p style="font-size:13px;color:#64748b;">${isEs
-      ? "Si tiene preguntas, comuníquese con nosotros al (346) 820-6021."
-      : "If you have any questions, please contact us at (346) 820-6021."
+      ? "Si tiene preguntas, comuníquese con nosotros al (346) 696-8751."
+      : "If you have any questions, please contact us at (346) 696-8751."
     }</p>
     <p style="font-size:14px;color:#1e293b;">${isEs ? "¡Gracias por confiar en HTRGroup!" : "Thank you for choosing HTRGroup!"}</p>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    HTRGroup · Houston Metropolitan Area · (346) 820-6021
+    HTRGroup · Houston Metropolitan Area · (346) 696-8751
   </div></div>`,
             text: isEs
               ? `Estimado/a ${updatedBooking.name},\n\nSu cita ha sido reprogramada.\nNueva fecha: ${rsDate} · ${rsTime}\n\nHTRGroup`
@@ -2232,7 +2232,7 @@ bookingRouter.get("/cancel", async (req, res) => {
     </table>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 820-6021
+    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751
   </div>
 </div>`,
           text: `⚠️ Клиент ${booking.name} (${booking.phone}) самостоятельно отменил запись.\nДата: ${booking.preferredDate} · ${booking.preferredTime}\nID: ${shortId}`,
@@ -2248,9 +2248,9 @@ bookingRouter.get("/cancel", async (req, res) => {
     isEs ? "Cita Cancelada" : "Appointment Cancelled",
     isEs
       ? `<p>Su cita del <strong>${booking.preferredDate}</strong> a las <strong>${booking.preferredTime}</strong> ha sido cancelada exitosamente.</p>
-         <p>Si desea reagendar, llámenos al <a href="tel:3468206021" style="color:#1B6FE8;">(346) 820-6021</a>.</p>`
+         <p>Si desea reagendar, llámenos al <a href="tel:3466968751" style="color:#1B6FE8;">(346) 696-8751</a>.</p>`
       : `<p>Your appointment on <strong>${booking.preferredDate}</strong> at <strong>${booking.preferredTime}</strong> has been successfully cancelled.</p>
-         <p>To reschedule, please call us at <a href="tel:3468206021" style="color:#1B6FE8;">(346) 820-6021</a>.</p>`,
+         <p>To reschedule, please call us at <a href="tel:3466968751" style="color:#1B6FE8;">(346) 696-8751</a>.</p>`,
   ));
 });
 
@@ -2392,7 +2392,7 @@ bookingRouter.get("/approve", async (req, res) => {
       </form>
       <p class="note">This action notifies the client and syncs to your CRM.</p>
     </div>
-    <div class="footer">Hi-Tech Repair Group · (346) 820-6021</div>
+    <div class="footer">Hi-Tech Repair Group · (346) 696-8751</div>
   </div>
 </body>
 </html>`);
@@ -2508,12 +2508,12 @@ bookingRouter.post("/approve", async (req, res) => {
       <strong>🐾 Aviso importante — Seguridad de mascotas y técnico:</strong><br>
       Por razones de seguridad, tanto para nuestro técnico como para sus mascotas, le pedimos que <strong>aísle en una habitación separada</strong> a todos los animales grandes, reptiles, animales exóticos y gatos antes de la llegada del técnico.
     </div>
-    <p style="margin-top:24px;font-size:14px;color:#444;">Preguntas: <a href="tel:3468206021" style="color:#1B6FE8;font-weight:600;">(346) 820-6021</a></p>
+    <p style="margin-top:24px;font-size:14px;color:#444;">Preguntas: <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a></p>
     <div style="margin-top:20px;padding:14px 18px;background:#fef2f2;border-radius:8px;font-size:13px;color:#666;text-align:center;">
       ¿Necesita cancelar? <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">Cancelar mi cita</a>
     </div>
   </div>
-  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group · Houston · (346) 820-6021</div>
+  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group · Houston · (346) 696-8751</div>
 </div>` : `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#1B6FE8;padding:22px 24px;">
@@ -2535,12 +2535,12 @@ bookingRouter.post("/approve", async (req, res) => {
       <strong>🐾 Important — Pet & Technician Safety Notice:</strong><br>
       For the safety of both our technician and your pets, please <strong>isolate in a separate room</strong> all large animals, reptiles, exotic animals, and cats before our technician arrives.
     </div>
-    <p style="margin-top:24px;font-size:14px;color:#444;">Questions: <a href="tel:3468206021" style="color:#1B6FE8;font-weight:600;">(346) 820-6021</a></p>
+    <p style="margin-top:24px;font-size:14px;color:#444;">Questions: <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a></p>
     <div style="margin-top:20px;padding:14px 18px;background:#fef2f2;border-radius:8px;font-size:13px;color:#666;text-align:center;">
       Need to cancel? <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">Cancel my appointment</a>
     </div>
   </div>
-  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group · Houston Metropolitan Area · (346) 820-6021</div>
+  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751</div>
 </div>`;
 
   let clientEmailOk = false;
@@ -2606,7 +2606,7 @@ bookingRouter.post("/approve", async (req, res) => {
     </table>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston · (346) 820-6021 &nbsp;·&nbsp;
+    Hi-Tech Repair Group · Houston · (346) 696-8751 &nbsp;·&nbsp;
     Подтверждено: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`;
@@ -2808,8 +2808,8 @@ bookingRouter.post("/hubspot/webhook", async (req, res) => {
                 to:      clientEmail,
                 subject: isEs ? `Su cita ha sido cancelada — HTRGroup` : `Your appointment has been cancelled — HTRGroup`,
                 text: isEs
-                  ? `Estimado/a ${booking.name},\nSu cita del ${booking.preferredDate} a las ${booking.preferredTime} ha sido cancelada.\nContacto: (346) 820-6021 | htrgroupllc@gmail.com`
-                  : `Dear ${booking.name},\nYour appointment on ${booking.preferredDate} at ${booking.preferredTime} has been cancelled.\nContact: (346) 820-6021 | htrgroupllc@gmail.com`,
+                  ? `Estimado/a ${booking.name},\nSu cita del ${booking.preferredDate} a las ${booking.preferredTime} ha sido cancelada.\nContacto: (346) 696-8751 | htrgroupllc@gmail.com`
+                  : `Dear ${booking.name},\nYour appointment on ${booking.preferredDate} at ${booking.preferredTime} has been cancelled.\nContact: (346) 696-8751 | htrgroupllc@gmail.com`,
               });
             } catch { /* non-fatal */ }
           })();
@@ -2861,7 +2861,7 @@ function statusPage(type: "success" | "already" | "error", title: string, bodyHt
   <div class="card">
     <div class="hdr"><div class="ico">${icons[type]}</div><h1>${title}</h1></div>
     <div class="body">${bodyHtml}</div>
-    <div class="footer">Hi-Tech Repair Group · Houston, TX · (346) 820-6021</div>
+    <div class="footer">Hi-Tech Repair Group · Houston, TX · (346) 696-8751</div>
   </div>
 </body>
 </html>`;

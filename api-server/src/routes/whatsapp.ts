@@ -9,8 +9,8 @@ import { cancelDealInHubSpot, syncBookingToHubSpot } from "../hubspot.js";
 const waRouter = Router();
 
 const FROM_NUM     = process.env["TWILIO_WHATSAPP_NUMBER"] ?? "whatsapp:+14155238886";
-const OWNER_WA     = "whatsapp:+13468206021";
-const OWNER_PHONE  = "(346) 820-6021";
+const OWNER_WA     = "whatsapp:+13466968751";
+const OWNER_PHONE  = "(346) 696-8751";
 const OWNER_EMAIL  = "htrgroupllc@gmail.com";
 const COMPANY_NAME = "HTRGroup";
 
@@ -616,7 +616,7 @@ async function sendDatePicker(to: string, greeting: string, dates: string[], has
     (s) => clean(shortDateLabel(s)),
     `${greeting}\n\n` +
     `⚠️ *No available days in the next 7 days.*\n\n` +
-    `Please call or text us directly:\n📞 *(346) 820-6021*\n\nWe'll find a time for you! 🙏`,
+    `Please call or text us directly:\n📞 *(346) 696-8751*\n\nWe'll find a time for you! 🙏`,
   );
 }
 
@@ -642,7 +642,7 @@ async function sendSlotPicker(to: string, greeting: string, slots: string[], has
     to, greeting, slots, hasMore,
     (s) => clean(shortSlotLabel(s)).slice(0, 24),
     `${greeting}\n\n` +
-    `⚠️ *No available slots.*\n\nPlease call us: 📞 *(346) 820-6021*`,
+    `⚠️ *No available slots.*\n\nPlease call us: 📞 *(346) 696-8751*`,
   );
 }
 

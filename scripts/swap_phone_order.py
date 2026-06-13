@@ -83,8 +83,8 @@ def patch_site_phones():
     t = p.read_text(encoding="utf-8")
     new = """export const COMPANY_PHONE_DISPLAY = \"(606) 660-6067\";
 export const COMPANY_PHONE_HREF = \"tel:+16066606067\";
-export const PHONE_DISPLAY = \"(346) 820-6021\";
-export const PHONE_HREF = \"tel:+13468206021\";
+export const PHONE_DISPLAY = \"(346) 696-8751\";
+export const PHONE_HREF = \"tel:+13466968751\";
 """
     if "(606)" not in t:
         raise SystemExit("sitePhones unexpected")
@@ -119,16 +119,16 @@ def patch_bundle():
         total += n
     # sitePhones const order in bundle (each duplicated chunk)
     old = (
-        'const PHONE_DISPLAY$3 = "(346) 820-6021";\n'
-        'const PHONE_HREF$3 = "tel:+13468206021";\n'
+        'const PHONE_DISPLAY$3 = "(346) 696-8751";\n'
+        'const PHONE_HREF$3 = "tel:+13466968751";\n'
         'const COMPANY_PHONE_DISPLAY$3 = "(606) 660-6067";\n'
         'const COMPANY_PHONE_HREF$3 = "tel:+16066606067";'
     )
     new = (
         'const COMPANY_PHONE_DISPLAY$3 = "(606) 660-6067";\n'
         'const COMPANY_PHONE_HREF$3 = "tel:+16066606067";\n'
-        'const PHONE_DISPLAY$3 = "(346) 820-6021";\n'
-        'const PHONE_HREF$3 = "tel:+13468206021";'
+        'const PHONE_DISPLAY$3 = "(346) 696-8751";\n'
+        'const PHONE_HREF$3 = "tel:+13466968751";'
     )
     c = t.count(old)
     if c:

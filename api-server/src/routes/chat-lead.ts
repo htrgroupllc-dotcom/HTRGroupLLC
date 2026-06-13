@@ -220,7 +220,7 @@ chatLeadRouter.post("/chat-lead", async (req, res) => {
     const twilioSid   = process.env["TWILIO_ACCOUNT_SID"];
     const twilioToken = process.env["TWILIO_AUTH_TOKEN"];
     const fromNum     = process.env["TWILIO_WHATSAPP_NUMBER"] ?? "whatsapp:+14155238886";
-    const ownerWA     = "whatsapp:+13468206021";
+    const ownerWA     = "whatsapp:+13466968751";
 
     if (twilioSid && twilioToken) {
       const translatedForWA = translatedMessages ?? filteredMessages;

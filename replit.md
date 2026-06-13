@@ -54,7 +54,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - **WABA ID**: `17070097757403606`
 - **Meta Business Manager ID**: `398941535469435`
 - **FROM в коде**: `whatsapp:+15559554342` (env: `TWILIO_WHATSAPP_NUMBER`)
-- **OWNER_WA**: `whatsapp:+13468206021` (номер владельца для уведомлений)
+- **OWNER_WA**: `whatsapp:+13466968751` (номер владельца для уведомлений)
 - **Webhook URL**: `https://htr-group-llc-appliance-repair.replit.app/api/whatsapp/incoming` (HTTP POST)
 - **Twilio Account SID**: `[TWILIO-SID-REMOVED]`
 - **Messaging Service SID**: `MGf41635f067768fd033ad4fcea1a1964e` ("HTRGroupTX WhatsApp")
@@ -122,7 +122,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 Admin UI: кнопка "Изменить" (фиолетовая, Pencil icon) в mobile-карточке и desktop-таблице; модал с предзаполненными полями.
 
 ### Бизнес-контакты
-- Телефон: `(346) 820-6021` → `tel:3468206021`
+- Телефон: `(346) 696-8751` → `tel:3466968751`
 - Email: `htrgroupllc@gmail.com`
 - Сайт: `htrgrouptx.com`
 - Бэкенд (production): `https://htr-group-llc-appliance-repair.replit.app`

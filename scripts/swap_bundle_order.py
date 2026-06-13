@@ -44,16 +44,16 @@ print("contact ok")
 
 for suf in ("$3", "$2"):
     old = (
-        f"const PHONE_DISPLAY{suf} = \"(346) 820-6021\";\n"
-        f"const PHONE_HREF{suf} = \"tel:+13468206021\";\n"
+        f"const PHONE_DISPLAY{suf} = \"(346) 696-8751\";\n"
+        f"const PHONE_HREF{suf} = \"tel:+13466968751\";\n"
         f"const COMPANY_PHONE_DISPLAY{suf} = \"(606) 660-6067\";\n"
         f"const COMPANY_PHONE_HREF{suf} = \"tel:+16066606067\";"
     )
     new = (
         f"const COMPANY_PHONE_DISPLAY{suf} = \"(606) 660-6067\";\n"
         f"const COMPANY_PHONE_HREF{suf} = \"tel:+16066606067\";\n"
-        f"const PHONE_DISPLAY{suf} = \"(346) 820-6021\";\n"
-        f"const PHONE_HREF{suf} = \"tel:+13468206021\";"
+        f"const PHONE_DISPLAY{suf} = \"(346) 696-8751\";\n"
+        f"const PHONE_HREF{suf} = \"tel:+13466968751\";"
     )
     j = j.replace(old, new)
 

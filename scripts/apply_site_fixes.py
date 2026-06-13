@@ -3,7 +3,7 @@
 def patch_home():
     p = Path(r"C:\Projects\HTRGroupLLC\src\pages\home.tsx")
     h = p.read_text(encoding="utf-8")
-    old = 'const PHONE_DISPLAY = "(346) 820-6021";\nconst PHONE_HREF    = "tel:3468206021";'
+    old = 'const PHONE_DISPLAY = "(346) 696-8751";\nconst PHONE_HREF    = "tel:3466968751";'
     new = 'import { PHONE_DISPLAY, PHONE_HREF, COMPANY_PHONE_DISPLAY, COMPANY_PHONE_HREF } from "@/lib/sitePhones";'
     if old in h:
         h = h.replace(old, new, 1)
@@ -120,7 +120,7 @@ function MidPhoneStrip() {
 def patch_gallery():
     p = Path(r"C:\Projects\HTRGroupLLC\src\pages\gallery.tsx")
     h = p.read_text(encoding="utf-8")
-    old = 'const PHONE_DISPLAY = "(346) 820-6021";\nconst PHONE_HREF    = "tel:3468206021";'
+    old = 'const PHONE_DISPLAY = "(346) 696-8751";\nconst PHONE_HREF    = "tel:3466968751";'
     new = 'import { PHONE_DISPLAY, PHONE_HREF, COMPANY_PHONE_DISPLAY, COMPANY_PHONE_HREF } from "@/lib/sitePhones";'
     if old in h:
         h = h.replace(old, new, 1)

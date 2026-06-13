@@ -14,7 +14,7 @@ js = urllib.request.urlopen(
 i = js.find("header-phone-pair")
 sn = js[i : i + 900] if i != -1 else ""
 p606 = sn.find("660-6067")
-p346 = sn.find("820-6021")
+p346 = sn.find("696-8751")
 print("live header 606 first:", p606 != -1 and (p346 == -1 or p606 < p346))
 bad = 0
 pos = 0

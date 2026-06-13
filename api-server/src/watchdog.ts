@@ -23,7 +23,7 @@ import { syncBookingToHubSpot, cancelDealInHubSpot } from "./hubspot.js";
 import { verifyAdminToken } from "./admin-auth.js";
 
 // ─── Config ─────────────────────────────────────────────────────────────────
-const OWNER_WA           = "whatsapp:+13468206021";
+const OWNER_WA           = "whatsapp:+13466968751";
 const OWNER_EMAIL        = process.env["EMAIL_TO"]   ?? "htrgroupllc@gmail.com";
 const WA_FROM            = process.env["TWILIO_WHATSAPP_NUMBER"] ?? "whatsapp:+15559554342";
 
@@ -412,14 +412,14 @@ async function checkHubSpotDeletions() {
                       <h2 style="color:#dc2626;">Su cita ha sido cancelada</h2>
                       <p>Estimado/a <strong>${row.name}</strong>,</p>
                       <p>Su cita del <strong>${row.preferred_date}</strong> a las <strong>${row.preferred_time}</strong> para <strong>${row.appliance || "electrodoméstico"}</strong> ha sido cancelada.</p>
-                      <p>Para reagendar, contáctenos:<br>📞 (346) 820-6021<br>📧 htrgroupllc@gmail.com</p>
+                      <p>Para reagendar, contáctenos:<br>📞 (346) 696-8751<br>📧 htrgroupllc@gmail.com</p>
                       <p style="color:#6b7280;font-size:12px;">HTRGroupTX — Houston, TX</p>
                     </div>`
                   : `<div style="font-family:sans-serif;max-width:580px;margin:0 auto;padding:24px;">
                       <h2 style="color:#dc2626;">Your appointment has been cancelled</h2>
                       <p>Dear <strong>${row.name}</strong>,</p>
                       <p>Your appointment on <strong>${row.preferred_date}</strong> at <strong>${row.preferred_time}</strong> for <strong>${row.appliance || "appliance repair"}</strong> has been cancelled.</p>
-                      <p>To reschedule, please contact us:<br>📞 (346) 820-6021<br>📧 htrgroupllc@gmail.com</p>
+                      <p>To reschedule, please contact us:<br>📞 (346) 696-8751<br>📧 htrgroupllc@gmail.com</p>
                       <p style="color:#6b7280;font-size:12px;">HTRGroupTX — Houston, TX</p>
                     </div>`,
               });

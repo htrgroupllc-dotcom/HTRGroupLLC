@@ -10,14 +10,14 @@ if bi < 0:
 # const block immediately before BlogPost
 pre = s[:bi]
 old_block = (
-    'const PHONE_DISPLAY = "(346) 820-6021";\n'
-    'const PHONE_HREF = "tel:+13468206021";\n'
+    'const PHONE_DISPLAY = "(346) 696-8751";\n'
+    'const PHONE_HREF = "tel:+13466968751";\n'
     'const COMPANY_PHONE_DISPLAY$6 = "(606) 660-6067";\n'
     'const COMPANY_PHONE_HREF$6 = "tel:+16066606067";'
 )
 new_block = (
-    'const PHONE_DISPLAY$6 = "(346) 820-6021";\n'
-    'const PHONE_HREF$6 = "tel:+13468206021";\n'
+    'const PHONE_DISPLAY$6 = "(346) 696-8751";\n'
+    'const PHONE_HREF$6 = "tel:+13466968751";\n'
     'const COMPANY_PHONE_DISPLAY$6 = "(606) 660-6067";\n'
     'const COMPANY_PHONE_HREF$6 = "tel:+16066606067";'
 )

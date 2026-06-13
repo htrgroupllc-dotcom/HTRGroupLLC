@@ -192,8 +192,8 @@ export default function ChatWidget({ lang = "en" }: { lang?: "en" | "es" }) {
         prev.map((m) =>
           m.id === assistantId
             ? { ...m, content: lang === "es"
-                ? "Lo siento, ocurrió un error. Por favor llámenos al (346) 820-6021."
-                : "Sorry, something went wrong. Please call us at (346) 820-6021." }
+                ? "Lo siento, ocurrió un error. Por favor llámenos al (346) 696-8751."
+                : "Sorry, something went wrong. Please call us at (346) 696-8751." }
             : m
         )
       );

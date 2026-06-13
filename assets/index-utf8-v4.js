@@ -31057,8 +31057,8 @@ AccordionContent.displayName = Content2.displayName;
 /** NO fake reviews — API only. */
 const ALL_REVIEWS = [];
 const API_BASE$2 = "https://htr-group-llc-appliance-repair.replit.app";
-const PHONE_DISPLAY$4 = "(346) 820-6021";
-const PHONE_HREF$4 = "tel:+13468206021";
+const PHONE_DISPLAY$4 = "(346) 696-8751";
+const PHONE_HREF$4 = "tel:+13466968751";
 const EMAIL_DISPLAY = "htrgroupllc@gmail.com";
 const EMAIL_HREF = "mailto:htrgroupllc@gmail.com";
 const WELCOME = {
@@ -31221,7 +31221,7 @@ function ChatWidget({ lang = "en" }) {
     } catch {
       setMessages(
         (prev) => prev.map(
-          (m) => m.id === assistantId ? { ...m, content: lang === "es" ? "Lo siento, ocurrió un error. Por favor llámenos al (346) 820-6021." : "Sorry, something went wrong. Please call us at (346) 820-6021." } : m
+          (m) => m.id === assistantId ? { ...m, content: lang === "es" ? "Lo siento, ocurrió un error. Por favor llámenos al (346) 696-8751." : "Sorry, something went wrong. Please call us at (346) 696-8751." } : m
         )
       );
     } finally {
@@ -31744,8 +31744,8 @@ const new8a = "/assets/photo_8_2026-04-10_13-45-35_1775846776372-FwLH-xea.jpg";
 const heroImg = "/assets/ChatGPT_Image_12_%D0%B0%D0%BF%D1%80._2026_%D0%B3.__02_07_40_1775977673189-CuW01Jql.png";
 const COMPANY_PHONE_DISPLAY$3 = "(606) 660-6067";
 const COMPANY_PHONE_HREF$3 = "tel:+16066606067";
-const PHONE_DISPLAY$3 = "(346) 820-6021";
-const PHONE_HREF$3 = "tel:+13468206021";
+const PHONE_DISPLAY$3 = "(346) 696-8751";
+const PHONE_HREF$3 = "tel:+13466968751";
 const BRANDS_BY_APPLIANCE = {
   refrigerator: [
     { brand: "Samsung", models: ["French Door (RF Series)", "Side-by-Side (RS Series)", "Top Freezer (RT Series)", "4-Door Flex", "Bespoke", "Family Hub", "Chef Collection", "Other Samsung"] },
@@ -32024,7 +32024,7 @@ const TR$3 = {
     processH2: "How We Work",
     processSub: "Simple, transparent, and stress-free from first call to final check.",
     processSteps: [
-      { title: "Book Online or Call", desc: "Request service online or call (346) 820-6021. We confirm within 15 minutes." },
+      { title: "Book Online or Call", desc: "Request service online or call (346) 696-8751. We confirm within 15 minutes." },
       { title: "Same-Day Dispatch", desc: "A certified technician is dispatched to your home — often the same day you call." },
       { title: "Diagnosis & Estimate", desc: "We diagnose the issue and provide an upfront, honest quote before any work begins." },
       { title: "Repair & Parts", desc: "Most repairs are completed on the first visit using parts we carry in our fully-stocked trucks." },
@@ -32102,7 +32102,7 @@ const TR$3 = {
     processH2: "Cómo Trabajamos",
     processSub: "Simple, transparente y sin estrés desde la primera llamada hasta la revisión final.",
     processSteps: [
-      { title: "Reserve en Línea o Llame", desc: "Solicite el servicio en línea o llame al (346) 820-6021. Confirmamos en 15 minutos." },
+      { title: "Reserve en Línea o Llame", desc: "Solicite el servicio en línea o llame al (346) 696-8751. Confirmamos en 15 minutos." },
       { title: "Despacho el Mismo Día", desc: "Un técnico certificado se envía a su hogar — a menudo el mismo día que llama." },
       { title: "Diagnóstico y Presupuesto", desc: "Diagnosticamos el problema y le damos un presupuesto claro antes de comenzar cualquier trabajo." },
       { title: "Reparación con Repuestos", desc: "La mayoría de las reparaciones se completan en la primera visita con piezas que llevamos en nuestros camiones." },
@@ -32931,7 +32931,7 @@ function Home() {
     } catch {
       toast2({
         title: isEs ? "Error al enviar" : "Submission error",
-        description: isEs ? "Ocurrió un error. Llámenos al (346) 820-6021." : "Something went wrong. Please call us at (346) 820-6021.",
+        description: isEs ? "Ocurrió un error. Llámenos al (346) 696-8751." : "Something went wrong. Please call us at (346) 696-8751.",
         variant: "destructive"
       });
     } finally {
@@ -33791,8 +33791,8 @@ function Home() {
 }
 const COMPANY_PHONE_DISPLAY$2 = "(606) 660-6067";
 const COMPANY_PHONE_HREF$2 = "tel:+16066606067";
-const PHONE_DISPLAY$2 = "(346) 820-6021";
-const PHONE_HREF$2 = "tel:+13468206021";
+const PHONE_DISPLAY$2 = "(346) 696-8751";
+const PHONE_HREF$2 = "tel:+13466968751";
 const API$3 = "https://htr-group-llc-appliance-repair.replit.app";
 const K$2 = {
   accent: "#1B6FE8",
@@ -35554,8 +35554,8 @@ const BLOG_POSTS = [
     `
   }
 ];
-const PHONE_DISPLAY$1 = "(346) 820-6021";
-const PHONE_HREF$1 = "tel:+13468206021";
+const PHONE_DISPLAY$1 = "(346) 696-8751";
+const PHONE_HREF$1 = "tel:+13466968751";
 const COMPANY_PHONE_DISPLAY$5 = "(606) 660-6067";
 const COMPANY_PHONE_HREF$5 = "tel:+16066606067";
 const K$1 = {
@@ -35801,8 +35801,8 @@ function Blog() {
     /* @__PURE__ */ jsxRuntimeExports.jsx(ChatWidget, { lang })
   ] });
 }
-const PHONE_DISPLAY$6 = "(346) 820-6021";
-const PHONE_HREF$6 = "tel:+13468206021";
+const PHONE_DISPLAY$6 = "(346) 696-8751";
+const PHONE_HREF$6 = "tel:+13466968751";
 const COMPANY_PHONE_DISPLAY$6 = "(606) 660-6067";
 const COMPANY_PHONE_HREF$6 = "tel:+16066606067";
 const K = {
@@ -83867,7 +83867,7 @@ const DEFAULTS = {
   auto_payroll_enabled: "false",
   payroll_split_employee: "70",
   payroll_split_company: "30",
-  owner_whatsapp_number: "+13468206021",
+  owner_whatsapp_number: "+13466968751",
   visit_fee: "50"
 };
 function SettingsTab({ apiBase, adminAuthH }) {
@@ -84105,7 +84105,7 @@ function SettingsTab({ apiBase, adminAuthH }) {
             type: "tel",
             value: data.owner_whatsapp_number,
             onChange: set("owner_whatsapp_number"),
-            placeholder: "+13468206021",
+            placeholder: "+13466968751",
             className: inputCls
           }
         ),
@@ -86633,7 +86633,7 @@ function AdminDashboard() {
       if (!res.ok) throw new Error(data.error ?? "Unknown error");
       toast2({
         title: "📞 Ваш телефон сейчас зазвонит!",
-        description: "Ответьте на звонок с номера (346) 820-6021 — система автоматически соединит вас с клиентом. Клиент увидит только (606), ваш номер скрыт.",
+        description: "Ответьте на звонок с номера (346) 696-8751 — система автоматически соединит вас с клиентом. Клиент увидит только (606), ваш номер скрыт.",
         duration: 14e3
       });
     } catch (err) {
@@ -95678,18 +95678,18 @@ function PaymentSuccess() {
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "a",
         {
-          href: "tel:+13468206021",
+          href: "tel:+13466968751",
           className: "flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-stone-200 text-stone-700 font-bold text-sm hover:bg-stone-50 transition",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "w-4 h-4" }),
-            " (346) 820-6021"
+            " (346) 696-8751"
           ]
         }
       )
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-stone-400 mt-8", children: [
       t.help,
-      " (346) 820-6021"
+      " (346) 696-8751"
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "button",
@@ -97069,7 +97069,7 @@ function PrivacyPolicy() {
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "3. SMS / Text Messaging" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
       "By texting our number ",
-      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "(346) 820-6021" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "(346) 696-8751" }),
       " or providing your phone number through our booking form, you consent to receive SMS messages related to your service request, including appointment confirmations, technician arrival notices, and follow-up communications."
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
@@ -97081,7 +97081,7 @@ function PrivacyPolicy() {
       /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "STOP" }),
       " to any message. To get help, reply ",
       /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "HELP" }),
-      " or call (346) 820-6021."
+      " or call (346) 696-8751."
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "4. Information Sharing" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "We do not sell, trade, or transfer your personal information to third parties, except:" }),
@@ -97107,7 +97107,7 @@ function PrivacyPolicy() {
       "You may request access to, correction of, or deletion of your personal data by contacting us at ",
       /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "htrgroupllc@gmail.com" }),
       " or calling ",
-      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "(346) 820-6021" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "(346) 696-8751" }),
       "."
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "7. Changes to This Policy" }),
@@ -97118,7 +97118,7 @@ function PrivacyPolicy() {
       /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
       "Houston, TX",
       /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
-      "Phone: (346) 820-6021",
+      "Phone: (346) 696-8751",
       /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
       "Email: htrgroupllc@gmail.com",
       /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
@@ -97148,7 +97148,7 @@ function Terms() {
     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "HTRGroupTX provides professional appliance repair services in the Houston, TX metropolitan area. Services include diagnosis, repair, and maintenance of home appliances including refrigerators, washers, dryers, dishwashers, ovens, microwaves, and other household appliances." }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "2. Appointments and Scheduling" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Appointments can be scheduled through our website, by calling (346) 820-6021, or via WhatsApp at (555) 955-4342 or by calling (606) 660-6067." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Appointments can be scheduled through our website, by calling (346) 696-8751, or via WhatsApp at (555) 955-4342 or by calling (606) 660-6067." }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "We will confirm your appointment as soon as possible during business hours." }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Please provide accurate appliance information and service address to ensure timely service." }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Cancellations should be made at least 2 hours before the scheduled appointment time." })
@@ -97156,7 +97156,7 @@ function Terms() {
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "3. SMS Communications" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
       "By providing your phone number or texting us at ",
-      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "(346) 820-6021" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "(346) 696-8751" }),
       ", you agree to receive SMS messages related to your service request. These may include:"
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { children: [
@@ -97167,7 +97167,7 @@ function Terms() {
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "To stop receiving messages, reply STOP at any time." }),
-      " For help, reply HELP or call (346) 820-6021. Message and data rates may apply. Message frequency varies based on your service activity."
+      " For help, reply HELP or call (346) 696-8751. Message and data rates may apply. Message frequency varies based on your service activity."
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }, children: "4. Pricing and Payment" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { children: [
@@ -97191,7 +97191,7 @@ function Terms() {
       /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
       "Houston, TX",
       /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
-      "Phone: (346) 820-6021",
+      "Phone: (346) 696-8751",
       /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
       "Email: htrgroupllc@gmail.com",
       /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
