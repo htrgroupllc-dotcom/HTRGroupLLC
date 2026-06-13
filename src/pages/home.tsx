@@ -1024,34 +1024,26 @@ function DraggableMarquee({ brands, base, reverse = false }: { brands: [string, 
   );
 }
 
-function CenterConvergeMarquee({ brands, base }: { brands: [string, string][]; base: string }) {
+function CenterMarquee({ brands, base }: { brands: [string, string][]; base: string }) {
   const cardClass =
     "htr-brand-marquee-center__card flex-shrink-0 flex items-center justify-center bg-white rounded-xl border border-stone-100 shadow-sm p-2";
-  const renderStrip = (prefix: string) =>
-    brands.map(([name, file], i) => (
-      <div key={`${prefix}-${i}`} className={cardClass}>
-        <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
-      </div>
-    ));
+  const strip = brands.map(([name, file], i) => (
+    <div key={i} className={cardClass}>
+      <img src={`${base}/logos/${file}.png`} alt={name} className="w-full h-full object-contain" draggable={false} loading="lazy" />
+    </div>
+  ));
 
   return (
     <section className="htr-brand-marquee-center relative w-full py-6 bg-stone-50 border-y border-stone-200 overflow-hidden" aria-label="Brands we service">
       <div className="htr-brand-marquee-center__bleed w-screen relative left-1/2 -translate-x-1/2">
-        <div className="htr-brand-marquee-center__stage relative w-full">
-          <div className="htr-brand-marquee-center__row relative w-full min-h-[88px] h-[88px] overflow-hidden">
-            <div className="htr-brand-marquee-center__seam pointer-events-none absolute left-1/2 top-0 bottom-0 z-20" aria-hidden="true" />
-            <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--left absolute inset-y-0 left-0 w-1/2 overflow-hidden z-10">
-              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center w-max h-full justify-start">
-                <div className="htr-brand-marquee-center__strip flex items-center gap-3 flex-shrink-0">{renderStrip("la")}</div>
-                <div className="htr-brand-marquee-center__strip flex items-center gap-3 flex-shrink-0" aria-hidden="true">{renderStrip("lb")}</div>
-              </div>
-            </div>
-            <div className="htr-brand-marquee-center__wing htr-brand-marquee-center__wing--right absolute inset-y-0 right-0 w-1/2 overflow-hidden z-10">
-              <div className="htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center w-max h-full justify-end">
-                <div className="htr-brand-marquee-center__strip flex items-center gap-3 flex-shrink-0">{renderStrip("ra")}</div>
-                <div className="htr-brand-marquee-center__strip flex items-center gap-3 flex-shrink-0" aria-hidden="true">{renderStrip("rb")}</div>
-              </div>
-            </div>
+        <div className="htr-brand-marquee-center__viewport relative w-full min-h-[88px] h-[88px] overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
+            style={{ background: "linear-gradient(to right, #f9fafb, transparent)" }} />
+          <div className="absolute right-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
+            style={{ background: "linear-gradient(to left, #f9fafb, transparent)" }} />
+          <div className="htr-brand-marquee-center__track flex items-center w-max h-full">
+            <div className="htr-brand-marquee-center__strip flex items-center gap-3 flex-shrink-0">{strip}</div>
+            <div className="htr-brand-marquee-center__strip flex items-center gap-3 flex-shrink-0" aria-hidden="true">{strip}</div>
           </div>
         </div>
       </div>
@@ -1482,7 +1474,7 @@ export default function Home() {
           </div>
         </section>
 
-        <CenterConvergeMarquee
+        <CenterMarquee
           brands={MARQUEE_BRANDS}
           base={import.meta.env.BASE_URL.replace(/\/$/, "")}
         />
