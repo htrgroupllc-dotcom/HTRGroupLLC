@@ -1,0 +1,40 @@
+1096|
+1097|  const T = TR[lang];
+1098|  const isEs = lang === "es";
+1099|
+1100|  const STAT_ICONS = [
+1101|    <Users  className="h-8 w-8" />,
+1102|    <Wrench className="h-8 w-8" />,
+1103|    <Clock  className="h-8 w-8" />,
+1104|    <Award  className="h-8 w-8" />,
+1105|  ];
+1106|
+1107|  // Show 8 reviews per day (2 rows × 4 cols), rotating daily
+1108|  const _day = Math.floor(
+1109|    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86_400_000
+1110|  );
+1111|  // Hero overlay card: rotates every 12 hours
+1112|  const _halfDay = Math.floor(Date.now() / (12 * 3_600_000));
+1113|  const _fiveStar  = ALL_REVIEWS.filter(r => r.category === "5");
+1114|  const _fourStar  = ALL_REVIEWS.filter(r => r.category === "4");
+1115|  const _recentRev = ALL_REVIEWS.filter(r => r.category === "recent");
+1116|  const _overlayReview = _fiveStar[_halfDay % _fiveStar.length];
+1117|  const _dailyReview   = _fiveStar[_day % _fiveStar.length];
+1118|  const _pickN = (pool: typeof ALL_REVIEWS, n: number) => {
+1119|    const start = (_day * n) % pool.length;
+1120|    return [...pool.slice(start, start + n), ...pool.slice(0, Math.max(0, start + n - pool.length))];
+1121|  };
+1122|  // "all" tab: 6 five-star + 2 four-star interleaved (4★ at positions 3 and 7)
+1123|  const [f5a,f5b,f5c,f5d,f5e,f5f] = _pickN(_fiveStar, 6);
+1124|  const [f4a,f4b]                  = _pickN(_fourStar, 2);
+1125|  const _dailyMix = [f5a, f5b, f5c, f4a, f5d, f5e, f5f, f4b];
+1126|  const filteredReviews =
+1127|    reviewTab === "all"    ? _dailyMix :
+1128|    reviewTab === "5"      ? _pickN(_fiveStar, 8) :
+1129|    reviewTab === "4"      ? _pickN(_fourStar, 8) :
+1130|                             _pickN(_recentRev, 8);
+1131|
+1132|  const handleServiceClick = (svc: typeof SERVICES[0]) => {
+1133|    setAppliance(isEs ? svc.appEs : svc.appEn);
+1134|    setTimeout(() => {
+1135|      bookingFormRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });

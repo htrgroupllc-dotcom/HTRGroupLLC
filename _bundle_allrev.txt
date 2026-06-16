@@ -1,0 +1,487 @@
+h fixed. Good service, would prefer tighter window.", "Interruptor flotante de lavavajillas arreglado. Buen servicio, preferiría ventana más ajustada."],
+  ["Stanley P.", 4, "1 month ago", "4", "Fridge temperature consistent now. Waited 3 days during peak season.", "Temperatura de nevera consistente ahora. Esperé 3 días en temporada alta."],
+  ["Wanda T.", 4, "2 months ago", "4", "Gas dryer igniter fixed. 90-day warranty appreciated. Final price slightly over.", "Encendedor de secadora de gas arreglado. Garantía apreciada. Precio final ligeramente mayor."],
+  ["Harold M.", 4, "3 months ago", "4", "Fridge repair took two visits due to part. Second visit was under warranty.", "Reparación de nevera tomó dos visitas por el repuesto. Segunda bajo garantía."],
+  ["Marcus B.", 4, "4 months ago", "4", "Dishwasher control panel fixed. Full cycles complete now. Very good.", "Panel de control de lavavajillas arreglado. Ciclos completos. Muy bueno."],
+  ["Pedro A.", 4, "5 months ago", "4", "Wolf range burner serviced. Tech was knowledgeable. Parts slightly delayed.", "Quemador de estufa Wolf revisado. Técnico experto. Repuestos ligeramente retrasados."],
+  ["Nicole S.", 4, "6 months ago", "4", "Oven control board replaced. Works great now. Small delay ordering parts.", "Tarjeta de control del horno reemplazada. Funciona genial. Pequeño retraso en pedido."],
+  ["Carlos R.", 4, "7 months ago", "4", "Washer fixed correctly on first visit. Scheduling could be tighter.", "Lavadora arreglada correctamente en primera visita. Programación podría ser más ajustada."],
+  ["Tanya M.", 4, "8 months ago", "4", "Fridge water dispenser fixed. Tech was professional. Window was 4 hours.", "Dispensador de agua de nevera arreglado. Técnico profesional. Ventana fue de 4 horas."],
+  ["Billy J.", 4, "9 months ago", "4", "Dryer heating element replaced. Works great. Price was fair and transparent.", "Elemento calefactor de secadora reemplazado. Funciona genial. Precio justo y transparente."]
+];
+const ALL_REVIEWS = RAW.map(
+  ([name, rating, time2, category, textEn, textEs], i) => ({
+    name,
+    initials: name[0],
+    avatarColor: C[i % C.length],
+    rating,
+    time: time2,
+    textEn,
+    textEs,
+    category
+  })
+);
+const API_BASE$2 = "https://htr-group-llc-appliance-repair.replit.app";
+const PHONE_DISPLAY$4 = "(346) 696-8751";
+const PHONE_HREF$4 = "tel:+13466968751";
+const EMAIL_DISPLAY = "htrgroupllc@gmail.com";
+const EMAIL_HREF = "mailto:htrgroupllc@gmail.com";
+const WELCOME = {
+  en: "Hi! I'm your appliance repair assistant. Describe your appliance problem and I'll help you diagnose it step by step.\n\nWhat appliance is giving you trouble?",
+  es: "¡Hola! Soy tu asistente de reparación de electrodomésticos. Describe el problema y te ayudaré a diagnosticarlo paso a paso.\n\n¿Qué electrodoméstico te está dando problemas?"
+};
+const TR$4 = {
+  en: {
+    title: "HTRGroup",
+    subtitle: "AI Diagnostic Help",
+    placeholder: "Describe your appliance problem…",
+    send: "Send",
+    poweredBy: "Powered by AI • Not a substitute for professional diagnosis",
+    thinking: "Thinking…",
+    urgentTitle: "Looks like a serious issue!",
+    urgentBody: "Based on your description, this repair requires a certified technician. Contact us — we'll get it fixed fast.",
+    urgentBook: "Book a Technician",
+    urgentCall: "Call Now",
+    urgentEmail: "Email Us",
+    formTitle: "Before we start…",
+    formSubtitle: "Please share your details so we can follow up if needed.",
+    formName: "Full Name",
+    formEmail: "Email (optional)",
+    formPhone: "Phone Number",
+    formStart: "Start Chat",
+    formRequired: "Name and phone are required",
+    formNamePh: "e.g. John Smith",
+    formEmailPh: "e.g. john@example.com",
+    formPhonePh: "e.g. (346) 555-0000"
+  },
+  es: {
+    title: "HTRGroup",
+    subtitle: "Diagnóstico con IA",
+    placeholder: "Describe el problema con tu electrodoméstico…",
+    send: "Enviar",
+    poweredBy: "Impulsado por IA • No sustituye el diagnóstico profesional",
+    thinking: "Pensando…",
+    urgentTitle: "¡Parece un problema serio!",
+    urgentBody: "Según su descripción, esta reparación requiere un técnico certificado. Contáctenos — lo solucionamos rápido.",
+    urgentBook: "Reservar un Técnico",
+    urgentCall: "Llamar Ahora",
+    urgentEmail: "Escribirnos",
+    formTitle: "Antes de comenzar…",
+    formSubtitle: "Por favor comparte tus datos para que podamos contactarte si es necesario.",
+    formName: "Nombre Completo",
+    formEmail: "Correo electrónico (opcional)",
+    formPhone: "Número de Teléfono",
+    formStart: "Iniciar Chat",
+    formRequired: "Nombre y teléfono son obligatorios",
+    formNamePh: "ej. Juan García",
+    formEmailPh: "ej. juan@ejemplo.com",
+    formPhonePh: "ej. (346) 555-0000"
+  }
+};
+function formatText(text) {
+  return text.split("\n").map((line, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+    line,
+    i < text.split("\n").length - 1 && /* @__PURE__ */ jsxRuntimeExports.jsx("br", {})
+  ] }, i));
+}
+function ChatWidget({ lang = "en" }) {
+  const [open2, setOpen] = reactExports.useState(false);
+  const [stage, setStage] = reactExports.useState("form");
+  const [userInfo, setUserInfo] = reactExports.useState(null);
+  const [formData, setFormData] = reactExports.useState({ name: "", email: "", phone: "" });
+  const [formError, setFormError] = reactExports.useState(false);
+  const [messages, setMessages] = reactExports.useState([
+    { id: "welcome", role: "assistant", content: WELCOME[lang] }
+  ]);
+  const [input, setInput] = reactExports.useState("");
+  const [loading, setLoading] = reactExports.useState(false);
+  const [pulse, setPulse] = reactExports.useState(true);
+  const bottomRef = reactExports.useRef(null);
+  const inputRef = reactExports.useRef(null);
+  const leadSentRef = reactExports.useRef(false);
+  const t = TR$4[lang];
+  const userMsgCount = messages.filter((m) => m.role === "user").length;
+  const showUrgent = userMsgCount >= 6;
+  const resetChat = reactExports.useCallback(() => {
+    setOpen(false);
+    setStage("form");
+    setUserInfo(null);
+    setFormData({ name: "", email: "", phone: "" });
+    setFormError(false);
+    setMessages([{ id: "welcome", role: "assistant", content: WELCOME[lang] }]);
+    setInput("");
+    setLoading(false);
+    leadSentRef.current = false;
+  }, [lang]);
+  reactExports.useEffect(() => {
+    const timer = setTimeout(() => setPulse(false), 8e3);
+    return () => clearTimeout(timer);
+  }, []);
+  reactExports.useEffect(() => {
+    if (open2 && stage === "chat") {
+      setTimeout(() => inputRef.current?.focus(), 300);
+      setPulse(false);
+    }
+  }, [open2, stage]);
+  reactExports.useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading, showUrgent]);
+  reactExports.useEffect(() => {
+    if (messages.length === 1) {
+      setMessages([{ id: "welcome", role: "assistant", content: WELCOME[lang] }]);
+    }
+  }, [lang]);
+  reactExports.useEffect(() => {
+    if (showUrgent && userInfo && !leadSentRef.current) {
+      leadSentRef.current = true;
+      const chatMessages = messages.filter((m) => m.id !== "welcome").map((m) => ({ role: m.role, content: m.content }));
+      fetch(`${API_BASE$2}/api/chat-lead`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: userInfo.name,
+          email: userInfo.email,
+          phone: userInfo.phone,
+          messages: chatMessages,
+          lang
+        })
+      }).then((r2) => {
+        if (!r2.ok) r2.text().then((t2) => console.error("[chat-lead] server error:", r2.status, t2));
+        else console.log("[chat-lead] lead sent OK");
+      }).catch((err) => console.error("[chat-lead] network error:", err));
+    }
+  }, [showUrgent, userInfo, messages, lang]);
+  const handleFormSubmit = () => {
+    if (!formData.name.trim() || !formData.phone.trim()) {
+      setFormError(true);
+      return;
+    }
+    setFormError(false);
+    setUserInfo({ name: formData.name.trim(), email: formData.email.trim(), phone: formData.phone.trim() });
+    setStage("chat");
+  };
+  const send = reactExports.useCallback(async () => {
+    const text = input.trim();
+    if (!text || loading) return;
+    const userMsg = { id: Date.now().toString(), role: "user", content: text };
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
+    setInput("");
+    setLoading(true);
+    const assistantId = (Date.now() + 1).toString();
+    setMessages((prev) => [...prev, { id: assistantId, role: "assistant", content: "" }]);
+    try {
+      const apiMessages = updatedMessages.filter((m) => m.id !== "welcome").map((m) => ({ role: m.role, content: m.content }));
+      const res = await fetch(`${API_BASE$2}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: apiMessages, lang })
+      });
+      if (!res.ok) throw new Error("API error");
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setMessages(
+        (prev) => prev.map((m) => m.id === assistantId ? { ...m, content: data.content ?? "" } : m)
+      );
+    } catch {
+      setMessages(
+        (prev) => prev.map(
+          (m) => m.id === assistantId ? { ...m, content: lang === "es" ? "Lo siento, ocurrió un error. Por favor llámenos al (346) 696-8751." : "Sorry, something went wrong. Please call us at (346) 696-8751." } : m
+        )
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [input, loading, messages, lang]);
+  const handleKey = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "fixed bottom-6 left-6 md:left-auto md:right-6 z-50 flex flex-col items-start md:items-end gap-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: !open2 && pulse && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        motion.div,
+        {
+          initial: { opacity: 0, y: 8, scale: 0.9 },
+          animate: { opacity: 1, y: 0, scale: 1 },
+          exit: { opacity: 0, y: 8, scale: 0.9 },
+          className: "bg-white rounded-2xl shadow-lg border border-blue-100 px-3 py-2 text-xs text-slate-700 max-w-[180px] text-center leading-snug",
+          children: lang === "es" ? "¿Problema con un aparato? ¡Pregúntame!" : "Appliance problem? Ask me!"
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        motion.button,
+        {
+          onClick: () => setOpen((o) => !o),
+          whileTap: { scale: 0.93 },
+          className: "relative w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white",
+          style: { background: "linear-gradient(135deg, #1B6FE8, #0D47B0)" },
+          "aria-label": "Open chat",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { mode: "wait", children: open2 ? /* @__PURE__ */ jsxRuntimeExports.jsx(motion.span, { initial: { rotate: -90, opacity: 0 }, animate: { rotate: 0, opacity: 1 }, exit: { rotate: 90, opacity: 0 }, transition: { duration: 0.15 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { size: 22 }) }, "close") : /* @__PURE__ */ jsxRuntimeExports.jsx(motion.span, { initial: { rotate: 90, opacity: 0 }, animate: { rotate: 0, opacity: 1 }, exit: { rotate: -90, opacity: 0 }, transition: { duration: 0.15 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MessageCircle, { size: 22 }) }, "chat") }),
+            !open2 && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white animate-pulse" })
+          ]
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: open2 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      motion.div,
+      {
+        initial: { opacity: 0, y: 24, scale: 0.96 },
+        animate: { opacity: 1, y: 0, scale: 1 },
+        exit: { opacity: 0, y: 24, scale: 0.96 },
+        transition: { type: "spring", stiffness: 300, damping: 30 },
+        className: "fixed bottom-24 left-6 md:left-auto md:right-6 z-50 w-[340px] max-w-[calc(100vw-3rem)] bg-white rounded-2xl shadow-2xl border border-slate-100 flex flex-col overflow-hidden",
+        style: { maxHeight: "min(580px, calc(100vh - 11rem))" },
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 px-4 py-3 text-white flex-shrink-0", style: { background: "linear-gradient(135deg, #1B6FE8, #0D47B0)" }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Bot, { size: 18 }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold leading-tight", children: t.title }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-white/80 leading-tight", children: t.subtitle })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setOpen(false), className: "ml-auto text-white/70 hover:text-white transition-colors flex-shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { size: 18 }) })
+          ] }),
+          stage === "form" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto px-4 py-4 bg-slate-50", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center mb-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 rounded-full flex items-center justify-center mb-2", style: { background: "linear-gradient(135deg,#1B6FE8,#0D47B0)" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleUser, { size: 26, className: "text-white" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-800 text-center", children: t.formTitle }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 text-center mt-1 leading-relaxed", children: t.formSubtitle })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "text-xs font-semibold text-slate-600 mb-1 block", children: [
+                  t.formName,
+                  " ",
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-red-500", children: "*" })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "input",
+                  {
+                    type: "text",
+                    value: formData.name,
+                    onChange: (e) => setFormData((p) => ({ ...p, name: e.target.value })),
+                    placeholder: t.formNamePh,
+                    className: "w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "text-xs font-semibold text-slate-600 mb-1 block", children: [
+                  t.formPhone,
+                  " ",
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-red-500", children: "*" })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "input",
+                  {
+                    type: "tel",
+                    value: formData.phone,
+                    onChange: (e) => setFormData((p) => ({ ...p, phone: e.target.value })),
+                    placeholder: t.formPhonePh,
+                    className: "w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-semibold text-slate-600 mb-1 block", children: t.formEmail }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "input",
+                  {
+                    type: "email",
+                    value: formData.email,
+                    onChange: (e) => setFormData((p) => ({ ...p, email: e.target.value })),
+                    placeholder: t.formEmailPh,
+                    className: "w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  }
+                )
+              ] }),
+              formError && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-red-500 font-medium", children: t.formRequired }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  onClick: handleFormSubmit,
+                  className: "w-full flex items-center justify-center gap-2 text-sm font-bold text-white rounded-xl px-4 py-2.5 transition-all hover:opacity-90 mt-1",
+                  style: { background: "linear-gradient(135deg,#1B6FE8,#0D47B0)" },
+                  children: [
+                    t.formStart,
+                    " ",
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { size: 15 })
+                  ]
+                }
+              )
+            ] })
+          ] }),
+          stage === "chat" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto px-3 py-3 space-y-3 bg-slate-50", children: [
+              messages.map((msg) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `flex gap-2 items-end ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === "assistant" ? "bg-blue-600 text-white" : "bg-slate-300 text-slate-600"}`, children: msg.role === "assistant" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Bot, { size: 14 }) : /* @__PURE__ */ jsxRuntimeExports.jsx(User, { size: 14 }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${msg.role === "user" ? "bg-blue-600 text-white rounded-br-sm" : "bg-white text-slate-800 shadow-sm border border-slate-100 rounded-bl-sm"}`, children: msg.content ? formatText(msg.content) : /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex items-center gap-1.5 text-slate-400", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { size: 12, className: "animate-spin" }),
+                  t.thinking
+                ] }) })
+              ] }, msg.id)),
+              showUrgent && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                motion.div,
+                {
+                  initial: { opacity: 0, y: 10 },
+                  animate: { opacity: 1, y: 0 },
+                  transition: { duration: 0.4 },
+                  className: "rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 shadow-sm",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-1.5", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(TriangleAlert, { size: 15, className: "text-orange-500 flex-shrink-0" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-orange-700", children: t.urgentTitle })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-orange-700/90 leading-relaxed mb-3", children: t.urgentBody }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "a",
+                      {
+                        href: "#contact",
+                        onClick: resetChat,
+                        className: "flex items-center justify-center gap-1.5 w-full text-xs font-bold text-white rounded-xl px-3 py-2 mb-2 transition-all hover:opacity-90",
+                        style: { background: "linear-gradient(135deg,#1B6FE8,#0D47B0)" },
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(CalendarCheck, { size: 13 }),
+                          t.urgentBook
+                        ]
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$4, className: "flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-xl px-2 py-1.5 hover:bg-blue-100 transition-colors", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { size: 11 }),
+                        t.urgentCall
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: EMAIL_HREF, className: "flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-xl px-2 py-1.5 hover:bg-blue-100 transition-colors", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { size: 11 }),
+                        t.urgentEmail
+                      ] })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-2 text-[10px] text-orange-600/80 text-center space-y-0.5", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: PHONE_DISPLAY$4 }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: EMAIL_DISPLAY })
+                    ] })
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: bottomRef })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-shrink-0 border-t border-slate-100 bg-white px-3 py-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2 items-end", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "textarea",
+                  {
+                    ref: inputRef,
+                    value: input,
+                    onChange: (e) => setInput(e.target.value),
+                    onKeyDown: handleKey,
+                    placeholder: t.placeholder,
+                    rows: 1,
+                    disabled: loading,
+                    className: "flex-1 resize-none text-sm text-slate-800 placeholder-slate-400 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent disabled:opacity-50 leading-snug",
+                    style: { maxHeight: 80, overflowY: "auto" },
+                    onInput: (e) => {
+                      const el = e.target;
+                      el.style.height = "auto";
+                      el.style.height = Math.min(el.scrollHeight, 80) + "px";
+                    }
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    onClick: send,
+                    disabled: !input.trim() || loading,
+                    className: "w-9 h-9 rounded-xl flex items-center justify-center text-white flex-shrink-0 transition-all disabled:opacity-40 disabled:cursor-not-allowed",
+                    style: { background: "linear-gradient(135deg, #1B6FE8, #0D47B0)" },
+                    "aria-label": t.send,
+                    children: loading ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { size: 15, className: "animate-spin" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Send, { size: 15 })
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-slate-400 text-center mt-1.5", children: t.poweredBy })
+            ] })
+          ] })
+        ]
+      }
+    ) })
+  ] });
+}
+function keyTimesFor(pts) {
+  const dists = [0];
+  for (let i = 1; i < pts.length; i++) {
+    const dx = pts[i][0] - pts[i - 1][0];
+    const dy = pts[i][1] - pts[i - 1][1];
+    dists.push(dists[i - 1] + Math.sqrt(dx * dx + dy * dy));
+  }
+  const total = dists[dists.length - 1];
+  return dists.map((d) => (d / total).toFixed(3)).join(";");
+}
+function cxValues(pts) {
+  return pts.map((p) => p[0]).join(";");
+}
+function cyValues(pts) {
+  return pts.map((p) => p[1]).join(";");
+}
+function cxValuesRev(pts) {
+  return [...pts].reverse().map((p) => p[0]).join(";");
+}
+function cyValuesRev(pts) {
+  return [...pts].reverse().map((p) => p[1]).join(";");
+}
+const TRACKS = [
+  [[110, 68], [110, 52]],
+  // TOP straight
+  [[138, 82], [158, 62]],
+  // TOP-RIGHT diagonal
+  [[152, 110], [183, 110]],
+  // RIGHT straight
+  [[152, 100], [176, 100], [176, 78]],
+  // RIGHT upper L
+  [[152, 120], [176, 120], [176, 142]],
+  // RIGHT lower L
+  [[143, 92], [167, 68]],
+  // RIGHT-UP diagonal
+  [[138, 138], [158, 158]],
+  // BOTTOM-RIGHT diagonal
+  [[110, 152], [110, 182]],
+  // BOTTOM straight
+  [[82, 138], [62, 158]],
+  // BOTTOM-LEFT diagonal
+  [[68, 110], [37, 110]],
+  // LEFT straight
+  [[80, 100], [52, 100], [52, 76]],
+  // LEFT upper L
+  [[80, 120], [52, 120], [52, 144]],
+  // LEFT lower L
+  [[82, 82], [62, 62]]
+  // TOP-LEFT diagonal
+];
+const TRACK_COLOR = "rgba(98,182,255,0.48)";
+const NODE_COLOR = "rgba(98,182,255,0.90)";
+function HeroCircuitEffect() {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "div",
+    {
+      style: {
+        position: "absolute",
+        left: "77%",
+        top: "24%",
+        width: "27%",
+        aspectRatio: "1",
+        transform: "translate(-50%,-50%)",
+        pointerEvents: "none",
+        zIndex: 6
+      },
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "svg",
+        {
+          viewBox: "0 0 220 220",
+          fill: "none",
+          xmlns: "http://www.w3.org/2000/svg",
+          style: { width: "100%", height: "100%" },
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("defs", { children: [
+    

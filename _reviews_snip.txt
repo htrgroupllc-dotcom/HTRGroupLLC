@@ -1,0 +1,68 @@
+GOOGLE REVIEWS ── */}
+        <section id="reviews" className="py-10" style={{ backgroundColor: K.bg }}>
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+              <div>
+                <h2 className="text-2xl font-extrabold">{T.reviewsH2}</h2>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="flex gap-0.5">{[1,2,3,4,5].map(i => <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />)}</div>
+                  <span className="text-sm font-semibold text-stone-600">5.0 · {T.reviewsBased}</span>
+                  <span className="text-lg font-bold text-[#4285F4]">G</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <a href="https://google.com/maps" target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded border border-stone-300 hover:bg-stone-100 transition-colors">
+                  <ExternalLink className="h-3.5 w-3.5" /> {T.writeReview}
+                </a>
+                <button onClick={handleRefresh} className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded text-white transition-opacity hover:opacity-80" style={{ backgroundColor: K.accent }}>
+                  <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} /> {T.refresh}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex gap-1 mb-5 bg-white rounded-lg p-1 w-fit shadow-sm border border-stone-200">
+              {(["all","5","4","recent"] as Tab[]).map((key, i) => (
+                <button key={key} onClick={() => setReviewTab(key)}
+                  className="px-3 py-1.5 rounded text-xs font-semibold transition-all"
+                  style={reviewTab === key ? { backgroundColor: K.accent, color: "#fff" } : { color: "#57534e" }}>
+                  {T.tabLabels[i]}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {filteredReviews.map((r, i) => (
+                <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={FADE_UP}
+                  className="bg-white rounded-lg p-2.5 shadow-sm border border-stone-100 flex flex-col">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <div className="h-7 w-7 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0" style={{ backgroundColor: r.avatarColor }}>{r.initials}</div>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-xs text-stone-900 truncate">{r.name}</p>
+                        <p className="text-[10px] text-stone-400 leading-none">{r.time}</p>
+                      </div>
+                    </div>
+                    <span className="text-[#4285F4] font-bold text-base leading-none flex-shrink-0">G</span>
+                  </div>
+                  <div className="flex items-center gap-0.5 mb-1.5">
+                    {Array.from({ length: r.rating }).map((_, j) => <Star key={j} className="h-3 w-3 fill-yellow-400 text-yellow-400" />)}
+                  </div>
+                  <p className="text-stone-600 text-[11px] leading-snug flex-1 line-clamp-4">{isEs ? r.textEs : r.textEn}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── FAQ ── */}
+        <section id="faq" className="py-16 bg-white">
+          <div className="container mx-auto px-4 max-w-4xl">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-extrabold">{T.faqH2}</h2>
+              <div className="h-1 w-16 mx-auto mt-3 rounded-full" style={{ backgroundColor: K.accent }} />
+            </div>
+            <Accordion type="single" collapsible className="space-y-2">
+              {T.faqs.map((faq, i) => (
+                <AccordionItem key={i} value={`item-${i}`} className="border border-stone-200 rounded-xl px-2 shadow-sm">
+                  <AccordionTrigger className="text-left text-base md:text-lg font-semibold py-5 hover:opacity-70 transition-opacity">{faq.q}</AccordionTrigge

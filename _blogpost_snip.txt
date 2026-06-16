@@ -1,0 +1,409 @@
+﻿function BlogPost() {
+  const [lang, setLang] = reactExports.useState("en");
+  const [menuOpen, setMenuOpen] = reactExports.useState(false);
+  const params = useParams();
+  const T2 = TR[lang];
+  const isEs = lang === "es";
+  const base = "/".replace(/\/$/, "");
+  const post = BLOG_POSTS.find((p) => p.slug === params.slug);
+  const navHrefs = [`${base}/`, ...["#services", "#about", "#reviews", "#faq", "#contact"].map((h) => `${base}/${h}`)];
+  const relatedPosts = post ? BLOG_POSTS.filter((p) => p.slug !== post.slug).slice(0, 3) : [];
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col font-sans", style: { backgroundColor: K.bg, color: K.dark }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "sticky top-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 htr-site-header-bar htr-blog-header-bar flex flex-wrap items-center justify-between gap-x-3 gap-y-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 flex-shrink-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "h-3.5 w-3.5 text-stone-400" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => setLang("en"),
+              className: "text-xs font-bold px-2 py-1 rounded transition-all",
+              style: lang === "en" ? { backgroundColor: K.accent, color: "#fff" } : { color: "#57534e" },
+              children: "EN"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-300 text-xs", children: "|" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => setLang("es"),
+              className: "text-xs font-bold px-2 py-1 rounded transition-all",
+              style: lang === "es" ? { backgroundColor: K.accent, color: "#fff" } : { color: "#57534e" },
+              children: "ES"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: `${base}/`, className: "flex items-center gap-2 flex-shrink-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "h-5 w-5", style: { color: K.accent } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-lg font-extrabold tracking-tight", children: [
+            "HTR",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: K.accent }, children: "GroupTX" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "htr-blog-header-nav hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600", children: [
+          T2.nav.map((label, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: navHrefs[i], className: "hover:opacity-70 transition-opacity", children: label }, label)),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${base}/blog`, className: "hover:opacity-70 transition-opacity", style: { color: K.accent }, children: T2.blog })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-blog-header-actions hidden md:flex items-center gap-2 flex-shrink-0 flex-wrap justify-end min-w-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair htr-phone-pair htr-blog-header-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end min-w-0 max-w-full", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$6, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K.accent }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+              " ",
+              COMPANY_PHONE_DISPLAY$6
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$6, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K.accent }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+              " ",
+              PHONE_DISPLAY$6
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${base}/#contact`, className: "htr-blog-book-now shrink-0 whitespace-nowrap text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K.dark }, children: T2.bookNow })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "md:hidden p-2 rounded", onClick: () => setMenuOpen(!menuOpen), children: menuOpen ? /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "h-5 w-5" }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "block w-5 space-y-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "block h-0.5 bg-stone-700" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "block h-0.5 bg-stone-700" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "block h-0.5 bg-stone-700" })
+        ] }) })
+      ] }),
+      menuOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:hidden bg-white border-t border-stone-100 px-4 pb-3 flex flex-col gap-2 text-sm font-semibold text-stone-700", children: [
+        T2.nav.map((label, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: navHrefs[i], onClick: () => setMenuOpen(false), className: "py-2 border-b border-stone-100", children: label }, label)),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${base}/blog`, onClick: () => setMenuOpen(false), className: "py-2 border-b border-stone-100", style: { color: K.accent }, children: T2.blog }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair htr-phone-pair flex flex-col gap-1.5 mt-1 items-start", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$6, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K.accent }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+            " ",
+            COMPANY_PHONE_DISPLAY$6
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$6, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K.accent }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+            " ",
+            PHONE_DISPLAY$6
+          ] })
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-grow", children: !post ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 py-20 text-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-500", children: T2.notFound }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: `${base}/blog`, className: "mt-4 inline-flex items-center gap-1.5 font-semibold", style: { color: K.accent }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "h-4 w-4" }),
+        " ",
+        T2.backBlog
+      ] })
+    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full bg-stone-900 relative overflow-hidden", style: { maxHeight: "420px" }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            src: IMG_MAP[post.imgKey],
+            alt: isEs ? post.titleEs : post.titleEn,
+            className: "w-full object-cover opacity-70",
+            style: { maxHeight: "420px" }
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 pb-8", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: `${base}/blog`, className: "inline-flex items-center gap-1.5 text-sm font-semibold text-white/80 hover:text-white transition-colors mb-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "h-4 w-4" }),
+            " ",
+            T2.backBlog
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-2xl md:text-4xl font-extrabold text-white leading-tight max-w-3xl", children: isEs ? post.titleEs : post.titleEn }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 mt-3 text-sm text-white/70", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex items-center gap-1.5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Calendar, { className: "h-3.5 w-3.5" }),
+              post.date
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex items-center gap-1.5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { className: "h-3.5 w-3.5" }),
+              post.readMinutes,
+              " ",
+              T2.minRead
+            ] })
+          ] })
+        ] }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4 py-10", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid lg:grid-cols-[1fr_320px] gap-10 items-start", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          motion.article,
+          {
+            initial: "hidden",
+            animate: "visible",
+            variants: FADE_UP,
+            className: "bg-white rounded-2xl shadow-sm border border-stone-100 p-6 md:p-10 prose prose-stone prose-headings:font-extrabold prose-headings:text-stone-900 prose-h2:text-xl prose-h3:text-base prose-p:text-stone-600 prose-p:leading-relaxed prose-li:text-stone-600 prose-strong:text-stone-900 max-w-none",
+            dangerouslySetInnerHTML: { __html: isEs ? post.bodyEs : post.bodyEn }
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-2xl p-6 text-white", style: { backgroundColor: K.dark }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-extrabold text-lg mb-2", children: T2.ctaTitle }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white/70 text-sm mb-4", children: T2.ctaSub }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-phone-pair flex flex-col gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "a",
+                {
+                  href: COMPANY_PHONE_HREF$6,
+                  className: "htr-phone-btn flex items-center justify-center gap-2 font-bold px-4 py-3 rounded text-white w-full",
+                  style: { backgroundColor: K.accent },
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+                    " ",
+                    COMPANY_PHONE_DISPLAY$6
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "a",
+                {
+                  href: PHONE_HREF$6,
+                  className: "htr-phone-btn flex items-center justify-center gap-2 font-bold px-4 py-3 rounded text-white w-full",
+                  style: { backgroundColor: K.accent },
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+                    " ",
+                    PHONE_DISPLAY$6
+                  ]
+                }
+              )
+            ] })
+          ] }),
+          relatedPosts.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-sm border border-stone-100 p-5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-extrabold text-base mb-4", style: { color: K.dark }, children: isEs ? "MÃ¡s ArtÃ­culos" : "More Articles" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-4", children: relatedPosts.map((rel) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "a",
+              {
+                href: `${base}/blog/${rel.slug}`,
+                className: "flex gap-3 group",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "img",
+                    {
+                      src: IMG_MAP[rel.imgKey],
+                      alt: isEs ? rel.titleEs : rel.titleEn,
+                      className: "w-16 h-12 rounded-lg object-cover flex-shrink-0"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-stone-900 leading-snug group-hover:text-blue-700 transition-colors line-clamp-2", children: isEs ? rel.titleEs : rel.titleEn }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-stone-400 mt-0.5", children: rel.date })
+                  ] })
+                ]
+              },
+              rel.slug
+            )) })
+          ] })
+        ] })
+      ] }) })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "pt-6 pb-20 sm:pb-6", style: { backgroundColor: K.dark }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-between gap-4 mb-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "h-4 w-4", style: { color: K.accentLight } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white font-extrabold", children: [
+            "HTR",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: K.accentLight }, children: "GroupTX" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2", children: SOCIALS.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "a",
+          {
+            href: s.href,
+            target: "_blank",
+            rel: "noopener noreferrer",
+            "aria-label": s.label,
+            className: "h-8 w-8 rounded-full flex items-center justify-center text-white hover:opacity-75 transition-opacity",
+            style: { background: s.bg },
+            children: s.icon
+          },
+          s.label
+        )) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(AdminSecretAccess, { label: `Â© ${(/* @__PURE__ */ new Date()).getFullYear()} HTRGroupTX. ${T2.allRights}` }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-5 items-center", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#", className: "hover:text-white transition-colors", children: T2.privacy }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#", className: "hover:text-white transition-colors", children: T2.terms })
+        ] })
+      ] })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(ChatWidget, { lang })
+  ] });
+}
+const translations$1 = {
+  ru: {
+    // Header
+    schedule: "Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ñ€Ð°ÑÐ¿Ð¸ÑÐ°Ð½Ð¸ÐµÐ¼",
+    logout: "Ð’Ñ‹Ð¹Ñ‚Ð¸",
+    loggedPin: "Ð’Ñ…Ð¾Ð´ Ñ‡ÐµÑ€ÐµÐ· PIN",
+    loggedFid: "Ð’Ñ…Ð¾Ð´ Ñ‡ÐµÑ€ÐµÐ·",
+    // CRM tabs
+    tabBookings: "Ð—Ð°ÑÐ²ÐºÐ¸",
+    tabEmployees: "Ð¡Ð¾Ñ‚Ñ€ÑƒÐ´Ð½Ð¸ÐºÐ¸",
+    tabArchive: "ÐÑ€Ñ…Ð¸Ð²",
+    tabBlacklist: "Ð§Ñ‘Ñ€Ð½Ñ‹Ð¹ ÑÐ¿Ð¸ÑÐ¾Ðº",
+    // Mobile sub-tabs
+    slotsTab: "ðŸ“… Ð¡Ð»Ð¾Ñ‚Ñ‹",
+    // Statuses
+    statusPending: "â³ ÐžÐ¶Ð¸Ð´Ð°ÐµÑ‚",
+    statusApproved: "âœ… ÐŸÐ¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´Ñ‘Ð½",
+    statusCompleted: "âœ“ Ð—Ð°Ð²ÐµÑ€ÑˆÑ‘Ð½",
+    statusCancelled: "âŒ ÐžÑ‚Ð¼ÐµÐ½Ñ‘Ð½",
+    // Date selector panel
+    selectDate: "Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ Ð´Ð°Ñ‚Ñƒ",
+    refresh: "ÐžÐ±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ",
+    dateLabel: "Ð”Ð°Ñ‚Ð°:",
+    slotsFor: "Ð¡Ð»Ð¾Ñ‚Ñ‹ Ð½Ð°",
+    slotFreeLabel: "ðŸŸ¢ Ð¡Ð²Ð¾Ð±Ð¾Ð´ÐµÐ½",
+    slotBlockedLabel: "ðŸŸ  Ð—Ð°Ð±Ð»Ð¾Ðº.",
+    slotTakenLabel: "ðŸ”´ Ð—Ð°Ð½ÑÑ‚",
+    blockReasonLabel: "ÐŸÑ€Ð¸Ñ‡Ð¸Ð½Ð° Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²ÐºÐ¸:",
+    blockReasonPlaceholder: "ÐŸÐ¾Ð²Ñ‚Ð¾Ñ€Ð½Ñ‹Ð¹ Ð²Ñ‹Ð·Ð¾Ð²...",
+    slotBlocked: "ðŸ”’ Ð—Ð°Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²Ð°Ð½",
+    slotFreeBtn: "ÐžÑÐ²Ð¾Ð±Ð¾Ð´Ð¸Ñ‚ÑŒ",
+    slotUnblock: "Ð Ð°Ð·Ð±Ð»Ð¾ÐºÐ¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ",
+    slotBlockBtn: "Ð‘Ð»Ð¾Ðº",
+    slotBookBtn: "Ð‘Ñ€Ð¾Ð½ÑŒ",
+    slotApproved: "âœ… ÐŸÐ¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´Ñ‘Ð½",
+    slotWaiting: "â³ ÐžÐ¶Ð¸Ð´Ð°ÐµÑ‚",
+    // Orders panel header
+    allOrders: "Ð’ÑÐµ Ð·Ð°ÑÐ²ÐºÐ¸",
+    activeOrders: "ÐÐºÑ‚Ð¸Ð²Ð½Ñ‹Ðµ Ð·Ð°ÑÐ²ÐºÐ¸",
+    activeTab: "ÐÐºÑ‚Ð¸Ð²Ð½Ñ‹Ðµ",
+    searchPlaceholder: "ÐŸÐ¾Ð¸ÑÐº Ð¿Ð¾ Ð¸Ð¼ÐµÐ½Ð¸, Ñ‚ÐµÐ»ÐµÑ„Ð¾Ð½Ñƒ, Ð°Ð´Ñ€ÐµÑÑƒ, Ð´Ð°Ñ‚Ðµ (Ð“Ð“Ð“Ð“-ÐœÐœ-Ð”Ð”), Ñ‚ÐµÑ…Ð½Ð¸ÐºÐµâ€¦",
+    clearSearch: "ÐžÑ‡Ð¸ÑÑ‚Ð¸Ñ‚ÑŒ",
+    found: "ÐÐ°Ð¹Ð´ÐµÐ½Ð¾:",
+    of: "Ð¸Ð·",
+    selectAll: "Ð’Ñ‹Ð±Ñ€Ð°Ñ‚ÑŒ Ð²ÑÑ‘",
+    deselectAll: "Ð¡Ð½ÑÑ‚ÑŒ Ð²ÑÑ‘",
+    selected: "Ð’Ñ‹Ð±Ñ€Ð°Ð½Ð¾:",
+    deleteSelected: "Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ñ‹Ðµ",
+    deselect: "Ã— Ð¡Ð±Ñ€Ð¾ÑÐ¸Ñ‚ÑŒ",
+    historyLabel: "Ð˜ÑÑ‚Ð¾Ñ€Ð¸Ñ",
+    errorLoadTitle: "ÐžÑˆÐ¸Ð±ÐºÐ° Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ¸ Ð·Ð°ÑÐ²Ð¾Ðº",
+    nothingFound: "ÐÐ¸Ñ‡ÐµÐ³Ð¾ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ð¾ â€” Ð¿Ð¾Ð¿Ñ€Ð¾Ð±ÑƒÐ¹Ñ‚Ðµ Ð´Ñ€ÑƒÐ³Ð¾Ð¹ Ð·Ð°Ð¿Ñ€Ð¾Ñ",
+    noOrders: "Ð—Ð°ÑÐ²Ð¾Ðº Ð¿Ð¾ÐºÐ° Ð½ÐµÑ‚",
+    // Card/table fields
+    createdLabel: "Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¾:",
+    // Desktop table headers
+    thCreated: "Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¾",
+    thVisitDate: "Ð”Ð°Ñ‚Ð° Ð²Ð¸Ð·Ð¸Ñ‚Ð°",
+    thTime: "Ð’Ñ€ÐµÐ¼Ñ",
+    thClient: "ÐšÐ»Ð¸ÐµÐ½Ñ‚",
+    thPhone: "Ð¢ÐµÐ»ÐµÑ„Ð¾Ð½",
+    thAppliance: "Ð¢ÐµÑ…Ð½Ð¸ÐºÐ°",
+    thStatus: "Ð¡Ñ‚Ð°Ñ‚ÑƒÑ",
+    thAction: "Ð”ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ",
+    // Action buttons
+    approveBtn: "ÐžÐ´Ð¾Ð±Ñ€Ð¸Ñ‚ÑŒ",
+    editBtn: "Ð˜Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ",
+    completeBtn: "Ð—Ð°Ð²ÐµÑ€ÑˆÐ¸Ñ‚ÑŒ",
+    rescheduleBtn: "ÐŸÐµÑ€ÐµÐ½ÐµÑÑ‚Ð¸",
+    cancelBtn: "ÐžÑ‚Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ",
+    deletePerm: "Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð½Ð°Ð²ÑÐµÐ³Ð´Ð°",
+    restoreBtn2: "Ð’Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ",
+    recallBtn: "ÐŸÐ¾Ð²Ñ‚Ð¾Ñ€Ð½Ñ‹Ð¹ Ð²Ñ‹Ð·Ð¾Ð²",
+    recallConfirm: "Ð’ÐµÑ€Ð½ÑƒÑ‚ÑŒ Ð·Ð°ÐºÐ°Ð· Ñ‚ÐµÑ…Ð½Ð¸ÐºÑƒ ÐºÐ°Ðº Ð¿Ð¾Ð²Ñ‚Ð¾Ñ€Ð½Ñ‹Ð¹ Ð²Ñ‹Ð·Ð¾Ð²?",
+    clientSigned: "ÐšÐ»Ð¸ÐµÐ½Ñ‚ Ð¿Ð¾Ð´Ð¿Ð¸ÑÐ°Ð»",
+    deleteBtn: "Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ",
+    // Action button titles
+    titleApprove: "ÐžÐ´Ð¾Ð±Ñ€Ð¸Ñ‚ÑŒ Ð±Ñ€Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð¸ Ð¾Ñ‚Ð¿Ñ€Ð°Ð²Ð¸Ñ‚ÑŒ email ÐºÐ»Ð¸ÐµÐ½Ñ‚Ñƒ",
+    titleEdit: "Ð˜Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð±Ñ€Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ",
+    titleReschedule: "ÐŸÐµÑ€ÐµÐ½ÐµÑÑ‚Ð¸ Ð½Ð° Ð´Ñ€ÑƒÐ³ÑƒÑŽ Ð´Ð°Ñ‚Ñƒ/Ð²Ñ€ÐµÐ¼Ñ",
+    titleComplete: "ÐžÑ‚Ð¼ÐµÑ‚Ð¸Ñ‚ÑŒ ÐºÐ°Ðº Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¾ (Ð¿Ð¾ÑÐ»Ðµ Ñ„Ð°ÐºÑ‚Ð¸Ñ‡ÐµÑÐºÐ¾Ð³Ð¾ Ñ€ÐµÐ¼Ð¾Ð½Ñ‚Ð°)",
+    titleCancel: "ÐžÑ‚Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð±Ñ€Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ",
+    titleDelete: "Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð·Ð°ÑÐ²ÐºÑƒ Ð½Ð°Ð²ÑÐµÐ³Ð´Ð° Ð¸Ð· Ð±Ð°Ð·Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ…",
+    titleRestore: "Ð’Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð·Ð°ÑÐ²ÐºÑƒ Ð² Ð°ÐºÑ‚Ð¸Ð²Ð½Ñ‹Ðµ",
+    // Bulk delete modal
+    deleteBulkTitle: "Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ñ‹Ðµ Ð·Ð°ÑÐ²ÐºÐ¸?",
+    deleteBulkIrreversible: "âš ï¸ Ð”ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ Ð½ÐµÐ¾Ð±Ñ€Ð°Ñ‚Ð¸Ð¼Ð¾. Ð’ÑÐµ Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ñ‹Ðµ Ð·Ð°ÑÐ²ÐºÐ¸ Ð±ÑƒÐ´ÑƒÑ‚ ÑƒÐ´Ð°Ð»ÐµÐ½Ñ‹ Ð¸Ð· Ð±Ð°Ð·Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ… Ð½Ð°Ð²ÑÐµÐ³Ð´Ð°.",
+    deleting: "Ð£Ð´Ð°Ð»ÑÐµÐ¼...",
+    deleteBulkBtn: "ðŸ—‘ï¸ Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ",
+    // Delete modal
+    deletePermTitle: "Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð·Ð°ÑÐ²ÐºÑƒ Ð½Ð°Ð²ÑÐµÐ³Ð´Ð°?",
+    deletePermWarn: "âš ï¸ Ð­Ñ‚Ð¾ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ Ð½ÐµÐ¾Ð±Ñ€Ð°Ñ‚Ð¸Ð¼Ð¾. Ð—Ð°ÑÐ²ÐºÐ° Ð±ÑƒÐ´ÐµÑ‚ ÑƒÐ´Ð°Ð»ÐµÐ½Ð° Ð¸Ð· Ð±Ð°Ð·Ñ‹ Ð´Ð°Ð½Ð½Ñ‹Ñ… Ð±ÐµÐ· Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾ÑÑ‚Ð¸ Ð²Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ.",
+    deletePermBtn: "ðŸ—‘ï¸ Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð½Ð°Ð²ÑÐµÐ³Ð´Ð°",
+    clientLabel: "ÐšÐ»Ð¸ÐµÐ½Ñ‚:",
+    // Restore modal
+    restoreTitle: "Ð’Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð·Ð°ÑÐ²ÐºÑƒ?",
+    dateShort: "Ð”Ð°Ñ‚Ð°:",
+    showEdits: "âœï¸ Ð’Ð½ÐµÑÑ‚Ð¸ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ Ð² Ð·Ð°ÑÐ²ÐºÑƒ",
+    hideEdits: "Ð¡ÐºÑ€Ñ‹Ñ‚ÑŒ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ",
+    restoreNote: "Ð—Ð°ÑÐ²ÐºÐ° Ð²ÐµÑ€Ð½Ñ‘Ñ‚ÑÑ Ð² Ñ€Ð°Ð·Ð´ÐµÐ» Ð°ÐºÑ‚Ð¸Ð²Ð½Ñ‹Ñ… ÑÐ¾ ÑÑ‚Ð°Ñ‚ÑƒÑÐ¾Ð¼ Â«ÐžÐ¶Ð¸Ð´Ð°ÐµÑ‚Â». HubSpot-ÑÐ´ÐµÐ»ÐºÐ° Ð±ÑƒÐ´ÐµÑ‚ ÑÐ¾Ð·Ð´Ð°Ð½Ð° Ð·Ð°Ð½Ð¾Ð²Ð¾.",
+    restoring: "â³ Ð’Ð¾ÑÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼...",
+    restoreActionBtn: "â™»ï¸ Ð’Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ",
+    // Restore edit fields
+    fieldName: "Ð˜Ð¼Ñ ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð°",
+    fieldPhone: "Ð¢ÐµÐ»ÐµÑ„Ð¾Ð½",
+    fieldEmail: "Email",
+    fieldAddress: "ÐÐ´Ñ€ÐµÑ",
+    fieldAppliance: "Ð¢ÐµÑ…Ð½Ð¸ÐºÐ°",
+    fieldIssue: "ÐžÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ Ð¿Ð¾Ð»Ð¾Ð¼ÐºÐ¸",
+    fieldNewDate: "ÐÐ¾Ð²Ð°Ñ Ð´Ð°Ñ‚Ð°",
+    fieldNewTime: "ÐÐ¾Ð²Ð¾Ðµ Ð²Ñ€ÐµÐ¼Ñ",
+    // Conflict modal
+    conflictTitle: "ÐšÐ¾Ð½Ñ„Ð»Ð¸ÐºÑ‚ Ñ€Ð°ÑÐ¿Ð¸ÑÐ°Ð½Ð¸Ñ!",
+    conflictTaken: "Ð­Ñ‚Ð¾ Ð²Ñ€ÐµÐ¼Ñ ÑƒÐ¶Ðµ Ð·Ð°Ð½ÑÑ‚Ð¾:",
+    conflictPickOther: "Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ Ð´Ñ€ÑƒÐ³ÑƒÑŽ Ð´Ð°Ñ‚Ñƒ Ð¸ Ð²Ñ€ÐµÐ¼Ñ Ð´Ð»Ñ Ð·Ð°ÑÐ²ÐºÐ¸",
+    // Edit booking modal
+    editBookingTitle: "Ð˜Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð±Ñ€Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ",
+    labelStatus: "Ð¡Ñ‚Ð°Ñ‚ÑƒÑ:",
+    clientLangLabel: "Ð¯Ð·Ñ‹Ðº ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð°:",
+    clientLangEn: "ÐÐ½Ð³Ð»Ð¸Ð¹ÑÐºÐ¸Ð¹",
+    clientLangEs: "Ð˜ÑÐ¿Ð°Ð½ÑÐºÐ¸Ð¹",
+    clientNameReq: "Ð˜Ð¼Ñ ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð° *",
+    phoneReq: "Ð¢ÐµÐ»ÐµÑ„Ð¾Ð½ *",
+    emailClient: "Email ÐºÐ»Ð¸ÐµÐ½Ñ‚Ð°",
+    addressOptional: "ÐÐ´Ñ€ÐµÑ (Ð½ÐµÐ¾Ð±ÑÐ·Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾)",
+    applianceOptional: "Ð¢ÐµÑ…Ð½Ð¸ÐºÐ° (Ð½ÐµÐ¾Ð±ÑÐ·Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾)",
+    dateReq: "Ð”Ð°Ñ‚Ð° *",
+    dateFormatHint: "Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚: Apr 25, 2026",
+    timeReq: "Ð’Ñ€ÐµÐ¼Ñ *",
+    noteOptional: "Ð—Ð°Ð¼ÐµÑ‚ÐºÐ° (Ð½ÐµÐ¾Ð±ÑÐ·Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾)",
+    notePlaceholder: "Ð”Ð¾Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð°Ñ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñâ€¦",
+    saveEdits: "Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ",
+    savingDots: "Ð¡Ð¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ðµâ€¦",
+    // Manual booking modal
+    createBookingTitle: "Ð¡Ð¾Ð·Ð´Ð°Ñ‚ÑŒ Ð±Ñ€Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ",
+    zipOptional: "ZIP-ÐºÐ¾Ð´ (Ð½ÐµÐ¾Ð±ÑÐ·Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾)",
+    appliancePlaceholderRu: "Ð¥Ð¾Ð»Ð¾Ð´Ð¸Ð»ÑŒÐ½Ð¸Ðº, ÑÑ‚Ð¸Ñ€Ð°Ð»ÑŒÐ½Ð°Ñ Ð¼Ð°ÑˆÐ¸Ð½Ð°...",
+    addlInfoPlaceholder: "Ð”Ð¾Ð¿. Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ...",
+    bookBtn: "Ð—Ð°Ð±Ñ€Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ",
+    savingBook: "Ð¡Ð¾Ñ…Ñ€Ð°Ð½ÑÑŽâ€¦",
+    // Complete modal
+    completeTitle: "Ð—Ð°Ð²ÐµÑ€ÑˆÐ¸Ñ‚ÑŒ Ð·Ð°ÑÐ²ÐºÑƒ?",
+    completeDesc: "Ð—Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¸Ðµ Ð¿ÐµÑ€ÐµÐ¼ÐµÑÑ‚Ð¸Ñ‚ Ð·Ð°ÑÐ²ÐºÑƒ Ð² Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ. Ð­Ñ‚Ð¾ Ð½ÐµÐ»ÑŒÐ·Ñ Ð¾Ñ‚Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð°Ð²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸.",
+    completePaySection: "ÐžÐ¿Ð»Ð°Ñ‚Ð° (Ð½ÐµÐ¾Ð±ÑÐ·Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾)",
+    completeMethodLabel: "ÐœÐµÑ‚Ð¾Ð´ Ð¾Ð¿Ð»Ð°Ñ‚Ñ‹",
+    completeMethodPlaceholder: "ÐÐ°Ð», Ð‘ÐµÐ·Ð½Ð°Ð», ÐšÐ°Ñ€Ñ‚Ð°...",
+    completeAmountLabel: "Ð¡ÑƒÐ¼Ð¼Ð° ($)",
+    completeBtnLabel: "âœ“ Ð—Ð°Ð²ÐµÑ€ÑˆÐ¸Ñ‚ÑŒ",
+    // Cancel modal
+    cancelTitle: "ÐžÑ‚Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð±Ñ€Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ?",
+    cancelSlotWill: "Ð¡Ð»Ð¾Ñ‚ Ð±ÑƒÐ´ÐµÑ‚ Ð¾ÑÐ²Ð¾Ð±Ð¾Ð¶Ð´Ñ‘Ð½:",
+    cancelBtnLabel: "ÐžÑ‚Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð±Ñ€Ð¾Ð½Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ",
+    // Employees
+    empTitle: "Ð¡Ð¾Ñ‚Ñ€ÑƒÐ´Ð½Ð¸ÐºÐ¸",
+    empAddBtn: "Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ ÑÐ¾Ñ‚Ñ€ÑƒÐ´Ð½Ð¸ÐºÐ°",
+    empName: "Ð˜Ð¼Ñ",
+    empPhone: "Ð¢ÐµÐ»ÐµÑ„Ð¾Ð½",
+    empCar: "ÐÐ²Ñ‚Ð¾",
+    empPlate: "Ð“Ð¾ÑÐ½Ð¾Ð¼ÐµÑ€",
+    empActions: "Ð”ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ",
+    empEdit: "Ð ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ",
+    empWarnings: "Ð—Ð°Ð¼ÐµÑ‡Ð°Ð½Ð¸Ñ",
+    empFire: "Ð£Ð²Ð¾Ð»Ð¸Ñ‚ÑŒ",
+    empFireConfirm: "Ð£Ð²Ð¾Ð»Ð¸Ñ‚ÑŒ ÑÐ¾Ñ‚Ñ€ÑƒÐ´Ð½Ð¸ÐºÐ°?",
+    empFireMsg: "Ð¡Ð¾Ñ‚Ñ€ÑƒÐ´Ð½Ð¸Ðº Ð±ÑƒÐ´ÐµÑ‚ Ð¿ÐµÑ€ÐµÐ¼ÐµÑ‰Ñ‘Ð½ Ð² Ð°Ñ€Ñ…Ð¸Ð² ÑƒÐ²Ð¾Ð»ÐµÐ½Ð½Ñ‹Ñ…. Ð•Ð³Ð¾ Ð·Ð°ÐºÐ°Ð·Ñ‹ ÑÐ¾Ñ…Ñ€Ð°Ð½ÑÑ‚ÑÑ Ð² Ð¸ÑÑ‚Ð¾Ñ€Ð¸Ð¸.",
+    empFireYes: "Ð”Ð°, ÑƒÐ²Ð¾Ð»Ð¸Ñ‚ÑŒ",
+    sectionBank: "Ð‘Ð°Ð½Ðº / Bank",
+    sectionVehicle: "ÐÐ²Ñ‚Ð¾ / Vehicle",
+    empBankName: "ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð±Ð°Ð½ÐºÐ°",
+    empBankAccount: "Ð¡Ñ‡Ñ‘Ñ‚",
+    empBankRouting: "Routing",
+    empAddress: "ÐÐ´Ñ€ÐµÑ",
+    empCarMake: "ÐœÐ°Ñ€ÐºÐ°",
+    empCarModel: "ÐœÐ¾Ð´ÐµÐ»ÑŒ",
+    empPin: "PIN (Ð¼Ð¸Ð½. 4 Ñ†Ð¸Ñ„Ñ€Ñ‹)",
+    empPinNew: "ÐÐ¾Ð²Ñ‹Ð¹ PIN (Ð¾ÑÑ‚Ð°Ð²ÑŒÑ‚Ðµ Ð¿ÑƒÑÑ‚Ñ‹Ð¼ Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð½Ðµ Ð¼ÐµÐ½ÑÑ‚ÑŒ)",
+    empSave: "Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ",
+    empCancel: "ÐžÑ‚Ð¼ÐµÐ½Ð°",
+    empAdd: "Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ",
+    empNo

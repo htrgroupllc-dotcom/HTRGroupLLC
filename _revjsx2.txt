@@ -1,0 +1,283 @@
+s at (346) 696-8751.",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col overflow-x-hidden font-sans", style: { backgroundColor: K$3.bg, color: K$3.dark }, children: [
+    showFullModal && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-[200] flex items-center justify-center bg-black/50 px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center w-14 h-14 rounded-full bg-amber-100 mx-auto mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-7 h-7 text-amber-500", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 2, children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" }) }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-bold text-stone-800 mb-2", children: isEs ? "¡Todos los horarios están ocupados!" : "All Time Slots Are Fully Booked!" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-500 mb-5", children: isEs ? "No hay horarios disponibles para la fecha seleccionada. Por favor, elija otra fecha." : "There are no available time slots for the selected date. Please choose a different date." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          onClick: () => setShowFullModal(false),
+          className: "w-full py-2.5 rounded-xl text-sm font-bold text-white transition hover:opacity-90",
+          style: { backgroundColor: K$3.accent },
+          children: isEs ? "Elegir otra fecha" : "Choose Another Date"
+        }
+      )
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-header-spacer w-full flex-shrink-0", "aria-hidden": "true" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "htr-site-header-root fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 htr-site-header-bar flex items-center justify-between gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 flex-shrink-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "h-3.5 w-3.5 text-stone-400" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => setLang("en"),
+              className: "text-xs font-bold px-2 py-1 rounded transition-all",
+              style: lang === "en" ? { backgroundColor: K$3.accent, color: "#fff" } : { color: "#57534e" },
+              children: "EN"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-300 text-xs", children: "|" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => setLang("es"),
+              className: "text-xs font-bold px-2 py-1 rounded transition-all",
+              style: lang === "es" ? { backgroundColor: K$3.accent, color: "#fff" } : { color: "#57534e" },
+              children: "ES"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 flex-shrink-0 logo-container", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "h-5 w-5 logo-wrench", style: { color: K$3.accent } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-lg font-extrabold tracking-tight logo-shimmer-text", children: "HTRGroupTX" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "logo-spark logo-spark-1", children: "✦" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "logo-spark logo-spark-2", children: "✦" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "logo-spark logo-spark-3", children: "✦" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "htr-site-header-nav hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600", children: [
+          ["/", "#services", "#about", "#faq", "#contact"].map((href, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href, className: "hover:opacity-70 transition-opacity", children: T2.nav[i] }, href)),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${"/".replace(/\/$/, "")}/blog`, className: "hover:opacity-70 transition-opacity", style: { color: K$3.accent }, children: isEs ? "Blog" : "Blog" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden md:flex items-center gap-2 flex-shrink-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+              " ",
+              COMPANY_PHONE_DISPLAY$3
+            ]}),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+              " ",
+              PHONE_DISPLAY$3
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#contact", className: "text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K$3.dark }, children: T2.bookNow })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "md:hidden p-2 rounded", onClick: () => setMenuOpen(!menuOpen), children: menuOpen ? /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "h-5 w-5" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Menu, { className: "h-5 w-5" }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-header-mobile-strip md:hidden", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 py-2 flex flex-col gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }), " ", COMPANY_PHONE_DISPLAY$3] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }), " ", PHONE_DISPLAY$3] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#contact", className: "htr-header-mobile-book text-white font-bold px-3 py-2 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K$3.dark }, children: T2.bookNow })
+        ] })
+      ] }),
+      menuOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:hidden bg-white border-t border-stone-100 px-4 pb-3 flex flex-col gap-2 text-sm font-semibold text-stone-700", children: [
+        ["/", "#services", "#about", "#faq", "#contact"].map((href, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href, onClick: () => setMenuOpen(false), className: "py-2 border-b border-stone-100", children: T2.nav[i] }, href)),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${"/".replace(/\/$/, "")}/blog`, onClick: () => setMenuOpen(false), className: "py-2 border-b border-stone-100", style: { color: K$3.accent }, children: "Blog" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair flex flex-row flex-wrap gap-2 mt-1 items-start justify-start", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K$3.accent }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+            " ",
+            COMPANY_PHONE_DISPLAY$3
+          ]}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K$3.accent }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+            " ",
+            PHONE_DISPLAY$3
+          ] })
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-promo-bar w-full text-center text-xs sm:text-sm md:text-lg font-semibold text-white py-1.5 px-3 leading-snug", style: { backgroundColor: "#D97706" }, children: T2.promoBar }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "flex-grow", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "block md:hidden", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative htr-home-hero-mobile overflow-x-hidden", style: { height: "220px" }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: heroImg,
+                alt: "Appliance repair",
+                className: "absolute inset-0 w-full h-full",
+                style: { objectFit: "cover", objectPosition: "right center" }
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0", style: { background: "rgba(11,26,63,0.18)" } }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-home-hero-effects absolute inset-0 overflow-visible pointer-events-none", "aria-hidden": true, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(HeroCircuitEffect, {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-pulse-ring" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-pulse-ring-2" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-rotate-glow" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-1", "aria-hidden": true, children: "\u2726" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-2", "aria-hidden": true, children: "\u2726" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-3", "aria-hidden": true, children: "\u2726" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-4", "aria-hidden": true, children: "\u2726" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-5", "aria-hidden": true, children: "\u2726" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.div,
+            {
+              initial: "hidden",
+              animate: "visible",
+              variants: STAGGER,
+              className: "px-4 py-5",
+              style: { background: "rgba(11,26,63,0.92)" },
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { variants: FADE_UP$3, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-phone-pair--hero-top flex flex-row flex-wrap gap-2 items-center justify-start mb-4", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "htr-phone-btn inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+                    " ",
+                    COMPANY_PHONE_DISPLAY$3
+                  ]}),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "htr-phone-btn inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+                    " ",
+                    PHONE_DISPLAY$3
+                  ] })
+                ] }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.h1, { variants: FADE_UP$3, className: "text-2xl font-extrabold text-white uppercase leading-tight mb-3", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { display: "block", marginBottom: "8px" }, children: T2.heroH1[0] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: T2.heroH1[1] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(motion.p, { variants: FADE_UP$3, className: "font-bold text-xs uppercase tracking-wide mb-5", style: { color: K$3.accentLight }, children: T2.heroSub }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { variants: FADE_UP$3, className: "flex gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#services", className: "inline-flex items-center justify-center border-2 border-white text-white font-bold px-3 py-2 rounded uppercase tracking-wide text-xs hover:bg-white/10 transition-all whitespace-nowrap", children: T2.ourSvcs }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#contact", className: "inline-flex items-center justify-center text-white font-bold px-4 py-2 rounded uppercase tracking-wide text-xs transition-all shadow-lg whitespace-nowrap", style: { backgroundColor: K$3.accent }, children: T2.bookNow })
+                ] })
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden md:block relative htr-home-hero-desktop", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: heroImg, alt: "Appliance repair", className: "w-full block", style: { display: "block" } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0", style: { background: "rgba(11,26,63,0.10)" } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-home-hero-effects absolute inset-0 overflow-visible pointer-events-none", "aria-hidden": true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(HeroCircuitEffect, {}),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-pulse-ring" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-pulse-ring-2" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hero-rotate-glow" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-1", "aria-hidden": true, children: "\u2726" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-2", "aria-hidden": true, children: "\u2726" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-3", "aria-hidden": true, children: "\u2726" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-4", "aria-hidden": true, children: "\u2726" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hero-sparkle hero-sparkle-5", "aria-hidden": true, children: "\u2726" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 left-0 z-10 htr-hero-banner", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.div,
+            {
+              initial: "hidden",
+              animate: "visible",
+              variants: STAGGER,
+              style: {
+                maxWidth: "340px",
+                background: "rgba(11,26,63,0.82)",
+                borderRadius: "0 0 12px 0",
+                padding: "20px 24px",
+                backdropFilter: "blur(4px)"
+              },
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { variants: FADE_UP$3, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-phone-pair--hero-top flex flex-row flex-wrap gap-2 items-center justify-start mb-4", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "htr-phone-btn inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+                    " ",
+                    COMPANY_PHONE_DISPLAY$3
+                  ]}),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "htr-phone-btn inline-flex items-center gap-2 text-white font-bold px-4 py-2 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+                    " ",
+                    PHONE_DISPLAY$3
+                  ] })
+                ] }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.h1, { variants: FADE_UP$3, className: "text-2xl sm:text-3xl font-extrabold text-white uppercase leading-tight mb-3", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { display: "block", marginBottom: "8px" }, children: T2.heroH1[0] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: T2.heroH1[1] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(motion.p, { variants: FADE_UP$3, className: "font-bold text-xs md:text-sm uppercase tracking-wide mb-6", style: { color: K$3.accentLight }, children: T2.heroSub }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { variants: FADE_UP$3, className: "flex gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#services", className: "inline-flex items-center justify-center border-2 border-white text-white font-bold px-3 py-2 rounded uppercase tracking-wide text-xs hover:bg-white/10 transition-all whitespace-nowrap", children: T2.ourSvcs }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#contact", className: "inline-flex items-center justify-center text-white font-bold px-4 py-2 rounded uppercase tracking-wide text-xs transition-all shadow-lg whitespace-nowrap", style: { backgroundColor: K$3.accent }, children: T2.bookNow })
+                ] })
+              ]
+            }
+          ) })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-3", style: { backgroundColor: K$3.accent }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 md:grid-cols-4 gap-2 text-white text-center text-xs font-bold uppercase tracking-wide", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-1.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "h-4 w-4" }),
+          T2.trust[0]
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-1.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "h-4 w-4" }),
+          T2.trust[1]
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-1.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "h-4 w-4 fill-white" }),
+          T2.trust[2]
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-1.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }),
+          T2.trust[3]
+        ] })
+      ] }) }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "services", className: "py-10 bg-white", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center max-w-xl mx-auto mb-8", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl md:text-3xl font-extrabold", children: T2.svcH2 }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-1 w-14 mx-auto mt-2 rounded-full", style: { backgroundColor: K$3.accent } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-400 text-sm mt-2", children: isEs ? "Haz clic en una tarjeta para reservar ese servicio" : "Click a card to book that service" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4", children: SERVICES.map((s, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          motion.div,
+          {
+            initial: "hidden",
+            whileInView: "visible",
+            viewport: { once: true, margin: "-60px" },
+            variants: FADE_UP$3,
+            className: "group relative overflow-hidden rounded-lg shadow-sm cursor-pointer ring-0 hover:ring-2 transition-all duration-300",
+            style: { "--tw-ring-color": K$3.accent },
+            onClick: () => handleServiceClick(s),
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "aspect-[4/3] overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: s.img, alt: isEs ? s.titleEs : s.titleEn, className: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-white font-bold text-base", children: isEs ? s.titleEs : s.titleEn }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-300 text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300", children: isEs ? s.descEs : s.descEn }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-1 font-semibold text-xs mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300", style: { color: K$3.accentLight }, children: [
+                  T2.bookNow,
+                  " ",
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "h-3 w-3" })
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-2 right-2 bg-white/90 rounded-full px-2 py-0.5 text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity", style: { color: K$3.accent }, children: isEs ? "Reservar →" : "Book →" })
+            ]
+          },
+          i
+        )) })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "about", className: "relative py-12", style: { background: "linear-gradient(135deg, #0B1A3F 0%, #0D47B0 50%, #1B6FE8 100%)" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "container mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        motion.div,
+        {
+          initial: "hidden",
+          whileInView: "visible",
+          viewport: { once: true },
+          variants: STAGGER,
+          className: "grid grid-cols-2 md:grid-cols-4 gap-6 text-center",
+          children: STAT_ICONS.map((icon, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { variants: FADE_UP$3, className: "flex flex-col items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: K$3.accentLight }, children: icon }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-4xl font-extrabold", style: { color: K$3.accentLight }, children: STATS_VALUES[i] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white text-xs font-medium uppercase tracking-wide", children: T2.statsLabels[i] })
+          ] }, i))
+        }
+      ) }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-6 text-center bg-white border-y border-stone-100", children: [/* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-sm font-semibold mb-3", children: "Call us anytime" }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-center gap-3", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), COMPANY_PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "htr-phone-btn htr-phone-btn--mid inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded text-white text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4" }), PHONE_DISPLAY$3] })] }) ] }), /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-10 bg-white", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { 

@@ -1,0 +1,13 @@
+               ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#4285F4] font-extrabold text-lg leading-none flex-shrink-0", "aria-hidden": "true", children: "G" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-0.5 mb-2", children: Array.from({ length: r.rating }).map((_, j) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { key: j, className: "h-3.5 w-3.5 fill-yellow-400 text-yellow-400" })) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-600 text-sm leading-relaxed flex-1", children: isEs ? r.textEs : r.textEn })
+            ]
+          }
+        )) })
+      ] }) }),
+,
+      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "faq", className: "py-16 bg-white", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 max-w-4xl", children: [
+        /* @__PURE__ */ jsxRuntimeExports.j

@@ -1,0 +1,87 @@
+/ jsxRuntimeExports.jsx("p", { className: "text-stone-400 text-sm mt-0.5", children: T2.serviceAreaSub })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "a",
+              {
+                href: "https://www.google.com/maps/search/Houston+Metropolitan+Area,+Texas/@29.7,-95.4,9z",
+                target: "_blank",
+                rel: "noopener noreferrer",
+                className: "flex items-center gap-1.5 text-xs font-semibold text-white px-4 py-2 rounded-full hover:opacity-80 transition-opacity whitespace-nowrap self-start sm:self-auto",
+                style: { backgroundColor: K$3.accent },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(ExternalLink, { className: "h-3.5 w-3.5" }),
+                  T2.openInMaps
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: ["Houston", "Sugar Land", "Katy", "Pearland", "The Woodlands", "Pasadena", "Baytown", "League City", "Missouri City", "Conroe", "Friendswood", "Rosenberg"].map((city) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "span",
+            {
+              className: "text-xs font-medium px-3 py-1 rounded-full border",
+              style: { borderColor: K$3.accent, color: K$3.accent, backgroundColor: `${K$3.accent}12` },
+              children: [
+                "📍 ",
+                city
+              ]
+            },
+            city
+          )) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "a",
+            {
+              href: "https://www.google.com/maps/search/Houston+Metropolitan+Area,+Texas/@29.7,-95.4,9z",
+              target: "_blank",
+              rel: "noopener noreferrer",
+              className: "block relative rounded-xl overflow-hidden shadow-md group",
+              style: { height: 300 },
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "iframe",
+                  {
+                    title: "Service Area Map",
+                    src: "https://maps.google.com/maps?q=Houston+Metropolitan+Area,+Texas&ll=29.7,-95.4&z=9&output=embed",
+                    width: "100%",
+                    height: "300",
+                    style: { border: 0, pointerEvents: "none" },
+                    loading: "lazy",
+                    referrerPolicy: "no-referrer-when-downgrade"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ServiceAreaMapOverlay, {}),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 z-[2] bg-transparent group-hover:bg-black/10 transition-colors duration-200 flex items-end justify-center pb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/95 text-stone-800 text-xs font-semibold px-4 py-1.5 rounded-full shadow-md flex items-center gap-1.5", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(ExternalLink, { className: "h-3 w-3" }),
+                  T2.openInMaps
+                ] }) })
+              ]
+            }
+          )
+        ] })
+      ] }) })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "pt-6 pb-20 sm:pb-6", style: { backgroundColor: K$3.dark }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row items-center justify-between gap-4 mb-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "h-4 w-4", style: { color: K$3.accentLight } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-white font-extrabold", children: [
+            "HTR",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: K$3.accentLight }, children: "GroupTX" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2", children: SOCIALS$3.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "a",
+          {
+            href: s.href,
+            target: "_blank",
+            rel: "noopener noreferrer",
+            "aria-label": s.label,
+            className: "h-8 w-8 rounded-full flex items-center justify-center text-white hover:opacity-75 transition-opacity",
+            style: { background: s.bg },
+            children: s.icon
+          },
+          s.label
+        )) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-phone-pair--row flex flex-col sm:flex-row items-center justify-center gap-3 mb-4 text-sm", children: [/* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "htr-phone-btn inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity", children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4", style: { color: K$3.accentLight } }), COMPANY_PHONE_DISPLAY$3] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "htr-phone-btn inline-flex items-center gap-2 text-white font-semibold hover:opacity-80 transition-opacity", children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-4 w-4", style: { color: K$3.accentLight } }), PHONE_DISPLAY$3] })] }), /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(AdminSecretAccess, { label: `© ${(/* @__PURE__ */ new Date()).getFullYear()} HTRGroupTX. ${T2.allRights}` }) }),
+        /* @__PURE__ */ js

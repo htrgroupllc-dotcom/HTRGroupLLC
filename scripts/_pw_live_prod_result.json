@@ -1,0 +1,42 @@
+{
+  "url": "https://www.htrgrouptx.com/",
+  "cacheV": "57",
+  "reviews": {
+    "sectionFound": true,
+    "wrapFound": true,
+    "htrRowCount": 0,
+    "rowDivCount": 2,
+    "anyGridCount": 2,
+    "visibleCardCount": 5,
+    "firstRowCount": 5,
+    "secondRowCount": 0,
+    "firstCols": 5,
+    "secondCols": 5,
+    "firstRowUniqueTops": 1,
+    "secondRowUniqueTops": 0,
+    "firstRowBelowSecond": null,
+    "row0Class": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4",
+    "row1Class": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4",
+    "wrapDisplay": "block"
+  },
+  "marquee": {
+    "sectionFound": true,
+    "leftTrackClass": "htr-brand-marquee-center__track htr-brand-marquee-center__track--left flex items-center gap-3 w-max h-full justify-end",
+    "rightTrackClass": "htr-brand-marquee-center__track htr-brand-marquee-center__track--right flex items-center gap-3 w-max h-full justify-start",
+    "leftCardCount": 144,
+    "rightCardCount": 144,
+    "animLeft": true,
+    "animRight": true,
+    "animLeftName": "htr-marquee-center-left",
+    "animRightName": "htr-marquee-center-right",
+    "leftDelta": 1197.5068359375,
+    "rightDelta": -1197.506525917659,
+    "hasRightEdge": false,
+    "hasLeftEdge": true
+  },
+  "consoleErrors": [],
+  "shots": {
+    "reviews": "C:\\Projects\\HTRGroupLLC\\scripts\\_pw_live_reviews.png",
+    "marquee": "C:\\Projects\\HTRGroupLLC\\scripts\\_pw_live_marquee.png"
+  }
+}

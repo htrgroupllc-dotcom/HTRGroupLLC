@@ -1,0 +1,11 @@
+const html = await fetch("https://htrgrouptx.com/index.html").then((r) => r.text());
+const jsMatch = html.match(/src="([^"]*index-utf8[^"]+)"/);
+console.log("js:", jsMatch?.[1]);
+const jsUrl = new URL(jsMatch[1], "https://htrgrouptx.com").href;
+const js = await fetch(jsUrl).then((r) => r.text());
+console.log("has James W:", js.includes("James W."));
+console.log("has _fiveStar:", js.includes("_fiveStar"));
+console.log("has GOOGLE_HOME_REVIEWS_STATIC:", js.includes("GOOGLE_HOME_REVIEWS_STATIC"));
+console.log("has merge static:", js.includes("GOOGLE_HOME_REVIEWS_STATIC)"));
+const api = await fetch("https://htr-group-llc-appliance-repair.replit.app/api/google-reviews").then((r) => r.json());
+console.log("api ok:", api.ok, "reviews:", api.reviews?.length, "names:", api.reviews?.slice(0, 2).map((x) => x.name));

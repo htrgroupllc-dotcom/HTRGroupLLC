@@ -1,0 +1,13 @@
+reviewTab === "all" ? _dailyMix : reviewTab === "5" ? _pickN(_fiveStar, 8) : reviewTab === "4" ? _pickN(_fourStar, 8) : _pickN(_recentRev, 8);
+  const handleServiceClick = (svc) => {
+    setAppliance(isEs ? svc.appEs : svc.appEn);
+    setTimeout(() => {
+      bookingFormRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+  };
+  const handleBooking = async (e) => {
+    e.preventDefault();
+    if (submitting) return;
+    if (!selectedSlot) {
+      toast2({
+        tit

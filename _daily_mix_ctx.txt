@@ -1,0 +1,168 @@
+ ALL_REVIEWS.filter((r2) => r2.category === "4");
+  const _recentRev = ALL_REVIEWS.filter((r2) => r2.category === "recent");
+  _fiveStar[_halfDay % _fiveStar.length];
+  _fiveStar[_day % _fiveStar.length];
+  const _pickN = (pool, n) => {
+    const start = _day * n % pool.length;
+    return [...pool.slice(start, start + n), ...pool.slice(0, Math.max(0, start + n - pool.length))];
+  };
+  const [f5a, f5b, f5c, f5d, f5e, f5f] = _pickN(_fiveStar, 6);
+  const [f4a, f4b] = _pickN(_fourStar, 2);
+  const _dailyMix = [f5a, f5b, f5c, f4a, f5d, f5e, f5f, f4b];
+  reviewTab === "all" ? _dailyMix : reviewTab === "5" ? _pickN(_fiveStar, 8) : reviewTab === "4" ? _pickN(_fourStar, 8) : _pickN(_recentRev, 8);
+  const handleServiceClick = (svc) => {
+    setAppliance(isEs ? svc.appEs : svc.appEn);
+    setTimeout(() => {
+      bookingFormRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+  };
+  const handleBooking = async (e) => {
+    e.preventDefault();
+    if (submitting) return;
+    if (!selectedSlot) {
+      toast2({
+        title: isEs ? "Seleccione un horario" : "Please select a time slot",
+        description: isEs ? "Elija un horario disponible antes de continuar." : "Choose an available time before submitting.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setSubmitting(true);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    try {
+      const apiBase = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
+      const res = await fetch(`${apiBase}/api/booking`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name"),
+          phone: data.get("phone"),
+          email: data.get("email"),
+          address: data.get("address"),
+          appliance,
+          brandModel,
+          date: selectedDateStr,
+          time: selectedSlot ?? "",
+          message: data.get("message"),
+          lang
+        })
+      });
+      if (res.status === 409) {
+        toast2({
+          title: isEs ? "Horario no disponible" : "Time slot unavailable",
+          description: isEs ? "Este horario ya fue reservado. Por favor seleccione otro horario." : "This time slot was just booked. Please choose another time.",
+          variant: "destructive"
+        });
+        setBookedSlots((prev) => selectedSlot ? [...prev, selectedSlot] : prev);
+        setSelectedSlot(null);
+        setSubmitting(false);
+        return;
+      }
+      if (!res.ok) throw new Error("server error");
+      toast2({ title: T2.received, description: T2.callSoon, duration: 5e3 });
+      setSelectedSlot(null);
+      form.reset();
+      setAppliance("");
+      setBrandModel("");
+      const t = /* @__PURE__ */ new Date();
+      setBMonth(t.getMonth() + 1);
+      setBDay(t.getDate());
+      setBYear(t.getFullYear());
+    } catch {
+      toast2({
+        title: isEs ? "Error al enviar" : "Submission error",
+        description: isEs ? "Ocurrió un error. Llámenos al (346) 696-8751." : "Something went wrong. Please call us at (346) 696-8751.",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col overflow-x-hidden font-sans", style: { backgroundColor: K$3.bg, color: K$3.dark }, children: [
+    showFullModal && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-[200] flex items-center justify-center bg-black/50 px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center w-14 h-14 rounded-full bg-amber-100 mx-auto mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-7 h-7 text-amber-500", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 2, children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" }) }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-bold text-stone-800 mb-2", children: isEs ? "¡Todos los horarios están ocupados!" : "All Time Slots Are Fully Booked!" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-500 mb-5", children: isEs ? "No hay horarios disponibles para la fecha seleccionada. Por favor, elija otra fecha." : "There are no available time slots for the selected date. Please choose a different date." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          onClick: () => setShowFullModal(false),
+          className: "w-full py-2.5 rounded-xl text-sm font-bold text-white transition hover:opacity-90",
+          style: { backgroundColor: K$3.accent },
+          children: isEs ? "Elegir otra fecha" : "Choose Another Date"
+        }
+      )
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-header-spacer w-full flex-shrink-0", "aria-hidden": "true" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "htr-site-header-root fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 htr-site-header-bar flex items-center justify-between gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 flex-shrink-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "h-3.5 w-3.5 text-stone-400" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => setLang("en"),
+              className: "text-xs font-bold px-2 py-1 rounded transition-all",
+              style: lang === "en" ? { backgroundColor: K$3.accent, color: "#fff" } : { color: "#57534e" },
+              children: "EN"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-300 text-xs", children: "|" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => setLang("es"),
+              className: "text-xs font-bold px-2 py-1 rounded transition-all",
+              style: lang === "es" ? { backgroundColor: K$3.accent, color: "#fff" } : { color: "#57534e" },
+              children: "ES"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 flex-shrink-0 logo-container", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "h-5 w-5 logo-wrench", style: { color: K$3.accent } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-lg font-extrabold tracking-tight logo-shimmer-text", children: "HTRGroupTX" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "logo-spark logo-spark-1", children: "✦" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "logo-spark logo-spark-2", children: "✦" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "logo-spark logo-spark-3", children: "✦" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "htr-site-header-nav hidden md:flex items-center gap-5 text-sm font-semibold text-stone-600", children: [
+          ["/", "#services", "#about", "#faq", "#contact"].map((href, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href, className: "hover:opacity-70 transition-opacity", children: T2.nav[i] }, href)),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${"/".replace(/\/$/, "")}/blog`, className: "hover:opacity-70 transition-opacity", style: { color: K$3.accent }, children: isEs ? "Blog" : "Blog" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden md:flex items-center gap-2 flex-shrink-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+              " ",
+              COMPANY_PHONE_DISPLAY$3
+            ]}),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+              " ",
+              PHONE_DISPLAY$3
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#contact", className: "text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K$3.dark }, children: T2.bookNow })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "md:hidden p-2 rounded", onClick: () => setMenuOpen(!menuOpen), children: menuOpen ? /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "h-5 w-5" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Menu, { className: "h-5 w-5" }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "htr-header-mobile-strip md:hidden", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 py-2 flex flex-col gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair flex flex-row flex-wrap gap-2 items-center justify-end", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }), " ", COMPANY_PHONE_DISPLAY$3] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-1.5 rounded text-sm", style: { backgroundColor: K$3.accent }, children: [/* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }), " ", PHONE_DISPLAY$3] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "#contact", className: "htr-header-mobile-book text-white font-bold px-3 py-2 rounded text-sm uppercase tracking-wider", style: { backgroundColor: K$3.dark }, children: T2.bookNow })
+        ] })
+      ] }),
+      menuOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:hidden bg-white border-t border-stone-100 px-4 pb-3 flex flex-col gap-2 text-sm font-semibold text-stone-700", children: [
+        ["/", "#services", "#about", "#faq", "#contact"].map((href, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href, onClick: () => setMenuOpen(false), className: "py-2 border-b border-stone-100", children: T2.nav[i] }, href)),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `${"/".replace(/\/$/, "")}/blog`, onClick: () => setMenuOpen(false), className: "py-2 border-b border-stone-100", style: { color: K$3.accent }, children: "Blog" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "header-phone-pair flex flex-row flex-wrap gap-2 mt-1 items-start justify-start", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: COMPANY_PHONE_HREF$3, className: "header-phone-link htr-phone-btn flex items-center gap-1.5 text-white font-bold px-3 py-2 rounded text-sm w-fit", style: { backgroundColor: K$3.accent }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "h-3.5 w-3.5" }),
+            " ",
+            COMPANY_PHONE_DISPLAY$3
+          ]}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: PHONE_HREF$3, className: "header-phone-link htr-phon

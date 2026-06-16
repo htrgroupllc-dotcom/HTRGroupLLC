@@ -1,0 +1,10 @@
+r.length];
+  _fiveStar[_day % _fiveStar.length];
+  const _pickN = (pool, n) => {
+    const start = _day * n % pool.length;
+    return [...pool.slice(start, start + n), ...pool.slice(0, Math.max(0, start + n - pool.length))];
+  };
+  const [f5a, f5b, f5c, f5d, f5e, f5f] = _pickN(_fiveStar, 6);
+  const [f4a, f4b] = _pickN(_fourStar, 2);
+  const _dailyMix = [f5a, f5b, f5c, f4a, f5d, f5e, f5f, f4b];
+  reviewTab === "all" ? _dailyMix : reviewTab === "5" ? _pickN(_fiveStar, 8) : reviewTab === "4" ? _pi

@@ -1,0 +1,25 @@
+rt + n - pool.length))];
+  };
+  const [f5a, f5b, f5c, f5d, f5e, f5f] = _pickN(_fiveStar, 6);
+  const [f4a, f4b] = _pickN(_fourStar, 2);
+  const _dailyMix = [f5a, f5b, f5c, f4a, f5d, f5e, f5f, f4b];
+  reviewTab === "all" ? _dailyMix : reviewTab === "5" ? _pickN(_fiveStar, 8) : reviewTab === "4" ? _pickN(_fourStar, 8) : _pickN(_recentRev, 8);
+  const handleServiceClick = (svc) => {
+    setAppliance(isEs ? svc.appEs : svc.appEn);
+    setTimeout(() => {
+      bookingFormRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+  };
+  const handleBooking = async (e) => {
+    e.preventDefault();
+    if (submitting) return;
+    if (!selectedSlot) {
+      toast2({
+        title: isEs ? "Seleccione un horario" : "Please select a time slot",
+        description: isEs ? "Elija un horario disponible antes de continuar." : "Choose an available time before submitting.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setSubmitting(true);
+    const form = e.cu

@@ -1,0 +1,44 @@
+ater dispenser fixed. Tech was professional. Window was 4 hours.", "Dispensador de agua de nevera arreglado. Técnico profesional. Ventana fue de 4 horas."],
+  ["Billy J.", 4, "9 months ago", "4", "Dryer heating element replaced. Works great. Price was fair and transparent.", "Elemento calefactor de secadora reemplazado. Funciona genial. Precio justo y transparente."]
+];
+const ALL_REVIEWS = RAW.map(
+  ([name, rating, time2, category, textEn, textEs], i) => ({
+    name,
+    initials: name[0],
+    avatarColor: C[i % C.length],
+    rating,
+    time: time2,
+    textEn,
+    textEs,
+    category
+  })
+);
+const API_BASE$2 = "https://htr-group-llc-appliance-repair.replit.app";
+const PHONE_DISPLAY$4 = "(346) 696-8751";
+const PHONE_HREF$4 = "tel:+13466968751";
+const EMAIL_DISPLAY = "htrgroupllc@gmail.com";
+const EMAIL_HREF = "mailto:htrgroupllc@gmail.com";
+const WELCOME = {
+  en: "Hi! I'm your appliance repair assistant. Describe your appliance problem and I'll help you diagnose it step by step.\n\nWhat appliance is giving you trouble?",
+  es: "¡Hola! Soy tu asistente de reparación de electrodomésticos. Describe el problema y te ayudaré a diagnosticarlo paso a paso.\n\n¿Qué electrodoméstico te está dando problemas?"
+};
+const TR$4 = {
+  en: {
+    title: "HTRGroup",
+    subtitle: "AI Diagnostic Help",
+    placeholder: "Describe your appliance problem…",
+    send: "Send",
+    poweredBy: "Powered by AI • Not a substitute for professional diagnosis",
+    thinking: "Thinking…",
+    urgentTitle: "Looks like a serious issue!",
+    urgentBody: "Based on your description, this repair requires a certified technician. Contact us — we'll get it fixed fast.",
+    urgentBook: "Book a Technician",
+    urgentCall: "Call Now",
+    urgentEmail: "Email Us",
+    formTitle: "Before we start…",
+    formSubtitle: "Please share your details so we can follow up if needed.",
+    formName: "Full Name",
+    formEmail: "Email (optional)",
+    formPhone: "Phone Number",
+    formStart: "Start Chat",
+    formR

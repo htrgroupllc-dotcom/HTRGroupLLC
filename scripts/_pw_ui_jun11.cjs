@@ -1,0 +1,30 @@
+﻿const { chromium } = require('playwright');
+(async () => {
+  const browser = await chromium.launch();
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await page.goto('https://htrgrouptx.com/?nocache=' + Date.now(), { waitUntil: 'networkidle', timeout: 120000 });
+  const jsHref = await page.locator('script[type="module"]').getAttribute('src');
+  const cssHref = await page.locator('link[rel="stylesheet"][href*="index-_bdQPowM"]').getAttribute('href');
+  await page.locator('.htr-brand-marquee-center').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(1200);
+  const leftTrack = page.locator('.htr-brand-marquee-center__wing--left .htr-brand-marquee-center__track').first();
+  const rightTrack = page.locator('.htr-brand-marquee-center__wing--right .htr-brand-marquee-center__track').first();
+  const cardBox = await page.locator('.htr-brand-marquee-center__card').first().boundingBox();
+  const t0l = await leftTrack.evaluate(n => n.style.transform);
+  const t0r = await rightTrack.evaluate(n => n.style.transform);
+  await page.waitForTimeout(2500);
+  const t1l = await leftTrack.evaluate(n => n.style.transform);
+  const t1r = await rightTrack.evaluate(n => n.style.transform);
+  await page.locator('#reviews').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(2000);
+  const grid = await page.locator('.htr-google-reviews-grid').evaluate(el => {
+    const cs = getComputedStyle(el);
+    const kids = el.querySelectorAll(':scope > *').length;
+    return { cols: cs.gridTemplateColumns.split(' ').length, rows: cs.gridTemplateRows.split(' ').filter(Boolean).length, kids };
+  });
+  const starColor = await page.locator('.htr-google-reviews .htr-google-star').first().evaluate(el => getComputedStyle(el).fill);
+  console.log(JSON.stringify({ jsHref, cssHref, cardBox, leftMoved: t0l !== t1l, rightMoved: t0r !== t1r, t0l, t1l, t0r, t1r, grid, starColor }, null, 2));
+  await page.locator('.htr-brand-marquee-center').screenshot({ path: 'C:/Projects/HTRGroupLLC/scripts/prod-ui-jun11-marquee.png' });
+  await page.locator('#reviews').screenshot({ path: 'C:/Projects/HTRGroupLLC/scripts/prod-ui-jun11-reviews.png' });
+  await browser.close();
+})().catch(e => { console.error(e); process.exit(1); });

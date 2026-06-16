@@ -1,0 +1,282 @@
+-95.4031,29.479],[-95.4157,29.4979],[-95.4166,29.5262],[-95.3939,29.5412],[-95.3837,29.5313],[-95.3837,29.5335]] },
+  { z: "77581", r: [[-95.2177,29.5495],[-95.2262,29.515],[-95.2425,29.5094],[-95.2538,29.5187],[-95.2841,29.553],[-95.3046,29.5596],[-95.3211,29.5521],[-95.3401,29.5592],[-95.3518,29.5817],[-95.3452,29.5866],[-95.3374,29.5938],[-95.3275,29.598],[-95.3128,29.5969],[-95.2964,29.5963],[-95.2864,29.5976],[-95.2782,29.5957],[-95.2717,29.5943],[-95.2605,29.5902],[-95.2596,29.576],[-95.2526,29.5592],[-95.2274,29.5679],[-95.2189,29.5586],[-95.2158,29.5569],[-95.2177,29.5495]] },
+  { z: "77583", r: [[-95.4076,29.5082],[-95.4157,29.5084],[-95.4158,29.5117],[-95.4114,29.5118],[-95.4082,29.5119],[-95.408,29.5119],[-95.4076,29.5119],[-95.4076,29.5116],[-95.4076,29.5095],[-95.4076,29.5082]] },
+  { z: "77584", r: [[-95.3178,29.558],[-95.3169,29.5581],[-95.3163,29.5581],[-95.316,29.5581],[-95.3156,29.5581],[-95.3152,29.5581],[-95.3151,29.5581],[-95.3151,29.558],[-95.315,29.5546],[-95.315,29.5544],[-95.3151,29.5543],[-95.3152,29.5543],[-95.3154,29.5543],[-95.316,29.5543],[-95.3169,29.5543],[-95.3177,29.5543],[-95.3178,29.5543],[-95.3179,29.5544],[-95.3178,29.5545],[-95.3178,29.5547],[-95.3178,29.5552],[-95.3178,29.558]] },
+  { z: "77586", r: [[-95.0481,29.5905],[-95.0391,29.6038],[-95.0185,29.6178],[-94.9886,29.609],[-94.9827,29.6011],[-94.9878,29.5964],[-94.9879,29.594],[-94.9908,29.5931],[-94.9942,29.5878],[-94.9992,29.5842],[-95.0031,29.5801],[-95.0054,29.5772],[-95.0097,29.5715],[-95.0138,29.5641],[-95.0168,29.5585],[-95.0174,29.5489],[-95.0218,29.5487],[-95.0284,29.5508],[-95.0675,29.5576],[-95.0698,29.5819],[-95.0817,29.5894],[-95.09,29.5988],[-95.0508,29.5906],[-95.0481,29.5905]] },
+  { z: "77587", r: [[-95.2109,29.6587],[-95.2081,29.6553],[-95.208,29.6522],[-95.2113,29.6509],[-95.2184,29.6525],[-95.2257,29.6526],[-95.2337,29.6526],[-95.241,29.6525],[-95.2492,29.6522],[-95.2493,29.6584],[-95.2495,29.6657],[-95.2516,29.6662],[-95.2514,29.6702],[-95.2467,29.6701],[-95.2417,29.6702],[-95.2391,29.6703],[-95.2349,29.6699],[-95.2329,29.6698],[-95.226,29.6699],[-95.2151,29.67],[-95.2104,29.668],[-95.2116,29.6658],[-95.2091,29.6658],[-95.2081,29.6622],[-95.2115,29.6596],[-95.2109,29.6587]] },
+  { z: "77598", r: [[-95.1823,29.5855],[-95.1834,29.5862],[-95.1841,29.5868],[-95.1833,29.5875],[-95.1823,29.5884],[-95.1825,29.5879],[-95.1825,29.5869],[-95.182,29.5869],[-95.1814,29.5869],[-95.1812,29.5867],[-95.1804,29.5858],[-95.1798,29.5852],[-95.1805,29.5845],[-95.1806,29.5845],[-95.1809,29.5842],[-95.1819,29.585],[-95.1823,29.5855]] }
+];
+function serviceAreaLatLngToWorld(lat, lng) {
+  const sinY = Math.sin(lat * Math.PI / 180);
+  const clamped = Math.min(Math.max(sinY, -0.9999), 0.9999);
+  return {
+    x: (lng + 180) / 360,
+    y: 0.5 - Math.log((1 + clamped) / (1 - clamped)) / (4 * Math.PI)
+  };
+}
+function serviceAreaProject(lng, lat, w, h) {
+  const { centerLat, centerLng, zoom } = SERVICE_AREA_MAP_EMBED;
+  const scale = 256 * Math.pow(2, zoom);
+  const center = serviceAreaLatLngToWorld(centerLat, centerLng);
+  const point = serviceAreaLatLngToWorld(lat, lng);
+  const x = (point.x - center.x) * scale + w / 2;
+  const y = (point.y - center.y) * scale + h / 2;
+  return `${x.toFixed(2)},${y.toFixed(2)}`;
+}
+function serviceAreaRingPath(ring, w, h) {
+  const pts = ring.map(([lng, lat]) => serviceAreaProject(lng, lat, w, h));
+  return `M ${pts.join(" L ")} Z`;
+}
+function ServiceAreaMapOverlay() {
+  const wrapRef = reactExports.useRef(null);
+  const [size, setSize] = reactExports.useState({ w: 1e3, h: 300 });
+  reactExports.useLayoutEffect(() => {
+    const el = wrapRef.current?.parentElement;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      const w = Math.max(1, Math.round(width));
+      const h = Math.max(1, Math.round(height));
+      setSize((prev) => prev.w === w && prev.h === h ? prev : { w, h });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const { w, h } = size;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", {
+    ref: wrapRef,
+    className: "absolute inset-0 pointer-events-none z-[1]",
+    children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", {
+      className: "w-full h-full",
+      viewBox: `0 0 ${w} ${h}`,
+      preserveAspectRatio: "none",
+      "aria-hidden": true,
+      children: SERVICE_AREA_ZIP_POLYGONS.map((z) => /* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+        d: serviceAreaRingPath(z.r, w, h),
+        fill: SERVICE_AREA_MAP_FILL,
+        stroke: SERVICE_AREA_MAP_STROKE,
+        strokeWidth: 1.25,
+        vectorEffect: "non-scaling-stroke"
+      }, z.z))
+    })
+  });
+}
+/* SERVICE_AREA_MAP_OVERLAY */
+
+function Home() {
+  const { toast: toast2 } = useToast();
+  const contactRef = reactExports.useRef(null);
+  const bookingFormRef = reactExports.useRef(null);
+  const [lang, setLang] = reactExports.useState("en");
+  const [menuOpen, setMenuOpen] = reactExports.useState(false);
+  const [reviewTab, setReviewTab] = reactExports.useState("all");
+  const [refreshing, setRefreshing] = reactExports.useState(false);
+  const [appliance, setAppliance] = reactExports.useState("");
+  const [brandModel, setBrandModel] = reactExports.useState("");
+  const [submitting, setSubmitting] = reactExports.useState(false);
+  const _now = /* @__PURE__ */ new Date();
+  const _houstonNow = new Date((/* @__PURE__ */ new Date()).toLocaleString("en-US", { timeZone: "America/Chicago" }));
+  const _minBooking = new Date(_houstonNow);
+  if (_houstonNow.getHours() >= 17) _minBooking.setDate(_minBooking.getDate() + 1);
+  _minBooking.setHours(0, 0, 0, 0);
+  const [bMonth, setBMonth] = reactExports.useState(_minBooking.getMonth() + 1);
+  const [bDay, setBDay] = reactExports.useState(_minBooking.getDate());
+  const [bYear, setBYear] = reactExports.useState(_minBooking.getFullYear());
+  const [selectedSlot, setSelectedSlot] = reactExports.useState(null);
+  const [bookedSlots, setBookedSlots] = reactExports.useState([]);
+  const [loadingSlots, setLoadingSlots] = reactExports.useState(false);
+  const [showFullModal, setShowFullModal] = reactExports.useState(false);
+  const [certModal, setCertModal] = reactExports.useState(null);
+  const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const TIME_SLOTS2 = ["9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM"];
+  const _isSelectedToday = bYear === _houstonNow.getFullYear() && bMonth === _houstonNow.getMonth() + 1 && bDay === _houstonNow.getDate();
+  const _nowMinutesCT = _houstonNow.getHours() * 60 + _houstonNow.getMinutes() + 60;
+  function _slotToMinutes(slot) {
+    const m = /^(\d+):(\d+)\s*(AM|PM)$/i.exec(slot);
+    if (!m) return 0;
+    let h = parseInt(m[1], 10);
+    const min2 = parseInt(m[2], 10);
+    if (m[3].toUpperCase() === "PM" && h !== 12) h += 12;
+    if (m[3].toUpperCase() === "AM" && h === 12) h = 0;
+    return h * 60 + min2;
+  }
+  const selectedDateStr = `${MONTHS_SHORT[bMonth - 1]} ${bDay}, ${bYear}`;
+  const fetchSlots = reactExports.useCallback((date, resetSelection = false) => {
+    if (resetSelection) setSelectedSlot(null);
+    setLoadingSlots(true);
+    const apiBase = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
+    fetch(`${apiBase}/api/availability?date=${encodeURIComponent(date)}&_t=${Date.now()}`, { cache: "no-store" }).then((r2) => r2.json()).then((d) => {
+      const booked = d.bookedSlots ?? [];
+      const blocked = (d.blockedSlots ?? []).map((b) => b.time);
+      const buffer = d.bufferSlots ?? [];
+      setBookedSlots([.../* @__PURE__ */ new Set([...booked, ...blocked, ...buffer])]);
+    }).catch(() => setBookedSlots([])).finally(() => setLoadingSlots(false));
+  }, []);
+  reactExports.useEffect(() => {
+    const d = new Date(bYear, bMonth - 1, bDay);
+    const dow = d.getDay();
+    if (dow === 0 || dow === 6) {
+      const skip = dow === 6 ? 2 : 1;
+      const next = new Date(d);
+      next.setDate(d.getDate() + skip);
+      setBMonth(next.getMonth() + 1);
+      setBDay(next.getDate());
+      setBYear(next.getFullYear());
+    }
+  }, [bMonth, bDay, bYear]);
+  reactExports.useEffect(() => {
+    fetchSlots(selectedDateStr, true);
+  }, [bMonth, bDay, bYear]);
+  reactExports.useEffect(() => {
+    const id2 = setInterval(() => fetchSlots(selectedDateStr), 3e4);
+    return () => clearInterval(id2);
+  }, [selectedDateStr, fetchSlots]);
+  reactExports.useEffect(() => {
+    if (loadingSlots) return;
+    const allUnavailable = TIME_SLOTS2.every((slot) => {
+      const booked = bookedSlots.includes(slot);
+      const isPast = _isSelectedToday && _slotToMinutes(slot) <= _nowMinutesCT;
+      return booked || isPast;
+    });
+    if (allUnavailable && bookedSlots.length > 0) setShowFullModal(true);
+  }, [bookedSlots, loadingSlots]);
+  const T2 = TR$3[lang];
+  const isEs = lang === "es";
+  const STAT_ICONS = [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Users, { className: "h-8 w-8" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "h-8 w-8" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { className: "h-8 w-8" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Award, { className: "h-8 w-8" })
+  ];
+  const _day = Math.floor(
+    (Date.now() - new Date((/* @__PURE__ */ new Date()).getFullYear(), 0, 0).getTime()) / 864e5
+  );
+  const _halfDay = Math.floor(Date.now() / (12 * 36e5));
+  const _fiveStar = ALL_REVIEWS.filter((r2) => r2.category === "5");
+  const _fourStar = ALL_REVIEWS.filter((r2) => r2.category === "4");
+  const _recentRev = ALL_REVIEWS.filter((r2) => r2.category === "recent");
+  _fiveStar[_halfDay % _fiveStar.length];
+  _fiveStar[_day % _fiveStar.length];
+  const _pickN = (pool, n) => {
+    const start = _day * n % pool.length;
+    return [...pool.slice(start, start + n), ...pool.slice(0, Math.max(0, start + n - pool.length))];
+  };
+  const [f5a, f5b, f5c, f5d, f5e, f5f] = _pickN(_fiveStar, 6);
+  const [f4a, f4b] = _pickN(_fourStar, 2);
+  const _dailyMix = [f5a, f5b, f5c, f4a, f5d, f5e, f5f, f4b];
+  reviewTab === "all" ? _dailyMix : reviewTab === "5" ? _pickN(_fiveStar, 8) : reviewTab === "4" ? _pickN(_fourStar, 8) : _pickN(_recentRev, 8);
+  const handleServiceClick = (svc) => {
+    setAppliance(isEs ? svc.appEs : svc.appEn);
+    setTimeout(() => {
+      bookingFormRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+  };
+  const handleBooking = async (e) => {
+    e.preventDefault();
+    if (submitting) return;
+    if (!selectedSlot) {
+      toast2({
+        title: isEs ? "Seleccione un horario" : "Please select a time slot",
+        description: isEs ? "Elija un horario disponible antes de continuar." : "Choose an available time before submitting.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setSubmitting(true);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    try {
+      const apiBase = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
+      const res = await fetch(`${apiBase}/api/booking`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name"),
+          phone: data.get("phone"),
+          email: data.get("email"),
+          address: data.get("address"),
+          appliance,
+          brandModel,
+          date: selectedDateStr,
+          time: selectedSlot ?? "",
+          message: data.get("message"),
+          lang
+        })
+      });
+      if (res.status === 409) {
+        toast2({
+          title: isEs ? "Horario no disponible" : "Time slot unavailable",
+          description: isEs ? "Este horario ya fue reservado. Por favor seleccione otro horario." : "This time slot was just booked. Please choose another time.",
+          variant: "destructive"
+        });
+        setBookedSlots((prev) => selectedSlot ? [...prev, selectedSlot] : prev);
+        setSelectedSlot(null);
+        setSubmitting(false);
+        return;
+      }
+      if (!res.ok) throw new Error("server error");
+      toast2({ title: T2.received, description: T2.callSoon, duration: 5e3 });
+      setSelectedSlot(null);
+      form.reset();
+      setAppliance("");
+      setBrandModel("");
+      const t = /* @__PURE__ */ new Date();
+      setBMonth(t.getMonth() + 1);
+      setBDay(t.getDate());
+      setBYear(t.getFullYear());
+    } catch {
+      toast2({
+        title: isEs ? "Error al enviar" : "Submission error",
+        description: isEs ? "Ocurrió un error. Llámenos al (346) 696-8751." : "Something went wrong. Please call us at (346) 696-8751.",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col overflow-x-hidden font-sans", style: { backgroundColor: K$3.bg, color: K$3.dark }, children: [
+    showFullModal && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-[200] flex items-center justify-center bg-black/50 px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-center w-14 h-14 rounded-full bg-amber-100 mx-auto mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-7 h-7 text-amber-500", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 2, children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" }) }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-bold text-stone-800 mb-2", children: isEs ? "¡Todos los horarios están ocupados!" : "All Time Slots Are Fully Booked!" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-500 mb-5", children: isEs ? "No hay horarios disponibles para la fecha seleccionada. Por favor, elija otra fecha." : "There are no available time slots for the selected date. Please choose a different date." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          onClick: () => setShowFullModal(false),
+          className: "w-full py-2.5 rounded-xl text-sm font-bold text-white transition hover:opacity-90",
+          style: { backgroundColor: K$3.accent },
+          children: isEs ? "Elegir otra fecha" : "Choose Another Date"
+        }
+      )
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-header-spacer w-full flex-shrink-0", "aria-hidden": "true" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "htr-site-header-root fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-stone-200 shadow-sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 htr-site-header-bar flex items-center justify-between gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 flex-shrink-0", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "h-3.5 w-3.5 text-stone-400" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => setLang("en"),
+              className: "text-xs font-bold px-2 py-1 rounded transition-all",
+              style: lang === "en" ? { backgroundColor: K$3.accent, color: "#fff" } : { color: "#57534e" },
+              children: "EN"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-300 text-xs", children: "|" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => setLang("es"),
+              className: "text-xs font-bold px-2 py-1 rounded transition-all",
+              style: lang === "es" ? { backgroundColor: K$3.accent, color: "#fff" } : { color: "#57534e" },
+              children: "ES"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 flex-shrink-0 logo-container", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "h-5 w-5 logo-wrench", style: { color: K$3.accent } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-lg font-extrabold tracking-tight logo-shimmer-text", children: "HTRGroupTX" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "logo-spark logo-spark-1", children: "✦" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "logo-spark logo-spark-2", children: "✦" }),
+          /* @__PURE__ */ jsxRuntimeExports.

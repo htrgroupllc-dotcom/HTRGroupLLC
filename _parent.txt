@@ -1,0 +1,26 @@
+p-3",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    className: "h-20 w-20 rounded-full flex items-center justify-center text-white shadow-md flex-shrink-0",
+                    style: { backgroundColor: K$3.accent },
+                    children: icon
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "block text-xs font-bold uppercase tracking-widest mb-1", style: { color: K$3.accent }, children: [
+                    "Step ",
+                    i + 1
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-900 text-sm mb-1", children: T2.processSteps[i].title }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-500 text-xs leading-relaxed", children: T2.processSteps[i].desc })
+                ] })
+              ]
+            },
+            i
+          )) })
+        ] })
+      ] }) }),
+
+      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "reviews", className: "py-10 md:py-12", style: { backgroundColor: K$3.bg }, children: /* @__PURE

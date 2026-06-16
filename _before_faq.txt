@@ -1,0 +1,65 @@
+shadow-sm hover:shadow-md",
+                style: { aspectRatio: "4/3" },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: cert.img, alt: cert.label, className: "w-full h-full object-cover" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-black/0 group-hover:bg-black/40 flex flex-col items-center justify-center transition-colors duration-200 px-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white text-xs font-bold drop-shadow text-center leading-tight", children: isEs ? "Ver certificado" : "View cert" }) })
+                ]
+              },
+              i
+            )) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-5 flex items-start gap-3 px-4 py-4 rounded-xl border border-blue-100", style: { backgroundColor: K$3.bg }, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(BadgeCheck, { className: "h-6 w-6 flex-shrink-0 mt-0.5", style: { color: K$3.accent } }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-600 leading-relaxed", children: isEs ? "Todos nuestros técnicos están asegurados y certificados por la EPA." : "All our technicians are insured and EPA-certified for your peace of mind." })
+            ] })
+          ]
+        }
+      ) }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-12", style: { backgroundColor: K$3.bg }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center max-w-xl mx-auto mb-10", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl md:text-3xl font-extrabold", children: T2.processH2 }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-1 w-14 mx-auto mt-2 rounded-full", style: { backgroundColor: K$3.accent } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-500 text-sm mt-2", children: T2.processSub })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hidden md:block absolute top-10 left-[10%] right-[10%] h-0.5 bg-stone-200 z-0" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 relative z-10", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CalendarCheck, { className: "h-7 w-7" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Truck, { className: "h-7 w-7" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(SearchCode, { className: "h-7 w-7" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Hammer, { className: "h-7 w-7" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(BadgeCheck, { className: "h-7 w-7" })
+          ].map((icon, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.div,
+            {
+              initial: "hidden",
+              whileInView: "visible",
+              viewport: { once: true, margin: "-40px" },
+              variants: FADE_UP$3,
+              className: "flex flex-col items-center text-center gap-3",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    className: "h-20 w-20 rounded-full flex items-center justify-center text-white shadow-md flex-shrink-0",
+                    style: { backgroundColor: K$3.accent },
+                    children: icon
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "block text-xs font-bold uppercase tracking-widest mb-1", style: { color: K$3.accent }, children: [
+                    "Step ",
+                    i + 1
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-900 text-sm mb-1", children: T2.processSteps[i].title }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-stone-500 text-xs leading-relaxed", children: T2.processSteps[i].desc })
+                ] })
+              ]
+            },
+            i
+          )) })
+        ] })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "faq", className: "py-16 bg-white", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 max-w-4xl", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center mb-10", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl md:text-4xl font-extrabold", children: T2.faqH2 }),
+          /* @__PURE__ */ jsxRuntimeE
