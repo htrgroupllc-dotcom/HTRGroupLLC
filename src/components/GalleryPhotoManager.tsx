@@ -30,7 +30,9 @@ interface Props {
   adminBearer?: string | null;
   compact?: boolean;
   onPhotosChange?: () => void;
+  /** Which gallery is selected first (admin on dental → dental, etc.) */
   defaultSite?: GalleryUploadSite;
+  /** Show Dental / Appliance toggle (admin + secret gallery panel) */
   showSiteSelector?: boolean;
 }
 
