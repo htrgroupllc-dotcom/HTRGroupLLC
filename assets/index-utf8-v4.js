@@ -82039,24 +82039,69 @@ function requireHtml2pdf() {
 var html2pdfExports = requireHtml2pdf();
 const html2pdf = /* @__PURE__ */ getDefaultExportFromCjs(html2pdfExports);
 async function downloadReceiptPdf(opts) {
+
   const pdfUrl = opts.url.replace("/invoice-html", "/invoice-pdf");
+
   const res = await fetch(pdfUrl, { headers: opts.headers });
+
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const blob = await res.blob();
-  if (!blob.size) throw new Error("Empty PDF");
-  const objectUrl = URL.createObjectURL(blob);
-  try {
-    const a = document.createElement("a");
-    a.href = objectUrl;
-    a.download = `${opts.filenameBase}.pdf`;
-    a.rel = "noopener";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  } finally {
-    URL.revokeObjectURL(objectUrl);
+
+  const contentType = res.headers.get("content-type") || "";
+
+  if (!contentType.includes("application/pdf") && !contentType.includes("octet-stream")) {
+
+    throw new Error("Not a PDF response");
+
   }
+
+  const buf = await res.arrayBuffer();
+
+  if (buf.byteLength < 5) throw new Error("Empty PDF");
+
+  const head = new TextDecoder().decode(new Uint8Array(buf, 0, 4));
+
+  if (head !== "%PDF") throw new Error("Invalid PDF");
+
+  const blob = new Blob([buf], { type: "application/pdf" });
+
+  const objectUrl = URL.createObjectURL(blob);
+
+  const filename = `${opts.filenameBase}.pdf`;
+
+  try {
+
+    const isIOS = /iPad|iPhone|iPod/i.test(navigator.userAgent);
+
+    if (isIOS) {
+
+      window.open(objectUrl, "_blank", "noopener,noreferrer");
+
+      return;
+
+    }
+
+    const a = document.createElement("a");
+
+    a.href = objectUrl;
+
+    a.download = filename;
+
+    a.rel = "noopener";
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    document.body.removeChild(a);
+
+  } finally {
+
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+
+  }
+
 }
+
 
 const ACCENT$b = "#1B6FE8";
 const EMP_LANGS = [
