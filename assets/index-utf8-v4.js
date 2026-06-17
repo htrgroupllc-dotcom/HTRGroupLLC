@@ -36223,23 +36223,279 @@ function writeAdminUiLang(lang) {
   }
 }
 function AdminLangToggle({ lang, onChange, accent, compact = false }) {
-  const cls = compact ? "px-2 py-1 rounded-md text-xs font-bold border border-stone-200 hover:bg-stone-50 transition flex items-center gap-0.5" : "px-3 py-1.5 rounded-lg border border-stone-200 text-xs font-bold hover:bg-stone-50 transition flex items-center gap-0.5";
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    "button",
-    {
-      type: "button",
-      onClick: () => onChange(lang === "ru" ? "en" : "ru"),
-      className: cls,
-      "aria-label": "Admin language",
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: lang === "ru" ? accent : "#a8a29e" }, children: "RU" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-stone-300 font-normal mx-0.5", children: "|" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: lang === "en" ? accent : "#a8a29e" }, children: "EN" })
-      ]
-    }
-  );
+  const wrapCls = compact ? "inline-flex items-center gap-0.5 rounded-md border border-stone-200 bg-white p-0.5" : "inline-flex items-center gap-0.5 rounded-lg border border-stone-200 bg-white p-0.5";
+  const btnCls = compact ? "px-2 py-1 rounded text-xs font-bold transition" : "px-2.5 py-1 rounded-md text-xs font-bold transition";
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: wrapCls, role: "group", "aria-label": "Admin language", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "button",
+      {
+        type: "button",
+        onClick: () => onChange("ru"),
+        className: btnCls,
+        style: {
+          color: lang === "ru" ? "#fff" : "#a8a29e",
+          backgroundColor: lang === "ru" ? accent : "transparent"
+        },
+        children: "RU"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "button",
+      {
+        type: "button",
+        onClick: () => onChange("en"),
+        className: btnCls,
+        style: {
+          color: lang === "en" ? "#fff" : "#a8a29e",
+          backgroundColor: lang === "en" ? accent : "transparent"
+        },
+        children: "EN"
+      }
+    )
+  ] });
 }
-const ACCENT$3 = "#1B6FE8";
+const RU = {
+  scheduleMgmt: "Управление расписанием",
+  protectedSection: "Защищённый раздел",
+  logout: "Выйти",
+  photoTab: "Фото",
+  photoUploadTitle: "Загрузка фото на сайт",
+  photoUploadDesc: "Раздел Our Work / Gallery — выберите Dental или Appliance перед загрузкой.",
+  settingsTab: "Настройки",
+  settingsDesc: "Всплывающее окно при первом заходе на сайт. Цены для Appliance и Dental задаются отдельно.",
+  employeePortal: "Портал сотрудника",
+  pay: "Оплата",
+  tabSlots: "Слоты",
+  tabBookings: "Заявки",
+  tabPhotos: "Фото",
+  tabSettings: "Настройки",
+  pickDate: "Выберите дату",
+  refresh: "Обновить",
+  dateLabel: "Дата",
+  slotsOn: "Слоты на",
+  legendFree: "🟢 Свободен",
+  legendBlocked: "🟠 Заблок.",
+  legendBusy: "🔴 Занят",
+  blockReason: "Причина блокировки:",
+  blockReasonPh: "Повторный вызов...",
+  statusApproved: "✅ Подтверждён",
+  statusPending: "⏳ Ожидает",
+  statusCompleted: "✓ Завершён",
+  statusCancelled: "❌ Отменён",
+  slotFree: "🟢 Свободен",
+  slotBlocked: "🔒 Заблокирован",
+  releaseSlot: "Освободить",
+  unblock: "Разблокировать",
+  block: "Блок",
+  book: "Бронь",
+  allBookings: "Все заявки",
+  activeBookings: "Активные заявки",
+  activeOnly: "Активные",
+  allWithHistory: "Все заявки",
+  category: "Категория:",
+  filterAll: "Все",
+  searchPh: "Поиск по имени, телефону, адресу, дате, оборудованию…",
+  clearSearch: "Очистить",
+  foundCount: "Найдено",
+  selectAll: "Выбрать всё",
+  deselectAll: "Снять всё",
+  selected: "Выбрано",
+  deleteSelected: "Удалить выбранные",
+  resetSelection: "× Сбросить",
+  loadErrorTitle: "Ошибка загрузки заявок",
+  noSearchResults: "Ничего не найдено — попробуйте другой запрос",
+  noBookings: "Заявок пока нет",
+  history: "История",
+  colCreated: "Создано",
+  colVisitDate: "Дата визита",
+  colTime: "Время",
+  colClient: "Клиент",
+  colPhone: "Телефон",
+  colEquipment: "Оборудование",
+  colStatus: "Статус",
+  colAction: "Действие",
+  approve: "Одобрить",
+  edit: "Изменить",
+  reschedule: "Перенести",
+  complete: "Завершить",
+  cancel: "Отменить",
+  deleteForever: "Удалить",
+  restore: "Восстановить",
+  cancelBookingTitle: "Отменить бронирование?",
+  cancelBookingClient: "Клиент",
+  cancelBookingTime: "Время",
+  cancelBookingHint: "Слот снова станет доступным для новых бронирований.",
+  back: "Назад",
+  yesRelease: "Да, освободить",
+  completeTitle: "Отметить как завершённое?",
+  completeHint: "Нажмите только после того как ремонт фактически выполнен. Бронь переместится в историю.",
+  completeConfirm: "✓ Завершить",
+  bulkDeleteTitle: "Удалить выбранные заявки?",
+  bulkDeleteCount: "Количество",
+  bulkDeleteWarn: "⚠️ Действие необратимо. Все выбранные заявки будут удалены из базы данных навсегда.",
+  deleting: "Удаляем...",
+  deleteConfirm: "🗑️ Удалить навсегда",
+  deleteTitle: "Удалить заявку навсегда?",
+  deleteWarn: "⚠️ Это действие необратимо. Заявка будет удалена из базы данных без возможности восстановления.",
+  restoreTitle: "Восстановить заявку?",
+  restoreClient: "Клиент",
+  restoreDate: "Дата",
+  hideEdits: "Скрыть изменения",
+  showEdits: "✏️ Внести изменения в заявку",
+  clientName: "Имя клиента",
+  phone: "Телефон",
+  email: "Email",
+  address: "Адрес",
+  equipment: "Оборудование",
+  note: "Заметка",
+  newDate: "Новая дата",
+  newTime: "Новое время",
+  rescheduling: "⏳ Переносим...",
+  rescheduleBtn: "📅 Перенести",
+  editBookingTitle: "Изменить бронирование",
+  dateRequired: "Дата *",
+  dateFormatHint: "Формат: Apr 25, 2026",
+  timeRequired: "Время *",
+  saving: "Сохранение…",
+  saveChanges: "Сохранить изменения",
+  manualBookingTitle: "Создать бронирование",
+  zipOptional: "ZIP-код (необязательно)",
+  booking: "Забронировать",
+  pinLabel: "PIN-код",
+  pinPh: "Введите PIN",
+  pinWrong: "Неверный PIN-код",
+  login: "Войти",
+  dbDevEn: "Database developed by Eivaz Rakhmanov 2026",
+  dbDevRu: "База данных разработана Эйвазом Рахмановым в 2026 году"
+};
+const EN = {
+  scheduleMgmt: "Schedule management",
+  protectedSection: "Protected area",
+  logout: "Log out",
+  photoTab: "Photos",
+  photoUploadTitle: "Upload photos to site",
+  photoUploadDesc: "Our Work / Gallery — choose Dental or Appliance before uploading.",
+  settingsTab: "Settings",
+  settingsDesc: "First-visit popup. Appliance and Dental prices are set separately.",
+  employeePortal: "Employee Portal",
+  pay: "Pay",
+  tabSlots: "Slots",
+  tabBookings: "Bookings",
+  tabPhotos: "Photos",
+  tabSettings: "Settings",
+  pickDate: "Select date",
+  refresh: "Refresh",
+  dateLabel: "Date",
+  slotsOn: "Slots for",
+  legendFree: "🟢 Free",
+  legendBlocked: "🟠 Blocked",
+  legendBusy: "🔴 Booked",
+  blockReason: "Block reason:",
+  blockReasonPh: "Follow-up visit...",
+  statusApproved: "✅ Approved",
+  statusPending: "⏳ Pending",
+  statusCompleted: "✓ Completed",
+  statusCancelled: "❌ Cancelled",
+  slotFree: "🟢 Free",
+  slotBlocked: "🔒 Blocked",
+  releaseSlot: "Release",
+  unblock: "Unblock",
+  block: "Block",
+  book: "Book",
+  allBookings: "All bookings",
+  activeBookings: "Active bookings",
+  activeOnly: "Active",
+  allWithHistory: "All bookings",
+  category: "Category:",
+  filterAll: "All",
+  searchPh: "Search by name, phone, address, date, equipment…",
+  clearSearch: "Clear",
+  foundCount: "Found",
+  selectAll: "Select all",
+  deselectAll: "Deselect all",
+  selected: "Selected",
+  deleteSelected: "Delete selected",
+  resetSelection: "× Reset",
+  loadErrorTitle: "Failed to load bookings",
+  noSearchResults: "Nothing found — try another query",
+  noBookings: "No bookings yet",
+  history: "History",
+  colCreated: "Created",
+  colVisitDate: "Visit date",
+  colTime: "Time",
+  colClient: "Client",
+  colPhone: "Phone",
+  colEquipment: "Equipment",
+  colStatus: "Status",
+  colAction: "Action",
+  approve: "Approve",
+  edit: "Edit",
+  reschedule: "Reschedule",
+  complete: "Complete",
+  cancel: "Cancel",
+  deleteForever: "Delete",
+  restore: "Restore",
+  cancelBookingTitle: "Cancel booking?",
+  cancelBookingClient: "Client",
+  cancelBookingTime: "Time",
+  cancelBookingHint: "The slot will become available for new bookings.",
+  back: "Back",
+  yesRelease: "Yes, release",
+  completeTitle: "Mark as completed?",
+  completeHint: "Click only after the repair is actually done. The booking moves to history.",
+  completeConfirm: "✓ Complete",
+  bulkDeleteTitle: "Delete selected bookings?",
+  bulkDeleteCount: "Count",
+  bulkDeleteWarn: "⚠️ This cannot be undone. All selected bookings will be permanently deleted.",
+  deleting: "Deleting...",
+  deleteConfirm: "🗑️ Delete forever",
+  deleteTitle: "Delete booking forever?",
+  deleteWarn: "⚠️ This cannot be undone. The booking will be permanently removed from the database.",
+  restoreTitle: "Restore booking?",
+  restoreClient: "Client",
+  restoreDate: "Date",
+  hideEdits: "Hide edits",
+  showEdits: "✏️ Edit booking before restore",
+  clientName: "Client name",
+  phone: "Phone",
+  email: "Email",
+  address: "Address",
+  equipment: "Equipment",
+  note: "Note",
+  newDate: "New date",
+  newTime: "New time",
+  rescheduling: "⏳ Rescheduling...",
+  rescheduleBtn: "📅 Reschedule",
+  editBookingTitle: "Edit booking",
+  dateRequired: "Date *",
+  dateFormatHint: "Format: Apr 25, 2026",
+  timeRequired: "Time *",
+  saving: "Saving…",
+  saveChanges: "Save changes",
+  manualBookingTitle: "Create booking",
+  zipOptional: "ZIP code (optional)",
+  booking: "Book",
+  pinLabel: "PIN code",
+  pinPh: "Enter PIN",
+  pinWrong: "Wrong PIN",
+  login: "Sign in",
+  dbDevEn: "Database developed by Eivaz Rakhmanov 2026",
+  dbDevRu: "Database developed by Eivaz Rakhmanov in 2026"
+};
+const ADMIN_UI = { ru: RU, en: EN };
+function getAdminUi(lang) {
+  return ADMIN_UI[lang];
+}
+const ADMIN_SITE_CONFIG = {
+  defaultBizFilter: "appliance",
+  bookingBizFallback: "appliance",
+  defaultGallerySite: "appliance",
+  visitFeeSites: ["appliance", "dental"],
+  accent: "#6B7280",
+  pageBg: "#F3F4F6"
+};
+const ACCENT$4 = ADMIN_SITE_CONFIG.accent;
+const PAGE_BG = ADMIN_SITE_CONFIG.pageBg;
 const TIME_SLOTS = ["9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM"];
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const MONTHS_S = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -36289,7 +36545,7 @@ function AdminInput({ label, value, onChange, placeholder, type = "text" }) {
         onChange: (e) => onChange(e.target.value),
         placeholder,
         className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2",
-        style: { "--tw-ring-color": ACCENT$3 }
+        style: { "--tw-ring-color": ACCENT$4 }
       }
     )
   ] });
@@ -36335,8 +36591,9 @@ function AdminPage() {
   const [mobileTab, setMobileTab] = reactExports.useState("slots");
   const [showCompleted, setShowCompleted] = reactExports.useState(true);
   const [searchQuery, setSearchQuery] = reactExports.useState("");
-  const [bizFilter, setBizFilter] = reactExports.useState("appliance");
+  const [bizFilter, setBizFilter] = reactExports.useState(ADMIN_SITE_CONFIG.defaultBizFilter);
   const [adminLang, setAdminLangState] = reactExports.useState(() => readAdminUiLang());
+  const ui = getAdminUi(adminLang);
   const [confirmCancel, setConfirmCancel] = reactExports.useState(null);
   const [confirmComplete, setConfirmComplete] = reactExports.useState(null);
   const [confirmDelete, setConfirmDelete] = reactExports.useState(null);
@@ -36505,7 +36762,7 @@ function AdminPage() {
       headers: { "x-admin-pin": encodeURIComponent(pinInput) }
     });
     if (r2.status === 401) {
-      setPinError("Неверный PIN-код");
+      setPinError(ui.pinWrong);
       return;
     }
     setPin(pinInput);
@@ -36808,7 +37065,7 @@ function AdminPage() {
     const sq = searchQuery.trim().toLowerCase();
     let result = visibleBookings;
     if (bizFilter !== "all") {
-      result = result.filter((b) => (b.business_type ?? "appliance") === bizFilter);
+      result = result.filter((b) => (b.business_type ?? ADMIN_SITE_CONFIG.bookingBizFallback) === bizFilter);
     }
     if (!sq) return result;
     return result.filter(
@@ -36817,10 +37074,10 @@ function AdminPage() {
   })();
   const allSelected = filteredBookings.length > 0 && filteredBookings.every((b) => selectedIds.has(b.id));
   const statusInfo = (status) => {
-    if (status === "approved") return { cls: "bg-green-100 text-green-700", label: "✅ Подтверждён" };
-    if (status === "completed") return { cls: "bg-blue-100 text-blue-700", label: "✓ Завершён" };
-    if (status === "cancelled") return { cls: "bg-red-100 text-red-500", label: "❌ Отменён" };
-    return { cls: "bg-amber-100 text-amber-700", label: "⏳ Ожидает" };
+    if (status === "approved") return { cls: "bg-green-100 text-green-700", label: ui.statusApproved };
+    if (status === "completed") return { cls: "bg-slate-100 text-slate-700", label: ui.statusCompleted };
+    if (status === "cancelled") return { cls: "bg-red-100 text-red-500", label: ui.statusCancelled };
+    return { cls: "bg-amber-100 text-amber-700", label: ui.statusPending };
   };
   const openManual = (time2) => {
     setManualSlot(time2);
@@ -36868,14 +37125,18 @@ function AdminPage() {
     setPinInput("");
   };
   if (!authed) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col items-center justify-center gap-4", style: { background: "#EFF6FF" }, children: [
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col items-center justify-center gap-4 relative", style: { background: PAGE_BG }, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-4 right-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AdminLangToggle, { lang: adminLang, onChange: setAdminLang, accent: ACCENT$4 }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center mb-6", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-14 h-14 rounded-full flex items-center justify-center mb-3", style: { background: ACCENT$3 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "w-7 h-7 text-white" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-14 h-14 rounded-full flex items-center justify-center mb-3", style: { background: ACCENT$4 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "w-7 h-7 text-white" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-xl font-bold text-stone-800", children: "HTRGroup Admin" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-500 mt-1", children: "HTRGroup · Управление расписанием" })
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-stone-500 mt-1", children: [
+            "HTRGroup · ",
+            ui.scheduleMgmt
+          ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-stone-600 mb-1", children: "PIN-код" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-semibold text-stone-600 mb-1", children: ui.pinLabel }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "input",
           {
@@ -36883,9 +37144,9 @@ function AdminPage() {
             value: pinInput,
             onChange: (e) => setPinInput(e.target.value),
             onKeyDown: (e) => e.key === "Enter" && tryLogin(),
-            placeholder: "Введите PIN",
+            placeholder: ui.pinPh,
             className: "w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2",
-            style: { "--tw-ring-color": ACCENT$3 },
+            style: { "--tw-ring-color": ACCENT$4 },
             autoFocus: true
           }
         ),
@@ -36895,14 +37156,14 @@ function AdminPage() {
           {
             onClick: tryLogin,
             className: "w-full py-2.5 rounded-lg text-white font-semibold text-sm",
-            style: { background: ACCENT$3 },
-            children: "Войти"
+            style: { background: ACCENT$4 },
+            children: ui.login
           }
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center space-y-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold", style: { color: "#dc2626" }, children: "Database developed by Eivaz Rakhmanov 2026" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold", style: { color: "#16a34a" }, children: "База данных разработана Эйвазом Рахмановым в 2026 году" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold", style: { color: "#dc2626" }, children: ui.dbDevEn }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold", style: { color: "#16a34a" }, children: ui.dbDevRu })
       ] })
     ] });
   }
@@ -36917,30 +37178,32 @@ function AdminPage() {
     setMZip("");
     setMError("");
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen", style: { background: "#EFF6FF" }, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen", style: { background: PAGE_BG }, children: [
     confirmCancel && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { className: "w-5 h-5 text-red-500" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: "Отменить бронирование?" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: ui.cancelBookingTitle })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-stone-600 mb-1", children: [
-        "Клиент: ",
+        ui.cancelBookingClient,
+        ": ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: confirmCancel.name })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-stone-600 mb-4", children: [
-        "Время: ",
+        ui.cancelBookingTime,
+        ": ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: confirmCancel.time }),
         " · ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: dateStr })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-stone-400 mb-4", children: "Слот снова станет доступным для новых бронирований." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-stone-400 mb-4", children: ui.cancelBookingHint }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             onClick: () => setConfirmCancel(null),
             className: "flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition",
-            children: "Назад"
+            children: ui.back
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -36948,36 +37211,37 @@ function AdminPage() {
           {
             onClick: cancelBooking,
             className: "flex-1 py-2 rounded-lg bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition",
-            children: "Да, освободить"
+            children: ui.yesRelease
           }
         )
       ] })
     ] }) }),
     confirmComplete && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-5 h-5 text-blue-600" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: "Отметить как завершённое?" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-5 h-5 text-slate-600" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: ui.completeTitle })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-stone-600 mb-1", children: [
-        "Клиент: ",
+        ui.cancelBookingClient,
+        ": ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: confirmComplete.name })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-stone-400 mb-4", children: "Нажмите только после того как ремонт фактически выполнен. Бронь переместится в историю." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-stone-400 mb-4", children: ui.completeHint }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             onClick: () => setConfirmComplete(null),
             className: "flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition",
-            children: "Назад"
+            children: ui.back
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             onClick: () => completeBooking(confirmComplete.id),
-            className: "flex-1 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition",
-            children: "✓ Завершить"
+            className: "flex-1 py-2 rounded-lg bg-slate-600 text-white text-sm font-semibold hover:bg-slate-700 transition",
+            children: ui.completeConfirm
           }
         )
       ] })
@@ -36985,15 +37249,14 @@ function AdminPage() {
     confirmBulkDelete && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-5 h-5 text-red-700" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: "Удалить выбранные заявки?" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: ui.bulkDeleteTitle })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-stone-600 mb-1", children: [
-        "Количество: ",
-        /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: selectedIds.size }),
-        " ",
-        selectedIds.size === 1 ? "заявка" : selectedIds.size < 5 ? "заявки" : "заявок"
+        ui.bulkDeleteCount,
+        ": ",
+        /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: selectedIds.size })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-red-500 font-semibold mb-4", children: "⚠️ Действие необратимо. Все выбранные заявки будут удалены из базы данных навсегда." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-red-500 font-semibold mb-4", children: ui.bulkDeleteWarn }),
       bulkDeleteError && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-3 p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700", children: [
         "❌ ",
         bulkDeleteError
@@ -37008,7 +37271,7 @@ function AdminPage() {
             },
             disabled: isBulkDeleting,
             className: "flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition disabled:opacity-50",
-            children: "Назад"
+            children: ui.back
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -37017,7 +37280,7 @@ function AdminPage() {
             onClick: bulkDeleteBookings,
             disabled: isBulkDeleting,
             className: "flex-1 py-2 rounded-lg bg-red-700 text-white text-sm font-semibold hover:bg-red-800 transition disabled:opacity-50",
-            children: isBulkDeleting ? "Удаляем..." : `🗑️ Удалить (${selectedIds.size})`
+            children: isBulkDeleting ? ui.deleting : `${ui.deleteConfirm} (${selectedIds.size})`
           }
         )
       ] })
@@ -37025,13 +37288,14 @@ function AdminPage() {
     confirmDelete && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-5 h-5 text-red-700" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: "Удалить заявку навсегда?" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: ui.deleteTitle })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-stone-600 mb-1", children: [
-        "Клиент: ",
+        ui.cancelBookingClient,
+        ": ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: confirmDelete.name })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-red-500 font-semibold mb-4", children: "⚠️ Это действие необратимо. Заявка будет удалена из базы данных без возможности восстановления." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-red-500 font-semibold mb-4", children: ui.deleteWarn }),
       deleteError && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-3 p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700", children: [
         "❌ ",
         deleteError
@@ -37046,7 +37310,7 @@ function AdminPage() {
             },
             disabled: isDeleting,
             className: "flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition disabled:opacity-50",
-            children: "Назад"
+            children: ui.back
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -37055,7 +37319,7 @@ function AdminPage() {
             onClick: deleteBooking,
             disabled: isDeleting,
             className: "flex-1 py-2 rounded-lg bg-red-700 text-white text-sm font-semibold hover:bg-red-800 transition disabled:opacity-50",
-            children: isDeleting ? "Удаляем..." : "🗑️ Удалить навсегда"
+            children: isDeleting ? ui.deleting : ui.deleteConfirm
           }
         )
       ] })
@@ -37063,14 +37327,16 @@ function AdminPage() {
     confirmRestore && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm max-h-[92vh] overflow-y-auto", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCcw, { className: "w-5 h-5 text-orange-500" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: "Восстановить заявку?" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: ui.restoreTitle })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-stone-600 mb-1", children: [
-        "Клиент: ",
+        ui.restoreClient,
+        ": ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: confirmRestore.name })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-stone-600 mb-2", children: [
-        "Дата: ",
+        ui.restoreDate,
+        ": ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: confirmRestore.date }),
         " · ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: confirmRestore.time })
@@ -37081,11 +37347,11 @@ function AdminPage() {
           onClick: () => setRestoreEditOpen((v) => !v),
           disabled: isRestoring,
           className: "w-full flex items-center justify-between px-3 py-2 mb-3 rounded-lg border text-xs font-semibold transition",
-          style: { borderColor: restoreEditOpen ? ACCENT$3 : "#e7e5e4", color: restoreEditOpen ? ACCENT$3 : "#78716c", background: restoreEditOpen ? "#eff6ff" : "#fafaf9" },
+          style: { borderColor: restoreEditOpen ? ACCENT$4 : "#e7e5e4", color: restoreEditOpen ? ACCENT$4 : "#78716c", background: restoreEditOpen ? "#F3F4F6" : "#fafaf9" },
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex items-center gap-1.5", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "w-3.5 h-3.5" }),
-              restoreEditOpen ? "Скрыть изменения" : "✏️ Внести изменения в заявку"
+              restoreEditOpen ? ui.hideEdits : ui.showEdits
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-base leading-none", children: restoreEditOpen ? "▲" : "▼" })
           ]
@@ -37093,7 +37359,7 @@ function AdminPage() {
       ),
       restoreEditOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 mb-3 p-3 bg-stone-50 rounded-xl border border-stone-100", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Имя клиента" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.clientName }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -37101,12 +37367,12 @@ function AdminPage() {
               onChange: (e) => setReeName(e.target.value),
               disabled: isRestoring,
               className: "w-full border border-stone-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 disabled:opacity-50",
-              style: { "--tw-ring-color": ACCENT$3 }
+              style: { "--tw-ring-color": ACCENT$4 }
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Телефон" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.phone }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -37114,12 +37380,12 @@ function AdminPage() {
               onChange: (e) => setReePhone(e.target.value),
               disabled: isRestoring,
               className: "w-full border border-stone-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 disabled:opacity-50",
-              style: { "--tw-ring-color": ACCENT$3 }
+              style: { "--tw-ring-color": ACCENT$4 }
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Email" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.email }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -37128,12 +37394,12 @@ function AdminPage() {
               onChange: (e) => setReeEmail(e.target.value),
               disabled: isRestoring,
               className: "w-full border border-stone-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 disabled:opacity-50",
-              style: { "--tw-ring-color": ACCENT$3 }
+              style: { "--tw-ring-color": ACCENT$4 }
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Адрес" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.address }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -37141,12 +37407,12 @@ function AdminPage() {
               onChange: (e) => setReeAddr(e.target.value),
               disabled: isRestoring,
               className: "w-full border border-stone-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 disabled:opacity-50",
-              style: { "--tw-ring-color": ACCENT$3 }
+              style: { "--tw-ring-color": ACCENT$4 }
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Техника" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.equipment }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -37154,12 +37420,12 @@ function AdminPage() {
               onChange: (e) => setReeAppl(e.target.value),
               disabled: isRestoring,
               className: "w-full border border-stone-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 disabled:opacity-50",
-              style: { "--tw-ring-color": ACCENT$3 }
+              style: { "--tw-ring-color": ACCENT$4 }
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Описание поломки" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.note }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "textarea",
             {
@@ -37168,12 +37434,12 @@ function AdminPage() {
               disabled: isRestoring,
               rows: 2,
               className: "w-full border border-stone-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 resize-none disabled:opacity-50",
-              style: { "--tw-ring-color": ACCENT$3 }
+              style: { "--tw-ring-color": ACCENT$4 }
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Новая дата" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.newDate }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "select",
             {
@@ -37181,13 +37447,13 @@ function AdminPage() {
               onChange: (e) => setReeDate(e.target.value),
               disabled: isRestoring,
               className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 disabled:opacity-50",
-              style: { "--tw-ring-color": ACCENT$3 },
+              style: { "--tw-ring-color": ACCENT$4 },
               children: getNextBusinessDays(14).map((d) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: d, children: d }, d))
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Новое время" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.newTime }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "select",
             {
@@ -37195,7 +37461,7 @@ function AdminPage() {
               onChange: (e) => setReeTime(e.target.value),
               disabled: isRestoring,
               className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 disabled:opacity-50",
-              style: { "--tw-ring-color": ACCENT$3 },
+              style: { "--tw-ring-color": ACCENT$4 },
               children: TIME_SLOTS.map((t) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: t, children: t }, t))
             }
           )
@@ -37213,7 +37479,7 @@ function AdminPage() {
             onClick: () => setConfirmRestore(null),
             disabled: isRestoring,
             className: "flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition disabled:opacity-40",
-            children: "Назад"
+            children: ui.back
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -37223,7 +37489,7 @@ function AdminPage() {
             disabled: isRestoring,
             className: "flex-1 py-2 rounded-lg text-white text-sm font-semibold transition disabled:opacity-60",
             style: { background: "#f97316" },
-            children: isRestoring ? "⏳ Восстанавливаем..." : "♻️ Восстановить"
+            children: isRestoring ? ui.saving : ui.restore
           }
         )
       ] })
@@ -37253,27 +37519,27 @@ function AdminPage() {
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 mb-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Новая дата" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.newDate }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "select",
             {
               value: rescheduleDate,
               onChange: (e) => setRescheduleDate(e.target.value),
               className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2",
-              style: { "--tw-ring-color": ACCENT$3 },
+              style: { "--tw-ring-color": ACCENT$4 },
               children: getNextBusinessDays(14).map((d) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: d, children: d }, d))
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Новое время" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.newTime }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "select",
             {
               value: rescheduleTime,
               onChange: (e) => setRescheduleTime(e.target.value),
               className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2",
-              style: { "--tw-ring-color": ACCENT$3 },
+              style: { "--tw-ring-color": ACCENT$4 },
               children: TIME_SLOTS.map((t) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: t, children: t }, t))
             }
           )
@@ -37286,7 +37552,7 @@ function AdminPage() {
             onClick: () => setConflictInfo(null),
             disabled: isRestoring,
             className: "flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition disabled:opacity-40",
-            children: "Отмена"
+            children: ui.cancel
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -37303,11 +37569,12 @@ function AdminPage() {
     ] }) }),
     confirmReschedule && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(CalendarDays, { className: "w-5 h-5 text-blue-600" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: "Перенести заявку" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(CalendarDays, { className: "w-5 h-5 text-slate-600" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: ui.reschedule })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-stone-600 mb-1", children: [
-        "Клиент: ",
+        ui.cancelBookingClient,
+        ": ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: confirmReschedule.name })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-stone-500 mb-3 line-through text-xs", children: [
@@ -37334,7 +37601,7 @@ function AdminPage() {
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 mb-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Новая дата" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.newDate }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "select",
             {
@@ -37344,13 +37611,13 @@ function AdminPage() {
                 setRsConflict(null);
               },
               className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2",
-              style: { "--tw-ring-color": ACCENT$3 },
+              style: { "--tw-ring-color": ACCENT$4 },
               children: getNextBusinessDays(14).map((d) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: d, children: d }, d))
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Новое время" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.newTime }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "select",
             {
@@ -37360,7 +37627,7 @@ function AdminPage() {
                 setRsConflict(null);
               },
               className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2",
-              style: { "--tw-ring-color": ACCENT$3 },
+              style: { "--tw-ring-color": ACCENT$4 },
               children: TIME_SLOTS.map((t) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: t, children: t }, t))
             }
           )
@@ -37373,7 +37640,7 @@ function AdminPage() {
             onClick: () => setConfirmReschedule(null),
             disabled: isRescheduling,
             className: "flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition disabled:opacity-40",
-            children: "Отмена"
+            children: ui.cancel
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -37382,8 +37649,8 @@ function AdminPage() {
             onClick: () => rescheduleBooking(),
             disabled: isRescheduling,
             className: "flex-1 py-2 rounded-lg text-white text-sm font-semibold transition disabled:opacity-60",
-            style: { background: ACCENT$3 },
-            children: isRescheduling ? "⏳ Переносим..." : "📅 Перенести"
+            style: { background: ACCENT$4 },
+            children: isRescheduling ? ui.rescheduling : ui.rescheduleBtn
           }
         )
       ] })
@@ -37391,22 +37658,24 @@ function AdminPage() {
     editTarget && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-1", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "w-5 h-5 text-violet-600" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: "Изменить бронирование" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: ui.editBookingTitle })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-stone-400 mb-4", children: [
         "ID: ",
         editTarget.id.slice(0, 8).toUpperCase(),
-        " · Статус: ",
+        " · ",
+        ui.colStatus,
+        ": ",
         editTarget.status
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: "Имя клиента *", value: eName, onChange: setEName, placeholder: "John Smith" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: "Телефон *", value: ePhone, onChange: setEPhone, placeholder: "(346) 000-0000", type: "tel" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: "Email клиента", value: eEmail, onChange: setEEmail, placeholder: "client@email.com", type: "email" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: "Адрес (необязательно)", value: eAddr, onChange: setEAddr, placeholder: "123 Main St, Houston TX" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: "Техника (необязательно)", value: eAppl, onChange: setEAppl, placeholder: "Washer, Dryer, Fridge…" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: `${ui.clientName} *`, value: eName, onChange: setEName, placeholder: "John Smith" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: `${ui.phone} *`, value: ePhone, onChange: setEPhone, placeholder: "(346) 000-0000", type: "tel" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: ui.email, value: eEmail, onChange: setEEmail, placeholder: "client@email.com", type: "email" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: ui.address, value: eAddr, onChange: setEAddr, placeholder: "123 Main St, Houston TX" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: ui.equipment, value: eAppl, onChange: setEAppl, placeholder: "Chair, Autoclave, X-Ray…" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Дата *" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.dateRequired }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -37414,33 +37683,33 @@ function AdminPage() {
               value: eDate,
               onChange: (e) => setEDate(e.target.value),
               placeholder: "Apr 25, 2026",
-              className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100"
+              className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-100"
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-stone-400 mt-0.5", children: "Формат: Apr 25, 2026" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-stone-400 mt-0.5", children: ui.dateFormatHint })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Время *" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.timeRequired }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "select",
             {
               value: eTime,
               onChange: (e) => setETime(e.target.value),
-              className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400",
+              className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-slate-400",
               children: TIME_SLOTS.map((t) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: t, children: t }, t))
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Заметка (необязательно)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.note }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "textarea",
             {
               value: eNote,
               onChange: (e) => setENote(e.target.value),
               rows: 2,
-              placeholder: "Дополнительная информация…",
-              className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 resize-none"
+              placeholder: "…",
+              className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-slate-400 resize-none"
             }
           )
         ] })
@@ -37452,7 +37721,7 @@ function AdminPage() {
           {
             onClick: () => setEditTarget(null),
             className: "flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition",
-            children: "Отмена"
+            children: ui.cancel
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -37462,15 +37731,15 @@ function AdminPage() {
             disabled: eSaving,
             className: "flex-1 py-2 rounded-lg text-white text-sm font-semibold transition disabled:opacity-50",
             style: { background: "#7c3aed" },
-            children: eSaving ? "Сохранение…" : "Сохранить изменения"
+            children: eSaving ? ui.saving : ui.saveChanges
           }
         )
       ] })
     ] }) }),
     manualSlot && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(CirclePlus, { className: "w-5 h-5", style: { color: ACCENT$3 } }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: "Создать бронирование" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(CirclePlus, { className: "w-5 h-5", style: { color: ACCENT$4 } }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-stone-800", children: ui.manualBookingTitle })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-stone-400 mb-4", children: [
         dateStr,
@@ -37478,23 +37747,23 @@ function AdminPage() {
         /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: manualSlot })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: "Имя клиента *", value: mName, onChange: setMName, placeholder: "John Smith" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: "Телефон *", value: mPhone, onChange: setMPhone, placeholder: "(346) 000-0000", type: "tel" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: "Email клиента", value: mEmail, onChange: setMEmail, placeholder: "client@email.com", type: "email" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: "Адрес (необязательно)", value: mAddr, onChange: setMAddr, placeholder: "123 Main St, Houston, TX" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: "ZIP-код (необязательно)", value: mZip, onChange: setMZip, placeholder: "77001" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: "Техника (необязательно)", value: mAppl, onChange: setMAppl, placeholder: "Холодильник, стиральная машина..." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: `${ui.clientName} *`, value: mName, onChange: setMName, placeholder: "John Smith" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: `${ui.phone} *`, value: mPhone, onChange: setMPhone, placeholder: "(346) 000-0000", type: "tel" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: ui.email, value: mEmail, onChange: setMEmail, placeholder: "client@email.com", type: "email" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: ui.address, value: mAddr, onChange: setMAddr, placeholder: "123 Main St, Houston, TX" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: ui.zipOptional, value: mZip, onChange: setMZip, placeholder: "77001" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminInput, { label: ui.equipment, value: mAppl, onChange: setMAppl, placeholder: "Chair, Autoclave, X-Ray…" }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: "Заметка (необязательно)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-stone-500 mb-1", children: ui.note }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "textarea",
             {
               value: mNote,
               onChange: (e) => setMNote(e.target.value),
-              placeholder: "Доп. информация...",
+              placeholder: "…",
               rows: 2,
               className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 resize-none",
-              style: { "--tw-ring-color": ACCENT$3 }
+              style: { "--tw-ring-color": ACCENT$4 }
             }
           )
         ] })
@@ -37506,7 +37775,7 @@ function AdminPage() {
           {
             onClick: closeManualModal,
             className: "flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition",
-            children: "Отмена"
+            children: ui.cancel
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -37515,49 +37784,77 @@ function AdminPage() {
             onClick: createManualBooking,
             disabled: mSaving,
             className: "flex-1 py-2 rounded-lg text-white text-sm font-semibold transition disabled:opacity-60",
-            style: { background: ACCENT$3 },
-            children: mSaving ? "Сохраняю…" : "Забронировать"
+            style: { background: ACCENT$4 },
+            children: mSaving ? ui.saving : ui.booking
           }
         )
       ] })
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "sticky top-0 z-30 bg-white border-b shadow-sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex md:hidden items-center gap-2 px-3 h-14", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-lg flex-none flex items-center justify-center", style: { background: ACCENT$3 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Calendar, { className: "w-4 h-4 text-white" }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-lg flex-none flex items-center justify-center", style: { background: ACCENT$4 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Calendar, { className: "w-4 h-4 text-white" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-stone-800 text-sm leading-tight truncate", children: "HTRGroup Admin" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-stone-400 leading-tight truncate", children: mobileTab === "photos" ? "Загрузка фото на сайт" : mobileTab === "settings" ? "Popup и цена диагностики" : "Управление расписанием" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-stone-400 leading-tight truncate", children: mobileTab === "photos" ? ui.photoUploadTitle : mobileTab === "settings" ? ui.settingsDesc : ui.scheduleMgmt })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "button",
           {
             type: "button",
             onClick: () => setMobileTab("photos"),
-            className: `md:hidden flex-none flex flex-col items-center justify-center gap-0.5 px-2.5 py-1.5 rounded-lg border text-[10px] font-bold leading-tight transition ${mobileTab === "photos" ? "border-blue-200 bg-blue-50 text-blue-700" : "border-stone-200 bg-stone-50 text-stone-600"}`,
-            "aria-label": "Фото на сайт",
+            className: `md:hidden flex-none flex flex-col items-center justify-center gap-0.5 px-2.5 py-1.5 rounded-lg border text-[10px] font-bold leading-tight transition ${mobileTab === "photos" ? "border-slate-200 bg-slate-50 text-slate-700" : "border-stone-200 bg-stone-50 text-stone-600"}`,
+            "aria-label": ui.photoTab,
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Camera, { className: "w-4 h-4" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Фото" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: ui.photoTab })
             ]
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminLangToggle, { lang: adminLang, onChange: setAdminLang, accent: ACCENT$3, compact: true }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "a",
+          {
+            href: "/employee",
+            target: "_blank",
+            rel: "noreferrer",
+            className: "md:hidden flex-none flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-[10px] font-bold leading-tight",
+            title: ui.employeePortal,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "w-4 h-4" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "CRM" })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "a",
+          {
+            href: "/pay",
+            target: "_blank",
+            rel: "noreferrer",
+            className: "md:hidden flex-none flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-[10px] font-bold leading-tight",
+            title: ui.pay,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "w-4 h-4" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: ui.pay })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AdminLangToggle, { lang: adminLang, onChange: setAdminLang, accent: ACCENT$4, compact: true }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: logout, className: "flex-none flex items-center gap-1 text-xs text-stone-500 hover:text-red-500 transition px-2 py-1.5 rounded-lg hover:bg-red-50", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { className: "w-3.5 h-3.5" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Выйти" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: ui.logout })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden md:grid px-4 h-14 items-center", style: { gridTemplateColumns: "1fr auto 1fr" }, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-lg flex items-center justify-center", style: { background: ACCENT$3 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Calendar, { className: "w-4 h-4 text-white" }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-lg flex items-center justify-center", style: { background: ACCENT$4 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Calendar, { className: "w-4 h-4 text-white" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-stone-800 leading-tight", children: "Управление расписанием" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-stone-800 leading-tight", children: ui.scheduleMgmt }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-stone-400 leading-tight", children: "HTRGroup" })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center px-3", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-semibold leading-tight", style: { color: "#dc2626" }, children: "Database developed by Eivaz Rakhmanov 2026" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-semibold leading-tight", style: { color: "#16a34a" }, children: "База данных разработана Эйвазом Рахмановым в 2026 году" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-semibold leading-tight", style: { color: "#dc2626" }, children: ui.dbDevEn }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-semibold leading-tight", style: { color: "#16a34a" }, children: ui.dbDevRu })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -37567,10 +37864,10 @@ function AdminPage() {
               target: "_blank",
               rel: "noreferrer",
               className: "flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition",
-              title: adminLang === "ru" ? "Открыть портал сотрудника" : "Open employee portal",
+              title: ui.employeePortal,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "w-3.5 h-3.5" }),
-                adminLang === "ru" ? "Портал сотрудника" : "Employee Portal"
+                ui.employeePortal
               ]
             }
           ),
@@ -37581,17 +37878,17 @@ function AdminPage() {
               target: "_blank",
               rel: "noreferrer",
               className: "flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition",
-              title: adminLang === "ru" ? "Страница оплаты" : "Payment page",
+              title: ui.pay,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "w-3.5 h-3.5" }),
-                adminLang === "ru" ? "Оплата" : "Pay"
+                ui.pay
               ]
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(AdminLangToggle, { lang: adminLang, onChange: setAdminLang, accent: ACCENT$3 }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(AdminLangToggle, { lang: adminLang, onChange: setAdminLang, accent: ACCENT$4 }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: logout, className: "flex items-center gap-1.5 text-sm text-stone-500 hover:text-red-500 transition", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { className: "w-4 h-4" }),
-            "Выйти"
+            ui.logout
           ] })
         ] })
       ] })
@@ -37602,11 +37899,11 @@ function AdminPage() {
         {
           type: "button",
           onClick: () => setMobileTab("slots"),
-          className: `flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap ${mobileTab === "slots" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"}`,
+          className: `flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap ${mobileTab === "slots" ? "border-slate-600 text-slate-600" : "border-transparent text-stone-400"}`,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sm:hidden", children: "📅" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden sm:inline", children: "📅 " }),
-            "Слоты"
+            ui.tabSlots
           ]
         }
       ),
@@ -37615,14 +37912,16 @@ function AdminPage() {
         {
           type: "button",
           onClick: () => setMobileTab("bookings"),
-          className: `flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap ${mobileTab === "bookings" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"}`,
+          className: `flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap ${mobileTab === "bookings" ? "border-slate-600 text-slate-600" : "border-transparent text-stone-400"}`,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "sm:hidden", children: [
               "📋 ",
               allBookings.length
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "hidden sm:inline", children: [
-              "📋 Заявки (",
+              "📋 ",
+              ui.tabBookings,
+              " (",
               allBookings.length,
               ")"
             ] })
@@ -37634,10 +37933,10 @@ function AdminPage() {
         {
           type: "button",
           onClick: () => setMobileTab("photos"),
-          className: `flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap flex items-center justify-center gap-1 ${mobileTab === "photos" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"}`,
+          className: `flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap flex items-center justify-center gap-1 ${mobileTab === "photos" ? "border-slate-600 text-slate-600" : "border-transparent text-stone-400"}`,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Camera, { className: "w-3.5 h-3.5 flex-shrink-0" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Фото" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: ui.tabPhotos })
           ]
         }
       ),
@@ -37646,10 +37945,10 @@ function AdminPage() {
         {
           type: "button",
           onClick: () => setMobileTab("settings"),
-          className: `flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap flex items-center justify-center gap-1 ${mobileTab === "settings" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"}`,
+          className: `flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap flex items-center justify-center gap-1 ${mobileTab === "settings" ? "border-slate-600 text-slate-600" : "border-transparent text-stone-400"}`,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { className: "w-3.5 h-3.5 flex-shrink-0" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Настройки" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: ui.tabSettings })
           ]
         }
       )
@@ -37660,11 +37959,8 @@ function AdminPage() {
         className: "flex-1 overflow-y-auto p-4 md:p-6 max-w-2xl mx-auto w-full min-h-[calc(100dvh-7rem)]",
         style: { paddingBottom: "max(5rem, env(safe-area-inset-bottom))" },
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-600 mb-4", children: "Всплывающее окно при первом заходе на сайт. Цены для Appliance и Dental задаются отдельно." }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(VisitFeeSettings, { apiBase: API$2(), adminAuthH, site: "appliance" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(VisitFeeSettings, { apiBase: API$2(), adminAuthH, site: "dental" })
-          ] })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-600 mb-4", children: ui.settingsDesc }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: ADMIN_SITE_CONFIG.visitFeeSites.map((site) => /* @__PURE__ */ jsxRuntimeExports.jsx(VisitFeeSettings, { apiBase: API$2(), adminAuthH, site }, site)) })
         ]
       }
     ),
@@ -37675,11 +37971,11 @@ function AdminPage() {
         style: { paddingBottom: "max(5rem, env(safe-area-inset-bottom))" },
         children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl shadow-sm p-5 border border-stone-100", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-base font-bold text-stone-800 mb-1 flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Camera, { className: "w-5 h-5", style: { color: ACCENT$3 } }),
-            "Загрузка фото на сайт"
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Camera, { className: "w-5 h-5", style: { color: ACCENT$4 } }),
+            ui.photoUploadTitle
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-stone-500 mb-4", children: "Раздел Our Work / Gallery — выберите Appliance или Dental перед загрузкой." }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(GalleryPhotoManager, { adminPin: pin, adminBearer, defaultSite: "appliance" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-stone-500 mb-4", children: ui.photoUploadDesc }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(GalleryPhotoManager, { adminPin: pin, adminBearer, defaultSite: ADMIN_SITE_CONFIG.defaultGallerySite })
         ] })
       }
     ),
@@ -37688,12 +37984,13 @@ function AdminPage() {
         "div",
         {
           className: `overflow-y-auto border-r border-stone-200 p-4 space-y-4 ${mobileTab !== "slots" ? "hidden md:block" : "block"} md:w-[300px] md:flex-none`,
-          style: { background: "#EFF6FF", paddingBottom: 80 },
+          style: { background: "#F3F4F6", paddingBottom: 80 },
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl shadow-sm p-4", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-sm font-bold text-stone-600 mb-3 flex items-center gap-1.5", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Calendar, { className: "w-4 h-4" }),
-                " Выберите дату"
+                " ",
+                ui.pickDate
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -37706,7 +38003,7 @@ function AdminPage() {
                       if (day > new Date(year, m, 0).getDate()) setDay(1);
                     },
                     className: "border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 w-full",
-                    style: { "--tw-ring-color": ACCENT$3 },
+                    style: { "--tw-ring-color": ACCENT$4 },
                     children: MONTHS.map((m, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: i + 1, children: m }, m))
                   }
                 ),
@@ -37717,7 +38014,7 @@ function AdminPage() {
                       value: day,
                       onChange: (e) => setDay(+e.target.value),
                       className: "border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 flex-1",
-                      style: { "--tw-ring-color": ACCENT$3 },
+                      style: { "--tw-ring-color": ACCENT$4 },
                       children: Array.from({ length: new Date(year, month, 0).getDate() }, (_, i) => i + 1).map((d) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: d, children: d }, d))
                     }
                   ),
@@ -37727,7 +38024,7 @@ function AdminPage() {
                       value: year,
                       onChange: (e) => setYear(+e.target.value),
                       className: "border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 flex-1",
-                      style: { "--tw-ring-color": ACCENT$3 },
+                      style: { "--tw-ring-color": ACCENT$4 },
                       children: [(/* @__PURE__ */ new Date()).getFullYear(), (/* @__PURE__ */ new Date()).getFullYear() + 1].map((y) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: y, children: y }, y))
                     }
                   )
@@ -37741,41 +38038,44 @@ function AdminPage() {
                     },
                     disabled: loading,
                     className: "flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white transition w-full",
-                    style: { background: ACCENT$3, opacity: loading ? 0.7 : 1 },
+                    style: { background: ACCENT$4, opacity: loading ? 0.7 : 1 },
                     children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: `w-3.5 h-3.5 ${loading ? "animate-spin" : ""}` }),
-                      "Обновить"
+                      ui.refresh
                     ]
                   }
                 )
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-stone-400 mt-2", children: [
-                "Дата: ",
+                ui.dateLabel,
+                ": ",
                 /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-stone-600", children: dateStr })
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl shadow-sm p-4", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-sm font-bold text-stone-600 mb-1 flex items-center gap-1.5", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { className: "w-4 h-4" }),
-                " Слоты на ",
+                " ",
+                ui.slotsOn,
+                " ",
                 dateStr
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap gap-2 text-xs text-stone-500 mb-3", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "🟢 Свободен" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "🟠 Заблок." }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "🔴 Занят" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: ui.legendFree }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: ui.legendBlocked }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: ui.legendBusy })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-3", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-semibold text-stone-500 mb-1 block", children: "Причина блокировки:" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-semibold text-stone-500 mb-1 block", children: ui.blockReason }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "input",
                   {
                     type: "text",
                     value: reason,
                     onChange: (e) => setReason(e.target.value),
-                    placeholder: "Повторный вызов...",
+                    placeholder: ui.blockReasonPh,
                     className: "w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2",
-                    style: { "--tw-ring-color": ACCENT$3 }
+                    style: { "--tw-ring-color": ACCENT$4 }
                   }
                 )
               ] }),
@@ -37789,7 +38089,7 @@ function AdminPage() {
                     "👤 ",
                     detail.name
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-red-400", children: detail.status === "approved" ? "✅ Подтверждён" : "⏳ Ожидает" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-red-400", children: detail.status === "approved" ? ui.statusApproved : ui.statusPending }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "button",
                     {
@@ -37798,14 +38098,14 @@ function AdminPage() {
                       className: "mt-1 w-full flex items-center justify-center gap-1 text-[10px] font-semibold py-1 rounded-md bg-red-100 text-red-700 hover:bg-red-200 transition disabled:opacity-50",
                       children: [
                         /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { className: "w-3 h-3" }),
-                        busy ? "…" : "Освободить"
+                        busy ? "…" : ui.releaseSlot
                       ]
                     }
                   )
                 ] }, slot);
                 if (blocked) return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-lg border-2 p-2", style: { borderColor: "#f97316", background: "#fff7ed" }, children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-bold text-orange-600", children: slot }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-orange-500 mt-0.5 truncate", title: blocked.reason, children: blocked.reason ? `📝 ${blocked.reason}` : "🔒 Заблокирован" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-orange-500 mt-0.5 truncate", title: blocked.reason, children: blocked.reason ? `📝 ${blocked.reason}` : ui.slotBlocked }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "button",
                     {
@@ -37814,14 +38114,14 @@ function AdminPage() {
                       className: "mt-1 w-full flex items-center justify-center gap-1 text-[10px] font-semibold py-1 rounded-md bg-orange-100 text-orange-700 hover:bg-orange-200 transition disabled:opacity-50",
                       children: [
                         /* @__PURE__ */ jsxRuntimeExports.jsx(LockOpen, { className: "w-3 h-3" }),
-                        busy ? "…" : "Разблокировать"
+                        busy ? "…" : ui.unblock
                       ]
                     }
                   )
                 ] }, slot);
                 return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-lg border-2 p-2", style: { borderColor: "#16a34a", background: "#f0fdf4" }, children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-bold text-green-700", children: slot }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-green-500 mt-0.5", children: "🟢 Свободен" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-green-500 mt-0.5", children: ui.slotFree }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-1 mt-1", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs(
                       "button",
@@ -37831,7 +38131,7 @@ function AdminPage() {
                         className: "flex-1 flex items-center justify-center gap-0.5 text-[10px] font-semibold py-1 rounded-md bg-green-100 text-green-700 hover:bg-green-200 transition disabled:opacity-50",
                         children: [
                           /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: "w-2.5 h-2.5" }),
-                          busy ? "…" : "Блок"
+                          busy ? "…" : ui.block
                         ]
                       }
                     ),
@@ -37841,10 +38141,10 @@ function AdminPage() {
                         onClick: () => openManual(slot),
                         disabled: busy,
                         className: "flex-1 flex items-center justify-center gap-0.5 text-[10px] font-semibold py-1 rounded-md text-white transition disabled:opacity-50",
-                        style: { background: ACCENT$3 },
+                        style: { background: ACCENT$4 },
                         children: [
                           /* @__PURE__ */ jsxRuntimeExports.jsx(CirclePlus, { className: "w-2.5 h-2.5" }),
-                          "Бронь"
+                          ui.book
                         ]
                       }
                     )
@@ -37859,7 +38159,7 @@ function AdminPage() {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2 mb-3 flex-wrap", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-sm font-bold text-stone-600 flex items-center gap-1.5", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "w-4 h-4" }),
-            showCompleted ? "Все заявки" : "Активные заявки",
+            showCompleted ? ui.allBookings : ui.activeBookings,
             " (",
             visibleBookings.length,
             ")"
@@ -37869,9 +38169,9 @@ function AdminPage() {
               "button",
               {
                 onClick: () => setShowCompleted(false),
-                className: `px-3 py-1.5 transition ${!showCompleted ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`,
+                className: `px-3 py-1.5 transition ${!showCompleted ? "bg-slate-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`,
                 children: [
-                  "Активные",
+                  ui.activeOnly,
                   activeBookings.length > 0 ? ` (${activeBookings.length})` : ""
                 ]
               }
@@ -37880,9 +38180,9 @@ function AdminPage() {
               "button",
               {
                 onClick: () => setShowCompleted(true),
-                className: `px-3 py-1.5 border-l border-stone-200 transition ${showCompleted ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`,
+                className: `px-3 py-1.5 border-l border-stone-200 transition ${showCompleted ? "bg-slate-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`,
                 children: [
-                  "Все заявки",
+                  ui.allWithHistory,
                   historyBookings.length > 0 ? ` +${historyBookings.length}` : ""
                 ]
               }
@@ -37890,14 +38190,14 @@ function AdminPage() {
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-3 flex-wrap", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-semibold text-stone-500 whitespace-nowrap", children: "Категория:" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-semibold text-stone-500 whitespace-nowrap", children: ui.category }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded-lg border border-stone-200 overflow-hidden text-[11px] font-semibold", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
                 onClick: () => setBizFilter("all"),
                 className: `px-3 py-1.5 transition ${bizFilter === "all" ? "bg-slate-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`,
-                children: "Все"
+                children: ui.filterAll
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -37926,8 +38226,8 @@ function AdminPage() {
               type: "search",
               value: searchQuery,
               onChange: (e) => setSearchQuery(e.target.value),
-              placeholder: "Поиск по имени, телефону, адресу, дате (ГГГГ-ММ-ДД), технике…",
-              className: "w-full pl-8 pr-8 py-1.5 text-xs rounded-lg border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent placeholder-stone-400"
+              placeholder: ui.searchPh,
+              className: "w-full pl-8 pr-8 py-1.5 text-xs rounded-lg border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent placeholder-stone-400"
             }
           ),
           searchQuery && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -37935,15 +38235,16 @@ function AdminPage() {
             {
               onClick: () => setSearchQuery(""),
               className: "absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600",
-              title: "Очистить",
+              title: ui.clearSearch,
               children: "✕"
             }
           )
         ] }),
         searchQuery.trim() && /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-stone-400 mb-2 -mt-1", children: [
-          "Найдено: ",
+          ui.foundCount,
+          ": ",
           /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-stone-600", children: filteredBookings.length }),
-          " из ",
+          " / ",
           visibleBookings.length
         ] }),
         filteredBookings.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-3 flex-wrap", children: [
@@ -37952,7 +38253,7 @@ function AdminPage() {
             {
               onClick: allSelected ? deselectAll : selectAll,
               className: "flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition",
-              style: allSelected ? { borderColor: "#1B6FE8", background: "#EFF6FF", color: "#1B6FE8" } : { borderColor: "#e2e8f0", background: "#fff", color: "#57534e" },
+              style: allSelected ? { borderColor: "#6B7280", background: "#F3F4F6", color: "#6B7280" } : { borderColor: "#e2e8f0", background: "#fff", color: "#57534e" },
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "input",
@@ -37960,16 +38261,17 @@ function AdminPage() {
                     type: "checkbox",
                     readOnly: true,
                     checked: allSelected,
-                    className: "w-3.5 h-3.5 accent-blue-600 pointer-events-none"
+                    className: "w-3.5 h-3.5 accent-slate-600 pointer-events-none"
                   }
                 ),
-                allSelected ? "Снять всё" : "Выбрать всё"
+                allSelected ? ui.deselectAll : ui.selectAll
               ]
             }
           ),
           selectedIds.size > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-stone-500", children: [
-              "Выбрано: ",
+              ui.selected,
+              ": ",
               /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: selectedIds.size })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -37982,7 +38284,8 @@ function AdminPage() {
                 className: "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg bg-red-700 text-white hover:bg-red-800 transition",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-3.5 h-3.5" }),
-                  "Удалить выбранные (",
+                  ui.deleteSelected,
+                  " (",
                   selectedIds.size,
                   ")"
                 ]
@@ -37993,7 +38296,7 @@ function AdminPage() {
               {
                 onClick: deselectAll,
                 className: "text-xs text-stone-400 hover:text-stone-600 transition px-1",
-                children: "× Сбросить"
+                children: ui.resetSelection
               }
             )
           ] })
@@ -38001,11 +38304,11 @@ function AdminPage() {
         apiError && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-3 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "shrink-0 mt-0.5", children: "⚠️" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold", children: "Ошибка загрузки заявок" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold", children: ui.loadErrorTitle }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-0.5 text-red-600", children: apiError })
           ] })
         ] }),
-        !apiError && filteredBookings.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-400 py-4 text-center", children: searchQuery.trim() ? "Ничего не найдено — попробуйте другой запрос" : "Заявок пока нет" }) : !apiError && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        !apiError && filteredBookings.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-400 py-4 text-center", children: searchQuery.trim() ? ui.noSearchResults : ui.noBookings }) : !apiError && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "md:hidden space-y-3", children: filteredBookings.map((b, idx) => {
             const isHistory = b.status === "completed" || b.status === "cancelled";
             const isWA = /AM–|PM–|AM-|PM-/.test(b.preferred_time ?? "");
@@ -38016,13 +38319,13 @@ function AdminPage() {
             return /* @__PURE__ */ jsxRuntimeExports.jsxs(React.Fragment, { children: [
               showSeparator && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 pt-1", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 h-px bg-stone-200" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold text-stone-400 uppercase tracking-wide", children: "История" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold text-stone-400 uppercase tracking-wide", children: ui.history }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 h-px bg-stone-200" })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs(
                 "div",
                 {
-                  className: `border rounded-xl p-3 transition ${selectedIds.has(b.id) ? "ring-2 ring-blue-400 border-blue-300 bg-blue-50" : isHistory ? "border-stone-100 bg-stone-50 opacity-60" : "border-stone-200 bg-white"}`,
+                  className: `border rounded-xl p-3 transition ${selectedIds.has(b.id) ? "ring-2 ring-slate-400 border-slate-300 bg-slate-50" : isHistory ? "border-stone-100 bg-stone-50 opacity-60" : "border-stone-200 bg-white"}`,
                   children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-2 mb-2", children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start gap-2", children: [
@@ -38032,7 +38335,7 @@ function AdminPage() {
                             type: "checkbox",
                             checked: selectedIds.has(b.id),
                             onChange: () => toggleSelect(b.id),
-                            className: "mt-0.5 w-4 h-4 accent-blue-600 cursor-pointer flex-shrink-0"
+                            className: "mt-0.5 w-4 h-4 accent-slate-600 cursor-pointer flex-shrink-0"
                           }
                         ),
                         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -38042,7 +38345,8 @@ function AdminPage() {
                             isWA && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-1 py-0.5 rounded text-[9px] font-bold bg-green-100 text-green-700", children: "WA" })
                           ] }),
                           createdStr && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-stone-400 mt-0.5", children: [
-                            "Создано: ",
+                            ui.colCreated,
+                            ": ",
                             createdStr
                           ] })
                         ] })
@@ -38052,12 +38356,12 @@ function AdminPage() {
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 mb-1", children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx(User, { className: "w-3.5 h-3.5 text-stone-400 flex-shrink-0" }),
                       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-semibold text-stone-800", children: b.name }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${(b.business_type ?? "appliance") === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`, children: (b.business_type ?? "appliance") === "dental" ? "Dental" : "Appliance" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${(b.business_type ?? ADMIN_SITE_CONFIG.bookingBizFallback) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`, children: (b.business_type ?? ADMIN_SITE_CONFIG.bookingBizFallback) === "dental" ? "Dental" : "Appliance" }),
                       b.is_remote && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-1.5 py-0.5 rounded text-[9px] font-bold bg-stone-100 text-stone-500 leading-none", title: "Только просмотр — заявка с другого сайта", children: "👁" })
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 mb-1", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "w-3.5 h-3.5 flex-shrink-0", style: { color: ACCENT$3 } }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `tel:${b.phone}`, className: "text-sm font-medium", style: { color: ACCENT$3 }, children: b.phone })
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "w-3.5 h-3.5 flex-shrink-0", style: { color: ACCENT$4 } }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `tel:${b.phone}`, className: "text-sm font-medium", style: { color: ACCENT$4 }, children: b.phone })
                     ] }),
                     b.appliance && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 mb-2", children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "w-3.5 h-3.5 text-stone-400 flex-shrink-0" }),
@@ -38071,7 +38375,8 @@ function AdminPage() {
                           className: "w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition border border-green-100",
                           children: [
                             /* @__PURE__ */ jsxRuntimeExports.jsx(ThumbsUp, { className: "w-3.5 h-3.5" }),
-                            " Одобрить"
+                            " ",
+                            ui.approve
                           ]
                         }
                       ),
@@ -38083,7 +38388,8 @@ function AdminPage() {
                             className: "flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-violet-50 text-violet-700 hover:bg-violet-100 transition border border-violet-100",
                             children: [
                               /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "w-3.5 h-3.5" }),
-                              " Изменить"
+                              " ",
+                              ui.edit
                             ]
                           }
                         ),
@@ -38091,11 +38397,12 @@ function AdminPage() {
                           "button",
                           {
                             onClick: () => setConfirmComplete({ id: b.id, name: b.name }),
-                            className: "flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition border border-blue-100",
-                            title: "Отметить как выполнено (после фактического ремонта)",
+                            className: "flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100 transition border border-slate-100",
+                            title: ui.completeHint,
                             children: [
                               /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-3.5 h-3.5" }),
-                              " Завершить"
+                              " ",
+                              ui.complete
                             ]
                           }
                         )
@@ -38105,10 +38412,11 @@ function AdminPage() {
                           "button",
                           {
                             onClick: () => openReschedule(b),
-                            className: "flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition border border-blue-100",
+                            className: "flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100 transition border border-slate-100",
                             children: [
                               /* @__PURE__ */ jsxRuntimeExports.jsx(CalendarDays, { className: "w-3.5 h-3.5" }),
-                              " Перенести"
+                              " ",
+                              ui.reschedule
                             ]
                           }
                         ),
@@ -38119,7 +38427,8 @@ function AdminPage() {
                             className: "flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition border border-red-100",
                             children: [
                               /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { className: "w-3.5 h-3.5" }),
-                              " Отменить"
+                              " ",
+                              ui.cancel
                             ]
                           }
                         )
@@ -38131,7 +38440,8 @@ function AdminPage() {
                           className: "w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition border border-red-200",
                           children: [
                             /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-3.5 h-3.5" }),
-                            " Удалить навсегда"
+                            " ",
+                            ui.deleteForever
                           ]
                         }
                       )
@@ -38144,7 +38454,8 @@ function AdminPage() {
                           className: "flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 transition-all duration-150 hover:scale-105 border border-orange-100",
                           children: [
                             /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCcw, { className: "w-3.5 h-3.5" }),
-                            " Восстановить"
+                            " ",
+                            ui.restore
                           ]
                         }
                       ),
@@ -38171,17 +38482,17 @@ function AdminPage() {
                   checked: allSelected,
                   readOnly: true,
                   onClick: allSelected ? deselectAll : selectAll,
-                  className: "w-3.5 h-3.5 accent-blue-600 cursor-pointer"
+                  className: "w-3.5 h-3.5 accent-slate-600 cursor-pointer"
                 }
               ) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: "Создано" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: "Дата визита" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: "Время" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: "Клиент" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: "Телефон" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: "Техника" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: "Статус" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: "Действие" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: ui.colCreated }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: ui.colVisitDate }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: ui.colTime }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: ui.colClient }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: ui.colPhone }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: ui.colEquipment }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: ui.colStatus }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "text-left px-3 py-2 font-semibold", children: ui.colAction })
             ] }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { children: filteredBookings.map((b, i) => {
               const isHistory = b.status === "completed" || b.status === "cancelled";
@@ -38193,17 +38504,17 @@ function AdminPage() {
               return /* @__PURE__ */ jsxRuntimeExports.jsxs(React.Fragment, { children: [
                 showSepRow && /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: 9, className: "px-3 py-1.5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 h-px bg-stone-200" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold text-stone-400 uppercase tracking-wide", children: "История" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-semibold text-stone-400 uppercase tracking-wide", children: ui.history }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 h-px bg-stone-200" })
                 ] }) }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: `${selectedIds.has(b.id) ? "bg-blue-50 ring-1 ring-inset ring-blue-300" : i % 2 === 0 ? "bg-white" : "bg-stone-50"} ${isHistory && !selectedIds.has(b.id) ? "opacity-50" : ""} hover:bg-blue-50 transition-colors cursor-default`, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: `${selectedIds.has(b.id) ? "bg-slate-50 ring-1 ring-inset ring-slate-300" : i % 2 === 0 ? "bg-white" : "bg-stone-50"} ${isHistory && !selectedIds.has(b.id) ? "opacity-50" : ""} hover:bg-slate-50 transition-colors cursor-default`, children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-3 py-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "input",
                     {
                       type: "checkbox",
                       checked: selectedIds.has(b.id),
                       onChange: () => toggleSelect(b.id),
-                      className: "w-3.5 h-3.5 accent-blue-600 cursor-pointer"
+                      className: "w-3.5 h-3.5 accent-slate-600 cursor-pointer"
                     }
                   ) }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-3 py-2 text-stone-400 whitespace-nowrap", children: createdStr }),
@@ -38216,7 +38527,7 @@ function AdminPage() {
                     /* @__PURE__ */ jsxRuntimeExports.jsx(User, { className: "w-3 h-3 text-stone-400" }),
                     b.name
                   ] }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-3 py-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: `tel:${b.phone}`, className: "flex items-center gap-1", style: { color: ACCENT$3 }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-3 py-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: `tel:${b.phone}`, className: "flex items-center gap-1", style: { color: ACCENT$4 }, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "w-3 h-3" }),
                     b.phone
                   ] }) }),
@@ -38230,10 +38541,11 @@ function AdminPage() {
                           {
                             onClick: () => approveBooking(b.id),
                             className: "flex items-center gap-1 text-green-600 hover:text-green-800 font-semibold transition",
-                            title: "Одобрить бронирование и отправить email клиенту",
+                            title: ui.approve,
                             children: [
                               /* @__PURE__ */ jsxRuntimeExports.jsx(ThumbsUp, { className: "w-3.5 h-3.5" }),
-                              " Одобрить"
+                              " ",
+                              ui.approve
                             ]
                           }
                         ),
@@ -38244,10 +38556,11 @@ function AdminPage() {
                         {
                           onClick: () => openEditModal(b),
                           className: "flex items-center gap-1 text-violet-600 hover:text-violet-800 font-semibold transition",
-                          title: "Изменить данные бронирования",
+                          title: ui.edit,
                           children: [
                             /* @__PURE__ */ jsxRuntimeExports.jsx(Pencil, { className: "w-3.5 h-3.5" }),
-                            " Изменить"
+                            " ",
+                            ui.edit
                           ]
                         }
                       ),
@@ -38256,11 +38569,12 @@ function AdminPage() {
                         "button",
                         {
                           onClick: () => openReschedule(b),
-                          className: "flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold transition",
-                          title: "Перенести на другую дату/время",
+                          className: "flex items-center gap-1 text-slate-600 hover:text-slate-800 font-semibold transition",
+                          title: ui.reschedule,
                           children: [
                             /* @__PURE__ */ jsxRuntimeExports.jsx(CalendarDays, { className: "w-3.5 h-3.5" }),
-                            " Перенести"
+                            " ",
+                            ui.reschedule
                           ]
                         }
                       ),
@@ -38269,11 +38583,12 @@ function AdminPage() {
                         "button",
                         {
                           onClick: () => setConfirmComplete({ id: b.id, name: b.name }),
-                          className: "flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold transition",
-                          title: "Отметить как выполнено (после фактического ремонта)",
+                          className: "flex items-center gap-1 text-slate-600 hover:text-slate-800 font-semibold transition",
+                          title: ui.completeHint,
                           children: [
                             /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-3.5 h-3.5" }),
-                            " Завершить"
+                            " ",
+                            ui.complete
                           ]
                         }
                       ),
@@ -38283,10 +38598,11 @@ function AdminPage() {
                         {
                           onClick: () => setConfirmCancel({ id: b.id, name: b.name, time: b.preferred_time }),
                           className: "flex items-center gap-1 text-red-500 hover:text-red-700 font-semibold transition",
-                          title: "Отменить бронирование",
+                          title: ui.cancelBookingTitle,
                           children: [
                             /* @__PURE__ */ jsxRuntimeExports.jsx(CircleX, { className: "w-3.5 h-3.5" }),
-                            " Отменить"
+                            " ",
+                            ui.cancel
                           ]
                         }
                       ),
@@ -38296,10 +38612,11 @@ function AdminPage() {
                         {
                           onClick: () => setConfirmDelete({ id: b.id, name: b.name }),
                           className: "flex items-center gap-1 text-red-700 hover:text-red-900 font-semibold transition",
-                          title: "Удалить заявку навсегда из базы данных",
+                          title: ui.deleteTitle,
                           children: [
                             /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-3.5 h-3.5" }),
-                            " Удалить"
+                            " ",
+                            ui.deleteForever
                           ]
                         }
                       )
@@ -38311,10 +38628,11 @@ function AdminPage() {
                           onClick: () => openRestoreModal(b),
                           className: "flex items-center gap-1 font-semibold transition-all duration-150 hover:scale-110 origin-left",
                           style: { color: "#f97316" },
-                          title: "Восстановить заявку в активные",
+                          title: ui.restoreTitle,
                           children: [
                             /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCcw, { className: "w-3.5 h-3.5" }),
-                            " Восстановить"
+                            " ",
+                            ui.restore
                           ]
                         }
                       ),
@@ -38324,10 +38642,11 @@ function AdminPage() {
                         {
                           onClick: () => setConfirmDelete({ id: b.id, name: b.name }),
                           className: "flex items-center gap-1 text-red-700 hover:text-red-900 font-semibold transition",
-                          title: "Удалить заявку навсегда из базы данных",
+                          title: ui.deleteTitle,
                           children: [
                             /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-3.5 h-3.5" }),
-                            " Удалить"
+                            " ",
+                            ui.deleteForever
                           ]
                         }
                       )
@@ -38341,8 +38660,8 @@ function AdminPage() {
       ] }) })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-6 pb-8 text-center space-y-1", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold", style: { color: "#dc2626" }, children: "Database developed by Eivaz Rakhmanov 2026" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold", style: { color: "#16a34a" }, children: "База данных разработана Эйвазом Рахмановым в 2026 году" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold", style: { color: "#dc2626" }, children: ui.dbDevEn }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold", style: { color: "#16a34a" }, children: ui.dbDevRu })
     ] })
   ] });
 }
@@ -39692,7 +40011,7 @@ async function startAuthentication(options) {
   };
 }
 const API$1 = () => "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
-const ACCENT$2 = "#1B6FE8";
+const ACCENT$3 = "#1B6FE8";
 const SUCCESS = "#16a34a";
 function statusLabel(s, t) {
   if (s === "pending") return `⏳ ${t("pending")}`;
@@ -39728,7 +40047,7 @@ function mapsUrl(addr) {
 function Btn({
   onClick,
   disabled,
-  color: color2 = ACCENT$2,
+  color: color2 = ACCENT$3,
   outline = false,
   children,
   full = true
@@ -40786,7 +41105,7 @@ function EmployeePage() {
         style: {
           padding: "4px 8px",
           borderRadius: 6,
-          border: lang === l.code ? `1.5px solid ${ACCENT$2}` : "1.5px solid #e2e8f0",
+          border: lang === l.code ? `1.5px solid ${ACCENT$3}` : "1.5px solid #e2e8f0",
           background: lang === l.code ? "#f0f7ff" : "#fff",
           fontSize: 12,
           cursor: "pointer",
@@ -40853,7 +41172,7 @@ function EmployeePage() {
             width: "100%",
             padding: "13px",
             marginBottom: 10,
-            background: loggingIn ? "#93c5fd" : ACCENT$2,
+            background: loggingIn ? "#93c5fd" : ACCENT$3,
             color: "#fff",
             border: "none",
             borderRadius: 10,
@@ -40957,7 +41276,7 @@ function EmployeePage() {
             width: 56,
             height: 56,
             borderRadius: 16,
-            background: ACCENT$2,
+            background: ACCENT$3,
             margin: "0 auto 12px",
             display: "flex",
             alignItems: "center",
@@ -41255,8 +41574,8 @@ function EmployeePage() {
                 minHeight: 44,
                 background: "transparent",
                 border: "none",
-                borderBottom: tab === tb ? `2.5px solid ${ACCENT$2}` : "2.5px solid transparent",
-                color: tab === tb ? ACCENT$2 : "#94a3b8",
+                borderBottom: tab === tb ? `2.5px solid ${ACCENT$3}` : "2.5px solid transparent",
+                color: tab === tb ? ACCENT$3 : "#94a3b8",
                 fontSize: 12,
                 fontWeight: 700,
                 cursor: "pointer",
@@ -41343,7 +41662,7 @@ function EmployeePage() {
                         border: "none",
                         borderRadius: 8,
                         boxShadow: isActive ? "0 1px 3px rgba(0,0,0,0.10)" : "none",
-                        color: isActive ? ACCENT$2 : "#94a3b8",
+                        color: isActive ? ACCENT$3 : "#94a3b8",
                         fontSize: 11,
                         fontWeight: 700,
                         cursor: "pointer",
@@ -41357,7 +41676,7 @@ function EmployeePage() {
                         st === "archived" && /* @__PURE__ */ jsxRuntimeExports.jsx(Archive, { style: { width: 10, height: 10 } }),
                         label,
                         count2 > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: {
-                          background: isActive ? ACCENT$2 : "#cbd5e1",
+                          background: isActive ? ACCENT$3 : "#cbd5e1",
                           color: "#fff",
                           borderRadius: 10,
                           padding: "1px 5px",
@@ -41548,7 +41867,7 @@ function EmployeePage() {
                       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 11, color: "#94a3b8", marginTop: 4 }, children: t("statsClosed") })
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { textAlign: "center" }, children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { fontSize: 36, fontWeight: 800, color: ACCENT$2, lineHeight: 1 }, children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { fontSize: 36, fontWeight: 800, color: ACCENT$3, lineHeight: 1 }, children: [
                         "$",
                         Number(empStats.revenue_total).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
                       ] }),
@@ -41699,7 +42018,7 @@ function EmployeePage() {
                     width: 52,
                     height: 52,
                     borderRadius: "50%",
-                    background: ACCENT$2,
+                    background: ACCENT$3,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -41816,7 +42135,7 @@ function EmployeePage() {
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("label", { style: { fontSize: 12, fontWeight: 600, color: "#64748b" }, children: t("partsReplaced") }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: addPart, style: { fontSize: 12, fontWeight: 700, color: ACCENT$2, background: "none", border: "none", cursor: "pointer" }, children: t("addPart") })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: addPart, style: { fontSize: 12, fontWeight: 700, color: ACCENT$3, background: "none", border: "none", cursor: "pointer" }, children: t("addPart") })
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { display: "flex", flexDirection: "column", gap: 8 }, children: closeParts.map((p, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", gap: 8 }, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -41865,7 +42184,7 @@ function EmployeePage() {
                   const total = labor + parts + taxAmt;
                   if (labor <= 0 && parts <= 0) return null;
                   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { background: "#f0f7ff", borderRadius: 14, padding: "14px 16px", border: "1.5px solid #bfdbfe" }, children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 12, fontWeight: 700, color: ACCENT$2, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }, children: t("estimateTotalLine") }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 12, fontWeight: 700, color: ACCENT$3, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }, children: t("estimateTotalLine") }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", flexDirection: "column", gap: 6 }, children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 13, color: "#374151" }, children: [
                         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t("repairAmount") }),
@@ -41889,7 +42208,7 @@ function EmployeePage() {
                               type: "checkbox",
                               checked: closeTax,
                               onChange: (e) => setCloseTax(e.target.checked),
-                              style: { width: 15, height: 15, accentColor: ACCENT$2, cursor: "pointer" }
+                              style: { width: 15, height: 15, accentColor: ACCENT$3, cursor: "pointer" }
                             }
                           ),
                           t("estimateTaxLine")
@@ -41898,7 +42217,7 @@ function EmployeePage() {
                       ] }),
                       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 800, color: "#1a1a2e", borderTop: "1.5px solid #bfdbfe", paddingTop: 8, marginTop: 2 }, children: [
                         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t("estimateTotalLine") }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { color: ACCENT$2 }, children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { color: ACCENT$3 }, children: [
                           "$",
                           total.toFixed(2)
                         ] })
@@ -41918,9 +42237,9 @@ function EmployeePage() {
                         fontSize: 12,
                         fontWeight: 700,
                         cursor: "pointer",
-                        border: closePayment === m ? `2px solid ${ACCENT$2}` : "1.5px solid #f1f5f9",
+                        border: closePayment === m ? `2px solid ${ACCENT$3}` : "1.5px solid #f1f5f9",
                         background: closePayment === m ? "#f0f7ff" : "#f8fafc",
-                        color: closePayment === m ? ACCENT$2 : "#64748b",
+                        color: closePayment === m ? ACCENT$3 : "#64748b",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -42070,9 +42389,9 @@ function EmployeePage() {
                             fontSize: 13,
                             fontWeight: 700,
                             cursor: disabled ? "not-allowed" : "pointer",
-                            border: closeNotify === m ? `2px solid ${ACCENT$2}` : "1.5px solid #f1f5f9",
+                            border: closeNotify === m ? `2px solid ${ACCENT$3}` : "1.5px solid #f1f5f9",
                             background: disabled ? "#f8fafc" : closeNotify === m ? "#f0f7ff" : "#f8fafc",
-                            color: disabled ? "#cbd5e1" : closeNotify === m ? ACCENT$2 : "#64748b",
+                            color: disabled ? "#cbd5e1" : closeNotify === m ? ACCENT$3 : "#64748b",
                             opacity: disabled ? 0.5 : 1
                           },
                           children: m === "email" ? t("viaEmail") : m === "sms" ? t("viaSMS") : t("viaBoth")
@@ -42100,9 +42419,9 @@ function EmployeePage() {
                         fontSize: 13,
                         fontWeight: 700,
                         cursor: "pointer",
-                        border: closeLang === l ? `2px solid ${ACCENT$2}` : "1.5px solid #f1f5f9",
+                        border: closeLang === l ? `2px solid ${ACCENT$3}` : "1.5px solid #f1f5f9",
                         background: closeLang === l ? "#f0f7ff" : "#f8fafc",
-                        color: closeLang === l ? ACCENT$2 : "#64748b"
+                        color: closeLang === l ? ACCENT$3 : "#64748b"
                       },
                       children: l === "en" ? "🇺🇸 English" : "🇪🇸 Español"
                     },
@@ -42150,7 +42469,7 @@ function EmployeePage() {
                         type: "checkbox",
                         checked: sigConsentGiven,
                         onChange: (e) => setSigConsentGiven(e.target.checked),
-                        style: { marginTop: 2, width: 14, height: 14, accentColor: ACCENT$2 }
+                        style: { marginTop: 2, width: 14, height: 14, accentColor: ACCENT$3 }
                       }
                     ),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 11, color: "#64748b", lineHeight: 1.4 }, children: t("sigConsentText") })
@@ -42213,7 +42532,7 @@ function EmployeePage() {
               ] }, photo.id)) }) }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { padding: "16px 20px 36px", borderTop: "1px solid #f1f5f9", display: "flex", flexDirection: "column", gap: 8 }, children: [
                 uploadProgress && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", flexDirection: "column", gap: 6 }, children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 12, fontWeight: 600, color: ACCENT$2 }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 12, fontWeight: 600, color: ACCENT$3 }, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
                       t("photoLoading"),
                       " ",
@@ -42229,7 +42548,7 @@ function EmployeePage() {
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { height: 4, borderRadius: 4, background: "#e2e8f0", overflow: "hidden" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
                     height: "100%",
                     borderRadius: 4,
-                    background: ACCENT$2,
+                    background: ACCENT$3,
                     width: `${Math.round(uploadProgress.current / uploadProgress.total * 100)}%`,
                     transition: "width 0.3s ease"
                   } }) })
@@ -42242,7 +42561,7 @@ function EmployeePage() {
                   width: "100%",
                   minHeight: 46,
                   borderRadius: 12,
-                  background: uploadProgress ? "#cbd5e1" : ACCENT$2,
+                  background: uploadProgress ? "#cbd5e1" : ACCENT$3,
                   color: "#fff",
                   fontSize: 14,
                   fontWeight: 700,
@@ -42275,11 +42594,11 @@ function EmployeePage() {
                   minHeight: 46,
                   borderRadius: 12,
                   background: uploadProgress ? "#cbd5e1" : "#f1f5f9",
-                  color: uploadProgress ? "#94a3b8" : ACCENT$2,
+                  color: uploadProgress ? "#94a3b8" : ACCENT$3,
                   fontSize: 13,
                   fontWeight: 700,
                   cursor: uploadProgress ? "not-allowed" : "pointer",
-                  border: `1.5px solid ${uploadProgress ? "#cbd5e1" : ACCENT$2}`
+                  border: `1.5px solid ${uploadProgress ? "#cbd5e1" : ACCENT$3}`
                 }, children: [
                   "🖼 ",
                   t("photoGallery"),
@@ -42358,7 +42677,7 @@ function EmployeePage() {
                         "+ ",
                         pb.name,
                         " ",
-                        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { color: ACCENT$2 }, children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { color: ACCENT$3 }, children: [
                           "$",
                           Number(pb.unit_price).toFixed(0)
                         ] })
@@ -42370,7 +42689,7 @@ function EmployeePage() {
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("label", { style: { fontSize: 12, fontWeight: 600, color: "#64748b" }, children: t("estimateItems") }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: addEstimateItem, style: { fontSize: 12, fontWeight: 700, color: ACCENT$2, background: "none", border: "none", cursor: "pointer" }, children: t("addItem") })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: addEstimateItem, style: { fontSize: 12, fontWeight: 700, color: ACCENT$3, background: "none", border: "none", cursor: "pointer" }, children: t("addItem") })
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { display: "flex", flexDirection: "column", gap: 10 }, children: estimateItems.map((item, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { background: "#f8fafc", borderRadius: 10, padding: "10px 12px" }, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", gap: 6, marginBottom: 6 }, children: [
@@ -42463,7 +42782,7 @@ function EmployeePage() {
                         tax.toFixed(2)
                       ] })
                     ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 16, fontWeight: 800, color: ACCENT$2, borderTop: "1px solid #bfdbfe", paddingTop: 6 }, children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 16, fontWeight: 800, color: ACCENT$3, borderTop: "1px solid #bfdbfe", paddingTop: 6 }, children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t("estimateTotalLine") }),
                       /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
                         "$",
@@ -42510,9 +42829,9 @@ function EmployeePage() {
                           fontSize: 13,
                           fontWeight: 700,
                           cursor: disabled ? "not-allowed" : "pointer",
-                          border: estimateNotify === m ? `2px solid ${ACCENT$2}` : "1.5px solid #f1f5f9",
+                          border: estimateNotify === m ? `2px solid ${ACCENT$3}` : "1.5px solid #f1f5f9",
                           background: disabled ? "#f8fafc" : estimateNotify === m ? "#f0f7ff" : "#f8fafc",
-                          color: disabled ? "#cbd5e1" : estimateNotify === m ? ACCENT$2 : "#64748b",
+                          color: disabled ? "#cbd5e1" : estimateNotify === m ? ACCENT$3 : "#64748b",
                           opacity: disabled ? 0.5 : 1
                         },
                         children: m === "email" ? t("viaEmail") : m === "sms" ? t("viaSMS") : t("viaBoth")
@@ -42524,7 +42843,7 @@ function EmployeePage() {
                 estimateErr && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { fontSize: 13, color: "#ef4444", textAlign: "center", margin: 0 }, children: estimateErr }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", gap: 10 }, children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(Btn, { outline: true, color: "#64748b", onClick: () => setEstimateTarget(null), children: t("cancel") }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs(Btn, { onClick: () => void submitEstimate(), disabled: estimateSending, color: ACCENT$2, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(Btn, { onClick: () => void submitEstimate(), disabled: estimateSending, color: ACCENT$3, children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { style: { width: 16, height: 16 } }),
                     estimateSending ? t("estimateSending") : t("estimateSend")
                   ] })
@@ -42587,7 +42906,7 @@ function EmployeePage() {
                           padding: "8px 6px",
                           borderRadius: 12,
                           cursor: "pointer",
-                          border: translatorPickerFor === "me" ? `2px solid ${ACCENT$2}` : "1.5px solid #e2e8f0",
+                          border: translatorPickerFor === "me" ? `2px solid ${ACCENT$3}` : "1.5px solid #e2e8f0",
                           background: translatorPickerFor === "me" ? "#eff6ff" : "#f8fafc",
                           display: "flex",
                           flexDirection: "column",
@@ -42597,7 +42916,7 @@ function EmployeePage() {
                         children: [
                           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 9, color: "#94a3b8", fontWeight: 700, textTransform: "uppercase" }, children: "🧑‍🔧 Я / Me" }),
                           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 22 }, children: TRANSLATOR_LANGS.find((l) => l.code === translatorLang)?.flag ?? "🏳" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 11, fontWeight: 700, color: translatorPickerFor === "me" ? ACCENT$2 : "#334155" }, children: TRANSLATOR_LANGS.find((l) => l.code === translatorLang)?.label })
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 11, fontWeight: 700, color: translatorPickerFor === "me" ? ACCENT$3 : "#334155" }, children: TRANSLATOR_LANGS.find((l) => l.code === translatorLang)?.label })
                         ]
                       }
                     ),
@@ -42658,7 +42977,7 @@ function EmployeePage() {
                     textTransform: "uppercase",
                     letterSpacing: "0.05em",
                     marginBottom: 6,
-                    color: translatorPickerFor === "me" ? ACCENT$2 : "#10b981"
+                    color: translatorPickerFor === "me" ? ACCENT$3 : "#10b981"
                   }, children: translatorPickerFor === "me" ? "🧑‍🔧 Выбери свой язык:" : "👤 Выбери язык клиента:" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
                     display: "grid",
@@ -42669,7 +42988,7 @@ function EmployeePage() {
                     overflowY: "auto"
                   }, children: TRANSLATOR_LANGS.map((lng) => {
                     const isSelected = translatorPickerFor === "me" ? translatorLang === lng.code : translatorCustomerLang === lng.code;
-                    const activeColor = translatorPickerFor === "me" ? ACCENT$2 : "#10b981";
+                    const activeColor = translatorPickerFor === "me" ? ACCENT$3 : "#10b981";
                     const activeBg = translatorPickerFor === "me" ? "#eff6ff" : "#ecfdf5";
                     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
                       "button",
@@ -42800,11 +43119,11 @@ function EmployeePage() {
                   ] }),
                   translatorResult && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
                     background: "#eff6ff",
-                    border: `1.5px solid ${ACCENT$2}`,
+                    border: `1.5px solid ${ACCENT$3}`,
                     borderRadius: 12,
                     padding: 12
                   }, children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { fontSize: 10, fontWeight: 700, color: ACCENT$2, textTransform: "uppercase", marginBottom: 4 }, children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { fontSize: 10, fontWeight: 700, color: ACCENT$3, textTransform: "uppercase", marginBottom: 4 }, children: [
                       "Translation (",
                       translatorResult.target,
                       ")"
@@ -42829,7 +43148,7 @@ function EmployeePage() {
                           marginTop: 8,
                           padding: "4px 10px",
                           borderRadius: 8,
-                          background: ACCENT$2,
+                          background: ACCENT$3,
                           color: "#fff",
                           border: "none",
                           fontSize: 11,
@@ -42928,7 +43247,7 @@ function ClientMessageBlock({
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 10, fontWeight: 700, color: "#94a3b8", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }, children: t("clientMessageOriginal") }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: "#374151", lineHeight: 1.55, whiteSpace: "pre-wrap" }, children: message }),
     empLang !== "en" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { borderTop: "1px solid #e2e8f0", marginTop: 8, paddingTop: 8 }, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 10, fontWeight: 700, color: ACCENT$2, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }, children: t("clientMessageTranslation") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 10, fontWeight: 700, color: ACCENT$3, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }, children: t("clientMessageTranslation") }),
       loading && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontStyle: "italic", color: "#94a3b8" }, children: t("translatingMessage") }),
       !loading && failed && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: "#ef4444", fontSize: 11 }, children: t("translationFailed") }),
       !loading && translation && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: "#0f172a", lineHeight: 1.55, whiteSpace: "pre-wrap" }, children: translation })
@@ -42972,8 +43291,8 @@ function JobCard({
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
     background: justClosed ? "#dcfce7" : "#fff",
     borderRadius: 14,
-    border: `2px solid ${justClosed ? SUCCESS : isHighlighted ? ACCENT$2 : "#f1f5f9"}`,
-    boxShadow: isHighlighted ? `0 0 0 3px ${ACCENT$2}22` : "0 1px 4px rgba(0,0,0,0.05)",
+    border: `2px solid ${justClosed ? SUCCESS : isHighlighted ? ACCENT$3 : "#f1f5f9"}`,
+    boxShadow: isHighlighted ? `0 0 0 3px ${ACCENT$3}22` : "0 1px 4px rgba(0,0,0,0.05)",
     overflow: "hidden",
     transition: "border-color 0.2s, box-shadow 0.2s"
   }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { padding: 16 }, children: [
@@ -43002,7 +43321,7 @@ function JobCard({
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { marginTop: 6 }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: mapsUrl(b.address), target: "_blank", rel: "noreferrer", style: {
             fontSize: 12,
             fontWeight: 700,
-            color: ACCENT$2,
+            color: ACCENT$3,
             display: "inline-flex",
             alignItems: "center",
             gap: 4,
@@ -43024,7 +43343,7 @@ function JobCard({
           /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: `tel:${b.phone}`, style: {
             fontSize: 11,
             fontWeight: 700,
-            color: ACCENT$2,
+            color: ACCENT$3,
             display: "inline-flex",
             alignItems: "center",
             gap: 3,
@@ -43288,12 +43607,12 @@ function JobCard({
       marginTop: 12
     }, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "center", gap: 6, fontSize: 13 }, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { style: { width: 14, height: 14, color: ACCENT$2, flexShrink: 0 } }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { style: { width: 14, height: 14, color: ACCENT$3, flexShrink: 0 } }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { color: "#64748b" }, children: [
           t("estimateSent"),
           ":"
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { fontWeight: 800, color: ACCENT$2 }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { fontWeight: 800, color: ACCENT$3 }, children: [
           "$",
           Number(lastEstimate.total).toFixed(2)
         ] })
@@ -43305,11 +43624,11 @@ function JobCard({
           onClick: onEditEstimate,
           style: {
             background: "none",
-            border: `1px solid ${ACCENT$2}`,
+            border: `1px solid ${ACCENT$3}`,
             cursor: "pointer",
             fontSize: 11,
             fontWeight: 700,
-            color: ACCENT$2,
+            color: ACCENT$3,
             padding: "3px 8px",
             borderRadius: 6
           },
@@ -43346,8 +43665,8 @@ function JobCard({
             width: "100%",
             minHeight: 40,
             background: "#fff",
-            color: ACCENT$2,
-            border: `1.5px solid ${ACCENT$2}`,
+            color: ACCENT$3,
+            border: `1.5px solid ${ACCENT$3}`,
             borderRadius: 10,
             fontSize: 13,
             fontWeight: 700,
@@ -43378,8 +43697,8 @@ function JobCard({
           width: "100%",
           minHeight: 44,
           background: "#fff",
-          color: ACCENT$2,
-          border: `1.5px solid ${ACCENT$2}`,
+          color: ACCENT$3,
+          border: `1.5px solid ${ACCENT$3}`,
           borderRadius: 10,
           fontSize: 13,
           fontWeight: 700,
@@ -43462,8 +43781,8 @@ function JobCard({
           width: "100%",
           minHeight: 40,
           background: "#eff6ff",
-          color: ACCENT$2,
-          border: `1.5px solid ${ACCENT$2}`,
+          color: ACCENT$3,
+          border: `1.5px solid ${ACCENT$3}`,
           borderRadius: 10,
           fontSize: 13,
           fontWeight: 700,
@@ -43482,7 +43801,7 @@ function JobCard({
     ) })
   ] }) });
 }
-const ACCENT$1 = "#1B6FE8";
+const ACCENT$2 = "#1B6FE8";
 function formatDate(iso, locale) {
   if (!iso) return "";
   try {
@@ -43574,7 +43893,7 @@ function PaymentSuccess() {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen bg-gradient-to-br from-blue-50 via-white to-stone-50 flex flex-col items-center justify-center px-4 py-12", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full max-w-lg text-center", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-20 h-20 rounded-full bg-green-100 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-12 h-12 text-green-500" }) }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-2 mb-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-xl flex items-center justify-center", style: { background: ACCENT$1 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "w-4 h-4 text-white" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-xl flex items-center justify-center", style: { background: ACCENT$2 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "w-4 h-4 text-white" }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-stone-700", children: "HTRGroup" })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-3xl font-bold text-stone-800 mb-2", children: t.title }),
@@ -43625,7 +43944,7 @@ function PaymentSuccess() {
         onClick: handleDownloadReceipt,
         disabled: downloading,
         className: "w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border-2 font-bold text-sm transition disabled:opacity-60 disabled:cursor-not-allowed",
-        style: { borderColor: ACCENT$1, color: ACCENT$1, background: "white" },
+        style: { borderColor: ACCENT$2, color: ACCENT$2, background: "white" },
         children: downloading ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-4 h-4 animate-spin" }),
           " ",
@@ -43643,7 +43962,7 @@ function PaymentSuccess() {
         {
           href: "/",
           className: "flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm transition",
-          style: { background: ACCENT$1 },
+          style: { background: ACCENT$2 },
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(House, { className: "w-4 h-4" }),
             " ",
@@ -44290,7 +44609,7 @@ createElementComponent("issuingCardCvcDisplay", isServer);
 createElementComponent("issuingCardExpiryDisplay", isServer);
 createElementComponent("issuingCardPinDisplay", isServer);
 createElementComponent("issuingCardCopyButton", isServer);
-const ACCENT = "#1B6FE8";
+const ACCENT$1 = "#1B6FE8";
 const API_BASE$1 = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
 const stripePromiseEn = null;
 const stripePromiseEs = null;
@@ -44453,7 +44772,7 @@ function PayPage() {
               fontWeight: 700,
               cursor: "pointer",
               border: "none",
-              background: lang === l ? ACCENT : "#f1f5f9",
+              background: lang === l ? ACCENT$1 : "#f1f5f9",
               color: lang === l ? "#fff" : "#64748b"
             },
             children: l === "en" ? "EN" : "ES"
@@ -44515,7 +44834,7 @@ function PayPage() {
                   background: "#f8fafc"
                 },
                 onFocus: (e) => {
-                  e.currentTarget.style.borderColor = ACCENT;
+                  e.currentTarget.style.borderColor = ACCENT$1;
                 },
                 onBlur: (e) => {
                   e.currentTarget.style.borderColor = error ? "#ef4444" : "#e2e8f0";
@@ -44545,7 +44864,7 @@ function PayPage() {
                 background: "#f8fafc"
               },
               onFocus: (e) => {
-                e.currentTarget.style.borderColor = ACCENT;
+                e.currentTarget.style.borderColor = ACCENT$1;
               },
               onBlur: (e) => {
                 e.currentTarget.style.borderColor = "#e2e8f0";
@@ -44573,7 +44892,7 @@ function PayPage() {
             style: {
               width: "100%",
               padding: "16px",
-              background: loadingIntent ? "#94a3b8" : ACCENT,
+              background: loadingIntent ? "#94a3b8" : ACCENT$1,
               color: "#fff",
               borderRadius: 12,
               border: "none",
@@ -45087,43 +45406,26 @@ function PromoPopup() {
   );
   return reactDomExports.createPortal(modal, document.body);
 }
-const API = "https://htr-group-llc-appliance-repair.replit.app";
+const ACCENT = "#6B7280";
+const API = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "") || "https://htr-group-llc-appliance-repair.replit.app";
 const TOKEN_KEY = "adminAuthToken";
-const TOKEN_EXP_KEY = "adminAuthTokenExp";
-const TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1e3;
 const FID_KEY = "htr_fid_cred_id";
-const FID_LABEL_KEY = "adminFidLabel";
-const FID_LABEL_LS_PFX = "htr_fid_label_";
 function getToken() {
-  const token = sessionStorage.getItem(TOKEN_KEY) ?? localStorage.getItem(TOKEN_KEY);
-  const exp = localStorage.getItem(TOKEN_EXP_KEY);
-  if (!token || !exp) return null;
-  if (Date.now() > parseInt(exp, 10)) {
-    clearToken();
-    return null;
-  }
-  return token;
+  return sessionStorage.getItem(TOKEN_KEY) ?? localStorage.getItem(TOKEN_KEY);
 }
 function saveToken(token) {
-  localStorage.setItem(TOKEN_KEY, token);
   sessionStorage.setItem(TOKEN_KEY, token);
-  localStorage.setItem(TOKEN_EXP_KEY, String(Date.now() + TOKEN_TTL_MS));
+  localStorage.setItem(TOKEN_KEY, token);
 }
 function clearToken() {
-  localStorage.removeItem(TOKEN_KEY);
   sessionStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(TOKEN_EXP_KEY);
+  localStorage.removeItem(TOKEN_KEY);
 }
 function getLocalCredId() {
   return localStorage.getItem(FID_KEY);
 }
 function saveLocalCredId(id2) {
   localStorage.setItem(FID_KEY, id2);
-}
-function saveFidLabel(label) {
-  localStorage.setItem(FID_LABEL_KEY, label);
-  const credId = getLocalCredId();
-  if (credId) localStorage.setItem(`${FID_LABEL_LS_PFX}${credId}`, label);
 }
 async function isTokenValid(token) {
   try {
@@ -45142,16 +45444,19 @@ async function hasPlatformBiometrics() {
     return false;
   }
 }
-function AuthGate({ children, title = "HTRGroup" }) {
+function AuthGate({ children, title = "HTRGroup Admin" }) {
   const [screen2, setScreen] = reactExports.useState("checking");
   const [pin, setPin] = reactExports.useState("");
   const [error, setError] = reactExports.useState("");
   const [loading, setLoading] = reactExports.useState(false);
   const [hasBiometrics, setHasBio] = reactExports.useState(false);
   const [deviceHasFid, setDevFid] = reactExports.useState(false);
-  const [deviceLabel, setDeviceLabel] = reactExports.useState("");
-  const [showPin, setShowPin] = reactExports.useState(false);
-  const autoTriggered = reactExports.useRef(false);
+  const [adminLang, setAdminLangState] = reactExports.useState(() => readAdminUiLang());
+  const ui = getAdminUi(adminLang);
+  const setAdminLang = reactExports.useCallback((lang) => {
+    setAdminLangState(lang);
+    writeAdminUiLang(lang);
+  }, []);
   reactExports.useEffect(() => {
     async function init() {
       const token = getToken();
@@ -45163,27 +45468,69 @@ function AuthGate({ children, title = "HTRGroup" }) {
       const [bio] = await Promise.all([hasPlatformBiometrics()]);
       setHasBio(bio);
       const localCredId = getLocalCredId();
-      const hasFid = bio && !!localCredId;
-      setDevFid(hasFid);
-      setShowPin(!hasFid);
+      setDevFid(bio && !!localCredId);
       setScreen("login");
-      if (hasFid && !autoTriggered.current) {
-        autoTriggered.current = true;
-        setTimeout(() => {
-          void triggerFaceID(localCredId);
-        }, 350);
-      }
     }
     void init();
   }, []);
-  async function triggerFaceID(localCredId) {
+  const handlePin = reactExports.useCallback(async (e) => {
+    e.preventDefault();
     setLoading(true);
     setError("");
     try {
+      const res = await fetch(`${API}/api/auth/verify-pin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin: pin.trim() })
+      });
+      const ct = res.headers.get("content-type") ?? "";
+      if (!ct.includes("application/json")) {
+        setError("Сайт не подключён к API (VITE_API_BASE). Подождите деплой Cloudflare или проверьте Secrets.");
+        return;
+      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (data.code === "admin_pin_missing") {
+          setError("На сервере не задан ADMIN_PIN. Replit → Secrets → ADMIN_PIN → Publish.");
+        } else if (data.code === "session_secret_missing") {
+          setError("На сервере не задан SESSION_SECRET. Replit → Secrets → Publish.");
+        } else if (data.code === "pin_invalid" || res.status === 401) {
+          setError(ui.pinWrong);
+        } else if (res.status >= 500) {
+          setError(data.error ?? "Ошибка сервера. Проверьте Replit Secrets.");
+        } else {
+          setError(data.error ?? "Ошибка входа. Проверьте подключение к API.");
+        }
+        return;
+      }
+      if (!data.token) {
+        setError("Ошибка сервера: нет токена");
+        return;
+      }
+      saveToken(data.token);
+      const trimmed = pin.trim();
+      sessionStorage.setItem("adminPin", trimmed);
+      localStorage.setItem("adminPin", trimmed);
+      if (hasBiometrics && !getLocalCredId()) {
+        setScreen("register-fid");
+      } else {
+        setScreen("authenticated");
+      }
+    } catch {
+      setError("Ошибка соединения");
+    } finally {
+      setLoading(false);
+    }
+  }, [pin, hasBiometrics, ui.pinWrong]);
+  const handleFaceID = reactExports.useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const localCredId = getLocalCredId();
       const optRes = await fetch(`${API}/api/auth/webauthn/login-options`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ credentialId: localCredId })
+        body: JSON.stringify(localCredId ? { credentialId: localCredId } : {})
       });
       if (!optRes.ok) throw new Error("Failed to get options");
       const { challengeId, ...optionsJSON } = await optRes.json();
@@ -45196,61 +45543,12 @@ function AuthGate({ children, title = "HTRGroup" }) {
       if (!verRes.ok) throw new Error("Verification failed");
       const data = await verRes.json();
       saveToken(data.token);
-      if (data.label) saveFidLabel(data.label);
       setScreen("authenticated");
     } catch {
-      setError("Face ID не прошёл. Введите пароль.");
-      setShowPin(true);
+      setError("Face ID не прошёл. Попробуйте пароль.");
     } finally {
       setLoading(false);
     }
-  }
-  const handlePin = reactExports.useCallback(async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch(`${API}/api/auth/verify-pin`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pin: pin.trim() })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        if (data.code === "admin_pin_missing") {
-          setError("На сервере не задан ADMIN_PIN. Replit → Secrets → ADMIN_PIN → Publish.");
-        } else if (data.code === "session_secret_missing") {
-          setError("На сервере не задан SESSION_SECRET. Replit → Secrets → Publish.");
-        } else if (res.status >= 500) {
-          setError(data.error ?? "Ошибка сервера. Проверьте Replit Secrets.");
-        } else {
-          setError("Неверный пароль");
-        }
-        return;
-      }
-      const login = await res.json();
-      saveToken(login.token);
-      localStorage.setItem("adminPin", pin.trim());
-      sessionStorage.setItem("adminPin", pin.trim());
-      localStorage.removeItem(FID_LABEL_KEY);
-      const ua = navigator.userAgent;
-      const isMobile = /iPhone|iPad|Android/i.test(ua);
-      if (hasBiometrics && !getLocalCredId() && isMobile) {
-        const autoLabel = /iPhone/.test(ua) ? "iPhone" : /iPad/.test(ua) ? "iPad" : "Android";
-        setDeviceLabel(autoLabel);
-        setScreen("register-fid");
-      } else {
-        setScreen("authenticated");
-      }
-    } catch {
-      setError("Ошибка соединения");
-    } finally {
-      setLoading(false);
-    }
-  }, [pin, hasBiometrics]);
-  const handleFaceID = reactExports.useCallback(async () => {
-    const localCredId = getLocalCredId() ?? "";
-    await triggerFaceID(localCredId);
   }, []);
   const handleRegisterFaceID = reactExports.useCallback(async () => {
     setLoading(true);
@@ -45267,15 +45565,15 @@ function AuthGate({ children, title = "HTRGroup" }) {
       if (!optRes.ok) throw new Error("Failed to get options");
       const { challengeId, ...optionsJSON } = await optRes.json();
       const credential = await startRegistration({ optionsJSON });
+      const deviceLabel = /iPhone|iPad/.test(navigator.userAgent) ? "iPhone" : /Android/.test(navigator.userAgent) ? "Android" : "Desktop";
       const verRes = await fetch(`${API}/api/auth/webauthn/register-verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ response: credential, label: deviceLabel.trim() || "Device", challengeId })
+        body: JSON.stringify({ response: credential, label: deviceLabel, challengeId })
       });
       if (!verRes.ok) throw new Error("Registration failed");
       const data = await verRes.json();
       if (data.credentialId) saveLocalCredId(data.credentialId);
-      localStorage.setItem("adminFidJustRegistered", "true");
       setScreen("authenticated");
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -45287,12 +45585,12 @@ function AuthGate({ children, title = "HTRGroup" }) {
     } finally {
       setLoading(false);
     }
-  }, [deviceLabel]);
+  }, []);
   if (screen2 === "checking") {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
       position: "fixed",
       inset: 0,
-      background: "#0B1A3F",
+      background: "#1F2937",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -45301,7 +45599,7 @@ function AuthGate({ children, title = "HTRGroup" }) {
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
         width: 40,
         height: 40,
-        border: "3px solid #1B6FE8",
+        border: "3px solid #6B7280",
         borderTopColor: "transparent",
         borderRadius: "50%",
         animation: "spin 0.8s linear infinite"
@@ -45313,65 +45611,118 @@ function AuthGate({ children, title = "HTRGroup" }) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children });
   }
   if (screen2 === "register-fid") {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
       position: "fixed",
       inset: 0,
-      background: "#0B1A3F",
+      background: "#1F2937",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       zIndex: 99999,
       padding: "20px"
-    }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
+    }, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { position: "absolute", top: 16, right: 16 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(AdminLangToggle, { lang: adminLang, onChange: setAdminLang, accent: ACCENT, compact: true }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
+        background: "#fff",
+        borderRadius: "20px",
+        padding: "36px 28px",
+        width: "min(380px, 100%)",
+        textAlign: "center",
+        boxShadow: "0 24px 80px rgba(0,0,0,0.4)"
+      }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 52, marginBottom: 12 }, children: "🔒" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: "#1F2937" }, children: "Включить Face ID?" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { style: { margin: "0 0 28px", fontSize: 14, color: "#64748b", lineHeight: 1.5 }, children: [
+          "Вход одним касанием без пароля.",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
+          "Ваше лицо / отпечаток не покидает устройство."
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            onClick: () => void handleRegisterFaceID(),
+            disabled: loading,
+            style: {
+              width: "100%",
+              padding: "13px",
+              marginBottom: 10,
+              background: loading ? "#CBD5E1" : "#6B7280",
+              color: "#fff",
+              border: "none",
+              borderRadius: 10,
+              fontSize: 15,
+              fontWeight: 600,
+              cursor: loading ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8
+            },
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 20 }, children: "👤" }),
+              loading ? "Регистрация..." : "Включить Face ID / Fingerprint"
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            onClick: () => setScreen("authenticated"),
+            disabled: loading,
+            style: {
+              width: "100%",
+              padding: "12px",
+              background: "transparent",
+              color: "#64748b",
+              border: "1.5px solid #e2e8f0",
+              borderRadius: 10,
+              fontSize: 14,
+              cursor: loading ? "not-allowed" : "pointer"
+            },
+            children: "Пропустить"
+          }
+        ),
+        error && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { marginTop: 10, color: "#ef4444", fontSize: 13 }, children: error })
+      ] })
+    ] });
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
+    position: "fixed",
+    inset: 0,
+    background: "#1F2937",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 99999,
+    padding: "20px"
+  }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { position: "absolute", top: 16, right: 16 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(AdminLangToggle, { lang: adminLang, onChange: setAdminLang, accent: ACCENT, compact: true }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
       background: "#fff",
       borderRadius: "20px",
       padding: "36px 28px",
       width: "min(380px, 100%)",
-      textAlign: "center",
       boxShadow: "0 24px 80px rgba(0,0,0,0.4)"
     }, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 52, marginBottom: 12 }, children: "🔒" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: "#0B1A3F" }, children: "Включить Face ID?" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { style: { margin: "0 0 16px", fontSize: 14, color: "#64748b", lineHeight: 1.5 }, children: [
-        "Вход одним касанием без пароля.",
-        /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
-        "Ваше лицо / отпечаток не покидает устройство."
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { textAlign: "center", marginBottom: 24 }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 44, marginBottom: 8 }, children: "🔐" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#1F2937" }, children: title }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { style: { margin: 0, fontSize: 13, color: "#64748b" }, children: [
+          "HTRGroup · ",
+          ui.protectedSection
+        ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { textAlign: "left", marginBottom: 20 }, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { style: { display: "block", fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 6 }, children: "Device name" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "text",
-            value: deviceLabel,
-            onChange: (e) => setDeviceLabel(e.target.value),
-            placeholder: "e.g. iPhone - Office",
-            maxLength: 80,
-            disabled: loading,
-            style: {
-              width: "100%",
-              boxSizing: "border-box",
-              padding: "10px 12px",
-              borderRadius: 8,
-              border: "1.5px solid #cbd5e1",
-              fontSize: 14,
-              outline: "none",
-              color: "#0B1A3F"
-            }
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      deviceHasFid && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "button",
         {
-          onClick: () => void handleRegisterFaceID(),
+          onClick: () => void handleFaceID(),
           disabled: loading,
           style: {
             width: "100%",
             padding: "13px",
-            marginBottom: 10,
-            background: loading ? "#93c5fd" : "#1B6FE8",
-            color: "#fff",
+            marginBottom: 16,
+            background: loading ? "#f1f5f9" : "#1F2937",
+            color: loading ? "#94a3b8" : "#fff",
             border: "none",
             borderRadius: 10,
             fontSize: 15,
@@ -45384,144 +45735,56 @@ function AuthGate({ children, title = "HTRGroup" }) {
           },
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 20 }, children: "👤" }),
-            loading ? "Регистрация..." : "Включить Face ID / Fingerprint"
+            loading ? "Проверка..." : "Войти через Face ID"
           ]
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          onClick: () => setScreen("authenticated"),
-          disabled: loading,
-          style: {
-            width: "100%",
-            padding: "12px",
-            background: "transparent",
-            color: "#64748b",
-            border: "1.5px solid #e2e8f0",
-            borderRadius: 10,
-            fontSize: 14,
-            cursor: loading ? "not-allowed" : "pointer"
-          },
-          children: "Пропустить"
-        }
-      ),
-      error && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { marginTop: 10, color: "#ef4444", fontSize: 13 }, children: error })
-    ] }) });
-  }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: {
-    position: "fixed",
-    inset: 0,
-    background: "#0B1A3F",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 99999,
-    padding: "20px"
-  }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
-    background: "#fff",
-    borderRadius: "20px",
-    padding: "36px 28px",
-    width: "min(380px, 100%)",
-    boxShadow: "0 24px 80px rgba(0,0,0,0.4)"
-  }, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { textAlign: "center", marginBottom: 24 }, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 44, marginBottom: 8 }, children: "🔐" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#0B1A3F" }, children: title }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { margin: 0, fontSize: 13, color: "#64748b" }, children: "HTRGroup · Защищённый раздел" })
-    ] }),
-    deviceHasFid && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      "button",
-      {
-        onClick: () => void handleFaceID(),
-        disabled: loading,
-        style: {
-          width: "100%",
-          padding: "16px",
-          marginBottom: 8,
-          background: loading ? "#f1f5f9" : "#0B1A3F",
-          color: loading ? "#94a3b8" : "#fff",
-          border: "none",
-          borderRadius: 12,
-          fontSize: 16,
-          fontWeight: 700,
-          cursor: loading ? "not-allowed" : "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 10
-        },
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 22 }, children: "👤" }),
-          loading ? "Проверка..." : "Войти через Face ID"
-        ]
-      }
-    ),
-    error && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { margin: "0 0 10px", fontSize: 13, color: "#ef4444", textAlign: "center" }, children: error }),
-    deviceHasFid && !showPin && /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "button",
-      {
-        onClick: () => {
-          setShowPin(true);
-          setError("");
-        },
-        style: {
-          width: "100%",
-          padding: "10px",
-          background: "transparent",
-          color: "#64748b",
-          border: "none",
-          fontSize: 13,
-          cursor: "pointer",
-          textDecoration: "underline"
-        },
-        children: "Войти по паролю"
-      }
-    ),
-    showPin && /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: (e) => void handlePin(e), style: { marginTop: deviceHasFid ? 8 : 0 }, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { marginBottom: 8 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          type: "password",
-          placeholder: "Пароль",
-          value: pin,
-          autoFocus: !deviceHasFid,
-          onChange: (e) => {
-            setPin(e.target.value);
-            setError("");
-          },
-          style: {
-            width: "100%",
-            boxSizing: "border-box",
-            padding: "11px 14px",
-            borderRadius: 10,
-            border: error ? "1.5px solid #ef4444" : "1.5px solid #cbd5e1",
-            fontSize: 15,
-            outline: "none"
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: (e) => void handlePin(e), children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { marginBottom: 8 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "password",
+            placeholder: ui.pinPh,
+            value: pin,
+            autoFocus: !deviceHasFid,
+            onChange: (e) => {
+              setPin(e.target.value);
+              setError("");
+            },
+            style: {
+              width: "100%",
+              boxSizing: "border-box",
+              padding: "11px 14px",
+              borderRadius: 10,
+              border: error ? "1.5px solid #ef4444" : "1.5px solid #cbd5e1",
+              fontSize: 15,
+              outline: "none"
+            }
           }
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          type: "submit",
-          disabled: loading || !pin,
-          style: {
-            width: "100%",
-            padding: "12px",
-            background: loading || !pin ? "#93c5fd" : "#1B6FE8",
-            color: "#fff",
-            border: "none",
-            borderRadius: 10,
-            fontSize: 15,
-            fontWeight: 600,
-            cursor: loading || !pin ? "not-allowed" : "pointer"
-          },
-          children: loading ? "Проверка..." : "Войти"
-        }
-      )
+        ) }),
+        error && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { margin: "0 0 8px", fontSize: 13, color: "#ef4444" }, children: error }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "submit",
+            disabled: loading || !pin,
+            style: {
+              width: "100%",
+              padding: "12px",
+              background: loading || !pin ? "#CBD5E1" : "#6B7280",
+              color: "#fff",
+              border: "none",
+              borderRadius: 10,
+              fontSize: 15,
+              fontWeight: 600,
+              cursor: loading || !pin ? "not-allowed" : "pointer"
+            },
+            children: loading ? "…" : ui.login
+          }
+        )
+      ] })
     ] })
-  ] }) });
+  ] });
 }
 class ErrorBoundary extends reactExports.Component {
   state = { error: null };
