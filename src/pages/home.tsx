@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect, useCallback } from "react";
+﻿import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import AdminSecretAccess from "@/components/AdminSecretAccess";
 import { onGlobeSecretClick, queueGalleryAdminOpen } from "@/lib/gallerySecretUnlock";
 import { motion } from "framer-motion";
@@ -18,6 +18,12 @@ import { useGoogleReviews } from "@/hooks/useGoogleReviews";
 import ChatWidget from "@/components/ChatWidget";
 import ServiceAreaMapOverlay from "@/components/ServiceAreaMapOverlay";
 import { HeroCircuitEffect } from "@/components/HeroCircuitEffect";
+import {
+  BOOKING_TIME_SLOTS,
+  getMinBookingDate,
+  isDayFullyBooked,
+  skipToNextBusinessDay,
+} from "@/lib/bookingDate";
 import svcDryerImg    from "@assets/svc_dryer_nobrand.png";
 import svcWasherImg   from "@assets/ChatGPT_Image_3_Ð°Ð¿Ñ€._2026_Ð³.,_21_04_57_1775269648058.png";
 import svcFridgeImg   from "@assets/ChatGPT_Image_3_Ð°Ð¿Ñ€._2026_Ð³.,_21_10_20_1775269648058.png";
@@ -1065,21 +1071,24 @@ export default function Home() {
   const [brandModel, setBrandModel] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const _now = new Date();
-  // Compute Houston (CDT) time; if >= 17:00 default to tomorrow
-  const _houstonNow = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Chicago" }));
-  const _minBooking = new Date(_houstonNow);
-  if (_houstonNow.getHours() >= 17) _minBooking.setDate(_minBooking.getDate() + 1);
-  _minBooking.setHours(0, 0, 0, 0);
+  const _minBooking = useMemo(() => getMinBookingDate(), []);
+  const userPickedDate = useRef(false);
+  const checkedAdvance = useRef(new Set<string>());
+  const autoAdvanceActive = useRef(true);
+  const markUserPickedDate = () => {
+    userPickedDate.current = true;
+    autoAdvanceActive.current = false;
+  };
   const [bMonth, setBMonth] = useState(_minBooking.getMonth() + 1);
   const [bDay,   setBDay]   = useState(_minBooking.getDate());
   const [bYear,  setBYear]  = useState(_minBooking.getFullYear());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [bookedSlots,  setBookedSlots]  = useState<string[]>([]);
-  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [loadingSlots, setLoadingSlots] = useState(true);
   const [certModal, setCertModal] = useState<{ img: string; label: string } | null>(null);
 
   const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const TIME_SLOTS = ["9:00 AM","9:30 AM","10:00 AM","10:30 AM","11:00 AM","11:30 AM","12:00 PM","12:30 PM","1:00 PM","1:30 PM","2:00 PM","2:30 PM","3:00 PM","3:30 PM","4:00 PM","4:30 PM","5:00 PM"];
+  const TIME_SLOTS = BOOKING_TIME_SLOTS;
 
   const selectedDateStr = `${MONTHS_SHORT[bMonth-1]} ${bDay}, ${bYear}`;
 
@@ -1092,7 +1101,8 @@ export default function Home() {
       .then(d => {
         const booked: string[]  = d.bookedSlots ?? [];
         const blocked: string[] = (d.blockedSlots ?? []).map((b: { time: string }) => b.time);
-        setBookedSlots([...new Set([...booked, ...blocked])]);
+        const buffer: string[]  = d.bufferSlots ?? [];
+        setBookedSlots([...new Set([...booked, ...blocked, ...buffer])]);
       })
       .catch(() => setBookedSlots([]))
       .finally(() => setLoadingSlots(false));
@@ -1116,6 +1126,28 @@ export default function Home() {
   useEffect(() => {
     fetchSlots(selectedDateStr, true);
   }, [bMonth, bDay, bYear]);
+
+  // Auto-advance to next business day while every slot is taken (max 30 days)
+  useEffect(() => {
+    if (!autoAdvanceActive.current || userPickedDate.current) return;
+    if (loadingSlots) return;
+    if (!isDayFullyBooked(bookedSlots, TIME_SLOTS)) {
+      autoAdvanceActive.current = false;
+      return;
+    }
+    if (checkedAdvance.current.has(selectedDateStr)) return;
+    checkedAdvance.current.add(selectedDateStr);
+    if (checkedAdvance.current.size > 30) {
+      autoAdvanceActive.current = false;
+      return;
+    }
+    const cur = new Date(bYear, bMonth - 1, bDay);
+    let next = skipToNextBusinessDay(cur);
+    if (next < _minBooking) next = new Date(_minBooking);
+    setBMonth(next.getMonth() + 1);
+    setBDay(next.getDate());
+    setBYear(next.getFullYear());
+  }, [loadingSlots, bookedSlots, selectedDateStr, bMonth, bDay, bYear, _minBooking]);
 
   // Auto-refresh every 30 s so freed/blocked slots appear immediately
   useEffect(() => {
@@ -1857,12 +1889,12 @@ export default function Home() {
                   </select>
                   {/* Preferred date â€” Month / Day / Year */}
                   <div className="grid grid-cols-3 gap-1.5">
-                    <select value={bMonth} onChange={e => { const m = +e.target.value; setBMonth(m); const max = new Date(bYear, m, 0).getDate(); if (bDay > max) setBDay(max); }}
+                    <select value={bMonth} onChange={e => { markUserPickedDate(); const m = +e.target.value; setBMonth(m); const max = new Date(bYear, m, 0).getDate(); if (bDay > max) setBDay(max); }}
                       className="border border-stone-200 bg-white rounded px-2 py-2.5 text-sm focus:outline-none focus:ring-2"
                       style={{ "--tw-ring-color": K.accent } as React.CSSProperties}>
                       {MONTHS_SHORT.map((m,i) => <option key={m} value={i+1}>{m}</option>)}
                     </select>
-                    <select value={bDay} onChange={e => setBDay(+e.target.value)}
+                    <select value={bDay} onChange={e => { markUserPickedDate(); setBDay(+e.target.value); }}
                       className="border border-stone-200 bg-white rounded px-2 py-2.5 text-sm focus:outline-none focus:ring-2"
                       style={{ "--tw-ring-color": K.accent } as React.CSSProperties}>
                       {Array.from({ length: new Date(bYear, bMonth, 0).getDate() }, (_, i) => i + 1).map(d => {
@@ -1871,7 +1903,7 @@ export default function Home() {
                         return <option key={d} value={d} disabled={opt < _minBooking}>{d}</option>;
                       })}
                     </select>
-                    <select value={bYear} onChange={e => setBYear(+e.target.value)}
+                    <select value={bYear} onChange={e => { markUserPickedDate(); setBYear(+e.target.value); }}
                       className="border border-stone-200 bg-white rounded px-2 py-2.5 text-sm focus:outline-none focus:ring-2"
                       style={{ "--tw-ring-color": K.accent } as React.CSSProperties}>
                       {[_now.getFullYear(), _now.getFullYear()+1].map(y => <option key={y} value={y}>{y}</option>)}
