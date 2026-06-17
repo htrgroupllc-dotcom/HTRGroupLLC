@@ -409,7 +409,7 @@ export default function Gallery() {
   // ── Load dynamic photos ───────────────────────────────────────────────────
   const loadDynPhotos = useCallback(async () => {
     try {
-      const r = await fetch(`${API}/api/gallery/photos`, { cache: "no-store" });
+      const r = await fetch(`${API}/api/gallery/photos?site=appliance`, { cache: "no-store" });
       if (r.ok) setDynPhotos(await r.json() as DynamicPhoto[]);
     } catch { /* non-fatal */ }
   }, []);
@@ -695,6 +695,7 @@ export default function Gallery() {
               <div className="p-5">
                 <GalleryPhotoManager
                   adminPin={adminPin}
+                  defaultSite="appliance"
                   onPhotosChange={() => void loadDynPhotos()}
                 />
               </div>

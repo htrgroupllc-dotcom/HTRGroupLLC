@@ -1277,15 +1277,15 @@ export default function AdminPage() {
               Загрузка фото на сайт
             </h2>
             <p className="text-xs text-stone-500 mb-4">
-              Раздел Our Work / Gallery на htrgrouptx.com
+              Раздел Our Work / Gallery — выберите Appliance или Dental перед загрузкой.
             </p>
-            <GalleryPhotoManager adminPin={pin} adminBearer={adminBearer} />
+            <GalleryPhotoManager adminPin={pin} adminBearer={adminBearer} defaultSite="appliance" />
           </div>
         </div>
       )}
 
       {/* ── Two-panel layout (desktop) / Tab content (mobile) ── */}
-      <div className={`flex gap-0 md:overflow-hidden md:h-[calc(100vh-56px)] ${mobileTab === "photos" ? "hidden" : ""}`}>
+      <div className={`flex gap-0 md:overflow-hidden md:h-[calc(100vh-56px)] ${mobileTab === "photos" || mobileTab === "settings" ? "hidden" : ""}`}>
 
         {/* ═══ LEFT PANEL / Слоты tab ═══ */}
         <div className={`overflow-y-auto border-r border-stone-200 p-4 space-y-4 ${mobileTab !== "slots" ? "hidden md:block" : "block"} md:w-[300px] md:flex-none`}

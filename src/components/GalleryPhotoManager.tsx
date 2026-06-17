@@ -1,14 +1,21 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Camera, X } from "lucide-react";
 
-const API = (import.meta.env.VITE_API_BASE as string | undefined) ?? "";
-const ACCENT = "#1B6FE8";
+const API = (import.meta.env.VITE_API_BASE as string | undefined ?? "https://htr-group-llc-appliance-repair.replit.app").replace(/\/$/, "");
+
+export type GalleryUploadSite = "appliance" | "dental";
+
+const SITE_META: Record<GalleryUploadSite, { label: string; website: string; accent: string }> = {
+  appliance: { label: "Appliance", website: "htrgrouptx.com", accent: "#1B6FE8" },
+  dental:    { label: "Dental", website: "dentequmentfix.com", accent: "#6B7280" },
+};
 
 export interface DynamicPhoto {
   id: number;
   filename: string;
   caption_en: string;
   caption_es: string;
+  site?: string;
 }
 
 function authHeaders(pin: string, bearer: string | null, extra?: Record<string, string>): Record<string, string> {
@@ -23,6 +30,8 @@ interface Props {
   adminBearer?: string | null;
   compact?: boolean;
   onPhotosChange?: () => void;
+  defaultSite?: GalleryUploadSite;
+  showSiteSelector?: boolean;
 }
 
 export default function GalleryPhotoManager({
@@ -30,7 +39,10 @@ export default function GalleryPhotoManager({
   adminBearer = null,
   compact = false,
   onPhotosChange,
+  defaultSite = "appliance",
+  showSiteSelector = true,
 }: Props) {
+  const [gallerySite, setGallerySite] = useState<GalleryUploadSite>(defaultSite);
   const [dynPhotos, setDynPhotos] = useState<DynamicPhoto[]>([]);
   const [upFiles, setUpFiles] = useState<File[]>([]);
   const [upLoading, setUpLoading] = useState(false);
@@ -41,6 +53,9 @@ export default function GalleryPhotoManager({
   const [bulkDeleteError, setBulkDeleteError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const meta = SITE_META[gallerySite];
+  const ACCENT = meta.accent;
+
   const pinHeaders = useCallback(
     (extra?: Record<string, string>) => authHeaders(adminPin, adminBearer, extra),
     [adminPin, adminBearer],
@@ -48,12 +63,15 @@ export default function GalleryPhotoManager({
 
   const loadDynPhotos = useCallback(async () => {
     try {
-      const r = await fetch(`${API}/api/gallery/photos`, { cache: "no-store" });
-      if (r.ok) setDynPhotos((await r.json()) as DynamicPhoto[]);
+      const r = await fetch(`${API}/api/gallery/photos?site=${gallerySite}`, { cache: "no-store" });
+      if (r.ok) {
+        setDynPhotos((await r.json()) as DynamicPhoto[]);
+        setSelectedIds(new Set());
+      }
     } catch {
       /* non-fatal */
     }
-  }, []);
+  }, [gallerySite]);
 
   useEffect(() => {
     void loadDynPhotos();
@@ -76,6 +94,7 @@ export default function GalleryPhotoManager({
         try {
           const fd = new FormData();
           fd.append("photo", file);
+          fd.append("site", gallerySite);
           const r = await fetch(`${API}/api/gallery/upload`, {
             method: "POST",
             headers: pinHeaders(),
@@ -97,7 +116,7 @@ export default function GalleryPhotoManager({
         setUpProgress(null);
       }, 800);
     },
-    [upFiles, pinHeaders, loadDynPhotos, onPhotosChange],
+    [upFiles, pinHeaders, loadDynPhotos, onPhotosChange, gallerySite],
   );
 
   const handleDelete = useCallback(
@@ -124,7 +143,7 @@ export default function GalleryPhotoManager({
 
   const handleBulkDelete = useCallback(async () => {
     if (selectedIds.size === 0) return;
-    if (!confirm(`Удалить ${selectedIds.size} фото с сайта?`)) return;
+    if (!confirm(`Удалить ${selectedIds.size} фото с сайта ${meta.website}?`)) return;
     setIsBulkDeleting(true);
     setBulkDeleteError("");
     try {
@@ -144,7 +163,7 @@ export default function GalleryPhotoManager({
       setBulkDeleteError("Ошибка соединения");
     }
     setIsBulkDeleting(false);
-  }, [selectedIds, pinHeaders, loadDynPhotos, onPhotosChange]);
+  }, [selectedIds, pinHeaders, loadDynPhotos, onPhotosChange, meta.website]);
 
   const toggleSelect = useCallback((id: number) => {
     setSelectedIds(prev => {
@@ -157,10 +176,37 @@ export default function GalleryPhotoManager({
 
   return (
     <div className={compact ? "space-y-4" : "space-y-5"}>
+      {showSiteSelector && (
+        <div className="rounded-xl border border-stone-200 bg-stone-50 p-3 space-y-2">
+          <p className="text-xs font-bold text-stone-600 uppercase tracking-wide">Галерея для сайта</p>
+          <div className="flex flex-col sm:flex-row gap-2">
+            {(["appliance", "dental"] as const).map(site => {
+              const m = SITE_META[site];
+              const active = gallerySite === site;
+              return (
+                <button
+                  key={site}
+                  type="button"
+                  onClick={() => setGallerySite(site)}
+                  className="flex-1 rounded-lg border-2 px-3 py-2.5 text-left transition touch-manipulation"
+                  style={{
+                    borderColor: active ? m.accent : "#e5e7eb",
+                    background: active ? `${m.accent}14` : "#fff",
+                  }}
+                >
+                  <span className="block text-sm font-bold text-stone-800">{m.label}</span>
+                  <span className="block text-[11px] text-stone-500">{m.website}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <form onSubmit={e => void handleUploadMany(e)}>
         <p className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-3 flex items-center gap-1.5">
           <Camera className="w-3.5 h-3.5" />
-          Фото на сайт (Our Work) · до 50 за раз
+          {meta.label} · Our Work ({meta.website}) · до 50 за раз
         </p>
 
         <div
@@ -225,7 +271,7 @@ export default function GalleryPhotoManager({
         >
           {upLoading
             ? `Загружаем ${upProgress ? `${upProgress.done}/${upProgress.total}` : ""}…`
-            : `Загрузить на сайт${upFiles.length > 0 ? ` (${upFiles.length})` : ""}`}
+            : `Загрузить на ${meta.website}${upFiles.length > 0 ? ` (${upFiles.length})` : ""}`}
         </button>
       </form>
 
@@ -233,7 +279,7 @@ export default function GalleryPhotoManager({
         <div>
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs font-bold text-stone-500 uppercase tracking-wide">
-              На сайте ({dynPhotos.length})
+              На {meta.website} ({dynPhotos.length})
             </p>
             <button
               type="button"
@@ -301,7 +347,9 @@ export default function GalleryPhotoManager({
       )}
 
       {dynPhotos.length === 0 && !upLoading && (
-        <p className="text-xs text-stone-400 text-center py-2">Пока нет загруженных фото — только статичные на странице.</p>
+        <p className="text-xs text-stone-400 text-center py-2">
+          Нет загруженных фото для {meta.label} ({meta.website}).
+        </p>
       )}
     </div>
   );
