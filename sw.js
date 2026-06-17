@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v11";
+const CACHE = "htr-pwa-v4";
 
 self.addEventListener("install", e => {
   e.waitUntil(self.skipWaiting());
@@ -113,4 +113,3 @@ self.addEventListener("periodicsync", event => {
     event.waitUntil(checkAndSetBadge());
   }
 });
-

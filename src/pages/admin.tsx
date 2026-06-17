@@ -77,6 +77,8 @@ interface BookingRow {
   preferred_time: string;
   status: string;
   created_at?: string;
+  business_type?: "appliance" | "dental" | string;
+  is_remote?: boolean;
 }
 interface BookedDetail {
   time: string;
@@ -137,6 +139,7 @@ export default function AdminPage() {
   const [mobileTab,      setMobileTab]      = useState<"slots"|"bookings"|"photos"|"settings">("slots");
   const [showCompleted,  setShowCompleted]  = useState(true);
   const [searchQuery,    setSearchQuery]    = useState("");
+  const [bizFilter,      setBizFilter]      = useState<"all" | "appliance" | "dental">("appliance");
   const [adminLang, setAdminLangState]      = useState<AdminUiLang>(() => readAdminUiLang());
 
   // Cancel client booking modal
@@ -649,8 +652,12 @@ export default function AdminPage() {
 
   const filteredBookings = (() => {
     const sq = searchQuery.trim().toLowerCase();
-    if (!sq) return visibleBookings;
-    return visibleBookings.filter(b =>
+    let result = visibleBookings;
+    if (bizFilter !== "all") {
+      result = result.filter(b => (b.business_type ?? "appliance") === bizFilter);
+    }
+    if (!sq) return result;
+    return result.filter(b =>
       (b.name           ?? "").toLowerCase().includes(sq) ||
       (b.phone          ?? "").toLowerCase().includes(sq) ||
       (b.address        ?? "").toLowerCase().includes(sq) ||
@@ -705,8 +712,8 @@ export default function AdminPage() {
             <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3" style={{ background: ACCENT }}>
               <ShieldCheck className="w-7 h-7 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-stone-800">Admin Panel</h1>
-            <p className="text-sm text-stone-500 mt-1">HTRGroupTX · Управление расписанием</p>
+            <h1 className="text-xl font-bold text-stone-800">HTRGroup Admin</h1>
+            <p className="text-sm text-stone-500 mt-1">HTRGroup · Управление расписанием</p>
           </div>
           <label className="block text-sm font-semibold text-stone-600 mb-1">PIN-код</label>
           <input type="password" value={pinInput} onChange={e => setPinInput(e.target.value)}
@@ -1169,9 +1176,9 @@ export default function AdminPage() {
             <Calendar className="w-4 h-4 text-white" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-bold text-stone-800 text-sm leading-tight truncate">HTRGroupTX Admin</div>
+            <div className="font-bold text-stone-800 text-sm leading-tight truncate">HTRGroup Admin</div>
             <div className="text-xs text-stone-400 leading-tight truncate">
-              {mobileTab === "photos" ? "Загрузка фото на сайт" : mobileTab === "settings" ? "Настройки popup" : "Управление расписанием"}
+              {mobileTab === "photos" ? "Загрузка фото на сайт" : mobileTab === "settings" ? "Popup и цена диагностики" : "Управление расписанием"}
             </div>
           </div>
           <button
@@ -1202,7 +1209,7 @@ export default function AdminPage() {
             </div>
             <div>
               <div className="font-bold text-stone-800 leading-tight">Управление расписанием</div>
-              <div className="text-xs text-stone-400 leading-tight">HTRGroupTX</div>
+              <div className="text-xs text-stone-400 leading-tight">HTRGroup</div>
             </div>
           </div>
           <div className="text-center px-3">
@@ -1219,6 +1226,16 @@ export default function AdminPage() {
             >
               <Wrench className="w-3.5 h-3.5" />
               {adminLang === "ru" ? "Портал сотрудника" : "Employee Portal"}
+            </a>
+            <a
+              href="/pay"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition"
+              title={adminLang === "ru" ? "Страница оплаты" : "Payment page"}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              {adminLang === "ru" ? "Оплата" : "Pay"}
             </a>
             <AdminLangToggle lang={adminLang} onChange={setAdminLang} accent={ACCENT} />
             <button onClick={logout} className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-red-500 transition">
@@ -1448,6 +1465,24 @@ export default function AdminPage() {
               </button>
             </div>
           </div>
+          {/* ── Business category filter ── */}
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <label className="text-xs font-semibold text-stone-500 whitespace-nowrap">Категория:</label>
+            <div className="flex rounded-lg border border-stone-200 overflow-hidden text-[11px] font-semibold">
+              <button onClick={() => setBizFilter("all")}
+                className={`px-3 py-1.5 transition ${bizFilter === "all" ? "bg-slate-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
+                Все
+              </button>
+              <button onClick={() => setBizFilter("appliance")}
+                className={`px-3 py-1.5 border-l border-stone-200 transition ${bizFilter === "appliance" ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
+                Appliance
+              </button>
+              <button onClick={() => setBizFilter("dental")}
+                className={`px-3 py-1.5 border-l border-stone-200 transition ${bizFilter === "dental" ? "bg-violet-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
+                Dental
+              </button>
+            </div>
+          </div>
           {/* ── Search bar ── */}
           <div className="relative mb-3">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" />
@@ -1566,6 +1601,12 @@ export default function AdminPage() {
                       <div className="flex items-center gap-1.5 mb-1">
                         <User className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
                         <span className="text-sm font-semibold text-stone-800">{b.name}</span>
+                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${(b.business_type ?? "appliance") === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
+                          {(b.business_type ?? "appliance") === "dental" ? "Dental" : "Appliance"}
+                        </span>
+                        {b.is_remote && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-stone-100 text-stone-500 leading-none" title="Только просмотр — заявка с другого сайта">👁</span>
+                        )}
                       </div>
                       <div className="flex items-center gap-1.5 mb-1">
                         <Phone className="w-3.5 h-3.5 flex-shrink-0" style={{ color: ACCENT }} />
@@ -1577,7 +1618,7 @@ export default function AdminPage() {
                           <span className="text-xs text-stone-600">{b.appliance}</span>
                         </div>
                       )}
-                      {(b.status === "pending" || b.status === "approved") && (
+                      {(b.status === "pending" || b.status === "approved") && !b.is_remote && (
                         <div className="flex flex-col gap-1.5 mt-1">
                           {b.status === "pending" && (
                             <button onClick={() => approveBooking(b.id)}
@@ -1713,7 +1754,7 @@ export default function AdminPage() {
                             </span>
                           </td>
                           <td className="px-3 py-2">
-                            {(b.status === "pending" || b.status === "approved") && (
+                            {(b.status === "pending" || b.status === "approved") && !b.is_remote && (
                               <div className="flex items-center gap-2 flex-wrap">
                                 {b.status === "pending" && (
                                   <>

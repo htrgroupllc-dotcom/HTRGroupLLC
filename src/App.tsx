@@ -8,6 +8,9 @@ import Gallery from "@/pages/gallery";
 import Blog from "@/pages/blog";
 import BlogPost from "@/pages/blog-post";
 import AdminPage from "@/pages/admin";
+import EmployeePage from "@/pages/employee";
+import PaymentSuccess from "@/pages/payment-success";
+import PayPage from "@/pages/pay";
 import VoiceBookCallPage from "@/pages/voice-book-call";
 import BackButton from "@/components/BackButton";
 import PromoPopup from "@/components/PromoPopup";
@@ -51,10 +54,13 @@ function Router() {
       <Route path="/blog" component={Blog} />
       <Route path="/blog/:slug" component={BlogPost} />
       <Route path="/admin">
-        <AuthGate title="Admin Panel">
+        <AuthGate title="HTRGroup Admin">
           <AdminPage />
         </AuthGate>
       </Route>
+      <Route path="/employee" component={EmployeePage} />
+      <Route path="/payment-success" component={PaymentSuccess} />
+      <Route path="/pay" component={PayPage} />
       <Route path="/book-call/:token" component={VoiceBookCallPage} />
       <Route path="/intake/:token" component={VoiceBookCallPage} />
       <Route path="/form/:token" component={VoiceBookCallPage} />
@@ -70,6 +76,8 @@ function GlobalUI() {
   const [location] = useLocation();
   const isAdmin   = location === "/admin";
   const isGallery = location === "/gallery";
+  const isEmployee = location === "/employee";
+  const isPay = location === "/pay" || location === "/payment-success";
   const isBookCall =
     location.startsWith("/book-call/") ||
     location.startsWith("/intake/") ||
@@ -92,13 +100,13 @@ function GlobalUI() {
   }, []);
 
   useEffect(() => {
-    if (isAdmin || isGallery || isBookCall) return;
+    if (isAdmin || isGallery || isBookCall || isEmployee || isPay) return;
     const t = setTimeout(() => setBubbleVisible(true), 3000);
     const t2 = setTimeout(() => setBubbleVisible(false), 10000);
     return () => { clearTimeout(t); clearTimeout(t2); };
-  }, [isAdmin, isGallery, isBookCall]);
+  }, [isAdmin, isGallery, isBookCall, isEmployee, isPay]);
 
-  if (isAdmin || isGallery || isBookCall) return null;
+  if (isAdmin || isGallery || isBookCall || isEmployee || isPay) return null;
 
   // Desktop: WA stacked above chat with enough gap so chat bubble doesn't reach WA button
   // Mobile:  WA at bottom-right corner, chat at bottom-left

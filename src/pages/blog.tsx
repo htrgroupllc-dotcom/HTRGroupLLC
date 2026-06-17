@@ -149,7 +149,7 @@ export default function Blog() {
           <a href={`${base}/`} className="flex items-center gap-2 flex-shrink-0">
             <Wrench className="h-5 w-5" style={{ color: K.accent }} />
             <span className="text-lg font-extrabold tracking-tight">
-              HTR<span style={{ color: K.accent }}>GroupTX</span>
+              HTR<span style={{ color: K.accent }}>Group</span>
             </span>
           </a>
 
@@ -266,7 +266,7 @@ export default function Blog() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 footer-top-row">
             <div className="flex items-center gap-2">
               <Wrench className="h-4 w-4" style={{ color: K.accentLight }} />
-              <span className="text-white font-extrabold">HTR<span style={{ color: K.accentLight }}>GroupTX</span></span>
+              <span className="text-white font-extrabold">HTR<span style={{ color: K.accentLight }}>Group</span></span>
             </div>
             <div className="flex items-center gap-2 footer-social-clear">
               {SOCIALS.map(s => (
@@ -277,7 +277,7 @@ export default function Blog() {
             </div>
           </div>
           <div className="border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400">
-            <p><AdminSecretAccess label={`© ${new Date().getFullYear()} HTRGroupTX. ${T.allRights}`} /></p>
+            <p><AdminSecretAccess label={`© ${new Date().getFullYear()} HTRGroup. ${T.allRights}`} /></p>
             <div className="flex gap-5 items-center">
               <a href="#" className="hover:text-white transition-colors">{T.privacy}</a>
               <a href="#" className="hover:text-white transition-colors">{T.terms}</a>

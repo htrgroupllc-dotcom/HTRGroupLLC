@@ -41,7 +41,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>Your refrigerator's compressor should cycle on and off throughout the day. If it runs non-stop, it's working overtime — usually because of dirty condenser coils, poor door seals, or a temperature sensor problem. This spikes your electricity bill and shortens the unit's life.</p>
 
 <h2>What to Do</h2>
-<p>If you notice any of these signs, contact a certified appliance technician. At HTRGroupTX, we diagnose and repair all major refrigerator brands in the Houston metropolitan area — often on the same day. Don't wait until your food spoils.</p>
+<p>If you notice any of these signs, contact a certified appliance technician. At HTRGroup, we diagnose and repair all major refrigerator brands in the Houston metropolitan area — often on the same day. Don't wait until your food spoils.</p>
     `,
     bodyEs: `
 <h2>Por Qué la Detección Temprana Ahorra Dinero</h2>
@@ -63,7 +63,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>Si el compresor funciona sin parar, está trabajando demasiado, generalmente debido a bobinas condensadoras sucias, sellos de puerta deficientes o un problema con el sensor de temperatura. Esto aumenta su factura de electricidad y acorta la vida útil del aparato.</p>
 
 <h2>Qué Hacer</h2>
-<p>Si nota alguna de estas señales, contacte a un técnico certificado. En HTRGroupTX, diagnosticamos y reparamos todas las marcas principales de refrigeradores en el área metropolitana de Houston, frecuentemente el mismo día.</p>
+<p>Si nota alguna de estas señales, contacte a un técnico certificado. En HTRGroup, diagnosticamos y reparamos todas las marcas principales de refrigeradores en el área metropolitana de Houston, frecuentemente el mismo día.</p>
     `,
   },
   {
@@ -98,7 +98,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>Water supply hoses should be checked every year for cracks, bulges, or corrosion. Replace them every 5 years regardless of condition — a burst hose can cause thousands of dollars of water damage.</p>
 
 <h2>When to Call a Technician</h2>
-<p>If your washer vibrates violently, won't drain, makes grinding noises, or doesn't spin properly, don't delay. Early repair is always cheaper than replacement. HTRGroupTX serves the entire Houston metropolitan area with same-day service.</p>
+<p>If your washer vibrates violently, won't drain, makes grinding noises, or doesn't spin properly, don't delay. Early repair is always cheaper than replacement. HTRGroup serves the entire Houston metropolitan area with same-day service.</p>
     `,
     bodyEs: `
 <h2>La Vida Útil Promedio de una Lavadora</h2>
@@ -123,7 +123,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>Las mangueras de suministro de agua deben revisarse cada año en busca de grietas o corrosión. Reemplázalas cada 5 años — una manguera reventada puede causar miles de dólares en daños por agua.</p>
 
 <h2>Cuándo Llamar a un Técnico</h2>
-<p>Si tu lavadora vibra violentamente, no drena, hace ruidos de molienda o no centrifuga correctamente, no lo dejes pasar. HTRGroupTX sirve a toda el área metropolitana de Houston con servicio el mismo día.</p>
+<p>Si tu lavadora vibra violentamente, no drena, hace ruidos de molienda o no centrifuga correctamente, no lo dejes pasar. HTRGroup sirve a toda el área metropolitana de Houston con servicio el mismo día.</p>
     `,
   },
   {
@@ -154,7 +154,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>5. Faulty Door Latch or Control Board</h2>
 <p>Sometimes the dishwasher doesn't complete the drain cycle because the control board sends the wrong signal, or the door latch doesn't register as fully closed. These issues require diagnostic tools to identify.</p>
 
-<h2>When to Call HTRGroupTX</h2>
+<h2>When to Call HTRGroup</h2>
 <p>If cleaning the filter and checking the drain hose doesn't solve the problem, it's time to call a certified technician. We service all major dishwasher brands throughout the Houston area and carry common replacement parts on our trucks.</p>
     `,
     bodyEs: `
@@ -176,7 +176,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>5. Pestillo de Puerta o Placa de Control Defectuosos</h2>
 <p>A veces el lavavajillas no completa el ciclo de drenaje porque la placa de control envía una señal incorrecta. Estos problemas requieren herramientas de diagnóstico para identificarlos.</p>
 
-<h2>Cuándo Llamar a HTRGroupTX</h2>
+<h2>Cuándo Llamar a HTRGroup</h2>
 <p>Si limpiar el filtro y revisar la manguera no resuelve el problema, es hora de llamar a un técnico certificado. Atendemos todas las marcas principales en el área de Houston.</p>
     `,
   },
@@ -191,7 +191,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerptEs: "Calor desigual, quemadores que no encienden o puertas que no cierran bien — los problemas del horno interrumpen la cocina diaria. Esto es lo que significa cada síntoma.",
     bodyEn: `
 <h2>Oven Problems That Shouldn't Be Ignored</h2>
-<p>An oven that doesn't work properly doesn't just ruin meals — it can be a safety hazard, especially with gas ranges. Here are the most common oven problems we see at HTRGroupTX and what causes them.</p>
+<p>An oven that doesn't work properly doesn't just ruin meals — it can be a safety hazard, especially with gas ranges. Here are the most common oven problems we see at HTRGroup and what causes them.</p>
 
 <h2>1. Oven Won't Heat Up (or Takes Too Long)</h2>
 <p>For electric ovens, this is usually a failed bake element or broil element — the coils inside the oven that generate heat. You may see visible damage (breaks or burns) on the element, or it may fail invisibly. For gas ovens, a faulty igniter is the most common cause — it glows but doesn't get hot enough to open the gas valve.</p>
@@ -211,7 +211,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>Gas Range Safety Warning</h2>
 <p>If you smell gas near your range and the burners are off, leave the house immediately and call your gas company. Never attempt to repair gas connections yourself.</p>
 
-<h2>Call HTRGroupTX</h2>
+<h2>Call HTRGroup</h2>
 <p>We repair electric and gas ranges and ovens of all major brands. Our trucks carry common replacement parts for same-day repairs in the Houston area.</p>
     `,
     bodyEs: `
@@ -236,7 +236,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>Advertencia de Seguridad para Cocinas de Gas</h2>
 <p>Si huele a gas cerca de su cocina y los quemadores están apagados, salga de la casa inmediatamente y llame a su compañía de gas. Nunca intente reparar las conexiones de gas usted mismo.</p>
 
-<h2>Llame a HTRGroupTX</h2>
+<h2>Llame a HTRGroup</h2>
 <p>Reparamos cocinas y hornos eléctricos y de gas de todas las marcas principales en el área de Houston.</p>
     `,
   },
@@ -274,7 +274,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>If your dryer connects to the wall duct via a plastic or thin foil accordion hose, replace it with a rigid or semi-rigid metal duct. Accordion hoses trap lint in their ridges and are a major fire risk.</p>
 
 <h2>When to Call a Professional</h2>
-<p>If your vent run is long, has multiple bends, or vents through the roof, professional cleaning is recommended. HTRGroupTX technicians can also diagnose dryer heating element and motor problems that may be contributing to poor performance.</p>
+<p>If your vent run is long, has multiple bends, or vents through the roof, professional cleaning is recommended. HTRGroup technicians can also diagnose dryer heating element and motor problems that may be contributing to poor performance.</p>
     `,
     bodyEs: `
 <h2>Un Conducto de Secadora Obstruido Es un Peligro de Incendio</h2>
@@ -300,7 +300,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>Si tu secadora se conecta a la pared mediante una manguera de acordeón de plástico o papel de aluminio delgado, reemplázala con un conducto de metal rígido o semirígido. Las mangueras de acordeón atrapan pelusa en sus crestas y son un riesgo importante de incendio.</p>
 
 <h2>Cuándo Llamar a un Profesional</h2>
-<p>Si el recorrido de tu conducto es largo o tiene múltiples curvas, se recomienda la limpieza profesional. Los técnicos de HTRGroupTX también pueden diagnosticar problemas de calefacción y motor de la secadora.</p>
+<p>Si el recorrido de tu conducto es largo o tiene múltiples curvas, se recomienda la limpieza profesional. Los técnicos de HTRGroup también pueden diagnosticar problemas de calefacción y motor de la secadora.</p>
     `,
   },
   {
@@ -338,7 +338,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>When to Repair vs. Replace</h2>
 <p>If your microwave is less than 7 years old and the repair cost is under 50% of a replacement unit, repair is usually the better choice. For older units with magnetron failure, replacement may be more practical.</p>
 
-<h2>HTRGroupTX Can Help</h2>
+<h2>HTRGroup Can Help</h2>
 <p>Our technicians diagnose and repair over-the-range and countertop microwaves of all brands throughout Houston. We'll give you an honest assessment: repair or replace.</p>
     `,
     bodyEs: `
@@ -367,7 +367,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>Cuándo Reparar vs. Reemplazar</h2>
 <p>Si tu microondas tiene menos de 7 años y el costo de reparación es inferior al 50% de una unidad de reemplazo, la reparación suele ser la mejor opción.</p>
 
-<h2>HTRGroupTX Puede Ayudar</h2>
+<h2>HTRGroup Puede Ayudar</h2>
 <p>Nuestros técnicos diagnostican y reparan microondas de todas las marcas en toda Houston.</p>
     `,
   },
@@ -409,7 +409,7 @@ export const BLOG_POSTS: BlogPost[] = [
   <li>You notice warm spots inside the freezer</li>
   <li>There's a burning smell or unusual noise from the compressor area</li>
 </ul>
-<p>HTRGroupTX services chest freezers, upright freezers, and combination refrigerator-freezers throughout the Houston metropolitan area.</p>
+<p>HTRGroup services chest freezers, upright freezers, and combination refrigerator-freezers throughout the Houston metropolitan area.</p>
     `,
     bodyEs: `
 <h2>Por Qué es Importante el Mantenimiento del Congelador</h2>
@@ -440,7 +440,7 @@ export const BLOG_POSTS: BlogPost[] = [
   <li>Notas zonas calientes dentro del congelador</li>
   <li>Hay un olor a quemado o ruidos inusuales del área del compresor</li>
 </ul>
-<p>HTRGroupTX presta servicio a congeladores horizontales, verticales y combinados en toda el área metropolitana de Houston.</p>
+<p>HTRGroup presta servicio a congeladores horizontales, verticales y combinados en toda el área metropolitana de Houston.</p>
     `,
   },
   {
@@ -479,7 +479,7 @@ export const BLOG_POSTS: BlogPost[] = [
   <li>Replace charcoal filters every 6 months (ductless models)</li>
 </ul>
 
-<h2>Call HTRGroupTX</h2>
+<h2>Call HTRGroup</h2>
 <p>We repair range hoods of all brands — wall-mounted, under-cabinet, and island models — throughout the Houston metropolitan area. Same-day service available.</p>
     `,
     bodyEs: `
@@ -509,7 +509,7 @@ export const BLOG_POSTS: BlogPost[] = [
   <li>Reemplaza los filtros de carbón cada 6 meses (modelos sin ducto)</li>
 </ul>
 
-<h2>Llame a HTRGroupTX</h2>
+<h2>Llame a HTRGroup</h2>
 <p>Reparamos campanas extractoras de todas las marcas en toda el área metropolitana de Houston. Servicio disponible el mismo día.</p>
     `,
   },
@@ -543,7 +543,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>5. Ice Maker is Making Noise</h2>
 <p>Clicking and buzzing during the fill cycle is normal. Loud grinding or squealing during the harvest cycle (when ice drops) can mean a worn motor or a jammed ejector arm.</p>
 
-<h2>HTRGroupTX Can Help</h2>
+<h2>HTRGroup Can Help</h2>
 <p>We repair built-in and stand-alone ice makers of all major brands throughout the Houston area. Our trucks carry common replacement parts for water inlet valves, motors, and control modules.</p>
     `,
     bodyEs: `
@@ -567,7 +567,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>5. La Máquina Hace Ruido</h2>
 <p>Los clics y zumbidos durante el ciclo de llenado son normales. Los chirridos fuertes durante el ciclo de cosecha pueden indicar un motor desgastado o un brazo eyector atascado.</p>
 
-<h2>HTRGroupTX Puede Ayudar</h2>
+<h2>HTRGroup Puede Ayudar</h2>
 <p>Reparamos máquinas de hielo integradas e independientes de todas las marcas en el área de Houston.</p>
     `,
   },
@@ -604,7 +604,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <h3>Cracked Glass Surface</h3>
 <p>A cracked glass-ceramic cooktop surface should not be used — it's a safety and electrical hazard. The glass must be replaced. While this is a more expensive repair, it's significantly cheaper than a new cooktop.</p>
 
-<h2>HTRGroupTX Cooktop Repair</h2>
+<h2>HTRGroup Cooktop Repair</h2>
 <p>We service all types of cooktops — gas, electric coil, and glass-ceramic — throughout the Houston area. We carry common replacement parts on our trucks for same-day repairs.</p>
     `,
     bodyEs: `
@@ -630,7 +630,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <h3>Superficie de Vidrio Agrietada</h3>
 <p>Una superficie de vitrocerámica agrietada no debe usarse — es un peligro eléctrico. El vidrio debe reemplazarse.</p>
 
-<h2>Reparación de Placas HTRGroupTX</h2>
+<h2>Reparación de Placas HTRGroup</h2>
 <p>Atendemos todo tipo de placas en el área de Houston con servicio disponible el mismo día.</p>
     `,
   },
@@ -676,7 +676,7 @@ export const BLOG_POSTS: BlogPost[] = [
   <li>Check the door seal every 6 months</li>
 </ul>
 
-<h2>HTRGroupTX Wine Cooler Service</h2>
+<h2>HTRGroup Wine Cooler Service</h2>
 <p>We repair both thermoelectric and compressor wine coolers throughout Houston. Contact us for same-day diagnosis and repair.</p>
     `,
     bodyEs: `
@@ -709,7 +709,7 @@ export const BLOG_POSTS: BlogPost[] = [
   <li>Revisa el sello de la puerta cada 6 meses</li>
 </ul>
 
-<h2>Servicio de Enfriadores HTRGroupTX</h2>
+<h2>Servicio de Enfriadores HTRGroup</h2>
 <p>Reparamos enfriadores de vino termoeléctricos y de compresor en Houston. Contáctenos para diagnóstico y reparación el mismo día.</p>
     `,
   },
@@ -755,7 +755,7 @@ export const BLOG_POSTS: BlogPost[] = [
   <li>Bones (damage the grinding plate)</li>
 </ul>
 
-<h2>HTRGroupTX Garbage Disposal Service</h2>
+<h2>HTRGroup Garbage Disposal Service</h2>
 <p>We repair and replace garbage disposals of all brands throughout the Houston area. If your unit can't be salvaged, we'll recommend the right replacement and install it the same day.</p>
     `,
     bodyEs: `
@@ -787,7 +787,7 @@ export const BLOG_POSTS: BlogPost[] = [
   <li>Huesos</li>
 </ul>
 
-<h2>Servicio de Trituradores HTRGroupTX</h2>
+<h2>Servicio de Trituradores HTRGroup</h2>
 <p>Reparamos y reemplazamos trituradores de basura de todas las marcas en el área de Houston.</p>
     `,
   },
@@ -839,7 +839,7 @@ export const BLOG_POSTS: BlogPost[] = [
   <li>Never use abrasive cleaners on the control panel</li>
 </ul>
 
-<h2>HTRGroupTX Warming Drawer Repair</h2>
+<h2>HTRGroup Warming Drawer Repair</h2>
 <p>We repair warming drawers of all major brands — Wolf, Sub-Zero, Thermador, GE, KitchenAid, and more — throughout the Houston metropolitan area. Contact us for a same-day service appointment.</p>
     `,
     bodyEs: `
@@ -872,7 +872,7 @@ export const BLOG_POSTS: BlogPost[] = [
   <li>Placa de control o sensor táctil defectuoso — requiere diagnóstico profesional</li>
 </ul>
 
-<h2>Reparación de Cajones Calentadores HTRGroupTX</h2>
+<h2>Reparación de Cajones Calentadores HTRGroup</h2>
 <p>Reparamos cajones calentadores de todas las marcas principales en toda el área metropolitana de Houston.</p>
     `,
   },

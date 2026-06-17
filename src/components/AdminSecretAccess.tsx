@@ -134,7 +134,7 @@ export default function AdminSecretAccess({ label }: { label: string }) {
               Admin Panel
             </h2>
             <p style={{ margin: "0 0 20px", fontSize: "13px", color: "#64748b" }}>
-              HTRGroupTX · Введите пароль
+              HTRGroup · Введите пароль
             </p>
             <form onSubmit={handleSubmit}>
               <input

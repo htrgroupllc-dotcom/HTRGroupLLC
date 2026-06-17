@@ -464,7 +464,7 @@ const TR = {
     heroSub:   "Precision Repair. Trusted Technicians. Guaranteed Solutions.",
     svcH2:     "Fast & Reliable Appliance Repair",
     statsLabels: ["Happy Customers", "Services Repaired", "Hours Spent", "Professional Team"],
-    whyH2:     "The HTRGroupTX Difference",
+    whyH2:     "The HTRGroup Difference",
     whyDesc:   "With over 25 years of appliance repair expertise, our team has the expertise and parts to get your home running again â€” fast.",
     whyItems:  [
       { title: "Certified Technicians",  desc: "All specialists are certified, insured, and trained on the latest appliance technology." },
@@ -543,7 +543,7 @@ const TR = {
     heroSub:   "ReparaciÃ³n de PrecisiÃ³n. TÃ©cnicos de Confianza. Soluciones Garantizadas.",
     svcH2:     "ReparaciÃ³n RÃ¡pida y Confiable",
     statsLabels: ["Clientes Satisfechos", "Servicios Realizados", "Horas Trabajadas", "Equipo Profesional"],
-    whyH2:     "La Diferencia de HTRGroupTX",
+    whyH2:     "La Diferencia de HTRGroup",
     whyDesc:   "Con mÃ¡s de 25 aÃ±os de experiencia en reparaciÃ³n de electrodomÃ©sticos, nuestro equipo tiene la experiencia y las piezas para hacer funcionar su hogar nuevamente â€” rÃ¡pido.",
     whyItems:  [
       { title: "TÃ©cnicos Certificados",     desc: "Todos nuestros especialistas estÃ¡n certificados, asegurados y capacitados en las Ãºltimas tecnologÃ­as." },
@@ -1261,7 +1261,7 @@ export default function Home() {
           <div className="flex items-center gap-2 flex-shrink-0 logo-container">
             <Wrench className="h-5 w-5 logo-wrench" style={{ color: K.accent }} />
             <span className="text-lg font-extrabold tracking-tight logo-shimmer-text">
-              HTRGroupTX
+              HTRGroup
             </span>
             <span className="logo-spark logo-spark-1">âœ¦</span>
             <span className="logo-spark logo-spark-2">âœ¦</span>
@@ -1770,7 +1770,7 @@ export default function Home() {
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <Wrench className="h-6 w-6" style={{ color: K.accent }} />
-                  <span className="text-xl font-extrabold">HTR<span style={{ color: K.accent }}>GroupTX</span></span>
+                  <span className="text-xl font-extrabold">HTR<span style={{ color: K.accent }}>Group</span></span>
                 </div>
                 <a href="#services" className="inline-block text-white font-bold px-5 py-2 uppercase tracking-widest text-xs rounded mb-6 hover:opacity-80 transition-opacity" style={{ backgroundColor: K.accent }}>
                   {T.learnMore}
@@ -2012,7 +2012,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 footer-top-row">
             <div className="flex items-center gap-2">
               <Wrench className="h-4 w-4" style={{ color: K.accentLight }} />
-              <span className="text-white font-extrabold">HTR<span style={{ color: K.accentLight }}>GroupTX</span></span>
+              <span className="text-white font-extrabold">HTR<span style={{ color: K.accentLight }}>Group</span></span>
             </div>
             <div className="flex items-center gap-2 footer-social-clear">
               {SOCIALS.map(s => (
@@ -2031,7 +2031,7 @@ export default function Home() {
             </a>
           </div>
           <div className="border-t border-white/10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400">
-            <p><AdminSecretAccess label={`Â© ${new Date().getFullYear()} HTRGroupTX. ${T.allRights}`} /></p>
+            <p><AdminSecretAccess label={`Â© ${new Date().getFullYear()} HTRGroup. ${T.allRights}`} /></p>
             <div className="flex gap-5 items-center">
               <a href="#" className="hover:text-white transition-colors">{T.privacy}</a>
               <a href="#" className="hover:text-white transition-colors">{T.terms}</a>

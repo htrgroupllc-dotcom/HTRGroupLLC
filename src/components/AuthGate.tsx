@@ -59,7 +59,7 @@ interface AuthGateProps {
 
 type Screen = "checking" | "login" | "register-fid" | "authenticated";
 
-export default function AuthGate({ children, title = "HTRGroupTX" }: AuthGateProps) {
+export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps) {
   const [screen, setScreen]         = useState<Screen>("checking");
   const [pin, setPin]               = useState("");
   const [error, setError]           = useState("");
@@ -301,7 +301,7 @@ export default function AuthGate({ children, title = "HTRGroupTX" }: AuthGatePro
             {title}
           </h2>
           <p style={{ margin: 0, fontSize: 13, color: "#64748b" }}>
-            HTRGroupTX · Защищённый раздел
+            HTRGroup · Защищённый раздел
           </p>
         </div>
 
