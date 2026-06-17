@@ -3,7 +3,10 @@ import {
   startRegistration,
   startAuthentication,
 } from "@simplewebauthn/browser";
-// Derive option JSON types from the library function signatures — no separate @simplewebauthn/types needed
+import AdminLangToggle, { readAdminUiLang, writeAdminUiLang, type AdminUiLang } from "@/components/admin/AdminLangToggle";
+import { getAdminUi } from "@/lib/adminUiCopy";
+const ACCENT = "#6B7280";
+
 type RegistrationOptionsJSON   = Parameters<typeof startRegistration>[0]["optionsJSON"];
 type AuthenticationOptionsJSON = Parameters<typeof startAuthentication>[0]["optionsJSON"];
 
@@ -11,8 +14,8 @@ type RegisterOptionsResponse = RegistrationOptionsJSON   & { challengeId: string
 type LoginOptionsResponse    = AuthenticationOptionsJSON & { challengeId: string };
 
 const API = (
-  import.meta.env.VITE_API_BASE as string | undefined
-) ?? "https://htr-group-llc-appliance-repair.replit.app";
+  (import.meta.env.VITE_API_BASE as string | undefined) ?? ""
+).replace(/\/$/, "") || "https://htr-group-llc-appliance-repair.replit.app";
 const TOKEN_KEY  = "adminAuthToken";
 const FID_KEY    = "htr_fid_cred_id"; // localStorage: credential ID for this device
 
@@ -59,7 +62,7 @@ interface AuthGateProps {
 
 type Screen = "checking" | "login" | "register-fid" | "authenticated";
 
-export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps) {
+export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGateProps) {
   const [screen, setScreen]         = useState<Screen>("checking");
   const [pin, setPin]               = useState("");
   const [error, setError]           = useState("");
@@ -67,6 +70,13 @@ export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps
   const [hasBiometrics, setHasBio]  = useState(false);
   // True only when THIS device has a registered credential (checked via localStorage)
   const [deviceHasFid, setDevFid]   = useState(false);
+  const [adminLang, setAdminLangState] = useState<AdminUiLang>(() => readAdminUiLang());
+  const ui = getAdminUi(adminLang);
+
+  const setAdminLang = useCallback((lang: AdminUiLang) => {
+    setAdminLangState(lang);
+    writeAdminUiLang(lang);
+  }, []);
 
   useEffect(() => {
     async function init() {
@@ -99,16 +109,23 @@ export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pin: pin.trim() }),
       });
+      const ct = res.headers.get("content-type") ?? "";
+      if (!ct.includes("application/json")) {
+        setError("Сайт не подключён к API (VITE_API_BASE). Подождите деплой Cloudflare или проверьте Secrets.");
+        return;
+      }
       const data = await res.json().catch(() => ({})) as { error?: string; code?: string; token?: string };
       if (!res.ok) {
         if (data.code === "admin_pin_missing") {
           setError("На сервере не задан ADMIN_PIN. Replit → Secrets → ADMIN_PIN → Publish.");
         } else if (data.code === "session_secret_missing") {
           setError("На сервере не задан SESSION_SECRET. Replit → Secrets → Publish.");
+        } else if (data.code === "pin_invalid" || res.status === 401) {
+          setError(ui.pinWrong);
         } else if (res.status >= 500) {
           setError(data.error ?? "Ошибка сервера. Проверьте Replit Secrets.");
         } else {
-          setError("Неверный пароль");
+          setError(data.error ?? "Ошибка входа. Проверьте подключение к API.");
         }
         return;
       }
@@ -133,7 +150,7 @@ export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps
     } finally {
       setLoading(false);
     }
-  }, [pin, hasBiometrics]);
+  }, [pin, hasBiometrics, ui.pinWrong]);
 
   const handleFaceID = useCallback(async () => {
     setLoading(true);
@@ -213,12 +230,12 @@ export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps
   if (screen === "checking") {
     return (
       <div style={{
-        position: "fixed", inset: 0, background: "#0B1A3F",
+        position: "fixed", inset: 0, background: "#1F2937",
         display: "flex", alignItems: "center", justifyContent: "center",
         zIndex: 99999,
       }}>
         <div style={{
-          width: 40, height: 40, border: "3px solid #1B6FE8",
+          width: 40, height: 40, border: "3px solid #6B7280",
           borderTopColor: "transparent", borderRadius: "50%",
           animation: "spin 0.8s linear infinite",
         }} />
@@ -234,17 +251,20 @@ export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps
   if (screen === "register-fid") {
     return (
       <div style={{
-        position: "fixed", inset: 0, background: "#0B1A3F",
+        position: "fixed", inset: 0, background: "#1F2937",
         display: "flex", alignItems: "center", justifyContent: "center",
         zIndex: 99999, padding: "20px",
       }}>
+        <div style={{ position: "absolute", top: 16, right: 16 }}>
+          <AdminLangToggle lang={adminLang} onChange={setAdminLang} accent={ACCENT} compact />
+        </div>
         <div style={{
           background: "#fff", borderRadius: "20px", padding: "36px 28px",
           width: "min(380px, 100%)", textAlign: "center",
           boxShadow: "0 24px 80px rgba(0,0,0,0.4)",
         }}>
           <div style={{ fontSize: 52, marginBottom: 12 }}>🔒</div>
-          <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: "#0B1A3F" }}>
+          <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: "#1F2937" }}>
             Включить Face ID?
           </h2>
           <p style={{ margin: "0 0 28px", fontSize: 14, color: "#64748b", lineHeight: 1.5 }}>
@@ -256,7 +276,7 @@ export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps
             disabled={loading}
             style={{
               width: "100%", padding: "13px", marginBottom: 10,
-              background: loading ? "#93c5fd" : "#1B6FE8",
+              background: loading ? "#CBD5E1" : "#6B7280",
               color: "#fff", border: "none", borderRadius: 10,
               fontSize: 15, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
@@ -286,10 +306,13 @@ export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps
   // Login screen
   return (
     <div style={{
-      position: "fixed", inset: 0, background: "#0B1A3F",
+      position: "fixed", inset: 0, background: "#1F2937",
       display: "flex", alignItems: "center", justifyContent: "center",
       zIndex: 99999, padding: "20px",
     }}>
+      <div style={{ position: "absolute", top: 16, right: 16 }}>
+        <AdminLangToggle lang={adminLang} onChange={setAdminLang} accent={ACCENT} compact />
+      </div>
       <div style={{
         background: "#fff", borderRadius: "20px", padding: "36px 28px",
         width: "min(380px, 100%)",
@@ -297,11 +320,11 @@ export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps
       }}>
         <div style={{ textAlign: "center", marginBottom: 24 }}>
           <div style={{ fontSize: 44, marginBottom: 8 }}>🔐</div>
-          <h2 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#0B1A3F" }}>
+          <h2 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#1F2937" }}>
             {title}
           </h2>
           <p style={{ margin: 0, fontSize: 13, color: "#64748b" }}>
-            HTRGroup · Защищённый раздел
+            HTRGroup · {ui.protectedSection}
           </p>
         </div>
 
@@ -312,7 +335,7 @@ export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps
             disabled={loading}
             style={{
               width: "100%", padding: "13px", marginBottom: 16,
-              background: loading ? "#f1f5f9" : "#0B1A3F",
+              background: loading ? "#f1f5f9" : "#1F2937",
               color: loading ? "#94a3b8" : "#fff",
               border: "none", borderRadius: 10,
               fontSize: 15, fontWeight: 600,
@@ -329,7 +352,7 @@ export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps
           <div style={{ marginBottom: 8 }}>
             <input
               type="password"
-              placeholder="Пароль"
+              placeholder={ui.pinPh}
               value={pin}
               autoFocus={!deviceHasFid}
               onChange={e => { setPin(e.target.value); setError(""); }}
@@ -347,13 +370,13 @@ export default function AuthGate({ children, title = "HTRGroup" }: AuthGateProps
             disabled={loading || !pin}
             style={{
               width: "100%", padding: "12px",
-              background: loading || !pin ? "#93c5fd" : "#1B6FE8",
+              background: loading || !pin ? "#CBD5E1" : "#6B7280",
               color: "#fff", border: "none", borderRadius: 10,
               fontSize: 15, fontWeight: 600,
               cursor: loading || !pin ? "not-allowed" : "pointer",
             }}
           >
-            {loading ? "Проверка..." : "Войти"}
+            {loading ? "…" : ui.login}
           </button>
         </form>
       </div>

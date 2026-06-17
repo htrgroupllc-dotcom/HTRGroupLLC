@@ -29,20 +29,37 @@ interface Props {
 }
 
 export default function AdminLangToggle({ lang, onChange, accent, compact = false }: Props) {
-  const cls = compact
-    ? "px-2 py-1 rounded-md text-xs font-bold border border-stone-200 hover:bg-stone-50 transition flex items-center gap-0.5"
-    : "px-3 py-1.5 rounded-lg border border-stone-200 text-xs font-bold hover:bg-stone-50 transition flex items-center gap-0.5";
+  const wrapCls = compact
+    ? "inline-flex items-center gap-0.5 rounded-md border border-stone-200 bg-white p-0.5"
+    : "inline-flex items-center gap-0.5 rounded-lg border border-stone-200 bg-white p-0.5";
+  const btnCls = compact
+    ? "px-2 py-1 rounded text-xs font-bold transition"
+    : "px-2.5 py-1 rounded-md text-xs font-bold transition";
 
   return (
-    <button
-      type="button"
-      onClick={() => onChange(lang === "ru" ? "en" : "ru")}
-      className={cls}
-      aria-label="Admin language"
-    >
-      <span style={{ color: lang === "ru" ? accent : "#a8a29e" }}>RU</span>
-      <span className="text-stone-300 font-normal mx-0.5">|</span>
-      <span style={{ color: lang === "en" ? accent : "#a8a29e" }}>EN</span>
-    </button>
+    <div className={wrapCls} role="group" aria-label="Admin language">
+      <button
+        type="button"
+        onClick={() => onChange("ru")}
+        className={btnCls}
+        style={{
+          color: lang === "ru" ? "#fff" : "#a8a29e",
+          backgroundColor: lang === "ru" ? accent : "transparent",
+        }}
+      >
+        RU
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange("en")}
+        className={btnCls}
+        style={{
+          color: lang === "en" ? "#fff" : "#a8a29e",
+          backgroundColor: lang === "en" ? accent : "transparent",
+        }}
+      >
+        EN
+      </button>
+    </div>
   );
 }

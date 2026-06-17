@@ -6,8 +6,11 @@ import {
 import GalleryPhotoManager from "@/components/GalleryPhotoManager";
 import VisitFeeSettings from "@/components/admin/VisitFeeSettings";
 import AdminLangToggle, { readAdminUiLang, writeAdminUiLang, type AdminUiLang } from "@/components/admin/AdminLangToggle";
+import { getAdminUi } from "@/lib/adminUiCopy";
+import { ADMIN_SITE_CONFIG } from "@/lib/adminSiteConfig";
 
-const ACCENT    = "#1B6FE8";
+const ACCENT    = ADMIN_SITE_CONFIG.accent;
+const PAGE_BG   = ADMIN_SITE_CONFIG.pageBg;
 const TIME_SLOTS = ["9:00 AM","9:30 AM","10:00 AM","10:30 AM","11:00 AM","11:30 AM","12:00 PM","12:30 PM","1:00 PM","1:30 PM","2:00 PM","2:30 PM","3:00 PM","3:30 PM","4:00 PM","4:30 PM","5:00 PM"];
 const MONTHS    = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const MONTHS_S  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -139,8 +142,9 @@ export default function AdminPage() {
   const [mobileTab,      setMobileTab]      = useState<"slots"|"bookings"|"photos"|"settings">("slots");
   const [showCompleted,  setShowCompleted]  = useState(true);
   const [searchQuery,    setSearchQuery]    = useState("");
-  const [bizFilter,      setBizFilter]      = useState<"all" | "appliance" | "dental">("appliance");
+  const [bizFilter,      setBizFilter]      = useState<"all" | "appliance" | "dental">(ADMIN_SITE_CONFIG.defaultBizFilter);
   const [adminLang, setAdminLangState]      = useState<AdminUiLang>(() => readAdminUiLang());
+  const ui = getAdminUi(adminLang);
 
   // Cancel client booking modal
   const [confirmCancel, setConfirmCancel] = useState<{ id: string; name: string; time: string } | null>(null);
@@ -335,7 +339,7 @@ export default function AdminPage() {
     const r = await fetch(`${API()}/api/admin/schedule?from=2020-01-01&to=2099-12-31`, {
       headers: { "x-admin-pin": encodeURIComponent(pinInput) },
     });
-    if (r.status === 401) { setPinError("Неверный PIN-код"); return; }
+    if (r.status === 401) { setPinError(ui.pinWrong); return; }
     setPin(pinInput);
     localStorage.setItem("admin_session", JSON.stringify({
       fingerprint: getDeviceFingerprint(),
@@ -654,7 +658,7 @@ export default function AdminPage() {
     const sq = searchQuery.trim().toLowerCase();
     let result = visibleBookings;
     if (bizFilter !== "all") {
-      result = result.filter(b => (b.business_type ?? "appliance") === bizFilter);
+      result = result.filter(b => (b.business_type ?? ADMIN_SITE_CONFIG.bookingBizFallback) === bizFilter);
     }
     if (!sq) return result;
     return result.filter(b =>
@@ -669,10 +673,10 @@ export default function AdminPage() {
   const allSelected = filteredBookings.length > 0 && filteredBookings.every(b => selectedIds.has(b.id));
 
   const statusInfo = (status: string) => {
-    if (status === "approved")   return { cls: "bg-green-100 text-green-700",   label: "✅ Подтверждён" };
-    if (status === "completed")  return { cls: "bg-blue-100 text-blue-700",     label: "✓ Завершён" };
-    if (status === "cancelled")  return { cls: "bg-red-100 text-red-500",       label: "❌ Отменён" };
-    return                              { cls: "bg-amber-100 text-amber-700",   label: "⏳ Ожидает" };
+    if (status === "approved")   return { cls: "bg-green-100 text-green-700",   label: ui.statusApproved };
+    if (status === "completed")  return { cls: "bg-slate-100 text-slate-700",     label: ui.statusCompleted };
+    if (status === "cancelled")  return { cls: "bg-red-100 text-red-500",       label: ui.statusCancelled };
+    return                              { cls: "bg-amber-100 text-amber-700",   label: ui.statusPending };
   };
 
   const openManual = (time: string) => {
@@ -706,31 +710,34 @@ export default function AdminPage() {
   // ── Login screen ──────────────────────────────────────────────────────────
   if (!authed) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: "#EFF6FF" }}>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 relative" style={{ background: PAGE_BG }}>
+        <div className="absolute top-4 right-4">
+          <AdminLangToggle lang={adminLang} onChange={setAdminLang} accent={ACCENT} />
+        </div>
         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm">
           <div className="flex flex-col items-center mb-6">
             <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3" style={{ background: ACCENT }}>
               <ShieldCheck className="w-7 h-7 text-white" />
             </div>
             <h1 className="text-xl font-bold text-stone-800">HTRGroup Admin</h1>
-            <p className="text-sm text-stone-500 mt-1">HTRGroup · Управление расписанием</p>
+            <p className="text-sm text-stone-500 mt-1">HTRGroup · {ui.scheduleMgmt}</p>
           </div>
-          <label className="block text-sm font-semibold text-stone-600 mb-1">PIN-код</label>
+          <label className="block text-sm font-semibold text-stone-600 mb-1">{ui.pinLabel}</label>
           <input type="password" value={pinInput} onChange={e => setPinInput(e.target.value)}
             onKeyDown={e => e.key === "Enter" && tryLogin()}
-            placeholder="Введите PIN"
+            placeholder={ui.pinPh}
             className="w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2"
             style={{ "--tw-ring-color": ACCENT } as React.CSSProperties} autoFocus />
           {pinError && <p className="text-xs text-red-500 mb-3">{pinError}</p>}
           <button onClick={tryLogin} className="w-full py-2.5 rounded-lg text-white font-semibold text-sm"
-            style={{ background: ACCENT }}>Войти</button>
+            style={{ background: ACCENT }}>{ui.login}</button>
         </div>
         <div className="text-center space-y-1">
           <p className="text-sm font-semibold" style={{ color: "#dc2626" }}>
-            Database developed by Eivaz Rakhmanov 2026
+            {ui.dbDevEn}
           </p>
           <p className="text-sm font-semibold" style={{ color: "#16a34a" }}>
-            База данных разработана Эйвазом Рахмановым в 2026 году
+            {ui.dbDevRu}
           </p>
         </div>
       </div>
@@ -744,7 +751,7 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: "#EFF6FF" }}>
+    <div className="min-h-screen" style={{ background: PAGE_BG }}>
 
       {/* ── Cancel booking modal ── */}
       {confirmCancel && (
@@ -752,19 +759,19 @@ export default function AdminPage() {
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
             <div className="flex items-center gap-2 mb-3">
               <XCircle className="w-5 h-5 text-red-500" />
-              <h3 className="font-bold text-stone-800">Отменить бронирование?</h3>
+              <h3 className="font-bold text-stone-800">{ui.cancelBookingTitle}</h3>
             </div>
-            <p className="text-sm text-stone-600 mb-1">Клиент: <strong>{confirmCancel.name}</strong></p>
-            <p className="text-sm text-stone-600 mb-4">Время: <strong>{confirmCancel.time}</strong> · <strong>{dateStr}</strong></p>
-            <p className="text-xs text-stone-400 mb-4">Слот снова станет доступным для новых бронирований.</p>
+            <p className="text-sm text-stone-600 mb-1">{ui.cancelBookingClient}: <strong>{confirmCancel.name}</strong></p>
+            <p className="text-sm text-stone-600 mb-4">{ui.cancelBookingTime}: <strong>{confirmCancel.time}</strong> · <strong>{dateStr}</strong></p>
+            <p className="text-xs text-stone-400 mb-4">{ui.cancelBookingHint}</p>
             <div className="flex gap-2">
               <button onClick={() => setConfirmCancel(null)}
                 className="flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition">
-                Назад
+                {ui.back}
               </button>
               <button onClick={cancelBooking}
                 className="flex-1 py-2 rounded-lg bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition">
-                Да, освободить
+                {ui.yesRelease}
               </button>
             </div>
           </div>
@@ -776,19 +783,19 @@ export default function AdminPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
             <div className="flex items-center gap-2 mb-3">
-              <CheckCircle2 className="w-5 h-5 text-blue-600" />
-              <h3 className="font-bold text-stone-800">Отметить как завершённое?</h3>
+              <CheckCircle2 className="w-5 h-5 text-slate-600" />
+              <h3 className="font-bold text-stone-800">{ui.completeTitle}</h3>
             </div>
-            <p className="text-sm text-stone-600 mb-1">Клиент: <strong>{confirmComplete.name}</strong></p>
-            <p className="text-xs text-stone-400 mb-4">Нажмите только после того как ремонт фактически выполнен. Бронь переместится в историю.</p>
+            <p className="text-sm text-stone-600 mb-1">{ui.cancelBookingClient}: <strong>{confirmComplete.name}</strong></p>
+            <p className="text-xs text-stone-400 mb-4">{ui.completeHint}</p>
             <div className="flex gap-2">
               <button onClick={() => setConfirmComplete(null)}
                 className="flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition">
-                Назад
+                {ui.back}
               </button>
               <button onClick={() => completeBooking(confirmComplete.id)}
-                className="flex-1 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition">
-                ✓ Завершить
+                className="flex-1 py-2 rounded-lg bg-slate-600 text-white text-sm font-semibold hover:bg-slate-700 transition">
+                {ui.completeConfirm}
               </button>
             </div>
           </div>
@@ -801,12 +808,12 @@ export default function AdminPage() {
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
             <div className="flex items-center gap-2 mb-3">
               <Trash2 className="w-5 h-5 text-red-700" />
-              <h3 className="font-bold text-stone-800">Удалить выбранные заявки?</h3>
+              <h3 className="font-bold text-stone-800">{ui.bulkDeleteTitle}</h3>
             </div>
             <p className="text-sm text-stone-600 mb-1">
-              Количество: <strong>{selectedIds.size}</strong> {selectedIds.size === 1 ? "заявка" : selectedIds.size < 5 ? "заявки" : "заявок"}
+              {ui.bulkDeleteCount}: <strong>{selectedIds.size}</strong>
             </p>
-            <p className="text-xs text-red-500 font-semibold mb-4">⚠️ Действие необратимо. Все выбранные заявки будут удалены из базы данных навсегда.</p>
+            <p className="text-xs text-red-500 font-semibold mb-4">{ui.bulkDeleteWarn}</p>
             {bulkDeleteError && (
               <div className="mb-3 p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
                 ❌ {bulkDeleteError}
@@ -815,11 +822,11 @@ export default function AdminPage() {
             <div className="flex gap-2">
               <button onClick={() => { setConfirmBulkDelete(false); setBulkDeleteError(null); }} disabled={isBulkDeleting}
                 className="flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition disabled:opacity-50">
-                Назад
+                {ui.back}
               </button>
               <button onClick={bulkDeleteBookings} disabled={isBulkDeleting}
                 className="flex-1 py-2 rounded-lg bg-red-700 text-white text-sm font-semibold hover:bg-red-800 transition disabled:opacity-50">
-                {isBulkDeleting ? "Удаляем..." : `🗑️ Удалить (${selectedIds.size})`}
+                {isBulkDeleting ? ui.deleting : `${ui.deleteConfirm} (${selectedIds.size})`}
               </button>
             </div>
           </div>
@@ -832,10 +839,10 @@ export default function AdminPage() {
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
             <div className="flex items-center gap-2 mb-3">
               <Trash2 className="w-5 h-5 text-red-700" />
-              <h3 className="font-bold text-stone-800">Удалить заявку навсегда?</h3>
+              <h3 className="font-bold text-stone-800">{ui.deleteTitle}</h3>
             </div>
-            <p className="text-sm text-stone-600 mb-1">Клиент: <strong>{confirmDelete.name}</strong></p>
-            <p className="text-xs text-red-500 font-semibold mb-4">⚠️ Это действие необратимо. Заявка будет удалена из базы данных без возможности восстановления.</p>
+            <p className="text-sm text-stone-600 mb-1">{ui.cancelBookingClient}: <strong>{confirmDelete.name}</strong></p>
+            <p className="text-xs text-red-500 font-semibold mb-4">{ui.deleteWarn}</p>
             {deleteError && (
               <div className="mb-3 p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
                 ❌ {deleteError}
@@ -844,11 +851,11 @@ export default function AdminPage() {
             <div className="flex gap-2">
               <button onClick={() => { setConfirmDelete(null); setDeleteError(null); }} disabled={isDeleting}
                 className="flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition disabled:opacity-50">
-                Назад
+                {ui.back}
               </button>
               <button onClick={deleteBooking} disabled={isDeleting}
                 className="flex-1 py-2 rounded-lg bg-red-700 text-white text-sm font-semibold hover:bg-red-800 transition disabled:opacity-50">
-                {isDeleting ? "Удаляем..." : "🗑️ Удалить навсегда"}
+                {isDeleting ? ui.deleting : ui.deleteConfirm}
               </button>
             </div>
           </div>
@@ -861,20 +868,20 @@ export default function AdminPage() {
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm max-h-[92vh] overflow-y-auto">
             <div className="flex items-center gap-2 mb-3">
               <RotateCcw className="w-5 h-5 text-orange-500" />
-              <h3 className="font-bold text-stone-800">Восстановить заявку?</h3>
+              <h3 className="font-bold text-stone-800">{ui.restoreTitle}</h3>
             </div>
-            <p className="text-sm text-stone-600 mb-1">Клиент: <strong>{confirmRestore.name}</strong></p>
-            <p className="text-sm text-stone-600 mb-2">Дата: <strong>{confirmRestore.date}</strong> · <strong>{confirmRestore.time}</strong></p>
+            <p className="text-sm text-stone-600 mb-1">{ui.restoreClient}: <strong>{confirmRestore.name}</strong></p>
+            <p className="text-sm text-stone-600 mb-2">{ui.restoreDate}: <strong>{confirmRestore.date}</strong> · <strong>{confirmRestore.time}</strong></p>
 
             {/* ── Toggle: edit fields before restore ── */}
             <button
               onClick={() => setRestoreEditOpen(v => !v)}
               disabled={isRestoring}
               className="w-full flex items-center justify-between px-3 py-2 mb-3 rounded-lg border text-xs font-semibold transition"
-              style={{ borderColor: restoreEditOpen ? ACCENT : "#e7e5e4", color: restoreEditOpen ? ACCENT : "#78716c", background: restoreEditOpen ? "#eff6ff" : "#fafaf9" }}>
+              style={{ borderColor: restoreEditOpen ? ACCENT : "#e7e5e4", color: restoreEditOpen ? ACCENT : "#78716c", background: restoreEditOpen ? "#F3F4F6" : "#fafaf9" }}>
               <span className="flex items-center gap-1.5">
                 <Pencil className="w-3.5 h-3.5" />
-                {restoreEditOpen ? "Скрыть изменения" : "✏️ Внести изменения в заявку"}
+                {restoreEditOpen ? ui.hideEdits : ui.showEdits}
               </span>
               <span className="text-base leading-none">{restoreEditOpen ? "▲" : "▼"}</span>
             </button>
@@ -882,43 +889,43 @@ export default function AdminPage() {
             {restoreEditOpen && (
               <div className="flex flex-col gap-2 mb-3 p-3 bg-stone-50 rounded-xl border border-stone-100">
                 <div>
-                  <label className="block text-xs font-semibold text-stone-500 mb-1">Имя клиента</label>
+                  <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.clientName}</label>
                   <input value={reeName} onChange={e => setReeName(e.target.value)} disabled={isRestoring}
                     className="w-full border border-stone-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 disabled:opacity-50"
                     style={{ "--tw-ring-color": ACCENT } as React.CSSProperties} />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-stone-500 mb-1">Телефон</label>
+                  <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.phone}</label>
                   <input value={reePhone} onChange={e => setReePhone(e.target.value)} disabled={isRestoring}
                     className="w-full border border-stone-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 disabled:opacity-50"
                     style={{ "--tw-ring-color": ACCENT } as React.CSSProperties} />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-stone-500 mb-1">Email</label>
+                  <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.email}</label>
                   <input type="email" value={reeEmail} onChange={e => setReeEmail(e.target.value)} disabled={isRestoring}
                     className="w-full border border-stone-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 disabled:opacity-50"
                     style={{ "--tw-ring-color": ACCENT } as React.CSSProperties} />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-stone-500 mb-1">Адрес</label>
+                  <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.address}</label>
                   <input value={reeAddr} onChange={e => setReeAddr(e.target.value)} disabled={isRestoring}
                     className="w-full border border-stone-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 disabled:opacity-50"
                     style={{ "--tw-ring-color": ACCENT } as React.CSSProperties} />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-stone-500 mb-1">Техника</label>
+                  <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.equipment}</label>
                   <input value={reeAppl} onChange={e => setReeAppl(e.target.value)} disabled={isRestoring}
                     className="w-full border border-stone-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 disabled:opacity-50"
                     style={{ "--tw-ring-color": ACCENT } as React.CSSProperties} />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-stone-500 mb-1">Описание поломки</label>
+                  <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.note}</label>
                   <textarea value={reeMsg} onChange={e => setReeMsg(e.target.value)} disabled={isRestoring} rows={2}
                     className="w-full border border-stone-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 resize-none disabled:opacity-50"
                     style={{ "--tw-ring-color": ACCENT } as React.CSSProperties} />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-stone-500 mb-1">Новая дата</label>
+                  <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.newDate}</label>
                   <select value={reeDate} onChange={e => setReeDate(e.target.value)} disabled={isRestoring}
                     className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 disabled:opacity-50"
                     style={{ "--tw-ring-color": ACCENT } as React.CSSProperties}>
@@ -926,7 +933,7 @@ export default function AdminPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-stone-500 mb-1">Новое время</label>
+                  <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.newTime}</label>
                   <select value={reeTime} onChange={e => setReeTime(e.target.value)} disabled={isRestoring}
                     className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 disabled:opacity-50"
                     style={{ "--tw-ring-color": ACCENT } as React.CSSProperties}>
@@ -945,12 +952,12 @@ export default function AdminPage() {
             <div className="flex gap-2">
               <button onClick={() => setConfirmRestore(null)} disabled={isRestoring}
                 className="flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition disabled:opacity-40">
-                Назад
+                {ui.back}
               </button>
               <button onClick={() => restoreBooking()} disabled={isRestoring}
                 className="flex-1 py-2 rounded-lg text-white text-sm font-semibold transition disabled:opacity-60"
                 style={{ background: "#f97316" }}>
-                {isRestoring ? "⏳ Восстанавливаем..." : "♻️ Восстановить"}
+                {isRestoring ? ui.saving : ui.restore}
               </button>
             </div>
           </div>
@@ -975,7 +982,7 @@ export default function AdminPage() {
             </p>
             <div className="flex flex-col gap-2 mb-4">
               <div>
-                <label className="block text-xs font-semibold text-stone-500 mb-1">Новая дата</label>
+                <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.newDate}</label>
                 <select
                   value={rescheduleDate}
                   onChange={e => setRescheduleDate(e.target.value)}
@@ -987,7 +994,7 @@ export default function AdminPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-stone-500 mb-1">Новое время</label>
+                <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.newTime}</label>
                 <select
                   value={rescheduleTime}
                   onChange={e => setRescheduleTime(e.target.value)}
@@ -1003,7 +1010,7 @@ export default function AdminPage() {
               <button
                 onClick={() => setConflictInfo(null)} disabled={isRestoring}
                 className="flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition disabled:opacity-40">
-                Отмена
+                {ui.cancel}
               </button>
               <button
                 onClick={() => restoreBooking(rescheduleDate, rescheduleTime)} disabled={isRestoring}
@@ -1021,10 +1028,10 @@ export default function AdminPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
             <div className="flex items-center gap-2 mb-3">
-              <CalendarDays className="w-5 h-5 text-blue-600" />
-              <h3 className="font-bold text-stone-800">Перенести заявку</h3>
+              <CalendarDays className="w-5 h-5 text-slate-600" />
+              <h3 className="font-bold text-stone-800">{ui.reschedule}</h3>
             </div>
-            <p className="text-sm text-stone-600 mb-1">Клиент: <strong>{confirmReschedule.name}</strong></p>
+            <p className="text-sm text-stone-600 mb-1">{ui.cancelBookingClient}: <strong>{confirmReschedule.name}</strong></p>
             <p className="text-sm text-stone-500 mb-3 line-through text-xs">
               Текущее: {confirmReschedule.date} · {confirmReschedule.time}
             </p>
@@ -1044,7 +1051,7 @@ export default function AdminPage() {
 
             <div className="flex flex-col gap-2 mb-4">
               <div>
-                <label className="block text-xs font-semibold text-stone-500 mb-1">Новая дата</label>
+                <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.newDate}</label>
                 <select value={rsDate} onChange={e => { setRsDate(e.target.value); setRsConflict(null); }}
                   className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
                   style={{ "--tw-ring-color": ACCENT } as React.CSSProperties}>
@@ -1052,7 +1059,7 @@ export default function AdminPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-stone-500 mb-1">Новое время</label>
+                <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.newTime}</label>
                 <select value={rsTime} onChange={e => { setRsTime(e.target.value); setRsConflict(null); }}
                   className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
                   style={{ "--tw-ring-color": ACCENT } as React.CSSProperties}>
@@ -1064,12 +1071,12 @@ export default function AdminPage() {
             <div className="flex gap-2">
               <button onClick={() => setConfirmReschedule(null)} disabled={isRescheduling}
                 className="flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition disabled:opacity-40">
-                Отмена
+                {ui.cancel}
               </button>
               <button onClick={() => rescheduleBooking()} disabled={isRescheduling}
                 className="flex-1 py-2 rounded-lg text-white text-sm font-semibold transition disabled:opacity-60"
                 style={{ background: ACCENT }}>
-                {isRescheduling ? "⏳ Переносим..." : "📅 Перенести"}
+                {isRescheduling ? ui.rescheduling : ui.rescheduleBtn}
               </button>
             </div>
           </div>
@@ -1082,44 +1089,44 @@ export default function AdminPage() {
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto">
             <div className="flex items-center gap-2 mb-1">
               <Pencil className="w-5 h-5 text-violet-600" />
-              <h3 className="font-bold text-stone-800">Изменить бронирование</h3>
+              <h3 className="font-bold text-stone-800">{ui.editBookingTitle}</h3>
             </div>
-            <p className="text-xs text-stone-400 mb-4">ID: {editTarget.id.slice(0, 8).toUpperCase()} · Статус: {editTarget.status}</p>
+            <p className="text-xs text-stone-400 mb-4">ID: {editTarget.id.slice(0, 8).toUpperCase()} · {ui.colStatus}: {editTarget.status}</p>
             <div className="space-y-3">
-              <AdminInput label="Имя клиента *" value={eName} onChange={setEName} placeholder="John Smith" />
-              <AdminInput label="Телефон *" value={ePhone} onChange={setEPhone} placeholder="(346) 000-0000" type="tel" />
-              <AdminInput label="Email клиента" value={eEmail} onChange={setEEmail} placeholder="client@email.com" type="email" />
-              <AdminInput label="Адрес (необязательно)" value={eAddr} onChange={setEAddr} placeholder="123 Main St, Houston TX" />
-              <AdminInput label="Техника (необязательно)" value={eAppl} onChange={setEAppl} placeholder="Washer, Dryer, Fridge…" />
+              <AdminInput label={`${ui.clientName} *`} value={eName} onChange={setEName} placeholder="John Smith" />
+              <AdminInput label={`${ui.phone} *`} value={ePhone} onChange={setEPhone} placeholder="(346) 000-0000" type="tel" />
+              <AdminInput label={ui.email} value={eEmail} onChange={setEEmail} placeholder="client@email.com" type="email" />
+              <AdminInput label={ui.address} value={eAddr} onChange={setEAddr} placeholder="123 Main St, Houston TX" />
+              <AdminInput label={ui.equipment} value={eAppl} onChange={setEAppl} placeholder="Chair, Autoclave, X-Ray…" />
               <div>
-                <label className="block text-xs font-semibold text-stone-500 mb-1">Дата *</label>
+                <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.dateRequired}</label>
                 <input type="text" value={eDate} onChange={e => setEDate(e.target.value)} placeholder="Apr 25, 2026"
-                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100" />
-                <p className="text-[10px] text-stone-400 mt-0.5">Формат: Apr 25, 2026</p>
+                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-100" />
+                <p className="text-[10px] text-stone-400 mt-0.5">{ui.dateFormatHint}</p>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-stone-500 mb-1">Время *</label>
+                <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.timeRequired}</label>
                 <select value={eTime} onChange={e => setETime(e.target.value)}
-                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400">
+                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-slate-400">
                   {TIME_SLOTS.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-stone-500 mb-1">Заметка (необязательно)</label>
-                <textarea value={eNote} onChange={e => setENote(e.target.value)} rows={2} placeholder="Дополнительная информация…"
-                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 resize-none" />
+                <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.note}</label>
+                <textarea value={eNote} onChange={e => setENote(e.target.value)} rows={2} placeholder="…"
+                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-slate-400 resize-none" />
               </div>
             </div>
             {eError && <p className="text-xs text-red-500 mt-2">{eError}</p>}
             <div className="flex gap-2 mt-4">
               <button onClick={() => setEditTarget(null)}
                 className="flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition">
-                Отмена
+                {ui.cancel}
               </button>
               <button onClick={handleEdit} disabled={eSaving}
                 className="flex-1 py-2 rounded-lg text-white text-sm font-semibold transition disabled:opacity-50"
                 style={{ background: "#7c3aed" }}>
-                {eSaving ? "Сохранение…" : "Сохранить изменения"}
+                {eSaving ? ui.saving : ui.saveChanges}
               </button>
             </div>
           </div>
@@ -1132,21 +1139,21 @@ export default function AdminPage() {
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
             <div className="flex items-center gap-2 mb-1">
               <PlusCircle className="w-5 h-5" style={{ color: ACCENT }} />
-              <h3 className="font-bold text-stone-800">Создать бронирование</h3>
+              <h3 className="font-bold text-stone-800">{ui.manualBookingTitle}</h3>
             </div>
             <p className="text-xs text-stone-400 mb-4">
               {dateStr} · <strong>{manualSlot}</strong>
             </p>
             <div className="space-y-3">
-              <AdminInput label="Имя клиента *" value={mName} onChange={setMName} placeholder="John Smith" />
-              <AdminInput label="Телефон *" value={mPhone} onChange={setMPhone} placeholder="(346) 000-0000" type="tel" />
-              <AdminInput label="Email клиента" value={mEmail} onChange={setMEmail} placeholder="client@email.com" type="email" />
-              <AdminInput label="Адрес (необязательно)" value={mAddr} onChange={setMAddr} placeholder="123 Main St, Houston, TX" />
-              <AdminInput label="ZIP-код (необязательно)" value={mZip} onChange={setMZip} placeholder="77001" />
-              <AdminInput label="Техника (необязательно)" value={mAppl} onChange={setMAppl} placeholder="Холодильник, стиральная машина..." />
+              <AdminInput label={`${ui.clientName} *`} value={mName} onChange={setMName} placeholder="John Smith" />
+              <AdminInput label={`${ui.phone} *`} value={mPhone} onChange={setMPhone} placeholder="(346) 000-0000" type="tel" />
+              <AdminInput label={ui.email} value={mEmail} onChange={setMEmail} placeholder="client@email.com" type="email" />
+              <AdminInput label={ui.address} value={mAddr} onChange={setMAddr} placeholder="123 Main St, Houston, TX" />
+              <AdminInput label={ui.zipOptional} value={mZip} onChange={setMZip} placeholder="77001" />
+              <AdminInput label={ui.equipment} value={mAppl} onChange={setMAppl} placeholder="Chair, Autoclave, X-Ray…" />
               <div>
-                <label className="block text-xs font-semibold text-stone-500 mb-1">Заметка (необязательно)</label>
-                <textarea value={mNote} onChange={e => setMNote(e.target.value)} placeholder="Доп. информация..."
+                <label className="block text-xs font-semibold text-stone-500 mb-1">{ui.note}</label>
+                <textarea value={mNote} onChange={e => setMNote(e.target.value)} placeholder="…"
                   rows={2}
                   className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 resize-none"
                   style={{ "--tw-ring-color": ACCENT } as React.CSSProperties} />
@@ -1156,12 +1163,12 @@ export default function AdminPage() {
             <div className="flex gap-2 mt-4">
               <button onClick={closeManualModal}
                 className="flex-1 py-2 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600 hover:bg-stone-50 transition">
-                Отмена
+                {ui.cancel}
               </button>
               <button onClick={createManualBooking} disabled={mSaving}
                 className="flex-1 py-2 rounded-lg text-white text-sm font-semibold transition disabled:opacity-60"
                 style={{ background: ACCENT }}>
-                {mSaving ? "Сохраняю…" : "Забронировать"}
+                {mSaving ? ui.saving : ui.booking}
               </button>
             </div>
           </div>
@@ -1178,7 +1185,7 @@ export default function AdminPage() {
           <div className="min-w-0 flex-1">
             <div className="font-bold text-stone-800 text-sm leading-tight truncate">HTRGroup Admin</div>
             <div className="text-xs text-stone-400 leading-tight truncate">
-              {mobileTab === "photos" ? "Загрузка фото на сайт" : mobileTab === "settings" ? "Popup и цена диагностики" : "Управление расписанием"}
+              {mobileTab === "photos" ? ui.photoUploadTitle : mobileTab === "settings" ? ui.settingsDesc : ui.scheduleMgmt}
             </div>
           </div>
           <button
@@ -1186,18 +1193,38 @@ export default function AdminPage() {
             onClick={() => setMobileTab("photos")}
             className={`md:hidden flex-none flex flex-col items-center justify-center gap-0.5 px-2.5 py-1.5 rounded-lg border text-[10px] font-bold leading-tight transition ${
               mobileTab === "photos"
-                ? "border-blue-200 bg-blue-50 text-blue-700"
+                ? "border-slate-200 bg-slate-50 text-slate-700"
                 : "border-stone-200 bg-stone-50 text-stone-600"
             }`}
-            aria-label="Фото на сайт"
+            aria-label={ui.photoTab}
           >
             <Camera className="w-4 h-4" />
-            <span>Фото</span>
+            <span>{ui.photoTab}</span>
           </button>
+          <a
+            href="/employee"
+            target="_blank"
+            rel="noreferrer"
+            className="md:hidden flex-none flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-[10px] font-bold leading-tight"
+            title={ui.employeePortal}
+          >
+            <Wrench className="w-4 h-4" />
+            <span>CRM</span>
+          </a>
+          <a
+            href="/pay"
+            target="_blank"
+            rel="noreferrer"
+            className="md:hidden flex-none flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-[10px] font-bold leading-tight"
+            title={ui.pay}
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span>{ui.pay}</span>
+          </a>
           <AdminLangToggle lang={adminLang} onChange={setAdminLang} accent={ACCENT} compact />
           <button onClick={logout} className="flex-none flex items-center gap-1 text-xs text-stone-500 hover:text-red-500 transition px-2 py-1.5 rounded-lg hover:bg-red-50">
             <LogOut className="w-3.5 h-3.5" />
-            <span>Выйти</span>
+            <span>{ui.logout}</span>
           </button>
         </div>
 
@@ -1208,13 +1235,13 @@ export default function AdminPage() {
               <Calendar className="w-4 h-4 text-white" />
             </div>
             <div>
-              <div className="font-bold text-stone-800 leading-tight">Управление расписанием</div>
+              <div className="font-bold text-stone-800 leading-tight">{ui.scheduleMgmt}</div>
               <div className="text-xs text-stone-400 leading-tight">HTRGroup</div>
             </div>
           </div>
           <div className="text-center px-3">
-            <div className="text-xs font-semibold leading-tight" style={{ color: "#dc2626" }}>Database developed by Eivaz Rakhmanov 2026</div>
-            <div className="text-xs font-semibold leading-tight" style={{ color: "#16a34a" }}>База данных разработана Эйвазом Рахмановым в 2026 году</div>
+            <div className="text-xs font-semibold leading-tight" style={{ color: "#dc2626" }}>{ui.dbDevEn}</div>
+            <div className="text-xs font-semibold leading-tight" style={{ color: "#16a34a" }}>{ui.dbDevRu}</div>
           </div>
           <div className="flex justify-end items-center gap-2">
             <a
@@ -1222,24 +1249,24 @@ export default function AdminPage() {
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition"
-              title={adminLang === "ru" ? "Открыть портал сотрудника" : "Open employee portal"}
+              title={ui.employeePortal}
             >
               <Wrench className="w-3.5 h-3.5" />
-              {adminLang === "ru" ? "Портал сотрудника" : "Employee Portal"}
+              {ui.employeePortal}
             </a>
             <a
               href="/pay"
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition"
-              title={adminLang === "ru" ? "Страница оплаты" : "Payment page"}
+              title={ui.pay}
             >
               <ShieldCheck className="w-3.5 h-3.5" />
-              {adminLang === "ru" ? "Оплата" : "Pay"}
+              {ui.pay}
             </a>
             <AdminLangToggle lang={adminLang} onChange={setAdminLang} accent={ACCENT} />
             <button onClick={logout} className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-red-500 transition">
-              <LogOut className="w-4 h-4" />Выйти
+              <LogOut className="w-4 h-4" />{ui.logout}
             </button>
           </div>
         </div>
@@ -1252,41 +1279,41 @@ export default function AdminPage() {
             type="button"
             onClick={() => setMobileTab("slots")}
             className={`flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap ${
-              mobileTab === "slots" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"
+              mobileTab === "slots" ? "border-slate-600 text-slate-600" : "border-transparent text-stone-400"
             }`}
           >
             <span className="sm:hidden">📅</span>
-            <span className="hidden sm:inline">📅 </span>Слоты
+            <span className="hidden sm:inline">📅 </span>{ui.tabSlots}
           </button>
           <button
             type="button"
             onClick={() => setMobileTab("bookings")}
             className={`flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap ${
-              mobileTab === "bookings" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"
+              mobileTab === "bookings" ? "border-slate-600 text-slate-600" : "border-transparent text-stone-400"
             }`}
           >
             <span className="sm:hidden">📋 {allBookings.length}</span>
-            <span className="hidden sm:inline">📋 Заявки ({allBookings.length})</span>
+            <span className="hidden sm:inline">📋 {ui.tabBookings} ({allBookings.length})</span>
           </button>
           <button
             type="button"
             onClick={() => setMobileTab("photos")}
             className={`flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap flex items-center justify-center gap-1 ${
-              mobileTab === "photos" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"
+              mobileTab === "photos" ? "border-slate-600 text-slate-600" : "border-transparent text-stone-400"
             }`}
           >
             <Camera className="w-3.5 h-3.5 flex-shrink-0" />
-            <span>Фото</span>
+            <span>{ui.tabPhotos}</span>
           </button>
           <button
             type="button"
             onClick={() => setMobileTab("settings")}
             className={`flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap flex items-center justify-center gap-1 ${
-              mobileTab === "settings" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"
+              mobileTab === "settings" ? "border-slate-600 text-slate-600" : "border-transparent text-stone-400"
             }`}
           >
             <Settings className="w-3.5 h-3.5 flex-shrink-0" />
-            <span>Настройки</span>
+            <span>{ui.tabSettings}</span>
           </button>
         </div>
       </div>
@@ -1298,11 +1325,12 @@ export default function AdminPage() {
           style={{ paddingBottom: "max(5rem, env(safe-area-inset-bottom))" }}
         >
           <p className="text-sm text-stone-600 mb-4">
-            Всплывающее окно при первом заходе на сайт. Цены для Appliance и Dental задаются отдельно.
+            {ui.settingsDesc}
           </p>
           <div className="space-y-4">
-            <VisitFeeSettings apiBase={API()} adminAuthH={adminAuthH} site="appliance" />
-            <VisitFeeSettings apiBase={API()} adminAuthH={adminAuthH} site="dental" />
+            {ADMIN_SITE_CONFIG.visitFeeSites.map(site => (
+              <VisitFeeSettings key={site} apiBase={API()} adminAuthH={adminAuthH} site={site} />
+            ))}
           </div>
         </div>
       )}
@@ -1316,12 +1344,12 @@ export default function AdminPage() {
           <div className="bg-white rounded-xl shadow-sm p-5 border border-stone-100">
             <h2 className="text-base font-bold text-stone-800 mb-1 flex items-center gap-2">
               <Camera className="w-5 h-5" style={{ color: ACCENT }} />
-              Загрузка фото на сайт
+              {ui.photoUploadTitle}
             </h2>
             <p className="text-xs text-stone-500 mb-4">
-              Раздел Our Work / Gallery — выберите Appliance или Dental перед загрузкой.
+              {ui.photoUploadDesc}
             </p>
-            <GalleryPhotoManager adminPin={pin} adminBearer={adminBearer} defaultSite="appliance" />
+            <GalleryPhotoManager adminPin={pin} adminBearer={adminBearer} defaultSite={ADMIN_SITE_CONFIG.defaultGallerySite} />
           </div>
         </div>
       )}
@@ -1331,12 +1359,12 @@ export default function AdminPage() {
 
         {/* ═══ LEFT PANEL / Слоты tab ═══ */}
         <div className={`overflow-y-auto border-r border-stone-200 p-4 space-y-4 ${mobileTab !== "slots" ? "hidden md:block" : "block"} md:w-[300px] md:flex-none`}
-          style={{ background: "#EFF6FF", paddingBottom: 80 }}>
+          style={{ background: "#F3F4F6", paddingBottom: 80 }}>
 
           {/* Date selector */}
           <div className="bg-white rounded-xl shadow-sm p-4">
             <h2 className="text-sm font-bold text-stone-600 mb-3 flex items-center gap-1.5">
-              <Calendar className="w-4 h-4" /> Выберите дату
+              <Calendar className="w-4 h-4" /> {ui.pickDate}
             </h2>
             <div className="flex flex-col gap-2">
               <select value={month}
@@ -1361,28 +1389,28 @@ export default function AdminPage() {
               <button onClick={() => { loadSlots(); loadSchedule(); }} disabled={loading}
                 className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white transition w-full"
                 style={{ background: ACCENT, opacity: loading ? 0.7 : 1 }}>
-                <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />Обновить
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />{ui.refresh}
               </button>
             </div>
-            <p className="text-xs text-stone-400 mt-2">Дата: <strong className="text-stone-600">{dateStr}</strong></p>
+            <p className="text-xs text-stone-400 mt-2">{ui.dateLabel}: <strong className="text-stone-600">{dateStr}</strong></p>
           </div>
 
           {/* Slot grid */}
           <div className="bg-white rounded-xl shadow-sm p-4">
             <h2 className="text-sm font-bold text-stone-600 mb-1 flex items-center gap-1.5">
-              <Clock className="w-4 h-4" /> Слоты на {dateStr}
+              <Clock className="w-4 h-4" /> {ui.slotsOn} {dateStr}
             </h2>
             <div className="flex flex-wrap gap-2 text-xs text-stone-500 mb-3">
-              <span>🟢 Свободен</span>
-              <span>🟠 Заблок.</span>
-              <span>🔴 Занят</span>
+              <span>{ui.legendFree}</span>
+              <span>{ui.legendBlocked}</span>
+              <span>{ui.legendBusy}</span>
             </div>
 
             {/* Block reason */}
             <div className="mb-3">
-              <label className="text-xs font-semibold text-stone-500 mb-1 block">Причина блокировки:</label>
+              <label className="text-xs font-semibold text-stone-500 mb-1 block">{ui.blockReason}</label>
               <input type="text" value={reason} onChange={e => setReason(e.target.value)}
-                placeholder="Повторный вызов..."
+                placeholder={ui.blockReasonPh}
                 className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
                 style={{ "--tw-ring-color": ACCENT } as React.CSSProperties} />
             </div>
@@ -1399,12 +1427,12 @@ export default function AdminPage() {
                     <div className="text-xs font-bold text-red-600">{slot}</div>
                     <div className="text-[10px] text-red-500 mt-0.5 truncate" title={detail.name}>👤 {detail.name}</div>
                     <div className="text-[10px] text-red-400">
-                      {detail.status === "approved" ? "✅ Подтверждён" : "⏳ Ожидает"}
+                      {detail.status === "approved" ? ui.statusApproved : ui.statusPending}
                     </div>
                     <button onClick={() => setConfirmCancel({ id: detail.id, name: detail.name, time: slot })}
                       disabled={busy}
                       className="mt-1 w-full flex items-center justify-center gap-1 text-[10px] font-semibold py-1 rounded-md bg-red-100 text-red-700 hover:bg-red-200 transition disabled:opacity-50">
-                      <XCircle className="w-3 h-3" />{busy ? "…" : "Освободить"}
+                      <XCircle className="w-3 h-3" />{busy ? "…" : ui.releaseSlot}
                     </button>
                   </div>
                 );
@@ -1414,11 +1442,11 @@ export default function AdminPage() {
                   <div key={slot} className="rounded-lg border-2 p-2" style={{ borderColor: "#f97316", background: "#fff7ed" }}>
                     <div className="text-xs font-bold text-orange-600">{slot}</div>
                     <div className="text-[10px] text-orange-500 mt-0.5 truncate" title={blocked.reason}>
-                      {blocked.reason ? `📝 ${blocked.reason}` : "🔒 Заблокирован"}
+                      {blocked.reason ? `📝 ${blocked.reason}` : ui.slotBlocked}
                     </div>
                     <button onClick={() => unblockSlot(slot)} disabled={busy}
                       className="mt-1 w-full flex items-center justify-center gap-1 text-[10px] font-semibold py-1 rounded-md bg-orange-100 text-orange-700 hover:bg-orange-200 transition disabled:opacity-50">
-                      <Unlock className="w-3 h-3" />{busy ? "…" : "Разблокировать"}
+                      <Unlock className="w-3 h-3" />{busy ? "…" : ui.unblock}
                     </button>
                   </div>
                 );
@@ -1427,16 +1455,16 @@ export default function AdminPage() {
                 return (
                   <div key={slot} className="rounded-lg border-2 p-2" style={{ borderColor: "#16a34a", background: "#f0fdf4" }}>
                     <div className="text-xs font-bold text-green-700">{slot}</div>
-                    <div className="text-[10px] text-green-500 mt-0.5">🟢 Свободен</div>
+                    <div className="text-[10px] text-green-500 mt-0.5">{ui.slotFree}</div>
                     <div className="flex gap-1 mt-1">
                       <button onClick={() => blockSlot(slot)} disabled={busy}
                         className="flex-1 flex items-center justify-center gap-0.5 text-[10px] font-semibold py-1 rounded-md bg-green-100 text-green-700 hover:bg-green-200 transition disabled:opacity-50">
-                        <Lock className="w-2.5 h-2.5" />{busy ? "…" : "Блок"}
+                        <Lock className="w-2.5 h-2.5" />{busy ? "…" : ui.block}
                       </button>
                       <button onClick={() => openManual(slot)} disabled={busy}
                         className="flex-1 flex items-center justify-center gap-0.5 text-[10px] font-semibold py-1 rounded-md text-white transition disabled:opacity-50"
                         style={{ background: ACCENT }}>
-                        <PlusCircle className="w-2.5 h-2.5" />Бронь
+                        <PlusCircle className="w-2.5 h-2.5" />{ui.book}
                       </button>
                     </div>
                   </div>
@@ -1452,26 +1480,26 @@ export default function AdminPage() {
           <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
             <h2 className="text-sm font-bold text-stone-600 flex items-center gap-1.5">
               <Wrench className="w-4 h-4" />
-              {showCompleted ? "Все заявки" : "Активные заявки"} ({visibleBookings.length})
+              {showCompleted ? ui.allBookings : ui.activeBookings} ({visibleBookings.length})
             </h2>
             <div className="flex rounded-lg border border-stone-200 overflow-hidden text-[11px] font-semibold">
               <button onClick={() => setShowCompleted(false)}
-                className={`px-3 py-1.5 transition ${!showCompleted ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
-                Активные{activeBookings.length > 0 ? ` (${activeBookings.length})` : ""}
+                className={`px-3 py-1.5 transition ${!showCompleted ? "bg-slate-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
+                {ui.activeOnly}{activeBookings.length > 0 ? ` (${activeBookings.length})` : ""}
               </button>
               <button onClick={() => setShowCompleted(true)}
-                className={`px-3 py-1.5 border-l border-stone-200 transition ${showCompleted ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
-                Все заявки{historyBookings.length > 0 ? ` +${historyBookings.length}` : ""}
+                className={`px-3 py-1.5 border-l border-stone-200 transition ${showCompleted ? "bg-slate-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
+                {ui.allWithHistory}{historyBookings.length > 0 ? ` +${historyBookings.length}` : ""}
               </button>
             </div>
           </div>
           {/* ── Business category filter ── */}
           <div className="flex items-center gap-2 mb-3 flex-wrap">
-            <label className="text-xs font-semibold text-stone-500 whitespace-nowrap">Категория:</label>
+            <label className="text-xs font-semibold text-stone-500 whitespace-nowrap">{ui.category}</label>
             <div className="flex rounded-lg border border-stone-200 overflow-hidden text-[11px] font-semibold">
               <button onClick={() => setBizFilter("all")}
                 className={`px-3 py-1.5 transition ${bizFilter === "all" ? "bg-slate-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
-                Все
+                {ui.filterAll}
               </button>
               <button onClick={() => setBizFilter("appliance")}
                 className={`px-3 py-1.5 border-l border-stone-200 transition ${bizFilter === "appliance" ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
@@ -1490,21 +1518,21 @@ export default function AdminPage() {
               type="search"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Поиск по имени, телефону, адресу, дате (ГГГГ-ММ-ДД), технике…"
-              className="w-full pl-8 pr-8 py-1.5 text-xs rounded-lg border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent placeholder-stone-400"
+              placeholder={ui.searchPh}
+              className="w-full pl-8 pr-8 py-1.5 text-xs rounded-lg border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent placeholder-stone-400"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
-                title="Очистить">
+                title={ui.clearSearch}>
                 ✕
               </button>
             )}
           </div>
           {searchQuery.trim() && (
             <p className="text-[11px] text-stone-400 mb-2 -mt-1">
-              Найдено: <strong className="text-stone-600">{filteredBookings.length}</strong> из {visibleBookings.length}
+              {ui.foundCount}: <strong className="text-stone-600">{filteredBookings.length}</strong> / {visibleBookings.length}
             </p>
           )}
 
@@ -1515,29 +1543,29 @@ export default function AdminPage() {
                 onClick={allSelected ? deselectAll : selectAll}
                 className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition"
                 style={allSelected
-                  ? { borderColor: "#1B6FE8", background: "#EFF6FF", color: "#1B6FE8" }
+                  ? { borderColor: "#6B7280", background: "#F3F4F6", color: "#6B7280" }
                   : { borderColor: "#e2e8f0", background: "#fff", color: "#57534e" }
                 }>
                 <input
                   type="checkbox" readOnly checked={allSelected}
-                  className="w-3.5 h-3.5 accent-blue-600 pointer-events-none"
+                  className="w-3.5 h-3.5 accent-slate-600 pointer-events-none"
                 />
-                {allSelected ? "Снять всё" : "Выбрать всё"}
+                {allSelected ? ui.deselectAll : ui.selectAll}
               </button>
 
               {selectedIds.size > 0 && (
                 <>
-                  <span className="text-xs text-stone-500">Выбрано: <strong>{selectedIds.size}</strong></span>
+                  <span className="text-xs text-stone-500">{ui.selected}: <strong>{selectedIds.size}</strong></span>
                   <button
                     onClick={() => { setConfirmBulkDelete(true); setBulkDeleteError(null); }}
                     className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg bg-red-700 text-white hover:bg-red-800 transition">
                     <Trash2 className="w-3.5 h-3.5" />
-                    Удалить выбранные ({selectedIds.size})
+                    {ui.deleteSelected} ({selectedIds.size})
                   </button>
                   <button
                     onClick={deselectAll}
                     className="text-xs text-stone-400 hover:text-stone-600 transition px-1">
-                    × Сбросить
+                    {ui.resetSelection}
                   </button>
                 </>
               )}
@@ -1548,14 +1576,14 @@ export default function AdminPage() {
             <div className="mb-3 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-2">
               <span className="shrink-0 mt-0.5">⚠️</span>
               <div>
-                <p className="font-semibold">Ошибка загрузки заявок</p>
+                <p className="font-semibold">{ui.loadErrorTitle}</p>
                 <p className="mt-0.5 text-red-600">{apiError}</p>
               </div>
             </div>
           )}
           {!apiError && filteredBookings.length === 0 ? (
             <p className="text-sm text-stone-400 py-4 text-center">
-              {searchQuery.trim() ? "Ничего не найдено — попробуйте другой запрос" : "Заявок пока нет"}
+              {searchQuery.trim() ? ui.noSearchResults : ui.noBookings}
             </p>
           ) : !apiError && (<>
             {/* ── Mobile: card layout ── */}
@@ -1573,19 +1601,19 @@ export default function AdminPage() {
                     {showSeparator && (
                       <div className="flex items-center gap-2 pt-1">
                         <div className="flex-1 h-px bg-stone-200" />
-                        <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wide">История</span>
+                        <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wide">{ui.history}</span>
                         <div className="flex-1 h-px bg-stone-200" />
                       </div>
                     )}
                     <div
-                      className={`border rounded-xl p-3 transition ${selectedIds.has(b.id) ? "ring-2 ring-blue-400 border-blue-300 bg-blue-50" : isHistory ? "border-stone-100 bg-stone-50 opacity-60" : "border-stone-200 bg-white"}`}>
+                      className={`border rounded-xl p-3 transition ${selectedIds.has(b.id) ? "ring-2 ring-slate-400 border-slate-300 bg-slate-50" : isHistory ? "border-stone-100 bg-stone-50 opacity-60" : "border-stone-200 bg-white"}`}>
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <div className="flex items-start gap-2">
                           <input
                             type="checkbox"
                             checked={selectedIds.has(b.id)}
                             onChange={() => toggleSelect(b.id)}
-                            className="mt-0.5 w-4 h-4 accent-blue-600 cursor-pointer flex-shrink-0"
+                            className="mt-0.5 w-4 h-4 accent-slate-600 cursor-pointer flex-shrink-0"
                           />
                           <div>
                             <div className="text-xs font-bold text-stone-700">{b.preferred_date}</div>
@@ -1593,7 +1621,7 @@ export default function AdminPage() {
                               {b.preferred_time}
                               {isWA && <span className="px-1 py-0.5 rounded text-[9px] font-bold bg-green-100 text-green-700">WA</span>}
                             </div>
-                            {createdStr && <div className="text-[10px] text-stone-400 mt-0.5">Создано: {createdStr}</div>}
+                            {createdStr && <div className="text-[10px] text-stone-400 mt-0.5">{ui.colCreated}: {createdStr}</div>}
                           </div>
                         </div>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${statusCls}`}>{statusLabel}</span>
@@ -1601,8 +1629,8 @@ export default function AdminPage() {
                       <div className="flex items-center gap-1.5 mb-1">
                         <User className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
                         <span className="text-sm font-semibold text-stone-800">{b.name}</span>
-                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${(b.business_type ?? "appliance") === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
-                          {(b.business_type ?? "appliance") === "dental" ? "Dental" : "Appliance"}
+                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${(b.business_type ?? ADMIN_SITE_CONFIG.bookingBizFallback) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
+                          {(b.business_type ?? ADMIN_SITE_CONFIG.bookingBizFallback) === "dental" ? "Dental" : "Appliance"}
                         </span>
                         {b.is_remote && (
                           <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-stone-100 text-stone-500 leading-none" title="Только просмотр — заявка с другого сайта">👁</span>
@@ -1623,33 +1651,33 @@ export default function AdminPage() {
                           {b.status === "pending" && (
                             <button onClick={() => approveBooking(b.id)}
                               className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition border border-green-100">
-                              <ThumbsUp className="w-3.5 h-3.5" /> Одобрить
+                              <ThumbsUp className="w-3.5 h-3.5" /> {ui.approve}
                             </button>
                           )}
                           <div className="flex gap-2">
                             <button onClick={() => openEditModal(b)}
                               className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-violet-50 text-violet-700 hover:bg-violet-100 transition border border-violet-100">
-                              <Pencil className="w-3.5 h-3.5" /> Изменить
+                              <Pencil className="w-3.5 h-3.5" /> {ui.edit}
                             </button>
                             <button onClick={() => setConfirmComplete({ id: b.id, name: b.name })}
-                              className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition border border-blue-100"
-                              title="Отметить как выполнено (после фактического ремонта)">
-                              <CheckCircle2 className="w-3.5 h-3.5" /> Завершить
+                              className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100 transition border border-slate-100"
+                              title={ui.completeHint}>
+                              <CheckCircle2 className="w-3.5 h-3.5" /> {ui.complete}
                             </button>
                           </div>
                           <div className="flex gap-2">
                             <button onClick={() => openReschedule(b)}
-                              className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition border border-blue-100">
-                              <CalendarDays className="w-3.5 h-3.5" /> Перенести
+                              className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100 transition border border-slate-100">
+                              <CalendarDays className="w-3.5 h-3.5" /> {ui.reschedule}
                             </button>
                             <button onClick={() => setConfirmCancel({ id: b.id, name: b.name, time: b.preferred_time })}
                               className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition border border-red-100">
-                              <XCircle className="w-3.5 h-3.5" /> Отменить
+                              <XCircle className="w-3.5 h-3.5" /> {ui.cancel}
                             </button>
                           </div>
                           <button onClick={() => setConfirmDelete({ id: b.id, name: b.name })}
                             className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition border border-red-200">
-                            <Trash2 className="w-3.5 h-3.5" /> Удалить навсегда
+                            <Trash2 className="w-3.5 h-3.5" /> {ui.deleteForever}
                           </button>
                         </div>
                       )}
@@ -1658,7 +1686,7 @@ export default function AdminPage() {
                           <button
                             onClick={() => openRestoreModal(b)}
                             className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 transition-all duration-150 hover:scale-105 border border-orange-100">
-                            <RotateCcw className="w-3.5 h-3.5" /> Восстановить
+                            <RotateCcw className="w-3.5 h-3.5" /> {ui.restore}
                           </button>
                           <button onClick={() => setConfirmDelete({ id: b.id, name: b.name })}
                             className="flex items-center justify-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition border border-red-200">
@@ -1681,17 +1709,17 @@ export default function AdminPage() {
                       <input
                         type="checkbox" checked={allSelected} readOnly
                         onClick={allSelected ? deselectAll : selectAll}
-                        className="w-3.5 h-3.5 accent-blue-600 cursor-pointer"
+                        className="w-3.5 h-3.5 accent-slate-600 cursor-pointer"
                       />
                     </th>
-                    <th className="text-left px-3 py-2 font-semibold">Создано</th>
-                    <th className="text-left px-3 py-2 font-semibold">Дата визита</th>
-                    <th className="text-left px-3 py-2 font-semibold">Время</th>
-                    <th className="text-left px-3 py-2 font-semibold">Клиент</th>
-                    <th className="text-left px-3 py-2 font-semibold">Телефон</th>
-                    <th className="text-left px-3 py-2 font-semibold">Техника</th>
-                    <th className="text-left px-3 py-2 font-semibold">Статус</th>
-                    <th className="text-left px-3 py-2 font-semibold">Действие</th>
+                    <th className="text-left px-3 py-2 font-semibold">{ui.colCreated}</th>
+                    <th className="text-left px-3 py-2 font-semibold">{ui.colVisitDate}</th>
+                    <th className="text-left px-3 py-2 font-semibold">{ui.colTime}</th>
+                    <th className="text-left px-3 py-2 font-semibold">{ui.colClient}</th>
+                    <th className="text-left px-3 py-2 font-semibold">{ui.colPhone}</th>
+                    <th className="text-left px-3 py-2 font-semibold">{ui.colEquipment}</th>
+                    <th className="text-left px-3 py-2 font-semibold">{ui.colStatus}</th>
+                    <th className="text-left px-3 py-2 font-semibold">{ui.colAction}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1712,19 +1740,19 @@ export default function AdminPage() {
                             <td colSpan={9} className="px-3 py-1.5">
                               <div className="flex items-center gap-2">
                                 <div className="flex-1 h-px bg-stone-200" />
-                                <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wide">История</span>
+                                <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wide">{ui.history}</span>
                                 <div className="flex-1 h-px bg-stone-200" />
                               </div>
                             </td>
                           </tr>
                         )}
-                        <tr className={`${selectedIds.has(b.id) ? "bg-blue-50 ring-1 ring-inset ring-blue-300" : i % 2 === 0 ? "bg-white" : "bg-stone-50"} ${isHistory && !selectedIds.has(b.id) ? "opacity-50" : ""} hover:bg-blue-50 transition-colors cursor-default`}>
+                        <tr className={`${selectedIds.has(b.id) ? "bg-slate-50 ring-1 ring-inset ring-slate-300" : i % 2 === 0 ? "bg-white" : "bg-stone-50"} ${isHistory && !selectedIds.has(b.id) ? "opacity-50" : ""} hover:bg-slate-50 transition-colors cursor-default`}>
                           <td className="px-3 py-2">
                             <input
                               type="checkbox"
                               checked={selectedIds.has(b.id)}
                               onChange={() => toggleSelect(b.id)}
-                              className="w-3.5 h-3.5 accent-blue-600 cursor-pointer"
+                              className="w-3.5 h-3.5 accent-slate-600 cursor-pointer"
                             />
                           </td>
                           <td className="px-3 py-2 text-stone-400 whitespace-nowrap">{createdStr}</td>
@@ -1761,8 +1789,8 @@ export default function AdminPage() {
                                     <button
                                       onClick={() => approveBooking(b.id)}
                                       className="flex items-center gap-1 text-green-600 hover:text-green-800 font-semibold transition"
-                                      title="Одобрить бронирование и отправить email клиенту">
-                                      <ThumbsUp className="w-3.5 h-3.5" /> Одобрить
+                                      title={ui.approve}>
+                                      <ThumbsUp className="w-3.5 h-3.5" /> {ui.approve}
                                     </button>
                                     <span className="text-stone-300">|</span>
                                   </>
@@ -1770,36 +1798,36 @@ export default function AdminPage() {
                                 <button
                                   onClick={() => openEditModal(b)}
                                   className="flex items-center gap-1 text-violet-600 hover:text-violet-800 font-semibold transition"
-                                  title="Изменить данные бронирования">
-                                  <Pencil className="w-3.5 h-3.5" /> Изменить
+                                  title={ui.edit}>
+                                  <Pencil className="w-3.5 h-3.5" /> {ui.edit}
                                 </button>
                                 <span className="text-stone-300">|</span>
                                 <button
                                   onClick={() => openReschedule(b)}
-                                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold transition"
-                                  title="Перенести на другую дату/время">
-                                  <CalendarDays className="w-3.5 h-3.5" /> Перенести
+                                  className="flex items-center gap-1 text-slate-600 hover:text-slate-800 font-semibold transition"
+                                  title={ui.reschedule}>
+                                  <CalendarDays className="w-3.5 h-3.5" /> {ui.reschedule}
                                 </button>
                                 <span className="text-stone-300">|</span>
                                 <button
                                   onClick={() => setConfirmComplete({ id: b.id, name: b.name })}
-                                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold transition"
-                                  title="Отметить как выполнено (после фактического ремонта)">
-                                  <CheckCircle2 className="w-3.5 h-3.5" /> Завершить
+                                  className="flex items-center gap-1 text-slate-600 hover:text-slate-800 font-semibold transition"
+                                  title={ui.completeHint}>
+                                  <CheckCircle2 className="w-3.5 h-3.5" /> {ui.complete}
                                 </button>
                                 <span className="text-stone-300">|</span>
                                 <button
                                   onClick={() => setConfirmCancel({ id: b.id, name: b.name, time: b.preferred_time })}
                                   className="flex items-center gap-1 text-red-500 hover:text-red-700 font-semibold transition"
-                                  title="Отменить бронирование">
-                                  <XCircle className="w-3.5 h-3.5" /> Отменить
+                                  title={ui.cancelBookingTitle}>
+                                  <XCircle className="w-3.5 h-3.5" /> {ui.cancel}
                                 </button>
                                 <span className="text-stone-300">|</span>
                                 <button
                                   onClick={() => setConfirmDelete({ id: b.id, name: b.name })}
                                   className="flex items-center gap-1 text-red-700 hover:text-red-900 font-semibold transition"
-                                  title="Удалить заявку навсегда из базы данных">
-                                  <Trash2 className="w-3.5 h-3.5" /> Удалить
+                                  title={ui.deleteTitle}>
+                                  <Trash2 className="w-3.5 h-3.5" /> {ui.deleteForever}
                                 </button>
                               </div>
                             )}
@@ -1809,15 +1837,15 @@ export default function AdminPage() {
                                   onClick={() => openRestoreModal(b)}
                                   className="flex items-center gap-1 font-semibold transition-all duration-150 hover:scale-110 origin-left"
                                   style={{ color: "#f97316" }}
-                                  title="Восстановить заявку в активные">
-                                  <RotateCcw className="w-3.5 h-3.5" /> Восстановить
+                                  title={ui.restoreTitle}>
+                                  <RotateCcw className="w-3.5 h-3.5" /> {ui.restore}
                                 </button>
                                 <span className="text-stone-300">|</span>
                                 <button
                                   onClick={() => setConfirmDelete({ id: b.id, name: b.name })}
                                   className="flex items-center gap-1 text-red-700 hover:text-red-900 font-semibold transition"
-                                  title="Удалить заявку навсегда из базы данных">
-                                  <Trash2 className="w-3.5 h-3.5" /> Удалить
+                                  title={ui.deleteTitle}>
+                                  <Trash2 className="w-3.5 h-3.5" /> {ui.deleteForever}
                                 </button>
                               </div>
                             )}
@@ -1837,10 +1865,10 @@ export default function AdminPage() {
       {/* ── Developer footer ── */}
       <div className="mt-6 pb-8 text-center space-y-1">
         <p className="text-sm font-semibold" style={{ color: "#dc2626" }}>
-          Database developed by Eivaz Rakhmanov 2026
+          {ui.dbDevEn}
         </p>
         <p className="text-sm font-semibold" style={{ color: "#16a34a" }}>
-          База данных разработана Эйвазом Рахмановым в 2026 году
+          {ui.dbDevRu}
         </p>
       </div>
     </div>
