@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import GalleryPhotoManager from "@/components/GalleryPhotoManager";
 import VisitFeeSettings from "@/components/admin/VisitFeeSettings";
+import AdminLangToggle, { readAdminUiLang, writeAdminUiLang, type AdminUiLang } from "@/components/admin/AdminLangToggle";
 
 const ACCENT    = "#1B6FE8";
 const TIME_SLOTS = ["9:00 AM","9:30 AM","10:00 AM","10:30 AM","11:00 AM","11:30 AM","12:00 PM","12:30 PM","1:00 PM","1:30 PM","2:00 PM","2:30 PM","3:00 PM","3:30 PM","4:00 PM","4:30 PM","5:00 PM"];
@@ -136,6 +137,7 @@ export default function AdminPage() {
   const [mobileTab,      setMobileTab]      = useState<"slots"|"bookings"|"photos"|"settings">("slots");
   const [showCompleted,  setShowCompleted]  = useState(true);
   const [searchQuery,    setSearchQuery]    = useState("");
+  const [adminLang, setAdminLangState]      = useState<AdminUiLang>(() => readAdminUiLang());
 
   // Cancel client booking modal
   const [confirmCancel, setConfirmCancel] = useState<{ id: string; name: string; time: string } | null>(null);
@@ -226,6 +228,17 @@ export default function AdminPage() {
     return h;
   }, [pin, adminBearer]);
   const headers = adminAuthH({ "Content-Type": "application/json" });
+
+  const setAdminLang = useCallback((lang: AdminUiLang) => {
+    setAdminLangState(lang);
+    writeAdminUiLang(lang);
+    if (!authed) return;
+    void fetch(`${API()}/api/admin/settings`, {
+      method: "POST",
+      headers: adminAuthH({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ admin_ui_language: lang }),
+    }).catch(() => { /* non-fatal */ });
+  }, [authed, adminAuthH]);
 
   // Silent fetch — no loading spinner (used by auto-refresh)
   const fetchSlots = useCallback(async () => {
@@ -1174,6 +1187,7 @@ export default function AdminPage() {
             <Camera className="w-4 h-4" />
             <span>Фото</span>
           </button>
+          <AdminLangToggle lang={adminLang} onChange={setAdminLang} accent={ACCENT} compact />
           <button onClick={logout} className="flex-none flex items-center gap-1 text-xs text-stone-500 hover:text-red-500 transition px-2 py-1.5 rounded-lg hover:bg-red-50">
             <LogOut className="w-3.5 h-3.5" />
             <span>Выйти</span>
@@ -1195,7 +1209,18 @@ export default function AdminPage() {
             <div className="text-xs font-semibold leading-tight" style={{ color: "#dc2626" }}>Database developed by Eivaz Rakhmanov 2026</div>
             <div className="text-xs font-semibold leading-tight" style={{ color: "#16a34a" }}>База данных разработана Эйвазом Рахмановым в 2026 году</div>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end items-center gap-2">
+            <a
+              href="/employee"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition"
+              title={adminLang === "ru" ? "Открыть портал сотрудника" : "Open employee portal"}
+            >
+              <Wrench className="w-3.5 h-3.5" />
+              {adminLang === "ru" ? "Портал сотрудника" : "Employee Portal"}
+            </a>
+            <AdminLangToggle lang={adminLang} onChange={setAdminLang} accent={ACCENT} />
             <button onClick={logout} className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-red-500 transition">
               <LogOut className="w-4 h-4" />Выйти
             </button>

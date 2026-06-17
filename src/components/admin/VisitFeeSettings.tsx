@@ -35,18 +35,16 @@ export default function VisitFeeSettings({ apiBase, adminAuthH, site }: Props) {
     setLoading(true);
     setMsg(null);
     try {
+      const pub = await fetch(`${apiBase}/api/settings/visit-fee?site=${site}`, { cache: "no-store" });
+      const pd = await pub.json() as { fee?: string; site?: string };
+      if (pd.fee != null) {
+        setVisitFee(pd.fee);
+        return;
+      }
       const r = await fetch(`${apiBase}/api/admin/settings`, { headers: adminAuthH() });
       const d = await r.json() as { ok?: boolean; settings?: Record<string, string> };
-      if (d.ok && d.settings) {
-        const fee = d.settings[settingsKey] ?? d.settings.visit_fee;
-        if (fee) {
-          setVisitFee(fee);
-          return;
-        }
-      }
-      const pub = await fetch(`${apiBase}/api/settings/visit-fee?site=${site}`);
-      const pd = await pub.json() as { fee?: string };
-      if (pd.fee) setVisitFee(pd.fee);
+      const fee = d.settings?.[settingsKey];
+      if (d.ok && fee) setVisitFee(fee);
     } catch {
       setMsg({ ok: false, text: "Ошибка загрузки настроек" });
     } finally {
