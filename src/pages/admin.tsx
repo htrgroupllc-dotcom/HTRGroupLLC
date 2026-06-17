@@ -16,7 +16,7 @@ import TrashTab from "@/components/crm/TrashTab";
 import PricebookTab from "@/components/crm/PricebookTab";
 import GalleryPhotoManager from "@/components/GalleryPhotoManager";
 import VisitFeeSettings from "@/components/admin/VisitFeeSettings";
-import { ADMIN_SITE_CONFIG } from "@/lib/adminSiteConfig";
+import { ADMIN_SITE_CONFIG, resolveBookingBiz } from "@/lib/adminSiteConfig";
 
 const ACCENT = ADMIN_SITE_CONFIG.accent;
 const PAGE_BG = ADMIN_SITE_CONFIG.pageBg;
@@ -1415,7 +1415,7 @@ function AdminDashboard() {
     const sq = searchQuery.trim().toLowerCase();
     let result = visibleBookings;
     if (bizFilter !== "all") {
-      result = result.filter(b => (b.business_type ?? "appliance") === bizFilter);
+      result = result.filter(b => resolveBookingBiz(b.business_type) === bizFilter);
     }
     if (empFilter) {
       result = result.filter(b => b.assigned_employee_id === empFilter);
@@ -1450,7 +1450,12 @@ function AdminDashboard() {
     setMSaving(true); setMError("");
     const r = await fetch(`${API()}/api/admin/booking`, {
       method: "POST", headers,
-      body: JSON.stringify({ name: mName, phone: mPhone, email: mEmail, appliance: mAppl, address: mAddr, message: [mNote, mZip ? `ZIP: ${mZip}` : ""].filter(Boolean).join(" | "), date: dateStr, time: manualSlot }),
+      body: JSON.stringify({
+        name: mName, phone: mPhone, email: mEmail, appliance: mAppl, address: mAddr,
+        message: [mNote, mZip ? `ZIP: ${mZip}` : ""].filter(Boolean).join(" | "),
+        date: dateStr, time: manualSlot,
+        business_type: ADMIN_SITE_CONFIG.bookingBizFallback,
+      }),
     });
     if (r.status === 409) { setMError(t.errSlotTakenShort); setMSaving(false); return; }
     if (!r.ok) { setMError(t.errServer); setMSaving(false); return; }
@@ -2521,8 +2526,8 @@ function AdminDashboard() {
                       <div className="flex items-center gap-1.5 mb-1">
                         <User className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
                         <span className="text-sm font-semibold text-stone-800">{b.name}</span>
-                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${(b.business_type ?? "appliance") === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
-                          {(b.business_type ?? "appliance") === "dental" ? t.bizDental : t.bizAppliance}
+                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${resolveBookingBiz(b.business_type) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
+                          {resolveBookingBiz(b.business_type) === "dental" ? t.bizDental : t.bizAppliance}
                         </span>
                         {b.is_remote && (
                           <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-stone-100 text-stone-500 leading-none" title={t.remoteBookingHint}>👁</span>
@@ -2978,9 +2983,15 @@ function AdminDashboard() {
 
                           {/* Клиент + телефон */}
                           <td className="px-3 pt-2 pb-1 align-top">
-                            <span className="flex items-center gap-1">
+                            <span className="flex items-center gap-1 flex-wrap">
                               <User className="w-3 h-3 text-stone-400 shrink-0" />
                               <span className="font-medium text-stone-700">{b.name}</span>
+                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${resolveBookingBiz(b.business_type) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
+                                {resolveBookingBiz(b.business_type) === "dental" ? t.bizDental : t.bizAppliance}
+                              </span>
+                              {b.is_remote && (
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-stone-100 text-stone-500 leading-none" title={t.remoteBookingHint}>👁</span>
+                              )}
                               {b.client_lang && (
                                 <span
                                   className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-sky-100 text-sky-700 leading-none uppercase"
