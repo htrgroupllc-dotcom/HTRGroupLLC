@@ -7298,8 +7298,8 @@ footer {
   }
 
   .emp-main-inner {
-    padding: 0 24px;
-    max-width: 100% !important;
+    padding: 0 16px;
+    max-width: 480px !important;
   }
 }
 

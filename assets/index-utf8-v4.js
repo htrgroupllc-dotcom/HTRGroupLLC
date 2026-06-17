@@ -82039,48 +82039,25 @@ function requireHtml2pdf() {
 var html2pdfExports = requireHtml2pdf();
 const html2pdf = /* @__PURE__ */ getDefaultExportFromCjs(html2pdfExports);
 async function downloadReceiptPdf(opts) {
-  const res = await fetch(opts.url, { headers: opts.headers });
+  const pdfUrl = opts.url.replace("/invoice-html", "/invoice-pdf");
+  const res = await fetch(pdfUrl, { headers: opts.headers });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const html = await res.text();
-  const iframe = document.createElement("iframe");
-  iframe.setAttribute("sandbox", "allow-same-origin");
-  iframe.style.position = "fixed";
-  iframe.style.left = "-10000px";
-  iframe.style.top = "0";
-  iframe.style.width = "640px";
-  iframe.style.height = "10px";
-  iframe.style.border = "0";
-  iframe.srcdoc = html;
-  document.body.appendChild(iframe);
-  await new Promise((resolve) => {
-    iframe.addEventListener("load", () => resolve(), { once: true });
-  });
-  const innerDoc = iframe.contentDocument;
-  if (!innerDoc) {
-    document.body.removeChild(iframe);
-    throw new Error("iframe load failed");
-  }
-  const host = document.createElement("div");
-  host.style.position = "fixed";
-  host.style.left = "-10000px";
-  host.style.top = "0";
-  host.style.width = "640px";
-  host.style.background = "#f4f6f9";
-  host.innerHTML = innerDoc.body.innerHTML;
-  document.body.appendChild(host);
+  const blob = await res.blob();
+  if (!blob.size) throw new Error("Empty PDF");
+  const objectUrl = URL.createObjectURL(blob);
   try {
-    await html2pdf().set({
-      margin: 0,
-      filename: `${opts.filenameBase}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#f4f6f9" },
-      jsPDF: { unit: "pt", format: "letter", orientation: "portrait" }
-    }).from(host).save();
+    const a = document.createElement("a");
+    a.href = objectUrl;
+    a.download = `${opts.filenameBase}.pdf`;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   } finally {
-    document.body.removeChild(host);
-    document.body.removeChild(iframe);
+    URL.revokeObjectURL(objectUrl);
   }
 }
+
 const ACCENT$b = "#1B6FE8";
 const EMP_LANGS = [
   { code: "en", label: "EN" },
