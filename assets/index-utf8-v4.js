@@ -90619,7 +90619,11 @@ const translations = {
     editEmail: "Edit Email",
     emailSaved: "Email saved",
     emailSaveErr: "Error saving email",
-    addEmail: "Add Email"
+    addEmail: "Add Email",
+    clientMessageOriginal: "Client message (English)",
+    clientMessageTranslation: "Translation",
+    translatingMessage: "Translating…",
+    translationFailed: "Translation unavailable"
   },
   ru: {
     title: "Портал сотрудника",
@@ -90767,7 +90771,11 @@ const translations = {
     editEmail: "Изменить Email",
     emailSaved: "Email сохранён",
     emailSaveErr: "Ошибка сохранения Email",
-    addEmail: "Добавить Email"
+    addEmail: "Добавить Email",
+    clientMessageOriginal: "Сообщение клиента (English)",
+    clientMessageTranslation: "Перевод",
+    translatingMessage: "Переводим…",
+    translationFailed: "Перевод недоступен"
   },
   es: {
     title: "Portal del empleado",
@@ -90915,7 +90923,11 @@ const translations = {
     editEmail: "Editar Email",
     emailSaved: "Email guardado",
     emailSaveErr: "Error al guardar email",
-    addEmail: "Agregar Email"
+    addEmail: "Agregar Email",
+    clientMessageOriginal: "Mensaje del cliente (English)",
+    clientMessageTranslation: "Traducción",
+    translatingMessage: "Traduciendo…",
+    translationFailed: "Traducción no disponible"
   },
   tr: {
     title: "Personel Portalı",
@@ -91058,7 +91070,11 @@ const translations = {
     editEmail: "E-posta Düzenle",
     emailSaved: "E-posta kaydedildi",
     emailSaveErr: "E-posta kaydetme hatası",
-    addEmail: "E-posta Ekle"
+    addEmail: "E-posta Ekle",
+    clientMessageOriginal: "Müşteri mesajı (English)",
+    clientMessageTranslation: "Çeviri",
+    translatingMessage: "Çevriliyor…",
+    translationFailed: "Çeviri kullanılamıyor"
   },
   az: {
     title: "İşçi Portalı",
@@ -91201,7 +91217,11 @@ const translations = {
     editEmail: "E-poçtu Yenilə",
     emailSaved: "E-poçt qeydə alındı",
     emailSaveErr: "E-poçt saxlama xətası",
-    addEmail: "E-poçt Əlavə Et"
+    addEmail: "E-poçt Əlavə Et",
+    clientMessageOriginal: "Müştəri mesajı (English)",
+    clientMessageTranslation: "Tərcümə",
+    translatingMessage: "Tərcümə olunur…",
+    translationFailed: "Tərcümə mövcud deyil"
   },
   uk: {
     title: "Портал працівника",
@@ -91344,7 +91364,11 @@ const translations = {
     editEmail: "Оновити Email",
     emailSaved: "Email збережено",
     emailSaveErr: "Помилка збереження Email",
-    addEmail: "Додати Email"
+    addEmail: "Додати Email",
+    clientMessageOriginal: "Повідомлення клієнта (English)",
+    clientMessageTranslation: "Переклад",
+    translatingMessage: "Перекладаємо…",
+    translationFailed: "Переклад недоступний"
   }
 };
 const EmpLangContext = reactExports.createContext(void 0);
@@ -93504,6 +93528,8 @@ function EmployeePage() {
                     setEmailEditVal,
                     setEmailEditMsg,
                     saveClientEmail,
+                    empLang: lang,
+                    authH,
                     t
                   },
                   b.id
@@ -93546,6 +93572,8 @@ function EmployeePage() {
                     setEmailEditVal,
                     setEmailEditMsg,
                     saveClientEmail,
+                    empLang: lang,
+                    authH,
                     t
                   },
                   b.id
@@ -93589,6 +93617,8 @@ function EmployeePage() {
                     setEmailEditVal,
                     setEmailEditMsg,
                     saveClientEmail,
+                    empLang: lang,
+                    authH,
                     t
                   },
                   b.id
@@ -94917,6 +94947,76 @@ function EmployeePage() {
     )
   ] });
 }
+
+const messageTranslationCache = new Map();
+const EMP_EMPLOYEE_LANG_MAP = {
+  en: { label: "English", code: "en" },
+  ru: { label: "Russian", code: "ru" },
+  es: { label: "Spanish", code: "es" },
+  tr: { label: "Turkish", code: "tr" },
+  az: { label: "Azerbaijani", code: "az" },
+  uk: { label: "Ukrainian", code: "uk" }
+};
+function ClientMessageBlock({ message, empLang, authH, t }) {
+  const [translation, setTranslation] = reactExports.useState(null);
+  const [loading, setLoading] = reactExports.useState(false);
+  const [failed, setFailed] = reactExports.useState(false);
+  reactExports.useEffect(() => {
+    if (empLang === "en") {
+      setTranslation(null);
+      setFailed(false);
+      setLoading(false);
+      return;
+    }
+    const cacheKey = `${empLang}::${message}`;
+    const cached = messageTranslationCache.get(cacheKey);
+    if (cached) {
+      setTranslation(cached);
+      setFailed(false);
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    setFailed(false);
+    const emp = EMP_EMPLOYEE_LANG_MAP[empLang];
+    fetch(`${API$1()}/api/employee/translate`, {
+      method: "POST",
+      headers: authH(),
+      body: JSON.stringify({
+        text: message,
+        myLang: emp.label,
+        myLangCode: emp.code,
+        customerLang: "English",
+        customerLangCode: "en"
+      })
+    }).then((r) => r.json()).then((d) => {
+      if (cancelled) return;
+      if (d.translation) {
+        messageTranslationCache.set(cacheKey, d.translation);
+        setTranslation(d.translation);
+      } else {
+        setFailed(true);
+      }
+    }).catch(() => {
+      if (!cancelled) setFailed(true);
+    }).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [message, empLang, authH]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { fontSize: 12, color: "#64748b", background: "#f8fafc", padding: 10, borderRadius: 8, border: "1px solid #e2e8f0" }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 10, fontWeight: 700, color: "#94a3b8", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }, children: t("clientMessageOriginal") }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: "#374151", lineHeight: 1.55, whiteSpace: "pre-wrap" }, children: message }),
+    empLang !== "en" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { borderTop: "1px solid #e2e8f0", marginTop: 8, paddingTop: 8 }, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 10, fontWeight: 700, color: ACCENT$2, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }, children: t("clientMessageTranslation") }),
+      loading && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontStyle: "italic", color: "#94a3b8" }, children: t("translatingMessage") }),
+      !loading && failed && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: "#ef4444", fontSize: 11 }, children: t("translationFailed") }),
+      !loading && translation && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: "#0f172a", lineHeight: 1.55, whiteSpace: "pre-wrap" }, children: translation })
+    ] })
+  ] });
+}
+
 function JobCard({
   b,
   justClosed,
@@ -94945,6 +95045,8 @@ function JobCard({
   setEmailEditVal,
   setEmailEditMsg,
   saveClientEmail,
+  empLang,
+  authH,
   t
 }) {
   const [genderPickOpen, setGenderPickOpen] = reactExports.useState(false);
@@ -95238,10 +95340,7 @@ function JobCard({
         /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { style: { width: 13, height: 13, flexShrink: 0 } }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: b.recall_note })
       ] }),
-      b.message && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "flex-start", gap: 8, fontSize: 12, color: "#64748b", background: "#f8fafc", padding: 8, borderRadius: 8 }, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { style: { width: 12, height: 12, flexShrink: 0, marginTop: 2 } }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: b.message })
-      ] }),
+      b.message && /* @__PURE__ */ jsxRuntimeExports.jsx(ClientMessageBlock, { message: b.message, empLang, authH, t }),
       b.status === "completed" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { borderTop: "1px solid #f1f5f9", marginTop: 4, paddingTop: 12, display: "flex", flexDirection: "column", gap: 6 }, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" }, children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { fontSize: 12, fontWeight: 700, color: SUCCESS }, children: [
