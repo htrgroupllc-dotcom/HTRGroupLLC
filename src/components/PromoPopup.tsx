@@ -5,22 +5,35 @@ import { X, Wrench, CalendarCheck } from "lucide-react";
 const STORAGE_KEY = "htr_promo_shown";
 const DELAY_MS = 1_000;
 
-const TR = {
-  en: {
-    badge:   "Limited Offer",
-    title:   "Free Diagnostic Visit!",
-    sub:     "Not sure what's wrong with your appliance? Our technician comes to you and diagnoses the problem — completely free.",
-    cta:     "Book Free Visit",
-    dismiss: "No thanks",
-  },
-  es: {
-    badge:   "Oferta Limitada",
-    title:   "¡Visita de Diagnóstico Gratis!",
-    sub:     "¿No sabe qué le pasa a su electrodoméstico? Nuestro técnico va a su casa y diagnostica el problema — completamente gratis.",
-    cta:     "Reservar Visita Gratis",
-    dismiss: "No, gracias",
-  },
-};
+const EXCLUDED_PATHS = ["/admin", "/gallery", "/book-call", "/intake", "/form", "/pay", "/payment-success"];
+
+function makeTranslations(fee: string) {
+  const n = Number(fee);
+  const isFree = Number.isFinite(n) && n === 0;
+  const feeLabel = isFree ? "Free" : `$${fee}`;
+  const feeLabelEs = isFree ? "Gratis" : `$${fee}`;
+
+  return {
+    en: {
+      badge:   "Limited Offer",
+      title:   isFree ? "Free Diagnostic Visit!" : `$${fee} Diagnostic Visit!`,
+      sub:     isFree
+        ? "Not sure what's wrong with your appliance? Our technician comes to you and diagnoses the problem — completely free."
+        : `Not sure what's wrong with your appliance? Our technician comes to you and diagnoses the problem for only $${fee} — applied toward your repair.`,
+      cta:     isFree ? "Book Free Visit" : `Book for ${feeLabel}`,
+      dismiss: "No thanks",
+    },
+    es: {
+      badge:   "Oferta Limitada",
+      title:   isFree ? "¡Visita de Diagnóstico Gratis!" : `¡Visita de Diagnóstico por ${feeLabelEs}!`,
+      sub:     isFree
+        ? "¿No sabe qué le pasa a su electrodoméstico? Nuestro técnico va a su casa y diagnostica el problema — completamente gratis."
+        : `¿No sabe qué le pasa a su electrodoméstico? Nuestro técnico va a su casa y diagnostica el problema por solo ${feeLabelEs} — aplicado al costo de la reparación.`,
+      cta:     isFree ? "Reservar Visita Gratis" : `Reservar por ${feeLabelEs}`,
+      dismiss: "No, gracias",
+    },
+  };
+}
 
 function safeStorage(type: "local" | "session") {
   try {
@@ -33,18 +46,30 @@ function safeStorage(type: "local" | "session") {
   }
 }
 
+const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined ?? "https://htr-group-llc-appliance-repair.replit.app").replace(/\/$/, "");
+
 export default function PromoPopup() {
   const [visible, setVisible] = useState(false);
+  const [fee, setFee]         = useState<string | null>(null);
 
   const lang: "en" | "es" = (() => {
     try { return (localStorage.getItem("lang") as "en" | "es") ?? "en"; }
     catch { return "en"; }
   })();
-  const T = TR[lang] ?? TR.en;
 
   useEffect(() => {
+    const base = import.meta.env.BASE_URL.replace(/\/$/, "") || "";
+    const p = window.location.pathname.replace(base, "") || "/";
+    if (EXCLUDED_PATHS.some(ep => p === ep || p.startsWith(ep + "/"))) return;
+
     const ss = safeStorage("session");
     if (ss?.getItem(STORAGE_KEY)) return;
+
+    fetch(`${API_BASE}/api/settings/visit-fee?site=appliance`)
+      .then(r => r.json())
+      .then((d: { fee?: string }) => setFee(d.fee ?? "0"))
+      .catch(() => setFee("0"));
+
     const timer = setTimeout(() => setVisible(true), DELAY_MS);
     return () => clearTimeout(timer);
   }, []);
@@ -62,7 +87,10 @@ export default function PromoPopup() {
     }, 200);
   }
 
-  if (!visible) return null;
+  if (!visible || fee === null) return null;
+
+  const TR = makeTranslations(fee);
+  const T  = TR[lang] ?? TR.en;
 
   const modal = (
     <div
@@ -98,7 +126,6 @@ export default function PromoPopup() {
           }
         `}</style>
 
-        {/* Header gradient */}
         <div style={{
           background: "linear-gradient(135deg,#0B1A3F,#1B6FE8)",
           padding: "28px 24px 20px",
@@ -162,7 +189,6 @@ export default function PromoPopup() {
           }}>{T.title}</h2>
         </div>
 
-        {/* Body */}
         <div style={{ padding: "20px 24px 24px" }}>
           <p style={{
             color: "#4b5563",

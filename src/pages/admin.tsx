@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Lock, Unlock, Calendar, RefreshCw, LogOut, ShieldCheck,
-  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Camera,
+  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Camera, Settings,
 } from "lucide-react";
 import GalleryPhotoManager from "@/components/GalleryPhotoManager";
+import VisitFeeSettings from "@/components/admin/VisitFeeSettings";
 
 const ACCENT    = "#1B6FE8";
 const TIME_SLOTS = ["9:00 AM","9:30 AM","10:00 AM","10:30 AM","11:00 AM","11:30 AM","12:00 PM","12:30 PM","1:00 PM","1:30 PM","2:00 PM","2:30 PM","3:00 PM","3:30 PM","4:00 PM","4:30 PM","5:00 PM"];
@@ -132,7 +133,7 @@ export default function AdminPage() {
   const [apiError,      setApiError]      = useState<string | null>(null);
   const [reason,        setReason]        = useState("");
   const [actionSlot,    setActionSlot]    = useState<string | null>(null);
-  const [mobileTab,      setMobileTab]      = useState<"slots"|"bookings"|"photos">("slots");
+  const [mobileTab,      setMobileTab]      = useState<"slots"|"bookings"|"photos"|"settings">("slots");
   const [showCompleted,  setShowCompleted]  = useState(true);
   const [searchQuery,    setSearchQuery]    = useState("");
 
@@ -1157,7 +1158,7 @@ export default function AdminPage() {
           <div className="min-w-0 flex-1">
             <div className="font-bold text-stone-800 text-sm leading-tight truncate">HTRGroupTX Admin</div>
             <div className="text-xs text-stone-400 leading-tight truncate">
-              {mobileTab === "photos" ? "Загрузка фото на сайт" : "Управление расписанием"}
+              {mobileTab === "photos" ? "Загрузка фото на сайт" : mobileTab === "settings" ? "Настройки popup" : "Управление расписанием"}
             </div>
           </div>
           <button
@@ -1235,8 +1236,34 @@ export default function AdminPage() {
             <Camera className="w-3.5 h-3.5 flex-shrink-0" />
             <span>Фото</span>
           </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab("settings")}
+            className={`flex-none min-w-[5.5rem] flex-1 px-2 py-3 text-xs sm:text-sm font-semibold border-b-2 transition whitespace-nowrap flex items-center justify-center gap-1 ${
+              mobileTab === "settings" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"
+            }`}
+          >
+            <Settings className="w-3.5 h-3.5 flex-shrink-0" />
+            <span>Настройки</span>
+          </button>
         </div>
       </div>
+
+      {/* ── Popup settings (appliance + dental, separate prices) ── */}
+      {mobileTab === "settings" && (
+        <div
+          className="flex-1 overflow-y-auto p-4 md:p-6 max-w-2xl mx-auto w-full min-h-[calc(100dvh-7rem)]"
+          style={{ paddingBottom: "max(5rem, env(safe-area-inset-bottom))" }}
+        >
+          <p className="text-sm text-stone-600 mb-4">
+            Всплывающее окно при первом заходе на сайт. Цены для Appliance и Dental задаются отдельно.
+          </p>
+          <div className="space-y-4">
+            <VisitFeeSettings apiBase={API()} adminAuthH={adminAuthH} site="appliance" />
+            <VisitFeeSettings apiBase={API()} adminAuthH={adminAuthH} site="dental" />
+          </div>
+        </div>
+      )}
 
       {/* ── Gallery photos tab ── */}
       {mobileTab === "photos" && (
