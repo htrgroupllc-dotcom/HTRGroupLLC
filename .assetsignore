@@ -1,0 +1,6 @@
+# Dev/build tooling — not served on htrgrouptx.com (scripts/_tx_zips.geojson is 76MB, CF limit 25MB)
+scripts/
+src/
+.github/
+node_modules/
+.git/
