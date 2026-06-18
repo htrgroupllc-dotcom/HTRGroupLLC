@@ -86546,7 +86546,7 @@ function TrashTab({
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-600 mb-1 font-semibold", children: confirmPerm.name }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-red-500 mb-4", children: t.trashPermanentConfirmMsg }),
       permErr && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-red-600 mb-2", children: permErr }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col-reverse sm:flex-row gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
@@ -86555,7 +86555,7 @@ function TrashTab({
               setPermErr(null);
             },
             disabled: permDeleting,
-            className: "flex-1 py-2 rounded-xl border border-stone-200 text-sm text-stone-600 hover:bg-stone-50",
+            className: "flex-1 py-2.5 rounded-xl border border-stone-200 text-sm text-stone-600 hover:bg-stone-50",
             children: t.cancel
           }
         ),
@@ -86564,7 +86564,7 @@ function TrashTab({
           {
             onClick: permanentDelete,
             disabled: permDeleting,
-            className: "flex-1 py-2 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-60",
+            className: "flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-60 inline-flex items-center justify-center text-center leading-snug",
             children: permDeleting ? t.trashDeleting : t.trashPermanentConfirmYes
           }
         )
@@ -86579,9 +86579,9 @@ function TrashTab({
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-600 mb-1 font-semibold", children: t.trashSelected(confirmBulkPerm.length) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-red-500 mb-4", children: t.trashBulkDeleteMsg(confirmBulkPerm.length) }),
       permErr && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-red-600 mb-2", children: permErr }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => { setConfirmBulkPerm(null); setPermErr(null); }, disabled: permDeleting, className: "flex-1 py-2 rounded-xl border border-stone-200 text-sm text-stone-600 hover:bg-stone-50", children: t.cancel }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: permanentDeleteBulk, disabled: permDeleting, className: "flex-1 py-2 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-60", children: permDeleting ? t.trashDeleting : t.trashBulkDeleteYes })
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col-reverse sm:flex-row gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => { setConfirmBulkPerm(null); setPermErr(null); }, disabled: permDeleting, className: "flex-1 py-2.5 rounded-xl border border-stone-200 text-sm text-stone-600 hover:bg-stone-50", children: t.cancel }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: permanentDeleteBulk, disabled: permDeleting, className: "flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-60 inline-flex items-center justify-center text-center leading-snug", children: permDeleting ? t.trashDeleting : t.trashBulkDeleteYes })
       ] })
     ] }) }),
     confirmEmpty && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6", children: [
@@ -86643,9 +86643,9 @@ function TrashTab({
         t.trashSelectAll,
         selectedIds.size > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-stone-400 font-normal", children: [" · ", t.trashSelected(selectedIds.size)] })
       ] }),
-      selectedIds.size > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => { setConfirmBulkPerm([...selectedIds]); setPermErr(null); }, className: "flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-3.5 h-3.5" }),
-        t.trashBulkDeleteBtn(selectedIds.size)
+      selectedIds.size > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => { setConfirmBulkPerm([...selectedIds]); setPermErr(null); }, className: "inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition text-center leading-snug shrink-0", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-3.5 h-3.5 shrink-0" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t.trashBulkDeleteBtn(selectedIds.size) })
       ] })
     ] }),
     err && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700", children: err }),
@@ -86655,24 +86655,24 @@ function TrashTab({
     ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: bookings.map((b) => {
       const col = STATUS_COLORS[b.status] ?? { bg: "#f3f4f6", text: "#374151" };
       const checked = selectedIds.has(b.id);
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `bg-white rounded-2xl shadow-sm border p-4 ${checked ? "border-red-300 ring-1 ring-red-100" : "border-stone-100"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-3 flex-wrap", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-start gap-3 flex-1 min-w-0 cursor-pointer", children: [
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `bg-white rounded-2xl shadow-sm border p-4 ${checked ? "border-red-300 ring-1 ring-red-100" : "border-stone-100"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "flex items-start gap-3 min-w-0 cursor-pointer w-full sm:flex-1", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "checkbox", checked, onChange: () => toggleSelect(b.id), className: "w-4 h-4 mt-1 rounded border-stone-300 flex-shrink-0" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold text-stone-700 text-sm", children: b.name }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-semibold text-stone-700 text-sm break-words", children: b.name }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "span",
               {
-                className: "inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold",
+                className: "inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0",
                 style: { background: col.bg, color: col.text },
                 children: statusLabel2(b.status)
               }
             )
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-stone-500 mt-0.5", children: b.phone }),
-          b.appliance && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-stone-400", children: b.appliance }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-stone-400", children: [
+          b.appliance && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-stone-400 break-words", children: b.appliance }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-stone-400 break-words", children: [
             b.preferred_date,
             " · ",
             b.preferred_time
@@ -86685,19 +86685,18 @@ function TrashTab({
           ] })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 flex-shrink-0", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex w-full gap-2 pl-7 sm:pl-0 sm:w-auto sm:flex-shrink-0", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "button",
             {
               onClick: () => restoreBooking(b.id),
               disabled: restoringId === b.id,
-              className: "flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold border transition disabled:opacity-50",
+              className: "flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 rounded-xl text-xs font-semibold border transition disabled:opacity-50 leading-snug text-center",
               style: { borderColor: ACCENT$6, color: ACCENT$6 },
               title: t.trashRestoreBtn,
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCcw, { className: `w-3.5 h-3.5 ${restoringId === b.id ? "animate-spin" : ""}` }),
-                restoringId === b.id ? t.trashRestoring : t.trashRestoreBtn
-              ]
+                /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCcw, { className: `w-3.5 h-3.5 shrink-0 ${restoringId === b.id ? "animate-spin" : ""}` }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: restoringId === b.id ? t.trashRestoring : t.trashRestoreBtn })
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -86708,12 +86707,11 @@ function TrashTab({
                 setPermErr(null);
               },
               disabled: restoringId === b.id,
-              className: "flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold border border-red-200 text-red-500 hover:bg-red-50 transition disabled:opacity-50",
+              className: "flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 rounded-xl text-xs font-semibold border border-red-200 text-red-500 hover:bg-red-50 transition disabled:opacity-50 leading-snug text-center",
               title: t.trashPermanentBtn,
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-3.5 h-3.5" }),
-                t.trashPermanentBtn
-              ]
+                /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-3.5 h-3.5 shrink-0" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t.trashPermanentBtn })
             }
           )
         ] })

@@ -303,18 +303,18 @@ export default function TrashTab({
             <p className="text-sm text-stone-600 mb-1 font-semibold">{confirmPerm.name}</p>
             <p className="text-xs text-red-500 mb-4">{t.trashPermanentConfirmMsg}</p>
             {permErr && <p className="text-xs text-red-600 mb-2">{permErr}</p>}
-            <div className="flex gap-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-2">
               <button
                 onClick={() => { setConfirmPerm(null); setPermErr(null); }}
                 disabled={permDeleting}
-                className="flex-1 py-2 rounded-xl border border-stone-200 text-sm text-stone-600 hover:bg-stone-50"
+                className="flex-1 py-2.5 rounded-xl border border-stone-200 text-sm text-stone-600 hover:bg-stone-50"
               >
                 {t.cancel}
               </button>
               <button
                 onClick={permanentDelete}
                 disabled={permDeleting}
-                className="flex-1 py-2 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-60"
+                className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-60 inline-flex items-center justify-center text-center leading-snug"
               >
                 {permDeleting ? t.trashDeleting : t.trashPermanentConfirmYes}
               </button>
@@ -334,18 +334,18 @@ export default function TrashTab({
             <p className="text-sm text-stone-600 mb-1 font-semibold">{t.trashSelected(confirmBulkPerm.length)}</p>
             <p className="text-xs text-red-500 mb-4">{t.trashBulkDeleteMsg(confirmBulkPerm.length)}</p>
             {permErr && <p className="text-xs text-red-600 mb-2">{permErr}</p>}
-            <div className="flex gap-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-2">
               <button
                 onClick={() => { setConfirmBulkPerm(null); setPermErr(null); }}
                 disabled={permDeleting}
-                className="flex-1 py-2 rounded-xl border border-stone-200 text-sm text-stone-600 hover:bg-stone-50"
+                className="flex-1 py-2.5 rounded-xl border border-stone-200 text-sm text-stone-600 hover:bg-stone-50"
               >
                 {t.cancel}
               </button>
               <button
                 onClick={permanentDeleteBulk}
                 disabled={permDeleting}
-                className="flex-1 py-2 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-60"
+                className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-60 inline-flex items-center justify-center text-center leading-snug"
               >
                 {permDeleting ? t.trashDeleting : t.trashBulkDeleteYes}
               </button>
@@ -426,10 +426,10 @@ export default function TrashTab({
           {selectedIds.size > 0 && (
             <button
               onClick={() => { setConfirmBulkPerm([...selectedIds]); setPermErr(null); }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition text-center leading-snug shrink-0"
             >
-              <Trash2 className="w-3.5 h-3.5" />
-              {t.trashBulkDeleteBtn(selectedIds.size)}
+              <Trash2 className="w-3.5 h-3.5 shrink-0" />
+              <span>{t.trashBulkDeleteBtn(selectedIds.size)}</span>
             </button>
           )}
         </div>
@@ -456,8 +456,8 @@ export default function TrashTab({
                 key={b.id}
                 className={`bg-white rounded-2xl shadow-sm border p-4 ${checked ? "border-red-300 ring-1 ring-red-100" : "border-stone-100"}`}
               >
-                <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <label className="flex items-start gap-3 flex-1 min-w-0 cursor-pointer">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <label className="flex items-start gap-3 min-w-0 cursor-pointer w-full sm:flex-1">
                     <input
                       type="checkbox"
                       checked={checked}
@@ -466,42 +466,42 @@ export default function TrashTab({
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-semibold text-stone-700 text-sm">{b.name}</p>
+                        <p className="font-semibold text-stone-700 text-sm break-words">{b.name}</p>
                         <span
-                          className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold"
+                          className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0"
                           style={{ background: col.bg, color: col.text }}
                         >
                           {statusLabel(b.status)}
                         </span>
                       </div>
                       <p className="text-xs text-stone-500 mt-0.5">{b.phone}</p>
-                      {b.appliance && <p className="text-xs text-stone-400">{b.appliance}</p>}
-                      <p className="text-xs text-stone-400">{b.preferred_date} · {b.preferred_time}</p>
+                      {b.appliance && <p className="text-xs text-stone-400 break-words">{b.appliance}</p>}
+                      <p className="text-xs text-stone-400 break-words">{b.preferred_date} · {b.preferred_time}</p>
                       {b.address && <p className="text-xs text-stone-400 truncate">{b.address}</p>}
                       <p className="text-[10px] text-stone-300 mt-1">
                         {t.trashDeletedAt} {fmtDate(b.deleted_at)}
                       </p>
                     </div>
                   </label>
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex w-full gap-2 pl-7 sm:pl-0 sm:w-auto sm:flex-shrink-0">
                     <button
                       onClick={() => restoreBooking(b.id)}
                       disabled={restoringId === b.id}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold border transition disabled:opacity-50"
+                      className="flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 rounded-xl text-xs font-semibold border transition disabled:opacity-50 leading-snug text-center"
                       style={{ borderColor: ACCENT, color: ACCENT }}
                       title={t.trashRestoreBtn}
                     >
-                      <RotateCcw className={`w-3.5 h-3.5 ${restoringId === b.id ? "animate-spin" : ""}`} />
-                      {restoringId === b.id ? t.trashRestoring : t.trashRestoreBtn}
+                      <RotateCcw className={`w-3.5 h-3.5 shrink-0 ${restoringId === b.id ? "animate-spin" : ""}`} />
+                      <span>{restoringId === b.id ? t.trashRestoring : t.trashRestoreBtn}</span>
                     </button>
                     <button
                       onClick={() => { setConfirmPerm(b); setPermErr(null); }}
                       disabled={restoringId === b.id}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold border border-red-200 text-red-500 hover:bg-red-50 transition disabled:opacity-50"
+                      className="flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 rounded-xl text-xs font-semibold border border-red-200 text-red-500 hover:bg-red-50 transition disabled:opacity-50 leading-snug text-center"
                       title={t.trashPermanentBtn}
                     >
-                      <X className="w-3.5 h-3.5" />
-                      {t.trashPermanentBtn}
+                      <X className="w-3.5 h-3.5 shrink-0" />
+                      <span>{t.trashPermanentBtn}</span>
                     </button>
                   </div>
                 </div>
