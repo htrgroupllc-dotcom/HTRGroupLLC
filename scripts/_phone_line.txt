@@ -1,0 +1,1 @@
+'jsxRuntimeExports.jsx(Phone, { className: "w-3.5 h-3.5 flex-shrink-0", style: { color: ACCENT$4 } }),\n                      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: `tel:${b.phone}`, className: "text-sm font-medium", style: { color: ACCENT$'

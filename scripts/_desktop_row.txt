@@ -1,0 +1,50 @@
+hidden md:block", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-reviews-row gap-4", children: firstRow.map((r2, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(ReviewCard, { review: r2, isEs }, `${r2.name}-${safePage}-${i}`)) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "htr-reviews-row gap-4", children: secondRow.map((r2, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(ReviewCard, { review: r2, isEs }, `${r2.name}-${safePage}-${i + 5}`)) })
+        ] }),
+        totalPages > 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-3 mt-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              "aria-label": copy.prev,
+              disabled: safePage <= 0,
+              onClick: () => setPage((p) => Math.max(0, p - 1)),
+              className: "inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm transition-opacity disabled:opacity-40 hover:opacity-80",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "h-5 w-5" })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-semibold text-stone-500 tabular-nums", children: [
+            safePage + 1,
+            " / ",
+            totalPages
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              "aria-label": copy.next,
+              disabled: safePage >= totalPages - 1,
+              onClick: () => setPage((p) => Math.min(totalPages - 1, p + 1)),
+              className: "inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 shadow-sm transition-opacity disabled:opacity-40 hover:opacity-80",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "h-5 w-5" })
+            }
+          )
+        ] })
+      ] })
+    ] }),
+    loading && reviews.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-center text-[11px] text-stone-400 mt-2", children: isEs ? "Actualizando reseñas…" : "Updating reviews…" })
+  ] }) });
+}
+function useGoogleReviews() {
+  const [reviews, setReviews] = reactExports.useState([]);
+  const [rating, setRating] = reactExports.useState(null);
+  const [reviewCount, setReviewCount] = reactExports.useState(null);
+  const [loading, setLoading] = reactExports.useState(false);
+  const [source, setSource] = reactExports.useState(null);
+  const loadReviews = reactExports.useCallback(async () => {
+    const apiBase = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
+    setLoading(true);
+    try {
+      const data = await fetchGoogleReviewsFrom

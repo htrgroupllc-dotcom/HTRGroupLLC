@@ -1,0 +1,9 @@
+ess_type) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`, children: resolveBookingBiz(b.business_type) === "dental" ? t.bizDental : t.bizAppliance }),
+                      b.is_remote && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-1.5 py-0.5 rounded text-[9px] font-bold bg-stone-100 text-stone-500 leading-none", title: t.remoteBookingHint, children: "👁" }),
+                      b.client_lang && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "span",
+                        {
+                          className: "inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-sky-100 text-sky-700 leading-none uppercase",
+                          title: b.client_lang === "es" ? t.clientLangEs : b.client_lang === "en" ? t.clientLangEn : b.client_lang,
+                          children: b.client_lang
+               

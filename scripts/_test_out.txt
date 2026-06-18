@@ -1,0 +1,4 @@
+FN: True
+DESKTOP: False
+approve idx: 4399327
+API snippet: 'dSchedule()]);\n  };\n  const approveBooking = async (id2) => {\n    await fetch(`${API$2()}/api/admin/approve-booking`, {\n      method: "POST",\n      he'
