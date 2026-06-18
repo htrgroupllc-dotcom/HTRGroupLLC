@@ -86452,7 +86452,7 @@ function TrashTab({
         setConfirmBulkPerm(null);
         return;
       }
-      if (r2.status === 404) {
+      if (r2.status !== 400 && r2.status !== 401 && r2.status !== 403) {
         const deletedIds = [];
         for (const id2 of confirmBulkPerm) {
           const errMsg = await deleteOnePermanent(id2);
@@ -92779,9 +92779,10 @@ const TRANSLATOR_LANGS = [
 ];
 function EmployeePage() {
   const { lang, setLang, t } = useEmpLang();
-  const [empScreen, setEmpScreen] = reactExports.useState("checking");
-  const [token, setToken] = reactExports.useState(null);
-  const [empName, setEmpName] = reactExports.useState("");
+  const storedAuthInit = loadStoredToken();
+  const [empScreen, setEmpScreen] = reactExports.useState("login");
+  const [token, setToken] = reactExports.useState(storedAuthInit?.token ?? null);
+  const [empName, setEmpName] = reactExports.useState(storedAuthInit?.name ?? "");
   const [hasBiometrics, setHasBio] = reactExports.useState(false);
   const [deviceHasFid, setDevFid] = reactExports.useState(false);
   const [showLoginForm, setShowLoginForm] = reactExports.useState(false);
@@ -92795,8 +92796,11 @@ function EmployeePage() {
     if (stored) {
       setToken(stored.token);
       setEmpName(stored.name);
+      setEmpScreen("login");
       return;
     }
+    setEmpScreen("login");
+    setShowLoginForm(true);
     const bio = await hasPlatformBiometrics$1();
     setHasBio(bio);
     const localCredId = localStorage.getItem(EMP_FID_KEY);
@@ -92896,7 +92900,7 @@ function EmployeePage() {
       }
     } finally {
       setLoggingIn(false);
-      setEmpScreen("checking");
+      setEmpScreen("login");
     }
   };
   const logout = () => {
@@ -93826,7 +93830,7 @@ function EmployeePage() {
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "button",
         {
-          onClick: () => setEmpScreen("checking"),
+          onClick: () => setEmpScreen("login"),
           disabled: loggingIn,
           style: {
             width: "100%",

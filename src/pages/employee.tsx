@@ -327,9 +327,10 @@ function EmployeePage() {
 
   // Auth state
   type EmpScreen = "checking" | "login" | "register-fid";
-  const [empScreen, setEmpScreen]   = useState<EmpScreen>("checking");
-  const [token, setToken]           = useState<string | null>(null);
-  const [empName, setEmpName]       = useState("");
+  const storedAuthInit = loadStoredToken();
+  const [empScreen, setEmpScreen]   = useState<EmpScreen>("login");
+  const [token, setToken]           = useState<string | null>(storedAuthInit?.token ?? null);
+  const [empName, setEmpName]       = useState(storedAuthInit?.name ?? "");
   const [hasBiometrics, setHasBio]  = useState(false);
   const [deviceHasFid, setDevFid]   = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
@@ -347,8 +348,11 @@ function EmployeePage() {
     if (stored) {
       setToken(stored.token);
       setEmpName(stored.name);
+      setEmpScreen("login");
       return;
     }
+    setEmpScreen("login");
+    setShowLoginForm(true);
     const bio = await hasPlatformBiometrics();
     setHasBio(bio);
     const localCredId = localStorage.getItem(EMP_FID_KEY);
@@ -448,7 +452,7 @@ function EmployeePage() {
       }
     } finally {
       setLoggingIn(false);
-      setEmpScreen("checking"); // force re-render to portal
+      setEmpScreen("login");
     }
   };
 
@@ -1393,7 +1397,7 @@ function EmployeePage() {
             {loggingIn ? t("fidRegistering") : t("fidEnable")}
           </button>
           <button
-            onClick={() => setEmpScreen("checking")}
+            onClick={() => setEmpScreen("login")}
             disabled={loggingIn}
             style={{
               width: "100%", padding: "12px",

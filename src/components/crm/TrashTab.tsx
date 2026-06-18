@@ -181,6 +181,39 @@ export default function TrashTab({
     return d.error ?? `Server error ${r.status}`;
   };
 
+  const deleteManyPermanent = async (ids: string[]): Promise<string | null> => {
+    const deletedIds: string[] = [];
+    for (const id of ids) {
+      const errMsg = await deleteOnePermanent(id);
+      if (errMsg) {
+        if (deletedIds.length > 0) {
+          const partial = new Set(deletedIds);
+          setBookings(prev => {
+            const next = prev.filter(b => !partial.has(b.id));
+            onCountChange?.(next.length);
+            return next;
+          });
+          setSelectedIds(prev => {
+            const next = new Set(prev);
+            deletedIds.forEach(did => next.delete(did));
+            return next;
+          });
+        }
+        return errMsg;
+      }
+      deletedIds.push(id);
+    }
+    const deleted = new Set(deletedIds);
+    setBookings(prev => {
+      const next = prev.filter(b => !deleted.has(b.id));
+      onCountChange?.(next.length);
+      return next;
+    });
+    setSelectedIds(new Set());
+    setConfirmBulkPerm(null);
+    return null;
+  };
+
   const permanentDeleteBulk = async () => {
     if (!confirmBulkPerm?.length || permDeleting) return;
     setPermDeleting(true);
@@ -203,38 +236,10 @@ export default function TrashTab({
         return;
       }
 
-      // Bulk API not deployed yet (404) — delete one-by-one via existing endpoint.
-      if (r.status === 404) {
-        const deletedIds: string[] = [];
-        for (const id of confirmBulkPerm) {
-          const errMsg = await deleteOnePermanent(id);
-          if (errMsg) {
-            if (deletedIds.length > 0) {
-              const partial = new Set(deletedIds);
-              setBookings(prev => {
-                const next = prev.filter(b => !partial.has(b.id));
-                onCountChange?.(next.length);
-                return next;
-              });
-              setSelectedIds(prev => {
-                const next = new Set(prev);
-                deletedIds.forEach(did => next.delete(did));
-                return next;
-              });
-            }
-            setPermErr(errMsg);
-            return;
-          }
-          deletedIds.push(id);
-        }
-        const deleted = new Set(deletedIds);
-        setBookings(prev => {
-          const next = prev.filter(b => !deleted.has(b.id));
-          onCountChange?.(next.length);
-          return next;
-        });
-        setSelectedIds(new Set());
-        setConfirmBulkPerm(null);
+      // Bulk failed (404/500/etc.) — delete one-by-one via existing endpoint.
+      if (r.status !== 400 && r.status !== 401 && r.status !== 403) {
+        const errMsg = await deleteManyPermanent(confirmBulkPerm);
+        if (errMsg) setPermErr(errMsg);
         return;
       }
 
