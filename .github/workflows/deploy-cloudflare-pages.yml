@@ -28,17 +28,12 @@ jobs:
         run: |
           set -euo pipefail
           raw="$CLOUDFLARE_API_TOKEN_RAW"
-          # Normalize common paste mistakes (Bearer prefix, quotes, KEY=value, whitespace)
           token="$(printf '%s' "$raw" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//' -e 's/^Bearer[[:space:]]*//' -e 's/^CLOUDFLARE_API_TOKEN=//')"
           token="$(printf '%s' "$token" | tr -d '[:space:]')"
           unset CLOUDFLARE_API_TOKEN_RAW raw
           export CLOUDFLARE_API_TOKEN="$token"
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "::error::CLOUDFLARE_API_TOKEN is empty. Add it in GitHub repo Settings → Secrets → Actions (same token as DentalEquipSite repo)."
-            exit 1
-          fi
-          if printf '%s' "$CLOUDFLARE_API_TOKEN" | grep -q '[^A-Za-z0-9._-]'; then
-            echo "::error::CLOUDFLARE_API_TOKEN contains invalid characters after normalization (use API Token value only, not Global API Key + email)"
+            echo "::error::CLOUDFLARE_API_TOKEN is empty. Update it in GitHub → Settings → Secrets → Actions."
             exit 1
           fi
           echo "CLOUDFLARE_API_TOKEN length after normalization: ${#CLOUDFLARE_API_TOKEN}"
