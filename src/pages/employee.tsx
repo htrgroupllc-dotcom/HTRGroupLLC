@@ -24,20 +24,23 @@ const API = () => (import.meta.env.VITE_API_BASE as string ?? "").replace(/\/$/,
 const ACCENT  = "#1B6FE8";
 const SUCCESS = "#16a34a";
 
+const STRIPE_DASHBOARD_MOBILE_URL = "https://dashboard.stripe.com/dashboard";
+
 function stripeDashboardUrl(): string {
   const ua = navigator.userAgent;
-  if (/iPad|iPhone|iPod/.test(ua)) return "https://apps.apple.com/app/id978516833";
-  if (/Android/.test(ua)) return "https://play.google.com/store/apps/details?id=com.stripe.android.dashboard";
+  if (/iPad|iPhone|iPod/.test(ua) || /Android/.test(ua)) return STRIPE_DASHBOARD_MOBILE_URL;
   return "https://dashboard.stripe.com/terminal/payments/create";
 }
 
 function openStripeDashboardLink(e: React.MouseEvent<HTMLAnchorElement>) {
-  const standalone = !!(navigator as Navigator & { standalone?: boolean }).standalone
-    || window.matchMedia("(display-mode: standalone)").matches;
-  if (standalone) {
-    e.preventDefault();
-    window.location.assign(stripeDashboardUrl());
+  e.preventDefault();
+  const url = stripeDashboardUrl();
+  const isMobile = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+  if (isMobile) {
+    window.location.assign(url);
+    return;
   }
+  window.open(url, "_blank", "noopener");
 }
 
 function openExternalLink(e: React.MouseEvent<HTMLAnchorElement>) {
@@ -2388,7 +2391,6 @@ function EmployeePage() {
                   </div>
                   <a
                     href={stripeDashboardUrl()}
-                    target="_blank"
                     rel="noopener noreferrer"
                     onClick={openStripeDashboardLink}
                     style={{
