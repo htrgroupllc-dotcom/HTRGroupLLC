@@ -37,5 +37,38 @@ jobs:
             exit 1
           fi
           echo "CLOUDFLARE_API_TOKEN length after normalization: ${#CLOUDFLARE_API_TOKEN}"
+          mkdir -p _pages_deploy
+          rsync -a \
+            --exclude 'scripts/' \
+            --exclude 'src/' \
+            --exclude '.github/' \
+            --exclude 'node_modules/' \
+            --exclude 'api-server/' \
+            --exclude 'artifacts/' \
+            --exclude 'attached_assets/' \
+            --exclude 'dist/' \
+            --exclude 'build/' \
+            --exclude 'out/' \
+            --exclude 'public/' \
+            --exclude '.git/' \
+            --exclude '*.zip' \
+            --exclude 'package.json' \
+            --exclude 'package-lock.json' \
+            --exclude 'pnpm-lock.yaml' \
+            --exclude 'pnpm-workspace.yaml' \
+            --exclude 'vite.config.ts' \
+            --exclude 'tsconfig*.json' \
+            --exclude 'REPORT.md' \
+            --exclude 'replit.md' \
+            --exclude 'debug.log' \
+            --exclude '.env.production' \
+            ./ _pages_deploy/
+          if find _pages_deploy -type f -size +25M | grep -q .; then
+            echo "::error::Deploy bundle still contains files over Cloudflare 25 MiB limit:"
+            find _pages_deploy -type f -size +25M -printf '%p %k KB\n'
+            exit 1
+          fi
+          echo "Deploy bundle ready:"
+          du -sh _pages_deploy
           npx wrangler@3.90.0 whoami
-          npx wrangler@3.90.0 pages deploy . --project-name=htrgrouptx --branch=main --commit-hash="${GITHUB_SHA}"
+          npx wrangler@3.90.0 pages deploy _pages_deploy --project-name=htrgrouptx --branch=main --commit-hash="${GITHUB_SHA}"
