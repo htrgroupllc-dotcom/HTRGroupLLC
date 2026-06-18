@@ -87383,13 +87383,29 @@ function ReceiptHistoryPanel({ rows, loading, error, t, filters, onFiltersChange
     ] }, row.id)) })
   ] });
 }
+function readAdminSessionInit() {
+  try {
+    const authToken = sessionStorage.getItem("adminAuthToken") ?? localStorage.getItem("adminAuthToken");
+    const authPin = sessionStorage.getItem("adminPin") ?? localStorage.getItem("adminPin");
+    if (authToken && authPin) return { pin: authPin, bearer: null, fidLabel: null, authed: true };
+    if (authToken) {
+      const sessionLabel = sessionStorage.getItem("adminFidLabel");
+      const credId = localStorage.getItem("htr_fid_cred_id");
+      const fidLabel = sessionLabel ?? (credId ? localStorage.getItem(`htr_fid_label_${credId}`) : null);
+      return { pin: "", bearer: authToken, fidLabel, authed: true };
+    }
+  } catch {
+  }
+  return { pin: "", bearer: null, fidLabel: null, authed: false };
+}
 function AdminDashboard() {
   const { lang, setLang, t } = useAdminLang();
   const { toast: toast2 } = useToast();
-  const [pin, setPin] = reactExports.useState("");
-  const [adminBearer, setBearer] = reactExports.useState(null);
-  const [authed, setAuthed] = reactExports.useState(false);
-  const [fidLabel, setFidLabel] = reactExports.useState(null);
+  const adminSessionInit = readAdminSessionInit();
+  const [pin, setPin] = reactExports.useState(adminSessionInit.pin);
+  const [adminBearer, setBearer] = reactExports.useState(adminSessionInit.bearer);
+  const [authed, setAuthed] = reactExports.useState(adminSessionInit.authed);
+  const [fidLabel, setFidLabel] = reactExports.useState(adminSessionInit.fidLabel);
   const [adminTab, setAdminTab] = reactExports.useState("bookings");
   const [trashCount, setTrashCount] = reactExports.useState(0);
   const [employees, setEmployees] = reactExports.useState([]);
@@ -88643,7 +88659,9 @@ function AdminDashboard() {
     sessionStorage.removeItem("adminFidLabel");
     window.location.reload();
   };
-  if (!authed) return null;
+  if (!authed) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen flex items-center justify-center", style: { background: "#F3F4F6" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-stone-500", children: t.loading }) });
+  }
   const closeManualModal = () => {
     setManualSlot(null);
     setMName("");

@@ -38,6 +38,10 @@ rsync -a \
   "$ROOT/" "$OUT/"
 
 # Hard fail before wrangler upload — same error as Cloudflare would return.
+if [ -f "$OUT/assets/index-utf8-v4.js" ]; then
+  node --check "$OUT/assets/index-utf8-v4.js"
+fi
+
 oversized="$(find "$OUT" -type f -size +${CF_MAX_MIB}M || true)"
 if [ -n "$oversized" ]; then
   echo "::error::Deploy bundle contains file(s) over Cloudflare ${CF_MAX_MIB} MiB limit:"

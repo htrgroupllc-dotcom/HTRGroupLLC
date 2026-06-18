@@ -343,13 +343,38 @@ interface BlockedRow {
   reason: string;
 }
 
+function readAdminSessionInit(): {
+  pin: string;
+  bearer: string | null;
+  fidLabel: string | null;
+  authed: boolean;
+} {
+  try {
+    const authToken = sessionStorage.getItem("adminAuthToken") ?? localStorage.getItem("adminAuthToken");
+    const authPin = sessionStorage.getItem("adminPin") ?? localStorage.getItem("adminPin");
+    if (authToken && authPin) {
+      return { pin: authPin, bearer: null, fidLabel: null, authed: true };
+    }
+    if (authToken) {
+      const sessionLabel = sessionStorage.getItem("adminFidLabel");
+      const credId = localStorage.getItem("htr_fid_cred_id");
+      const fidLabel = sessionLabel ?? (credId ? localStorage.getItem(`htr_fid_label_${credId}`) : null);
+      return { pin: "", bearer: authToken, fidLabel, authed: true };
+    }
+  } catch {
+    /* storage blocked */
+  }
+  return { pin: "", bearer: null, fidLabel: null, authed: false };
+}
+
 function AdminDashboard() {
   const { lang, setLang, t } = useAdminLang();
   const { toast } = useToast();
-  const [pin, setPin]             = useState("");
-  const [adminBearer, setBearer]  = useState<string | null>(null);
-  const [authed, setAuthed]       = useState(false);
-  const [fidLabel, setFidLabel]   = useState<string | null>(null);
+  const sessionInit = readAdminSessionInit();
+  const [pin, setPin]             = useState(sessionInit.pin);
+  const [adminBearer, setBearer]  = useState<string | null>(sessionInit.bearer);
+  const [authed, setAuthed]       = useState(sessionInit.authed);
+  const [fidLabel, setFidLabel]   = useState<string | null>(sessionInit.fidLabel);
 
   // CRM: top-level tab navigation
   const [adminTab, setAdminTab]   = useState<"bookings"|"employees"|"archive"|"blacklist"|"payroll"|"reports"|"settings"|"trash"|"pricebook"|"photos">("bookings");
@@ -1747,7 +1772,13 @@ function AdminDashboard() {
     window.location.reload();
   };
 
-  if (!authed) return null;
+  if (!authed) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: PAGE_BG }}>
+        <div className="text-sm text-stone-500">{t.loading}</div>
+      </div>
+    );
+  }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   const closeManualModal = () => {
