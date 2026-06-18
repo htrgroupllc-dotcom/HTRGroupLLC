@@ -35,3 +35,36 @@ export function isDayFullyBooked(
   const takenSet = new Set(taken);
   return slots.every(s => takenSet.has(s));
 }
+
+const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+export function formatBookingDateStr(d: Date): string {
+  return `${MONTHS_SHORT[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+export function isBookingDateToday(dateStr: string): boolean {
+  return dateStr === formatBookingDateStr(getHoustonNow());
+}
+
+export function slotToMinutes(time: string): number {
+  const m = /^(\d+):(\d+)\s*(AM|PM)$/i.exec(time.trim());
+  if (!m) return 0;
+  let h = parseInt(m[1]!, 10);
+  const min = parseInt(m[2]!, 10);
+  const isPM = m[3]!.toUpperCase() === "PM";
+  if (isPM && h !== 12) h += 12;
+  if (!isPM && h === 12) h = 0;
+  return h * 60 + min;
+}
+
+/** Slots that are no longer bookable for the given date (Houston CT). */
+export function getPastTimeSlots(
+  dateStr: string,
+  slots: readonly string[] = BOOKING_TIME_SLOTS,
+): string[] {
+  if (!isBookingDateToday(dateStr)) return [];
+  const houston = getHoustonNow();
+  if (houston.getHours() >= 17) return [...slots];
+  const cutoffMins = houston.getHours() * 60 + houston.getMinutes() + 60;
+  return slots.filter(slot => slotToMinutes(slot) <= cutoffMins);
+}

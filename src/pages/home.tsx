@@ -22,6 +22,7 @@ import { HeroCircuitEffect } from "@/components/HeroCircuitEffect";
 import {
   BOOKING_TIME_SLOTS,
   getMinBookingDate,
+  getPastTimeSlots,
   isDayFullyBooked,
   skipToNextBusinessDay,
 } from "@/lib/bookingDate";
@@ -1076,7 +1077,12 @@ export default function Home() {
   const [brandModel, setBrandModel] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const _now = new Date();
-  const _minBooking = useMemo(() => getMinBookingDate(), []);
+  const [, slotClock] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => slotClock(t => t + 1), 60_000);
+    return () => clearInterval(id);
+  }, []);
+  const _minBooking = getMinBookingDate();
   const userPickedDate = useRef(false);
   const checkedAdvance = useRef(new Set<string>());
   const autoAdvanceActive = useRef(true);
@@ -1107,7 +1113,8 @@ export default function Home() {
         const booked: string[]  = d.bookedSlots ?? [];
         const blocked: string[] = (d.blockedSlots ?? []).map((b: { time: string }) => b.time);
         const buffer: string[]  = d.bufferSlots ?? [];
-        setBookedSlots([...new Set([...booked, ...blocked, ...buffer])]);
+        const past: string[]    = (d.pastSlots as string[] | undefined) ?? getPastTimeSlots(date);
+        setBookedSlots([...new Set([...booked, ...blocked, ...buffer, ...past])]);
       })
       .catch(() => setBookedSlots([]))
       .finally(() => setLoadingSlots(false));

@@ -32143,6 +32143,25 @@ function isDayFullyBooked(taken, slots = BOOKING_TIME_SLOTS) {
   const takenSet = new Set(taken);
   return slots.every((s) => takenSet.has(s));
 }
+function slotToMinutes(time) {
+  const m = /^(\d+):(\d+)\s*(AM|PM)$/i.exec(time.trim());
+  if (!m) return 0;
+  let h = parseInt(m[1], 10);
+  const min = parseInt(m[2], 10);
+  const isPM = m[3].toUpperCase() === "PM";
+  if (isPM && h !== 12) h += 12;
+  if (!isPM && h === 12) h = 0;
+  return h * 60 + min;
+}
+function getPastTimeSlots(dateStr, slots = BOOKING_TIME_SLOTS) {
+  const houston = getHoustonNow();
+  const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const todayStr = `${monthsShort[houston.getMonth()]} ${houston.getDate()}, ${houston.getFullYear()}`;
+  if (dateStr !== todayStr) return [];
+  if (houston.getHours() >= 17) return [...slots];
+  const cutoffMins = houston.getHours() * 60 + houston.getMinutes() + 60;
+  return slots.filter((slot) => slotToMinutes(slot) <= cutoffMins);
+}
 const svcDryerImg = "/assets/svc_dryer_nobrand-BbmTIoew.png";
 const svcWasherImg = "/assets/ChatGPT_Image_3_%D0%B0%D0%BF%D1%80._2026_%D0%B3.__21_04_57_1775269648058-CC0M5H-1.png";
 const svcFridgeImg$1 = "/assets/ChatGPT_Image_3_%D0%B0%D0%BF%D1%80._2026_%D0%B3.__21_04_57_1775269648058-CC0M5H-1.png";
@@ -33165,7 +33184,12 @@ function Home() {
   const [brandModel, setBrandModel] = reactExports.useState("");
   const [submitting, setSubmitting] = reactExports.useState(false);
   const _now = /* @__PURE__ */ new Date();
-  const _minBooking = reactExports.useMemo(() => getMinBookingDate(), []);
+  const [, slotClock] = reactExports.useState(0);
+  reactExports.useEffect(() => {
+    const id = setInterval(() => slotClock((t) => t + 1), 6e4);
+    return () => clearInterval(id);
+  }, []);
+  const _minBooking = getMinBookingDate();
   const userPickedDate = reactExports.useRef(false);
   const checkedAdvance = reactExports.useRef(/* @__PURE__ */ new Set());
   const autoAdvanceActive = reactExports.useRef(true);
@@ -33191,7 +33215,8 @@ function Home() {
       const booked = d.bookedSlots ?? [];
       const blocked = (d.blockedSlots ?? []).map((b) => b.time);
       const buffer = d.bufferSlots ?? [];
-      setBookedSlots([.../* @__PURE__ */ new Set([...booked, ...blocked, ...buffer])]);
+      const past = d.pastSlots ?? getPastTimeSlots(date);
+      setBookedSlots([.../* @__PURE__ */ new Set([...booked, ...blocked, ...buffer, ...past])]);
     }).catch(() => setBookedSlots([])).finally(() => setLoadingSlots(false));
   }, []);
   reactExports.useEffect(() => {
@@ -86711,6 +86736,7 @@ function TrashTab({
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCcw, { className: `w-3.5 h-3.5 shrink-0 ${restoringId === b.id ? "animate-spin" : ""}` }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: restoringId === b.id ? t.trashRestoring : t.trashRestoreBtn })
+              ]
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -86726,6 +86752,7 @@ function TrashTab({
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-3.5 h-3.5 shrink-0" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t.trashPermanentBtn })
+              ]
             }
           )
         ] })
