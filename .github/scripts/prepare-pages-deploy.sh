@@ -61,4 +61,16 @@ if grep -rq 'index-BQDqdfFg.css' "$OUT" --include='*.html' 2>/dev/null; then
   exit 1
 fi
 
+# Entry HTML must share the same bundle cache version as root index.html.
+root_ver="$(grep -oE 'index-utf8-v4\.js\?v=[0-9]+' "$OUT/index.html" | head -1 | sed 's/.*=//')"
+if [ -n "$root_ver" ]; then
+  for html in "$OUT/index.html" "$OUT/admin/index.html" "$OUT/pay/index.html"; do
+    [ -f "$html" ] || continue
+    if ! grep -q "index-utf8-v4.js?v=${root_ver}" "$html"; then
+      echo "::error::${html} must reference index-utf8-v4.js?v=${root_ver} (same as index.html)."
+      exit 1
+    fi
+  done
+fi
+
 echo "Pages deploy bundle OK ($(du -sh "$OUT" | cut -f1), max file < ${CF_MAX_MIB} MiB)"
