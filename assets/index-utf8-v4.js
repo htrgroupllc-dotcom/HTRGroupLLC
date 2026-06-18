@@ -32603,7 +32603,7 @@ const TR$3 = {
     bookSub: "We'll call you within 15 minutes to confirm your appointment.",
     formFields: ["Your name", "Phone number", "ZIP Code"],
     emailPh: "Email address (required)",
-    addressPh: "Home address (street, city, ZIP)",
+    addressPh: "Street, City, TX ZIP (e.g. 123 Main St, Houston, TX 77001)",
     datePh: "Preferred date (e.g. Apr 10)",
     timePh: "Preferred time (e.g. 10:00 AM)",
     selectPh: "Select appliance type...",
@@ -33256,9 +33256,20 @@ function Home() {
       });
       return;
     }
-    setSubmitting(true);
     const form = e.currentTarget;
     const data = new FormData(form);
+    const address = String(data.get("address") ?? "").trim();
+    const hasMetroZip = /\b(770|773|774|775)\d{2}\b/.test(address);
+    const hasMetroCityAndTx = /\b(?:houston|katy|sugar\s*land|the\s*woodlands|woodlands|spring|cypress|humble|kingwood|pearland|league\s*city|pasadena|baytown|conroe|galveston|missouri\s*city|stafford|richmond|rosenberg|tomball|fulshear|friendswood|deer\s*park|la\s*porte|clear\s*lake|webster|sugarland)\b/i.test(address) && /\b(?:tx|texas)\b/i.test(address);
+    if (!hasMetroZip && !hasMetroCityAndTx) {
+      toast2({
+        title: isEs ? "Dirección requerida" : "Address required",
+        description: isEs ? "Ingrese su dirección completa en Houston con ZIP 770, 773, 774 o 775 (ej.: 123 Main St, Houston, TX 77001)." : "Enter your full Houston-area address with ZIP 770, 773, 774, or 775 (e.g. 123 Main St, Houston, TX 77001).",
+        variant: "destructive"
+      });
+      return;
+    }
+    setSubmitting(true);
     try {
       const apiBase = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
       const res = await fetch(`${apiBase}/api/booking`, {
