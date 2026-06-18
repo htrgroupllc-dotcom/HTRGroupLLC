@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Lock, Unlock, Calendar, RefreshCw, LogOut,
-  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck,
+  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck, ArrowLeftRight,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLangProvider, useAdminLang } from "@/context/AdminLangContext";
@@ -383,6 +383,7 @@ function AdminDashboard() {
   }, [callbackLoading, toast]);
 
   const [reviewLoading, setReviewLoading] = useState<Set<string>>(new Set());
+  const [moveBizLoading, setMoveBizLoading] = useState<Set<string>>(new Set());
 
   // ── Admin Estimate Modal ──────────────────────────────────────────────────
   const [adminEstimateTarget, setAdminEstimateTarget] = useState<{ id: string; name: string; email: string; phone: string } | null>(null);
@@ -1219,6 +1220,52 @@ function AdminDashboard() {
     });
     await loadSlots();
     await loadSchedule();
+  };
+
+  const moveBookingBiz = async (bookingId: string, target: "appliance" | "dental") => {
+    if (moveBizLoading.has(bookingId)) return;
+    setMoveBizLoading(prev => new Set(prev).add(bookingId));
+    try {
+      const res = await fetch(`${API()}/api/admin/set-business-type`, {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify({ id: bookingId, business_type: target }),
+      });
+      const d = await res.json().catch(() => ({})) as { ok?: boolean; error?: string };
+      if (!res.ok || !d.ok) throw new Error(d.error ?? String(res.status));
+      toast({
+        title: target === "dental" ? `✅ ${t.moveToDentalSuccess}` : `✅ ${t.moveToApplianceSuccess}`,
+      });
+      await loadSchedule();
+    } catch {
+      toast({ title: t.moveBizError, variant: "destructive" });
+    } finally {
+      setMoveBizLoading(prev => { const s = new Set(prev); s.delete(bookingId); return s; });
+    }
+  };
+
+  const MoveBizButton = ({ b, className }: { b: BookingRow; className?: string }) => {
+    const current = resolveBookingBiz(b.business_type);
+    const target: "appliance" | "dental" = current === "dental" ? "appliance" : "dental";
+    const loading = moveBizLoading.has(b.id);
+    const btnClass = className ?? (
+      "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold leading-none border transition disabled:opacity-50 " +
+      (target === "dental"
+        ? "bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100"
+        : "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100")
+    );
+    return (
+      <button
+        type="button"
+        disabled={loading}
+        onClick={() => void moveBookingBiz(b.id, target)}
+        className={btnClass}
+        title={target === "dental" ? t.moveToDentalTitle : t.moveToApplianceTitle}
+      >
+        <ArrowLeftRight className="w-2.5 h-2.5" />
+        {loading ? "…" : (target === "dental" ? t.moveToDentalBtn : t.moveToApplianceBtn)}
+      </button>
+    );
   };
 
   const deleteBooking = async () => {
@@ -2578,6 +2625,7 @@ function AdminDashboard() {
                         <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${resolveBookingBiz(b.business_type) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
                           {resolveBookingBiz(b.business_type) === "dental" ? t.bizDental : t.bizAppliance}
                         </span>
+                        <MoveBizButton b={b} />
                         {b.is_remote && (
                           <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-stone-100 text-stone-500 leading-none" title={t.remoteBookingHint}>👁</span>
                         )}
@@ -3038,6 +3086,7 @@ function AdminDashboard() {
                               <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${resolveBookingBiz(b.business_type) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
                                 {resolveBookingBiz(b.business_type) === "dental" ? t.bizDental : t.bizAppliance}
                               </span>
+                              <MoveBizButton b={b} />
                               {b.is_remote && (
                                 <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-stone-100 text-stone-500 leading-none" title={t.remoteBookingHint}>👁</span>
                               )}
