@@ -1233,7 +1233,17 @@ export default function Home() {
         setSubmitting(false);
         return;
       }
-      if (!res.ok) throw new Error("server error");
+      const payload = await res.json().catch(() => ({} as { message?: string }));
+      if (!res.ok) {
+        toast({
+          title: isEs ? "Error al enviar" : "Submission error",
+          description: payload.message ?? (isEs
+            ? "Ocurrió un error. Llámenos al (346) 696-8751."
+            : "Something went wrong. Please call us at (346) 696-8751."),
+          variant: "destructive",
+        });
+        return;
+      }
       toast({ title: T.received, description: T.callSoon });
       setSelectedSlot(null);
       form.reset();
