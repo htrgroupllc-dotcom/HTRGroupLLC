@@ -33274,7 +33274,8 @@ function Home() {
           date: selectedDateStr,
           time: selectedSlot ?? "",
           message: data.get("message"),
-          lang
+          lang,
+          business_type: "appliance"
         })
       });
       if (res.status === 409) {

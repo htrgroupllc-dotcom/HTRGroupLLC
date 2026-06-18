@@ -1217,6 +1217,7 @@ export default function Home() {
           time: selectedSlot ?? "",
           message:    data.get("message"),
           lang,
+          business_type: "appliance",
         }),
       });
       if (res.status === 409) {
