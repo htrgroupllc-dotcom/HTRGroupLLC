@@ -34,7 +34,7 @@ jobs:
           unset CLOUDFLARE_API_TOKEN_RAW raw
           export CLOUDFLARE_API_TOKEN="$token"
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "::error::CLOUDFLARE_API_TOKEN is empty after normalization"
+            echo "::error::CLOUDFLARE_API_TOKEN is empty. Add it in GitHub repo Settings → Secrets → Actions (same token as DentalEquipSite repo)."
             exit 1
           fi
           if printf '%s' "$CLOUDFLARE_API_TOKEN" | grep -q '[^A-Za-z0-9._-]'; then
