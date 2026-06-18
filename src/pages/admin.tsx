@@ -1244,12 +1244,16 @@ function AdminDashboard() {
     }
   };
 
-  const MoveBizButton = ({ b, className }: { b: BookingRow; className?: string }) => {
+  const MoveBizButton = ({ b, className, fullWidth }: { b: BookingRow; className?: string; fullWidth?: boolean }) => {
     const current = resolveBookingBiz(b.business_type);
     const target: "appliance" | "dental" = current === "dental" ? "appliance" : "dental";
     const loading = moveBizLoading.has(b.id);
+    const sizeCls = fullWidth
+      ? "w-full inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold leading-snug "
+      : "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ";
     const btnClass = className ?? (
-      "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold leading-none border transition disabled:opacity-50 " +
+      sizeCls +
+      "border transition disabled:opacity-50 " +
       (target === "dental"
         ? "bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100"
         : "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100")
@@ -2619,23 +2623,27 @@ function AdminDashboard() {
                         </div>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${statusCls}`}>{statusLabel}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <User className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
-                        <span className="text-sm font-semibold text-stone-800">{b.name}</span>
-                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${resolveBookingBiz(b.business_type) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
-                          {resolveBookingBiz(b.business_type) === "dental" ? t.bizDental : t.bizAppliance}
-                        </span>
-                        <MoveBizButton b={b} />
-                        {b.is_remote && (
-                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-stone-100 text-stone-500 leading-none" title={t.remoteBookingHint}>👁</span>
-                        )}
-                        {b.client_lang && (
-                          <span
-                            className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-sky-100 text-sky-700 leading-none uppercase"
-                            title={b.client_lang === "es" ? t.clientLangEs : b.client_lang === "en" ? t.clientLangEn : b.client_lang}>
-                            {b.client_lang}
+                      <div className="mb-1">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <User className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+                          <span className="text-sm font-semibold text-stone-800 break-words">{b.name}</span>
+                          <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none shrink-0 ${resolveBookingBiz(b.business_type) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
+                            {resolveBookingBiz(b.business_type) === "dental" ? t.bizDental : t.bizAppliance}
                           </span>
-                        )}
+                          {b.is_remote && (
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-stone-100 text-stone-500 leading-none shrink-0" title={t.remoteBookingHint}>👁</span>
+                          )}
+                          {b.client_lang && (
+                            <span
+                              className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-sky-100 text-sky-700 leading-none uppercase shrink-0"
+                              title={b.client_lang === "es" ? t.clientLangEs : b.client_lang === "en" ? t.clientLangEn : b.client_lang}>
+                              {b.client_lang}
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-1.5">
+                          <MoveBizButton b={b} fullWidth />
+                        </div>
                       </div>
                       <div className="flex items-center gap-1.5 mb-1">
                         <Phone className="w-3.5 h-3.5 flex-shrink-0" style={{ color: ACCENT }} />
