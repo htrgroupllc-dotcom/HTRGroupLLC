@@ -1,6 +1,7 @@
-# Dev/build tooling — not served on htrgrouptx.com (scripts/_tx_zips.geojson is 76MB, CF limit 25MB)
+# Dev/build tooling — NOT uploaded (wrangler 3.90 ignores this; CI uses prepare-pages-deploy.sh)
 scripts/
 src/
 .github/
 node_modules/
 .git/
+_pages_deploy/

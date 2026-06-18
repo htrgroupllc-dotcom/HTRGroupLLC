@@ -2,3 +2,11 @@ node_modules
 .next
 dist
 .env
+
+# Dev-only large files — NOT for Cloudflare Pages (max 25 MiB per file)
+scripts/_tx_zips.geojson
+scripts/_prod_bundle_dl.js
+scripts/live-utf8*.js
+
+# Local deploy staging (CI only)
+_pages_deploy/
