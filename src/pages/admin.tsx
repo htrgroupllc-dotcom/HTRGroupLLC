@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Lock, Unlock, Calendar, RefreshCw, LogOut,
-  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck, ArrowLeftRight, Eye,
+  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck, ArrowLeftRight, Eye, ChevronLeft,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLangProvider, useAdminLang } from "@/context/AdminLangContext";
@@ -1046,6 +1046,28 @@ function AdminDashboard() {
       setSentDocLoadingKey(null);
     }
   }, [adminAuthH, getReceiptLangOverride, sentDocLoadingKey, t.viewSentInvoiceTitle, t.viewSentDocError]);
+
+  const closeSentDocPreview = useCallback((fromPopState = false) => {
+    setSentDocPreview(null);
+    if (!fromPopState && history.state?.htrAdminDocPreview) {
+      history.back();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!sentDocPreview) return;
+    history.pushState({ htrAdminDocPreview: true }, "");
+    const onPop = () => closeSentDocPreview(true);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeSentDocPreview(false);
+    };
+    window.addEventListener("popstate", onPop);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [sentDocPreview, closeSentDocPreview]);
 
   // Silent fetch — no loading spinner (used by auto-refresh)
   const fetchSlots = useCallback(async () => {
@@ -3873,24 +3895,30 @@ function AdminDashboard() {
 
       {/* ── Sent document preview (estimate / invoice as client received) ── */}
       {sentDocPreview && (
-        <div className="fixed inset-0 z-[60] flex flex-col bg-black/60">
-          <div className="flex items-center justify-between gap-3 bg-white border-b border-stone-200 px-4 py-3 shrink-0">
-            <div className="font-bold text-sm text-stone-800 truncate">{sentDocPreview.title}</div>
+        <div className="fixed inset-0 z-[60] flex flex-col bg-black/60 touch-none">
+          <div className="relative z-20 flex items-center gap-2 bg-white border-b border-stone-200 px-3 py-3 shrink-0 shadow-sm touch-auto">
             <button
               type="button"
-              onClick={() => setSentDocPreview(null)}
-              className="p-2 rounded-full hover:bg-stone-100 transition shrink-0"
+              onClick={() => closeSentDocPreview(false)}
+              className="inline-flex items-center gap-1 rounded-lg px-2.5 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-100 active:bg-stone-200 transition shrink-0 min-h-[44px]">
+              <ChevronLeft className="w-5 h-5 shrink-0" />
+              {t.back}
+            </button>
+            <div className="font-bold text-sm text-stone-800 truncate flex-1 min-w-0">{sentDocPreview.title}</div>
+            <button
+              type="button"
+              onClick={() => closeSentDocPreview(false)}
+              className="p-2.5 rounded-full hover:bg-stone-100 active:bg-stone-200 transition shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label={t.close}>
               <X className="w-5 h-5 text-stone-500" />
             </button>
           </div>
-          <div className="flex-1 overflow-auto bg-stone-100 p-2 sm:p-4">
+          <div className="relative z-0 flex-1 min-h-0 overflow-hidden bg-stone-100 p-2 sm:p-4 touch-auto">
             <iframe
               title={sentDocPreview.title}
               sandbox="allow-same-origin"
               srcDoc={sentDocPreview.html}
-              className="w-full max-w-3xl mx-auto bg-white rounded-lg shadow-lg border border-stone-200 min-h-[70vh]"
-              style={{ height: "calc(100vh - 80px)" }}
+              className="w-full h-full max-w-3xl mx-auto bg-white rounded-lg shadow-lg border border-stone-200 block"
             />
           </div>
         </div>
