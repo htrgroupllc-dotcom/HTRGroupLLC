@@ -15,6 +15,7 @@ import {
 
 import ReviewsSection from "@/components/ReviewsSection";
 import { useGoogleReviews } from "@/hooks/useGoogleReviews";
+import { GOOGLE_STAR_COLOR } from "@/lib/googleReviewsClient";
 import ChatWidget from "@/components/ChatWidget";
 import ServiceAreaMapOverlay from "@/components/ServiceAreaMapOverlay";
 import { HeroCircuitEffect } from "@/components/HeroCircuitEffect";

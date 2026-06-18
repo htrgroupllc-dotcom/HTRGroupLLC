@@ -33561,7 +33561,7 @@ function Home() {
                 /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-white/80 leading-tight drop-shadow", children: overlayReview?.time })
               ] })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-0.5 mb-1.5", children: [1, 2, 3, 4, 5].map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "h-3 w-3 drop-shadow", style: { color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR } }, s)) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-0.5 mb-1.5", children: [1, 2, 3, 4, 5].map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "h-3 w-3 drop-shadow", style: { color: "#FBBC04", fill: "#FBBC04" } }, s)) }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-white leading-relaxed line-clamp-2 drop-shadow", children: [
               '"',
               isEs ? overlayReview?.textEs : overlayReview?.textEn,
@@ -33610,7 +33610,7 @@ function Home() {
                 /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-white/80 leading-tight drop-shadow", children: overlayReview.time })
               ] })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-0.5 mb-1.5", children: [1, 2, 3, 4, 5].map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "h-3 w-3 drop-shadow", style: { color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR } }, s)) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-0.5 mb-1.5", children: [1, 2, 3, 4, 5].map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "h-3 w-3 drop-shadow", style: { color: "#FBBC04", fill: "#FBBC04" } }, s)) }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-white leading-relaxed line-clamp-2 drop-shadow", children: [
               '"',
               isEs ? overlayReview.textEs : overlayReview.textEn,
