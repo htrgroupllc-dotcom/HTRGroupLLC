@@ -92451,6 +92451,26 @@ async function startAuthentication(options) {
 const API$1 = () => "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
 const ACCENT$3 = "#1B6FE8";
 const SUCCESS = "#16a34a";
+function stripeDashboardUrl() {
+  const ua = navigator.userAgent;
+  if (/iPad|iPhone|iPod/.test(ua)) return "https://apps.apple.com/app/id978516833";
+  if (/Android/.test(ua)) return "https://play.google.com/store/apps/details?id=com.stripe.android.dashboard";
+  return "https://dashboard.stripe.com/terminal/payments/create";
+}
+function openStripeDashboardLink(e) {
+  const standalone = !!navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
+  if (standalone) {
+    e.preventDefault();
+    window.location.assign(stripeDashboardUrl());
+  }
+}
+function openExternalLink(e) {
+  const standalone = !!navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
+  if (standalone) {
+    e.preventDefault();
+    window.location.assign(e.currentTarget.href);
+  }
+}
 function statusLabel(s, t) {
   if (s === "pending") return `⏳ ${t("pending")}`;
   if (s === "approved") return `✅ ${t("confirmed")}`;
@@ -94710,15 +94730,12 @@ function EmployeePage() {
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 12, color: "#1d4ed8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }, children: "📱 Tap to Pay — Stripe" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: 12, color: "#3b82f6" }, children: t("tapToPayInstruction") }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                    "button",
+                    "a",
                     {
-                      onClick: () => {
-                        const ua = navigator.userAgent;
-                        const isIOS = /iPad|iPhone|iPod/.test(ua);
-                        const isAndroid = /Android/.test(ua);
-                        const url = isIOS ? "https://apps.apple.com/app/stripe-dashboard/id978516833" : isAndroid ? "https://play.google.com/store/apps/details?id=com.stripe.android.dashboard" : "https://dashboard.stripe.com/terminal/payments/create";
-                        window.open(url, "_blank", "noopener,noreferrer");
-                      },
+                      href: stripeDashboardUrl(),
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                      onClick: openStripeDashboardLink,
                       style: {
                         padding: "12px",
                         borderRadius: 10,
@@ -94731,7 +94748,8 @@ function EmployeePage() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        gap: 8
+                        gap: 8,
+                        textDecoration: "none"
                       },
                       children: [
                         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 18 }, children: "⚡" }),
@@ -94743,9 +94761,10 @@ function EmployeePage() {
                     /* @__PURE__ */ jsxRuntimeExports.jsx(
                       "a",
                       {
-                        href: "https://apps.apple.com/app/stripe-dashboard/id978516833",
+                        href: "https://apps.apple.com/app/id978516833",
                         target: "_blank",
-                        rel: "noreferrer",
+                        rel: "noopener noreferrer",
+                        onClick: openExternalLink,
                         style: { fontSize: 11, color: "#6366f1", textDecoration: "underline" },
                         children: "iOS App Store"
                       }

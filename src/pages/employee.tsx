@@ -24,6 +24,31 @@ const API = () => (import.meta.env.VITE_API_BASE as string ?? "").replace(/\/$/,
 const ACCENT  = "#1B6FE8";
 const SUCCESS = "#16a34a";
 
+function stripeDashboardUrl(): string {
+  const ua = navigator.userAgent;
+  if (/iPad|iPhone|iPod/.test(ua)) return "https://apps.apple.com/app/id978516833";
+  if (/Android/.test(ua)) return "https://play.google.com/store/apps/details?id=com.stripe.android.dashboard";
+  return "https://dashboard.stripe.com/terminal/payments/create";
+}
+
+function openStripeDashboardLink(e: React.MouseEvent<HTMLAnchorElement>) {
+  const standalone = !!(navigator as Navigator & { standalone?: boolean }).standalone
+    || window.matchMedia("(display-mode: standalone)").matches;
+  if (standalone) {
+    e.preventDefault();
+    window.location.assign(stripeDashboardUrl());
+  }
+}
+
+function openExternalLink(e: React.MouseEvent<HTMLAnchorElement>) {
+  const standalone = !!(navigator as Navigator & { standalone?: boolean }).standalone
+    || window.matchMedia("(display-mode: standalone)").matches;
+  if (standalone) {
+    e.preventDefault();
+    window.location.assign(e.currentTarget.href);
+  }
+}
+
 interface Booking {
   id: string;
   name: string;
@@ -2361,31 +2386,26 @@ function EmployeePage() {
                   <div style={{ fontSize: 12, color: "#3b82f6" }}>
                     {t("tapToPayInstruction")}
                   </div>
-                  <button
-                    onClick={() => {
-                      const ua = navigator.userAgent;
-                      const isIOS = /iPad|iPhone|iPod/.test(ua);
-                      const isAndroid = /Android/.test(ua);
-                      const url = isIOS
-                        ? "https://apps.apple.com/app/stripe-dashboard/id978516833"
-                        : isAndroid
-                          ? "https://play.google.com/store/apps/details?id=com.stripe.android.dashboard"
-                          : "https://dashboard.stripe.com/terminal/payments/create";
-                      window.open(url, "_blank", "noopener,noreferrer");
-                    }}
+                  <a
+                    href={stripeDashboardUrl()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={openStripeDashboardLink}
                     style={{
                       padding: "12px", borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: "pointer",
                       background: "#635bff", color: "#fff", border: "none",
                       display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                      textDecoration: "none",
                     }}
                   >
                     <span style={{ fontSize: 18 }}>⚡</span>
                     {t("openStripeApp")}
-                  </button>
+                  </a>
                   <div style={{ display: "flex", gap: 8, justifyContent: "center", alignItems: "center" }}>
                     <a
-                      href="https://apps.apple.com/app/stripe-dashboard/id978516833"
-                      target="_blank" rel="noreferrer"
+                      href="https://apps.apple.com/app/id978516833"
+                      target="_blank" rel="noopener noreferrer"
+                      onClick={openExternalLink}
                       style={{ fontSize: 11, color: "#6366f1", textDecoration: "underline" }}
                     >
                        iOS App Store
@@ -2393,7 +2413,8 @@ function EmployeePage() {
                     <span style={{ color: "#cbd5e1", fontSize: 11 }}>·</span>
                     <a
                       href="https://play.google.com/store/apps/details?id=com.stripe.android.dashboard"
-                      target="_blank" rel="noreferrer"
+                      target="_blank" rel="noopener noreferrer"
+                      onClick={openExternalLink}
                       style={{ fontSize: 11, color: "#6366f1", textDecoration: "underline" }}
                     >
                        Google Play
