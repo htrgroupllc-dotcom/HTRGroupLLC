@@ -86421,6 +86421,16 @@ function TrashTab({
       setPermDeleting(false);
     }
   };
+  const deleteOnePermanent = async (id2) => {
+    const r2 = await fetch(`${apiBase}/api/admin/permanent-delete`, {
+      method: "POST",
+      headers: adminAuthH({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ id: id2 })
+    });
+    if (r2.ok) return null;
+    const d = await r2.json().catch(() => ({}));
+    return d.error ?? `Server error ${r2.status}`;
+  };
   const permanentDeleteBulk = async () => {
     if (!confirmBulkPerm?.length || permDeleting) return;
     setPermDeleting(true);
@@ -86440,10 +86450,43 @@ function TrashTab({
         });
         setSelectedIds(/* @__PURE__ */ new Set());
         setConfirmBulkPerm(null);
-      } else {
-        const d = await r2.json().catch(() => ({}));
-        setPermErr(d.error ?? "Error");
+        return;
       }
+      if (r2.status === 404) {
+        const deletedIds = [];
+        for (const id2 of confirmBulkPerm) {
+          const errMsg = await deleteOnePermanent(id2);
+          if (errMsg) {
+            if (deletedIds.length > 0) {
+              const partial = new Set(deletedIds);
+              setBookings((prev) => {
+                const next = prev.filter((b) => !partial.has(b.id));
+                onCountChange?.(next.length);
+                return next;
+              });
+              setSelectedIds((prev) => {
+                const next = new Set(prev);
+                deletedIds.forEach((did) => next.delete(did));
+                return next;
+              });
+            }
+            setPermErr(errMsg);
+            return;
+          }
+          deletedIds.push(id2);
+        }
+        const deleted = new Set(deletedIds);
+        setBookings((prev) => {
+          const next = prev.filter((b) => !deleted.has(b.id));
+          onCountChange?.(next.length);
+          return next;
+        });
+        setSelectedIds(/* @__PURE__ */ new Set());
+        setConfirmBulkPerm(null);
+        return;
+      }
+      const d = await r2.json().catch(() => ({}));
+      setPermErr(d.error ?? `Server error ${r2.status}`);
     } catch {
       setPermErr("Connection error");
     } finally {

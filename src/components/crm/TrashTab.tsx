@@ -170,6 +170,17 @@ export default function TrashTab({
     }
   };
 
+  const deleteOnePermanent = async (id: string): Promise<string | null> => {
+    const r = await fetch(`${apiBase}/api/admin/permanent-delete`, {
+      method: "POST",
+      headers: adminAuthH({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ id }),
+    });
+    if (r.ok) return null;
+    const d = await r.json().catch(() => ({})) as { error?: string };
+    return d.error ?? `Server error ${r.status}`;
+  };
+
   const permanentDeleteBulk = async () => {
     if (!confirmBulkPerm?.length || permDeleting) return;
     setPermDeleting(true);
@@ -189,10 +200,46 @@ export default function TrashTab({
         });
         setSelectedIds(new Set());
         setConfirmBulkPerm(null);
-      } else {
-        const d = await r.json().catch(() => ({})) as { error?: string };
-        setPermErr(d.error ?? "Error");
+        return;
       }
+
+      // Bulk API not deployed yet (404) — delete one-by-one via existing endpoint.
+      if (r.status === 404) {
+        const deletedIds: string[] = [];
+        for (const id of confirmBulkPerm) {
+          const errMsg = await deleteOnePermanent(id);
+          if (errMsg) {
+            if (deletedIds.length > 0) {
+              const partial = new Set(deletedIds);
+              setBookings(prev => {
+                const next = prev.filter(b => !partial.has(b.id));
+                onCountChange?.(next.length);
+                return next;
+              });
+              setSelectedIds(prev => {
+                const next = new Set(prev);
+                deletedIds.forEach(did => next.delete(did));
+                return next;
+              });
+            }
+            setPermErr(errMsg);
+            return;
+          }
+          deletedIds.push(id);
+        }
+        const deleted = new Set(deletedIds);
+        setBookings(prev => {
+          const next = prev.filter(b => !deleted.has(b.id));
+          onCountChange?.(next.length);
+          return next;
+        });
+        setSelectedIds(new Set());
+        setConfirmBulkPerm(null);
+        return;
+      }
+
+      const d = await r.json().catch(() => ({})) as { error?: string };
+      setPermErr(d.error ?? `Server error ${r.status}`);
     } catch {
       setPermErr("Connection error");
     } finally {
