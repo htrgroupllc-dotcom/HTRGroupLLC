@@ -506,7 +506,9 @@ const TR = {
     bookSub:  "We'll call you within 15 minutes to confirm your appointment.",
     formFields: ["Your name", "Phone number", "ZIP Code"],
     emailPh:    "Email address (required)",
-    addressPh:  "Street, City, TX ZIP (e.g. 123 Main St, Houston, TX 77001)",
+    addressPh:  "Street address (required)",
+    cityPh:     "City (required)",
+    zipPh:      "ZIP code (required, Houston area: 770, 773, 774, 775)",
     datePh:     "Preferred date (e.g. Apr 10)",
     timePh:     "Preferred time (e.g. 10:00 AM)",
     selectPh:   "Select appliance type...",
@@ -585,7 +587,9 @@ const TR = {
     bookSub:  "Le llamaremos en 15 minutos para confirmar su cita.",
     formFields: ["Su nombre", "NÃºmero de telÃ©fono", "CÃ³digo ZIP"],
     emailPh:    "Correo electrÃ³nico (requerido)",
-    addressPh:  "DirecciÃ³n (calle, ciudad, ZIP)",
+    addressPh:  "DirecciÃ³n (calle)",
+    cityPh:     "Ciudad (requerido)",
+    zipPh:      "CÃ³digo postal (770, 773, 774, 775)",
     datePh:     "Fecha preferida (ej. 10 de Abr)",
     timePh:     "Hora preferida (ej. 10:00 AM)",
     selectPh:   "Seleccione el tipo de electrodomÃ©stico...",
@@ -1200,21 +1204,39 @@ export default function Home() {
     }
     const form = e.currentTarget;
     const data = new FormData(form);
-    const address = String(data.get("address") ?? "").trim();
-    const hasMetroZip = /\b(770|773|774|775)\d{2}\b/.test(address);
-    const hasMetroCityAndTx =
-      /\b(?:houston|katy|sugar\s*land|the\s*woodlands|woodlands|spring|cypress|humble|kingwood|pearland|league\s*city|pasadena|baytown|conroe|galveston|missouri\s*city|stafford|richmond|rosenberg|tomball|fulshear|friendswood|deer\s*park|la\s*porte|clear\s*lake|webster|sugarland)\b/i.test(address)
-      && /\b(?:tx|texas)\b/i.test(address);
-    if (!hasMetroZip && !hasMetroCityAndTx) {
+    const street = String(data.get("address") ?? "").trim();
+    const city = String(data.get("city") ?? "").trim();
+    const zipRaw = String(data.get("zip") ?? "").replace(/\D/g, "");
+    const houstonZipPrefixes = ["770", "772", "773", "774", "775"];
+    if (!city) {
       toast({
-        title: isEs ? "Dirección requerida" : "Address required",
-        description: isEs
-          ? "Ingrese su dirección completa en Houston con ZIP 770, 773, 774 o 775 (ej.: 123 Main St, Houston, TX 77001)."
-          : "Enter your full Houston-area address with ZIP 770, 773, 774, or 775 (e.g. 123 Main St, Houston, TX 77001).",
+        title: isEs ? "Ciudad requerida" : "City required",
+        description: isEs ? "Ingrese la ciudad de su dirección." : "Enter the city for your service address.",
         variant: "destructive",
       });
       return;
     }
+    if (zipRaw.length !== 5) {
+      toast({
+        title: isEs ? "Código postal requerido" : "ZIP code required",
+        description: isEs
+          ? "Ingrese un código postal de 5 dígitos del área de Houston (770, 773, 774, 775)."
+          : "Enter a 5-digit ZIP in the Greater Houston area (770, 773, 774, 775).",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!houstonZipPrefixes.includes(zipRaw.slice(0, 3))) {
+      toast({
+        title: isEs ? "Fuera del área de servicio" : "Outside service area",
+        description: isEs
+          ? "Solo atendemos el área metropolitana de Houston (ZIP 770, 773, 774, 775)."
+          : "We only serve the Greater Houston area (ZIP codes starting with 770, 773, 774, or 775).",
+        variant: "destructive",
+      });
+      return;
+    }
+    const fullAddress = `${street}${street ? ", " : ""}${city}, TX ${zipRaw}`;
     setSubmitting(true);
     try {
       const apiBase = (import.meta.env.VITE_API_BASE ?? "").replace(/\/$/, "");
@@ -1225,7 +1247,8 @@ export default function Home() {
           name:       data.get("name"),
           phone:      data.get("phone"),
           email:      data.get("email"),
-          address:    data.get("address"),
+          address:    fullAddress,
+          zip:        zipRaw,
           appliance,
           brandModel,
           date: selectedDateStr,
@@ -1879,11 +1902,21 @@ export default function Home() {
                     placeholder={T.emailPh}
                     className="w-full border border-stone-200 bg-white rounded px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
                     style={{ "--tw-ring-color": K.accent } as React.CSSProperties} />
-                  {/* Home Address */}
+                  {/* Street Address */}
                   <input name="address" type="text" required
                     placeholder={T.addressPh}
                     className="w-full border border-stone-200 bg-white rounded px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
                     style={{ "--tw-ring-color": K.accent } as React.CSSProperties} />
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <input name="city" type="text" required
+                      placeholder={T.cityPh}
+                      className="w-full border border-stone-200 bg-white rounded px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+                      style={{ "--tw-ring-color": K.accent } as React.CSSProperties} />
+                    <input name="zip" type="text" required inputMode="numeric" pattern="[0-9]{5}" maxLength={5}
+                      placeholder={T.zipPh}
+                      className="w-full border border-stone-200 bg-white rounded px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+                      style={{ "--tw-ring-color": K.accent } as React.CSSProperties} />
+                  </div>
                   {/* Appliance type */}
                   <select
                     name="appliance"
