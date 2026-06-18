@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { downloadReceiptPdf } from "@/lib/downloadReceipt";
 import { EmpLangProvider, useEmpLang, EmpLang } from "@/context/EmpLangContext";
+import { resolveBookingBiz } from "@/lib/adminSiteConfig";
 import {
   startRegistration,
   startAuthentication,
@@ -31,6 +32,7 @@ interface Booking {
   address: string;
   appliance: string;
   brand_model?: string;
+  business_type?: string | null;
   preferred_date: string;
   preferred_time: string;
   message?: string;
@@ -3269,12 +3271,22 @@ function JobCard({
               {b.preferred_date} • {b.preferred_time}
             </div>
           </div>
-          <span style={{
-            fontSize: 10, fontWeight: 700,
-            padding: "2px 8px", borderRadius: 20,
-          }} className={statusCls(b.status)}>
-            {statusLabel(b.status, t)}
-          </span>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
+            <span style={{
+              fontSize: 10, fontWeight: 700,
+              padding: "2px 8px", borderRadius: 20,
+            }} className={statusCls(b.status)}>
+              {statusLabel(b.status, t)}
+            </span>
+            <span style={{
+              fontSize: 10, fontWeight: 700,
+              padding: "2px 8px", borderRadius: 20,
+              background: resolveBookingBiz(b.business_type) === "dental" ? "#ede9fe" : "#dbeafe",
+              color: resolveBookingBiz(b.business_type) === "dental" ? "#6d28d9" : "#1d4ed8",
+            }}>
+              {resolveBookingBiz(b.business_type) === "dental" ? t("bizDental") : t("bizAppliance")}
+            </span>
+          </div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

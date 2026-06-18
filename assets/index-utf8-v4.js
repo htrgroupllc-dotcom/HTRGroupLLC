@@ -91166,6 +91166,8 @@ const translations = {
     completed: "Completed",
     pending: "Pending",
     confirmed: "Confirmed",
+    bizAppliance: "Appliance",
+    bizDental: "Dental",
     done: "Done",
     paid: "Paid",
     cancelled: "Cancelled",
@@ -91314,6 +91316,8 @@ const translations = {
     completed: "Завершено",
     pending: "Ожидает",
     confirmed: "Подтверждено",
+    bizAppliance: "Appliance",
+    bizDental: "Dental",
     done: "Готово",
     paid: "Оплачено",
     cancelled: "Отменено",
@@ -91462,6 +91466,8 @@ const translations = {
     completed: "Completado",
     pending: "Pendiente",
     confirmed: "Confirmado",
+    bizAppliance: "Appliance",
+    bizDental: "Dental",
     done: "Hecho",
     paid: "Pagado",
     cancelled: "Cancelado",
@@ -91610,6 +91616,8 @@ const translations = {
     completed: "Tamamlandı",
     pending: "Beklemede",
     confirmed: "Onaylandı",
+    bizAppliance: "Appliance",
+    bizDental: "Dental",
     done: "Bitti",
     paid: "Ödendi",
     cancelled: "İptal edildi",
@@ -91753,6 +91761,8 @@ const translations = {
     completed: "Tamamlandı",
     pending: "Gözləyir",
     confirmed: "Təsdiqləndi",
+    bizAppliance: "Appliance",
+    bizDental: "Dental",
     done: "Hazırdır",
     paid: "Ödənildi",
     cancelled: "Ləğv edildi",
@@ -91896,6 +91906,8 @@ const translations = {
     completed: "Завершено",
     pending: "Очікує",
     confirmed: "Підтверджено",
+    bizAppliance: "Appliance",
+    bizDental: "Dental",
     done: "Готово",
     paid: "Оплачено",
     cancelled: "Скасовано",
@@ -95732,12 +95744,22 @@ function JobCard({
           b.preferred_time
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: {
-        fontSize: 10,
-        fontWeight: 700,
-        padding: "2px 8px",
-        borderRadius: 20
-      }, className: statusCls(b.status), children: statusLabel(b.status, t) })
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: {
+          fontSize: 10,
+          fontWeight: 700,
+          padding: "2px 8px",
+          borderRadius: 20
+        }, className: statusCls(b.status), children: statusLabel(b.status, t) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: {
+          fontSize: 10,
+          fontWeight: 700,
+          padding: "2px 8px",
+          borderRadius: 20,
+          background: resolveBookingBiz(b.business_type) === "dental" ? "#ede9fe" : "#dbeafe",
+          color: resolveBookingBiz(b.business_type) === "dental" ? "#6d28d9" : "#1d4ed8"
+        }, children: resolveBookingBiz(b.business_type) === "dental" ? t("bizDental") : t("bizAppliance") })
+      ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", flexDirection: "column", gap: 8 }, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: "#374151" }, children: [
