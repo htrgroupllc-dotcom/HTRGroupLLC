@@ -87229,7 +87229,7 @@ function AdminDashboard() {
       setAdminEstimateNotes(prev.notes ?? "");
       setAdminEstimateNoTax(prev.no_tax);
     } else {
-      setAdminEstimateItems([{ description: "", category: "Labor", qty: 1, unit_price: 0 }]);
+      setAdminEstimateItems([{ description: "", category: "Labor", qty: 1, unit_price: "" }]);
       setAdminEstimateNotes("");
       setAdminEstimateNoTax(false);
     }
@@ -87241,7 +87241,7 @@ function AdminDashboard() {
   };
   const handleAdminEstimate = reactExports.useCallback(async () => {
     if (!adminEstimateTarget) return;
-    const validItems = adminEstimateItems.filter((i) => i.description.trim() && i.unit_price >= 0);
+    const validItems = adminEstimateItems.filter((i) => i.description.trim()).map((i) => ({ description: i.description.trim(), category: i.category, qty: Math.max(1, i.qty), unit_price: parseFloat(String(i.unit_price).replace(",", ".")) || 0 })).filter((i) => i.unit_price >= 0);
     if (!validItems.length) {
       setAdminEstimateErr(t.estimateItems + " — требуется хотя бы одна позиция");
       return;
@@ -90912,7 +90912,7 @@ function AdminDashboard() {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
-                onClick: () => setAdminEstimateItems((prev) => [...prev, { description: "", category: "Labor", qty: 1, unit_price: 0 }]),
+                onClick: () => setAdminEstimateItems((prev) => [...prev, { description: "", category: "Labor", qty: 1, unit_price: "" }]),
                 className: "text-xs font-bold text-blue-600 hover:text-blue-800",
                 children: t.addItem
               }
@@ -90969,11 +90969,11 @@ function AdminDashboard() {
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "input",
                   {
-                    type: "number",
-                    min: "0",
-                    step: "0.01",
-                    value: item.unit_price === 0 ? "" : item.unit_price,
-                    onChange: (e) => setAdminEstimateItems((prev) => prev.map((x, idx) => idx === i ? { ...x, unit_price: parseFloat(e.target.value) || 0 } : x)),
+                    type: "text",
+                    inputMode: "decimal",
+                    value: item.unit_price,
+                    placeholder: "0.00",
+                    onChange: (e) => setAdminEstimateItems((prev) => prev.map((x, idx) => idx === i ? { ...x, unit_price: e.target.value.replace(/[^\d.,]/g, "") } : x)),
                     className: "w-full border border-stone-200 rounded-lg pl-5 pr-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
                   }
                 )
@@ -90986,8 +90986,8 @@ function AdminDashboard() {
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-semibold text-green-700", children: t.noTax })
         ] }),
         (() => {
-          const labor = adminEstimateItems.filter((i) => i.category === "Labor").reduce((s, i) => s + i.qty * i.unit_price, 0);
-          const parts = adminEstimateItems.filter((i) => i.category !== "Labor").reduce((s, i) => s + i.qty * i.unit_price, 0);
+          const labor = adminEstimateItems.filter((i) => i.category === "Labor").reduce((s, i) => s + i.qty * (parseFloat(String(i.unit_price).replace(",", ".")) || 0), 0);
+          const parts = adminEstimateItems.filter((i) => i.category !== "Labor").reduce((s, i) => s + i.qty * (parseFloat(String(i.unit_price).replace(",", ".")) || 0), 0);
           const tax = adminEstimateNoTax ? 0 : (labor + parts) * 0.0825;
           const total = labor + parts + tax;
           return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-blue-50 rounded-lg p-3 space-y-1 text-xs", children: [

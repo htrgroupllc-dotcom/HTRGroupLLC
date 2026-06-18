@@ -248,6 +248,55 @@ interface AdminEstimateRecord {
   no_tax: boolean;
   sent_at: string;
 }
+
+type AdminEstimateLineItem = {
+  description: string;
+  category: string;
+  qty: number;
+  unit_price: string;
+};
+
+function parseEstimatePrice(raw: string | number | null | undefined): number {
+  if (raw === null || raw === undefined) return 0;
+  const s = String(raw).trim().replace(/,/g, ".");
+  if (!s || s === ".") return 0;
+  const n = parseFloat(s);
+  return Number.isFinite(n) && n >= 0 ? n : 0;
+}
+
+function estimateLineTotal(item: { qty: number; unit_price: string }): number {
+  const qty = Number.isFinite(item.qty) && item.qty > 0 ? item.qty : 1;
+  return qty * parseEstimatePrice(item.unit_price);
+}
+
+function normalizeEstimateLineItem(item: {
+  description?: string;
+  category?: string;
+  qty?: number | string;
+  unit_price?: number | string;
+}): AdminEstimateLineItem {
+  const price = item.unit_price;
+  return {
+    description: item.description ?? "",
+    category: item.category ?? "Labor",
+    qty: Math.max(1, parseInt(String(item.qty ?? 1), 10) || 1),
+    unit_price:
+      price === 0 || price === "0" || price === null || price === undefined
+        ? ""
+        : String(price),
+  };
+}
+
+function toEstimateApiItems(items: AdminEstimateLineItem[]) {
+  return items
+    .filter(i => i.description.trim())
+    .map(i => ({
+      description: i.description.trim(),
+      category: i.category,
+      qty: Math.max(1, i.qty),
+      unit_price: parseEstimatePrice(i.unit_price),
+    }));
+}
 interface ReceiptDownloadRow {
   id: number;
   booking_id: string;
@@ -337,7 +386,7 @@ function AdminDashboard() {
 
   // ── Admin Estimate Modal ──────────────────────────────────────────────────
   const [adminEstimateTarget, setAdminEstimateTarget] = useState<{ id: string; name: string; email: string; phone: string } | null>(null);
-  const [adminEstimateItems, setAdminEstimateItems] = useState<{ description: string; category: string; qty: number; unit_price: number }[]>([]);
+  const [adminEstimateItems, setAdminEstimateItems] = useState<AdminEstimateLineItem[]>([]);
   const [adminEstimateNotes, setAdminEstimateNotes] = useState("");
   const [adminEstimateNoTax, setAdminEstimateNoTax] = useState(false);
   const [adminEstimateNotify, setAdminEstimateNotify] = useState<"email" | "sms" | "both">("email");
@@ -390,11 +439,11 @@ function AdminDashboard() {
     setAdminEstimateTarget(b);
     setAdminEstimateIsEdit(!!prev);
     if (prev && prev.items.length > 0) {
-      setAdminEstimateItems(prev.items);
+      setAdminEstimateItems(prev.items.map(normalizeEstimateLineItem));
       setAdminEstimateNotes(prev.notes ?? "");
       setAdminEstimateNoTax(prev.no_tax);
     } else {
-      setAdminEstimateItems([{ description: "", category: "Labor", qty: 1, unit_price: 0 }]);
+      setAdminEstimateItems([{ description: "", category: "Labor", qty: 1, unit_price: "" }]);
       setAdminEstimateNotes("");
       setAdminEstimateNoTax(false);
     }
@@ -408,7 +457,7 @@ function AdminDashboard() {
 
   const handleAdminEstimate = useCallback(async () => {
     if (!adminEstimateTarget) return;
-    const validItems = adminEstimateItems.filter(i => i.description.trim() && i.unit_price >= 0);
+    const validItems = toEstimateApiItems(adminEstimateItems);
     if (!validItems.length) { setAdminEstimateErr(t.estimateItems + " — требуется хотя бы одна позиция"); return; }
     setAdminEstimateSending(true);
     setAdminEstimateErr("");
@@ -3720,7 +3769,7 @@ function AdminDashboard() {
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-xs font-semibold text-stone-500">{t.estimateItems}</label>
                       <button
-                        onClick={() => setAdminEstimateItems(prev => [...prev, { description: "", category: "Labor", qty: 1, unit_price: 0 }])}
+                        onClick={() => setAdminEstimateItems(prev => [...prev, { description: "", category: "Labor", qty: 1, unit_price: "" }])}
                         className="text-xs font-bold text-blue-600 hover:text-blue-800">{t.addItem}</button>
                     </div>
                     <div className="space-y-2">
@@ -3756,9 +3805,14 @@ function AdminDashboard() {
                             <div className="relative">
                               <span className="absolute left-2 top-2 text-stone-400 text-xs">$</span>
                               <input
-                                type="number" min="0" step="0.01"
-                                value={item.unit_price === 0 ? "" : item.unit_price}
-                                onChange={e => setAdminEstimateItems(prev => prev.map((x, idx) => idx === i ? { ...x, unit_price: parseFloat(e.target.value) || 0 } : x))}
+                                type="text"
+                                inputMode="decimal"
+                                value={item.unit_price}
+                                onChange={e => setAdminEstimateItems(prev => prev.map((x, idx) => idx === i ? {
+                                  ...x,
+                                  unit_price: e.target.value.replace(/[^\d.,]/g, ""),
+                                } : x))}
+                                placeholder="0.00"
                                 className="w-full border border-stone-200 rounded-lg pl-5 pr-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
                               />
                             </div>
@@ -3774,8 +3828,8 @@ function AdminDashboard() {
                   </label>
 
                   {(() => {
-                    const labor = adminEstimateItems.filter(i => i.category === "Labor").reduce((s, i) => s + i.qty * i.unit_price, 0);
-                    const parts = adminEstimateItems.filter(i => i.category !== "Labor").reduce((s, i) => s + i.qty * i.unit_price, 0);
+                    const labor = adminEstimateItems.filter(i => i.category === "Labor").reduce((s, i) => s + estimateLineTotal(i), 0);
+                    const parts = adminEstimateItems.filter(i => i.category !== "Labor").reduce((s, i) => s + estimateLineTotal(i), 0);
                     const tax = adminEstimateNoTax ? 0 : (labor + parts) * 0.0825;
                     const total = labor + parts + tax;
                     return (
