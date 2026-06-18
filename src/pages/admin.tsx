@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Lock, Unlock, Calendar, RefreshCw, LogOut,
-  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck, ArrowLeftRight,
+  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck, ArrowLeftRight, Eye,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLangProvider, useAdminLang } from "@/context/AdminLangContext";
@@ -239,6 +239,11 @@ interface BookingRow {
   client_signed_at?: string | null;
   business_type?: "appliance" | "dental" | string;
   is_remote?: boolean;
+  closed_at?: string | null;
+}
+function bookingHasViewableInvoice(b: BookingRow): boolean {
+  if (b.status !== "completed") return false;
+  return !!(b.stripe_paid || b.payment_status === "paid" || b.payment_status === "cash" || b.payment_amount != null);
 }
 interface AdminEstimateRecord {
   id: number;
@@ -672,6 +677,8 @@ function AdminDashboard() {
   // Resend paid receipt email (HTML + PDF attachment)
   const [resendingReceiptId, setResendingReceiptId] = useState<string | null>(null);
   const [resendReceiptSentId, setResendReceiptSentId] = useState<string | null>(null);
+  const [sentDocPreview, setSentDocPreview] = useState<{ kind: "estimate" | "invoice"; title: string; html: string } | null>(null);
+  const [sentDocLoadingKey, setSentDocLoadingKey] = useState<string | null>(null);
   // Note: resendPaymentLink and downloadReceipt are defined further below
   // (after `adminAuthH`) because they depend on it.
 
@@ -988,6 +995,57 @@ function AdminDashboard() {
       setResendingReceiptId(null);
     }
   }, [adminAuthH, resendingReceiptId, t.resendReceiptError]);
+
+  const getReceiptLangOverride = useCallback((b: BookingRow): "en" | "es" | null =>
+    b.payment_language === "es" || b.client_lang === "es" ? "es"
+    : b.payment_language === "en" || b.client_lang === "en" ? "en"
+    : null,
+  []);
+
+  const viewSentEstimate = useCallback(async (b: BookingRow, est?: AdminEstimateRecord | null) => {
+    const key = `est-${b.id}`;
+    if (sentDocLoadingKey) return;
+    setSentDocLoadingKey(key);
+    try {
+      const url = `${API()}/api/admin/bookings/${b.id}/estimate-html`
+        + (est?.id ? `?estimate_id=${est.id}` : "");
+      const r = await fetch(url, { headers: adminAuthH(), cache: "no-store" });
+      if (!r.ok) throw new Error(String(r.status));
+      const html = await r.text();
+      setSentDocPreview({
+        kind: "estimate",
+        title: `${t.viewSentEstimateTitle} — ${b.name}`,
+        html,
+      });
+    } catch {
+      window.alert(t.viewSentDocError);
+    } finally {
+      setSentDocLoadingKey(null);
+    }
+  }, [adminAuthH, sentDocLoadingKey, t.viewSentEstimateTitle, t.viewSentDocError]);
+
+  const viewSentInvoice = useCallback(async (b: BookingRow) => {
+    const key = `inv-${b.id}`;
+    if (sentDocLoadingKey) return;
+    setSentDocLoadingKey(key);
+    try {
+      const langOverride = getReceiptLangOverride(b);
+      const url = `${API()}/api/admin/bookings/${b.id}/invoice-html`
+        + (langOverride ? `?lang=${langOverride}` : "");
+      const r = await fetch(url, { headers: adminAuthH(), cache: "no-store" });
+      if (!r.ok) throw new Error(String(r.status));
+      const html = await r.text();
+      setSentDocPreview({
+        kind: "invoice",
+        title: `${t.viewSentInvoiceTitle} — ${b.name}`,
+        html,
+      });
+    } catch {
+      window.alert(t.viewSentDocError);
+    } finally {
+      setSentDocLoadingKey(null);
+    }
+  }, [adminAuthH, getReceiptLangOverride, sentDocLoadingKey, t.viewSentInvoiceTitle, t.viewSentDocError]);
 
   // Silent fetch — no loading spinner (used by auto-refresh)
   const fetchSlots = useCallback(async () => {
@@ -2735,17 +2793,28 @@ function AdminDashboard() {
                             💳 {t.stripePayLink}
                           </button>
                           {adminEstimateHistory[b.id] && (
-                            <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs">
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-blue-500">📋</span>
-                                <span className="text-slate-500">{t.estimateSentBadge}:</span>
-                                <span className="font-bold text-blue-700">${Number(adminEstimateHistory[b.id]!.total).toFixed(2)}</span>
+                            <div className="flex flex-col gap-1.5 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-blue-500">📋</span>
+                                  <span className="text-slate-500">{t.estimateSentBadge}:</span>
+                                  <span className="font-bold text-blue-700">${Number(adminEstimateHistory[b.id]!.total).toFixed(2)}</span>
+                                </div>
                               </div>
-                              <button
-                                onClick={() => openAdminEstimate({ id: b.id, name: b.name, email: b.email ?? "", phone: b.phone ?? "" }, adminEstimateHistory[b.id]!)}
-                                className="font-bold text-blue-700 border border-blue-300 rounded px-2 py-0.5 hover:bg-blue-100 transition">
-                                {t.estimateEditBtn}
-                              </button>
+                              <div className="flex gap-2">
+                                <button
+                                  disabled={sentDocLoadingKey === `est-${b.id}`}
+                                  onClick={() => void viewSentEstimate(b, adminEstimateHistory[b.id])}
+                                  className="flex-1 flex items-center justify-center gap-1 font-bold text-blue-700 border border-blue-300 rounded-lg px-2 py-1.5 hover:bg-blue-100 transition disabled:opacity-50">
+                                  <Eye className="w-3.5 h-3.5" />
+                                  {sentDocLoadingKey === `est-${b.id}` ? t.viewSentDocLoading : t.viewSentEstimateBtn}
+                                </button>
+                                <button
+                                  onClick={() => openAdminEstimate({ id: b.id, name: b.name, email: b.email ?? "", phone: b.phone ?? "" }, adminEstimateHistory[b.id]!)}
+                                  className="flex-1 font-bold text-blue-700 border border-blue-300 rounded-lg px-2 py-1.5 hover:bg-blue-100 transition">
+                                  {t.estimateEditBtn}
+                                </button>
+                              </div>
                             </div>
                           )}
                           <button
@@ -2807,15 +2876,23 @@ function AdminDashboard() {
                               📧 {resendSentId === b.id ? t.resendPaymentSent : resendingId === b.id ? t.resendPaymentSending : t.resendPaymentBtn}
                             </button>
                           )}
-                          {/* Download receipt for paid bookings */}
-                          {b.status === "completed" && (b.payment_status === "paid" || b.stripe_paid) && (
-                            <button
-                              disabled={downloadingReceiptId === b.id}
-                              onClick={() => downloadReceipt(b)}
-                              className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition border border-blue-200 disabled:opacity-50">
-                              <Download className="w-3.5 h-3.5" />
-                              {downloadingReceiptId === b.id ? t.downloadReceiptDownloading : t.downloadReceiptBtn}
-                            </button>
+                          {bookingHasViewableInvoice(b) && (
+                            <>
+                              <button
+                                disabled={sentDocLoadingKey === `inv-${b.id}`}
+                                onClick={() => void viewSentInvoice(b)}
+                                className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-violet-50 text-violet-700 hover:bg-violet-100 transition border border-violet-200 disabled:opacity-50">
+                                <Eye className="w-3.5 h-3.5" />
+                                {sentDocLoadingKey === `inv-${b.id}` ? t.viewSentDocLoading : t.viewSentInvoiceBtn}
+                              </button>
+                              <button
+                                disabled={downloadingReceiptId === b.id}
+                                onClick={() => downloadReceipt(b)}
+                                className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition border border-blue-200 disabled:opacity-50">
+                                <Download className="w-3.5 h-3.5" />
+                                {downloadingReceiptId === b.id ? t.downloadReceiptDownloading : t.downloadReceiptBtn}
+                              </button>
+                            </>
                           )}
                           {/* Resend receipt email (HTML + PDF) for paid bookings */}
                           {b.status === "completed" && (b.payment_status === "paid" || b.stripe_paid) && b.email && (
@@ -3273,8 +3350,15 @@ function AdminDashboard() {
                               )}
                               {/* Смета */}
                               {adminEstimateHistory[b.id] && (
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-1 flex-wrap">
                                   <span className="text-[11px] text-blue-700 font-bold">${Number(adminEstimateHistory[b.id]!.total).toFixed(2)}</span>
+                                  <button
+                                    disabled={sentDocLoadingKey === `est-${b.id}`}
+                                    onClick={() => void viewSentEstimate(b, adminEstimateHistory[b.id])}
+                                    className="flex items-center gap-0.5 text-[10px] font-bold text-violet-700 hover:underline whitespace-nowrap disabled:opacity-50">
+                                    <Eye className="w-3 h-3" />
+                                    {sentDocLoadingKey === `est-${b.id}` ? t.viewSentDocLoading : t.viewSentEstimateBtn}
+                                  </button>
                                   <button
                                     onClick={() => openAdminEstimate({ id: b.id, name: b.name, email: b.email ?? "", phone: b.phone ?? "" }, adminEstimateHistory[b.id]!)}
                                     className="text-[10px] font-bold text-blue-600 hover:underline whitespace-nowrap">
@@ -3307,14 +3391,23 @@ function AdminDashboard() {
                                 </button>
                               )}
                               {/* Скачать чек */}
-                              {b.status === "completed" && (b.payment_status === "paid" || b.stripe_paid) && (
-                                <button
-                                  disabled={downloadingReceiptId === b.id}
-                                  onClick={() => downloadReceipt(b)}
-                                  className="flex items-center gap-1 text-[10px] font-semibold text-blue-700 hover:text-blue-900 transition disabled:opacity-50">
-                                  <Download className="w-3 h-3" />
-                                  {downloadingReceiptId === b.id ? t.downloadReceiptDownloading : t.downloadReceiptBtn}
-                                </button>
+                              {bookingHasViewableInvoice(b) && (
+                                <>
+                                  <button
+                                    disabled={sentDocLoadingKey === `inv-${b.id}`}
+                                    onClick={() => void viewSentInvoice(b)}
+                                    className="flex items-center gap-1 text-[10px] font-semibold text-violet-700 hover:text-violet-900 transition disabled:opacity-50">
+                                    <Eye className="w-3 h-3" />
+                                    {sentDocLoadingKey === `inv-${b.id}` ? t.viewSentDocLoading : t.viewSentInvoiceBtn}
+                                  </button>
+                                  <button
+                                    disabled={downloadingReceiptId === b.id}
+                                    onClick={() => downloadReceipt(b)}
+                                    className="flex items-center gap-1 text-[10px] font-semibold text-blue-700 hover:text-blue-900 transition disabled:opacity-50">
+                                    <Download className="w-3 h-3" />
+                                    {downloadingReceiptId === b.id ? t.downloadReceiptDownloading : t.downloadReceiptBtn}
+                                  </button>
+                                </>
                               )}
                               {/* Переотправить чек на email */}
                               {b.status === "completed" && (b.payment_status === "paid" || b.stripe_paid) && b.email && (
@@ -3774,6 +3867,31 @@ function AdminDashboard() {
                 });
               })()}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Sent document preview (estimate / invoice as client received) ── */}
+      {sentDocPreview && (
+        <div className="fixed inset-0 z-[60] flex flex-col bg-black/60">
+          <div className="flex items-center justify-between gap-3 bg-white border-b border-stone-200 px-4 py-3 shrink-0">
+            <div className="font-bold text-sm text-stone-800 truncate">{sentDocPreview.title}</div>
+            <button
+              type="button"
+              onClick={() => setSentDocPreview(null)}
+              className="p-2 rounded-full hover:bg-stone-100 transition shrink-0"
+              aria-label={t.close}>
+              <X className="w-5 h-5 text-stone-500" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-auto bg-stone-100 p-2 sm:p-4">
+            <iframe
+              title={sentDocPreview.title}
+              sandbox="allow-same-origin"
+              srcDoc={sentDocPreview.html}
+              className="w-full max-w-3xl mx-auto bg-white rounded-lg shadow-lg border border-stone-200 min-h-[70vh]"
+              style={{ height: "calc(100vh - 80px)" }}
+            />
           </div>
         </div>
       )}
