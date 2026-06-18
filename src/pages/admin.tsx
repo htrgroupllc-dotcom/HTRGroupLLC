@@ -292,15 +292,21 @@ function normalizeEstimateLineItem(item: {
   };
 }
 
+function defaultEstimateDescription(category: string): string {
+  if (category === "Part") return "Part";
+  if (category === "Material") return "Material";
+  return "Labor";
+}
+
 function toEstimateApiItems(items: AdminEstimateLineItem[]) {
   return items
-    .filter(i => i.description.trim())
     .map(i => ({
-      description: i.description.trim(),
+      description: i.description.trim() || defaultEstimateDescription(i.category),
       category: i.category,
       qty: Math.max(1, i.qty),
       unit_price: parseEstimatePrice(i.unit_price),
-    }));
+    }))
+    .filter(i => i.unit_price > 0);
 }
 interface ReceiptDownloadRow {
   id: number;
@@ -464,7 +470,7 @@ function AdminDashboard() {
   const handleAdminEstimate = useCallback(async () => {
     if (!adminEstimateTarget) return;
     const validItems = toEstimateApiItems(adminEstimateItems);
-    if (!validItems.length) { setAdminEstimateErr(t.estimateItems + " — требуется хотя бы одна позиция"); return; }
+    if (!validItems.length) { setAdminEstimateErr(t.estimateItems + " — укажите цену хотя бы для одной позиции"); return; }
     setAdminEstimateSending(true);
     setAdminEstimateErr("");
     try {

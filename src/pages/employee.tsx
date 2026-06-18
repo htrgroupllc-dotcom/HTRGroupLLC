@@ -1130,8 +1130,13 @@ function EmployeePage() {
 
   const submitEstimate = async () => {
     if (!estimateTarget) return;
-    const validItems = estimateItems.filter(i => i.description.trim() && i.unit_price >= 0);
-    if (!validItems.length) { setEstimateErr(t("estimateItems") + " required"); return; }
+    const validItems = estimateItems
+      .map(i => ({
+        ...i,
+        description: i.description.trim() || (i.category === "Part" ? "Part" : i.category === "Material" ? "Material" : "Labor"),
+      }))
+      .filter(i => i.unit_price > 0);
+    if (!validItems.length) { setEstimateErr(t("estimateItems") + " — укажите цену хотя бы для одной позиции"); return; }
     setEstimateSending(true);
     setEstimateErr("");
     try {
