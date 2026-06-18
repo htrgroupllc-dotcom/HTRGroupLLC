@@ -51,4 +51,10 @@ if [ -n "$oversized" ]; then
   exit 1
 fi
 
+# Guard: truncated vite CSS breaks admin layout (needs full Tailwind bundle).
+if grep -rq 'index-BQDqdfFg.css' "$OUT" --include='*.html' 2>/dev/null; then
+  echo "::error::HTML references index-BQDqdfFg.css (~22KB). Use index-_bdQPowM.css for admin/site styling."
+  exit 1
+fi
+
 echo "Pages deploy bundle OK ($(du -sh "$OUT" | cut -f1), max file < ${CF_MAX_MIB} MiB)"
