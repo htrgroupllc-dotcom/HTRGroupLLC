@@ -93318,6 +93318,31 @@ function EmployeePage() {
   const [estimateErr, setEstimateErr] = reactExports.useState("");
   const [estimateDone, setEstimateDone] = reactExports.useState(false);
   const [estimateIsEdit, setEstimateIsEdit] = reactExports.useState(false);
+  reactExports.useEffect(() => {
+    const onEmployeeBack = () => {
+      if (closeTarget) {
+        setCloseTarget(null);
+        return;
+      }
+      if (estimateTarget) {
+        setEstimateTarget(null);
+        return;
+      }
+      if (photoModalId) {
+        setPhotoModalId(null);
+        return;
+      }
+      if (translatorOpen) {
+        setTranslatorOpen(false);
+        stopListening();
+        window.speechSynthesis.cancel();
+        return;
+      }
+      window.history.back();
+    };
+    window.addEventListener("htr-employee-back", onEmployeeBack);
+    return () => window.removeEventListener("htr-employee-back", onEmployeeBack);
+  }, [closeTarget, estimateTarget, photoModalId, translatorOpen, stopListening]);
   const loadPricebook = reactExports.useCallback(async () => {
     if (!token) return;
     try {
@@ -97438,10 +97463,17 @@ function VoiceBookCallPage() {
 function BackButton() {
   const [location2] = useLocation();
   if (location2 === "/" || location2 === "" || location2.startsWith("/admin")) return null;
+  const goBack = () => {
+    if (location2.startsWith("/employee")) {
+      window.dispatchEvent(new CustomEvent("htr-employee-back"));
+      return;
+    }
+    window.history.back();
+  };
   const button = /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "button",
     {
-      onClick: () => window.history.back(),
+      onClick: goBack,
       "aria-label": "Go back",
       style: {
         position: "fixed",

@@ -6,9 +6,17 @@ export default function BackButton() {
   const [location] = useLocation();
   if (location === "/" || location === "" || location.startsWith("/admin")) return null;
 
+  const goBack = () => {
+    if (location.startsWith("/employee")) {
+      window.dispatchEvent(new CustomEvent("htr-employee-back"));
+      return;
+    }
+    window.history.back();
+  };
+
   const button = (
     <button
-      onClick={() => window.history.back()}
+      onClick={goBack}
       aria-label="Go back"
       style={{
         position: "fixed",

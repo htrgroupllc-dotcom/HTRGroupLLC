@@ -1059,6 +1059,23 @@ function EmployeePage() {
   const [estimateDone,    setEstimateDone]    = useState(false);
   const [estimateIsEdit,  setEstimateIsEdit]  = useState(false);
 
+  useEffect(() => {
+    const onEmployeeBack = () => {
+      if (closeTarget) { setCloseTarget(null); return; }
+      if (estimateTarget) { setEstimateTarget(null); return; }
+      if (photoModalId) { setPhotoModalId(null); return; }
+      if (translatorOpen) {
+        setTranslatorOpen(false);
+        stopListening();
+        window.speechSynthesis.cancel();
+        return;
+      }
+      window.history.back();
+    };
+    window.addEventListener("htr-employee-back", onEmployeeBack);
+    return () => window.removeEventListener("htr-employee-back", onEmployeeBack);
+  }, [closeTarget, estimateTarget, photoModalId, translatorOpen, stopListening]);
+
   const loadPricebook = useCallback(async () => {
     if (!token) return;
     try {
