@@ -94716,16 +94716,8 @@ function EmployeePage() {
                         const ua = navigator.userAgent;
                         const isIOS = /iPad|iPhone|iPod/.test(ua);
                         const isAndroid = /Android/.test(ua);
-                        if (isIOS) {
-                          window.location.href = "stripedashboard://";
-                          setTimeout(() => {
-                            window.open("https://apps.apple.com/app/stripe-dashboard/id978516833", "_blank");
-                          }, 1500);
-                        } else if (isAndroid) {
-                          window.open("https://play.google.com/store/apps/details?id=com.stripe.android.dashboard", "_blank");
-                        } else {
-                          window.open("https://dashboard.stripe.com/terminal/payments/create", "_blank");
-                        }
+                        const url = isIOS ? "https://apps.apple.com/app/stripe-dashboard/id978516833" : isAndroid ? "https://play.google.com/store/apps/details?id=com.stripe.android.dashboard" : "https://dashboard.stripe.com/terminal/payments/create";
+                        window.open(url, "_blank", "noopener,noreferrer");
                       },
                       style: {
                         padding: "12px",
