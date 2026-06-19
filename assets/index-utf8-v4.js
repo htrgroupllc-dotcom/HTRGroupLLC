@@ -36952,6 +36952,9 @@ const translations$1 = {
     estimateEditTitle: "Редактировать и отправить смету",
     estimateSentBadge: "Смета",
     estimateEditBtn: "Изм. / Повтор",
+    estimateViewBtn: "Просмотр",
+    estimateDownloadBtn: "PDF",
+    estimateViewError: "Не удалось открыть смету. Попробуйте ещё раз.",
     noTax: "Без налога (скидка для клиента)",
     estimateSubtotal: "Итого",
     estimateTaxLine: "Налог (8.25%)",
@@ -37476,6 +37479,9 @@ const translations$1 = {
     estimateEditTitle: "Edit & Resend Estimate",
     estimateSentBadge: "Estimate",
     estimateEditBtn: "Edit / Resend",
+    estimateViewBtn: "View",
+    estimateDownloadBtn: "PDF",
+    estimateViewError: "Could not open estimate. Please try again.",
     noTax: "No tax (discount for client)",
     estimateSubtotal: "Subtotal",
     estimateTaxLine: "Tax (8.25%)",
@@ -82650,6 +82656,15 @@ async function downloadReceiptPdf(opts) {
     document.body.removeChild(iframe);
   }
 }
+async function openHtmlDocument(opts) {
+  const res = await fetch(opts.url, { headers: opts.headers });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const html = await res.text();
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const blobUrl = URL.createObjectURL(blob);
+  window.open(blobUrl, "_blank", "noopener,noreferrer");
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 120000);
+}
 const ACCENT$c = "#1B6FE8";
 const EMP_LANGS = [
   { code: "en", label: "EN" },
@@ -87686,6 +87701,7 @@ function AdminDashboard() {
   const [adminSigData, setAdminSigData] = reactExports.useState({});
   const [adminSigLoading, setAdminSigLoading] = reactExports.useState(/* @__PURE__ */ new Set());
   const [downloadingReceiptId, setDownloadingReceiptId] = reactExports.useState(null);
+  const [downloadingEstimateId, setDownloadingEstimateId] = reactExports.useState(null);
   const [resendingReceiptId, setResendingReceiptId] = reactExports.useState(null);
   const [resendReceiptSentId, setResendReceiptSentId] = reactExports.useState(null);
   const generatePaymentLink = async () => {
@@ -87987,6 +88003,30 @@ function AdminDashboard() {
       setDownloadingReceiptId(null);
     }
   }, [adminAuthH, downloadingReceiptId, loadReceiptHistory, getReceiptHistoryFilters, t.downloadReceiptError]);
+  const viewEstimate = reactExports.useCallback(async (b, estimateId) => {
+    try {
+      const url = `${API$2()}/api/admin/bookings/${b.id}/estimate-html` + (estimateId ? `?estimate_id=${estimateId}` : "");
+      await openHtmlDocument({ url, headers: adminAuthH() });
+    } catch {
+      window.alert(t.estimateViewError);
+    }
+  }, [adminAuthH, t.estimateViewError]);
+  const downloadEstimate = reactExports.useCallback(async (b, estimateId) => {
+    if (downloadingEstimateId) return;
+    setDownloadingEstimateId(b.id);
+    try {
+      const url = `${API$2()}/api/admin/bookings/${b.id}/estimate-html` + (estimateId ? `?estimate_id=${estimateId}` : "");
+      await downloadReceiptPdf({
+        url,
+        headers: adminAuthH(),
+        filenameBase: `estimate-${b.id.slice(0, 8)}`
+      });
+    } catch {
+      window.alert(t.estimateViewError);
+    } finally {
+      setDownloadingEstimateId(null);
+    }
+  }, [adminAuthH, downloadingEstimateId, t.estimateViewError]);
   const resendReceipt = reactExports.useCallback(async (b) => {
     if (resendingReceiptId) return;
     setResendingReceiptId(b.id);
@@ -88052,8 +88092,7 @@ function AdminDashboard() {
       }
       setApiError(null);
       setAllBookings(d.bookings ?? []);
-      const nonCompleted = (d.bookings ?? []).filter((b) => b.status !== "completed");
-      void Promise.all(nonCompleted.map((b) => loadAdminLastEstimate(b.id)));
+      void Promise.all((d.bookings ?? []).map((b) => loadAdminLastEstimate(b.id)));
     } catch (e) {
       setApiError(`${t.errConnectionPrefix}${e instanceof Error ? e.message : String(e)}`);
     }
@@ -90052,26 +90091,47 @@ function AdminDashboard() {
                           ]
                         }
                       ),
-                      adminEstimateHistory[b.id] && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-500", children: "📋" }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-slate-500", children: [
-                            t.estimateSentBadge,
-                            ":"
+                      adminEstimateHistory[b.id] && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-500", children: "📋" }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-slate-500", children: [
+                              t.estimateSentBadge,
+                              ":"
+                            ] }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-bold text-blue-700", children: [
+                              "$",
+                              Number(adminEstimateHistory[b.id].total).toFixed(2)
+                            ] })
                           ] }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-bold text-blue-700", children: [
-                            "$",
-                            Number(adminEstimateHistory[b.id].total).toFixed(2)
-                          ] })
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "button",
+                            {
+                              onClick: () => openAdminEstimate({ id: b.id, name: b.name, email: b.email ?? "", phone: b.phone ?? "" }, adminEstimateHistory[b.id]),
+                              className: "font-bold text-blue-700 border border-blue-300 rounded px-2 py-0.5 hover:bg-blue-100 transition",
+                              children: t.estimateEditBtn
+                            }
+                          )
                         ] }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx(
-                          "button",
-                          {
-                            onClick: () => openAdminEstimate({ id: b.id, name: b.name, email: b.email ?? "", phone: b.phone ?? "" }, adminEstimateHistory[b.id]),
-                            className: "font-bold text-blue-700 border border-blue-300 rounded px-2 py-0.5 hover:bg-blue-100 transition",
-                            children: t.estimateEditBtn
-                          }
-                        )
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "button",
+                            {
+                              onClick: () => void viewEstimate(b, adminEstimateHistory[b.id].id),
+                              className: "flex-1 font-bold text-blue-700 border border-blue-300 rounded px-2 py-1 hover:bg-blue-100 transition",
+                              children: t.estimateViewBtn
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "button",
+                            {
+                              disabled: downloadingEstimateId === b.id,
+                              onClick: () => void downloadEstimate(b, adminEstimateHistory[b.id].id),
+                              className: "flex-1 font-bold text-blue-700 border border-blue-300 rounded px-2 py-1 hover:bg-blue-100 transition disabled:opacity-50",
+                              children: downloadingEstimateId === b.id ? t.downloadReceiptDownloading : t.estimateDownloadBtn
+                            }
+                          )
+                        ] })
                       ] }),
                       /* @__PURE__ */ jsxRuntimeExports.jsxs(
                         "button",
@@ -91465,6 +91525,9 @@ const translations = {
     noProfile: "Loading profile...",
     estimateSent: "Estimate sent",
     estimateEdit: "Edit & Resend",
+    estimateView: "View",
+    estimateDownload: "PDF",
+    estimateViewError: "Could not open estimate. Please try again.",
     estimateEditTitle: "Edit Estimate",
     sendEstimate: "Send Estimate",
     estimateTitle: "Create Estimate",
@@ -91615,6 +91678,9 @@ const translations = {
     noProfile: "Загрузка профиля...",
     estimateSent: "Смета отправлена",
     estimateEdit: "Изменить и отправить",
+    estimateView: "Просмотр",
+    estimateDownload: "PDF",
+    estimateViewError: "Не удалось открыть смету. Попробуйте ещё раз.",
     estimateEditTitle: "Редактировать смету",
     sendEstimate: "Отправить смету",
     estimateTitle: "Создать смету",
@@ -91765,6 +91831,9 @@ const translations = {
     noProfile: "Cargando perfil...",
     estimateSent: "Presupuesto enviado",
     estimateEdit: "Editar y reenviar",
+    estimateView: "Ver",
+    estimateDownload: "PDF",
+    estimateViewError: "No se pudo abrir el presupuesto. Inténtelo de nuevo.",
     estimateEditTitle: "Editar presupuesto",
     sendEstimate: "Enviar presupuesto",
     estimateTitle: "Crear presupuesto",
@@ -93046,6 +93115,7 @@ function EmployeePage() {
     }
   }, [token, authH]);
   const [downloadingReceiptId, setDownloadingReceiptId] = reactExports.useState(null);
+  const [downloadingEstimateId, setDownloadingEstimateId] = reactExports.useState(null);
   const downloadReceipt = reactExports.useCallback(async (b) => {
     if (!token || downloadingReceiptId) return;
     setDownloadingReceiptId(b.id);
@@ -93063,6 +93133,31 @@ function EmployeePage() {
       setDownloadingReceiptId(null);
     }
   }, [token, downloadingReceiptId, t]);
+  const viewEstimate = reactExports.useCallback(async (b, estimateId) => {
+    if (!token) return;
+    try {
+      const url = `${API$1()}/api/employee/bookings/${b.id}/estimate-html` + (estimateId ? `?estimate_id=${estimateId}` : "");
+      await openHtmlDocument({ url, headers: { Authorization: `Bearer ${token}` } });
+    } catch {
+      window.alert(t("estimateViewError"));
+    }
+  }, [token, t]);
+  const downloadEstimate = reactExports.useCallback(async (b, estimateId) => {
+    if (!token || downloadingEstimateId) return;
+    setDownloadingEstimateId(b.id);
+    try {
+      const url = `${API$1()}/api/employee/bookings/${b.id}/estimate-html` + (estimateId ? `?estimate_id=${estimateId}` : "");
+      await downloadReceiptPdf({
+        url,
+        headers: { Authorization: `Bearer ${token}` },
+        filenameBase: `estimate-${b.id.slice(0, 8)}`
+      });
+    } catch {
+      window.alert(t("estimateViewError"));
+    } finally {
+      setDownloadingEstimateId(null);
+    }
+  }, [token, downloadingEstimateId, t]);
   const loadBookings = reactExports.useCallback(async () => {
     if (!token) return;
     setLoading(true);
@@ -93079,7 +93174,6 @@ function EmployeePage() {
       const inlineEstimates = {};
       const needsFetch = [];
       for (const b of bks) {
-        if (b.status === "completed" || b.employee_archived_at) continue;
         if (b.last_estimate_id != null) {
           inlineEstimates[b.id] = {
             id: b.last_estimate_id,
@@ -94478,6 +94572,9 @@ function EmployeePage() {
                     onEstimate: () => openEstimateModal(b),
                     onEditEstimate: estimateHistory[b.id] ? () => openEstimateModal(b, estimateHistory[b.id]) : void 0,
                     lastEstimate: estimateHistory[b.id],
+                    onViewEstimate: estimateHistory[b.id] ? () => void viewEstimate(b, estimateHistory[b.id].id) : void 0,
+                    onDownloadEstimate: estimateHistory[b.id] ? () => void downloadEstimate(b, estimateHistory[b.id].id) : void 0,
+                    downloadingEstimate: downloadingEstimateId === b.id,
                     onPhotos: () => openPhotoModal(b.id),
                     photoCount: (bookingPhotos[b.id] ?? []).length,
                     onDownloadReceipt: () => downloadReceipt(b),
@@ -94518,6 +94615,10 @@ function EmployeePage() {
                     justClosed: false,
                     isHighlighted: !!jobSearch.trim(),
                     onClose: void 0,
+                    lastEstimate: estimateHistory[b.id],
+                    onViewEstimate: estimateHistory[b.id] ? () => void viewEstimate(b, estimateHistory[b.id].id) : void 0,
+                    onDownloadEstimate: estimateHistory[b.id] ? () => void downloadEstimate(b, estimateHistory[b.id].id) : void 0,
+                    downloadingEstimate: downloadingEstimateId === b.id,
                     onArchive: () => void archiveJob(b.id),
                     archiving: archivingId === b.id,
                     onPhotos: () => openPhotoModal(b.id),
@@ -94563,6 +94664,10 @@ function EmployeePage() {
                     isHighlighted: !!jobSearch.trim(),
                     onClose: void 0,
                     isArchived: true,
+                    lastEstimate: estimateHistory[b.id],
+                    onViewEstimate: estimateHistory[b.id] ? () => void viewEstimate(b, estimateHistory[b.id].id) : void 0,
+                    onDownloadEstimate: estimateHistory[b.id] ? () => void downloadEstimate(b, estimateHistory[b.id].id) : void 0,
+                    downloadingEstimate: downloadingEstimateId === b.id,
                     onRestore: () => void restoreJob(b.id),
                     archiving: archivingId === b.id,
                     onPhotos: () => openPhotoModal(b.id),
@@ -95991,6 +96096,9 @@ function JobCard({
   onEstimate,
   onEditEstimate,
   lastEstimate,
+  onViewEstimate,
+  onDownloadEstimate,
+  downloadingEstimate,
   onArchive,
   onRestore,
   isArchived,
@@ -96337,43 +96445,87 @@ function JobCard({
     ] }),
     lastEstimate && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: {
       display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
+      flexDirection: "column",
+      gap: 8,
       background: "#eff6ff",
       border: "1px solid #bfdbfe",
       borderRadius: 8,
       padding: "8px 12px",
       marginTop: 12
     }, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "center", gap: 6, fontSize: 13 }, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { style: { width: 14, height: 14, color: ACCENT$3, flexShrink: 0 } }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { color: "#64748b" }, children: [
-          t("estimateSent"),
-          ":"
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "center", gap: 6, fontSize: 13 }, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { style: { width: 14, height: 14, color: ACCENT$3, flexShrink: 0 } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { color: "#64748b" }, children: [
+            t("estimateSent"),
+            ":"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { fontWeight: 800, color: ACCENT$3 }, children: [
+            "$",
+            Number(lastEstimate.total).toFixed(2)
+          ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { fontWeight: 800, color: ACCENT$3 }, children: [
-          "$",
-          Number(lastEstimate.total).toFixed(2)
-        ] })
+        onEditEstimate && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            onClick: onEditEstimate,
+            style: {
+              background: "none",
+              border: `1px solid ${ACCENT$3}`,
+              cursor: "pointer",
+              fontSize: 11,
+              fontWeight: 700,
+              color: ACCENT$3,
+              padding: "3px 8px",
+              borderRadius: 6
+            },
+            children: t("estimateEdit")
+          }
+        )
       ] }),
-      onEditEstimate && /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "button",
-        {
-          type: "button",
-          onClick: onEditEstimate,
-          style: {
-            background: "none",
-            border: `1px solid ${ACCENT$3}`,
-            cursor: "pointer",
-            fontSize: 11,
-            fontWeight: 700,
-            color: ACCENT$3,
-            padding: "3px 8px",
-            borderRadius: 6
-          },
-          children: t("estimateEdit")
-        }
-      )
+      (onViewEstimate || onDownloadEstimate) && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", gap: 8 }, children: [
+        onViewEstimate && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            onClick: onViewEstimate,
+            style: {
+              flex: 1,
+              background: "#fff",
+              border: `1px solid ${ACCENT$3}`,
+              cursor: "pointer",
+              fontSize: 11,
+              fontWeight: 700,
+              color: ACCENT$3,
+              padding: "6px 8px",
+              borderRadius: 6
+            },
+            children: t("estimateView")
+          }
+        ),
+        onDownloadEstimate && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            onClick: onDownloadEstimate,
+            disabled: downloadingEstimate,
+            style: {
+              flex: 1,
+              background: "#fff",
+              border: `1px solid ${ACCENT$3}`,
+              cursor: "pointer",
+              fontSize: 11,
+              fontWeight: 700,
+              color: ACCENT$3,
+              padding: "6px 8px",
+              borderRadius: 6,
+              opacity: downloadingEstimate ? 0.6 : 1
+            },
+            children: downloadingEstimate ? t("generating") : t("estimateDownload")
+          }
+        )
+      ] })
     ] }),
     onPhotos && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { marginTop: 12 }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { type: "button", onClick: onPhotos, style: {
       width: "100%",
