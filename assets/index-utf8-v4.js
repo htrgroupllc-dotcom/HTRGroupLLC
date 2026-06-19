@@ -89762,7 +89762,7 @@ function AdminDashboard() {
               "button",
               {
                 onClick: () => setBizFilter("dental"),
-                className: `px-3 py-1.5 border-l border-stone-200 transition ${bizFilter === "dental" ? "bg-violet-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`,
+                className: `px-3 py-1.5 border-l border-stone-200 transition ${bizFilter === "dental" ? "bg-violet-50 text-violet-700" : "bg-white text-stone-500 hover:bg-stone-50"}`,
                 children: t.filterDental
               }
             )
