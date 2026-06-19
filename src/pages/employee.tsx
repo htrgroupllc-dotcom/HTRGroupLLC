@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useLocation } from "wouter";
 import { createPortal } from "react-dom";
 import {
   Wrench, LogOut, CheckCircle2, Phone, MapPin,
@@ -8,7 +7,7 @@ import {
   Archive, ArchiveRestore, TrendingUp, Search, Star, Mail, MessageSquare, Camera, Pencil,
   PhoneOutgoing, Mic, MicOff, Languages,
 } from "lucide-react";
-import { downloadReceiptPdf } from "@/lib/downloadReceipt";
+import { downloadReceiptPdf, openHtmlDocument } from "@/lib/downloadReceipt";
 import { EmpLangProvider, useEmpLang, EmpLang } from "@/context/EmpLangContext";
 import { resolveBookingBiz } from "@/lib/adminSiteConfig";
 import {
@@ -325,14 +324,12 @@ const TRANSLATOR_LANGS = [
 
 function EmployeePage() {
   const { lang, setLang, t } = useEmpLang();
-  const [, setLocation] = useLocation();
 
   // Auth state
   type EmpScreen = "checking" | "login" | "register-fid";
-  const storedAuthInit = loadStoredToken();
-  const [empScreen, setEmpScreen]   = useState<EmpScreen>("login");
-  const [token, setToken]           = useState<string | null>(storedAuthInit?.token ?? null);
-  const [empName, setEmpName]       = useState(storedAuthInit?.name ?? "");
+  const [empScreen, setEmpScreen]   = useState<EmpScreen>("checking");
+  const [token, setToken]           = useState<string | null>(null);
+  const [empName, setEmpName]       = useState("");
   const [hasBiometrics, setHasBio]  = useState(false);
   const [deviceHasFid, setDevFid]   = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
@@ -350,11 +347,8 @@ function EmployeePage() {
     if (stored) {
       setToken(stored.token);
       setEmpName(stored.name);
-      setEmpScreen("login");
       return;
     }
-    setEmpScreen("login");
-    setShowLoginForm(true);
     const bio = await hasPlatformBiometrics();
     setHasBio(bio);
     const localCredId = localStorage.getItem(EMP_FID_KEY);
@@ -454,7 +448,7 @@ function EmployeePage() {
       }
     } finally {
       setLoggingIn(false);
-      setEmpScreen("login");
+      setEmpScreen("checking"); // force re-render to portal
     }
   };
 
@@ -506,6 +500,7 @@ function EmployeePage() {
 
   // Receipt download (employees can grab the same PDF the client got)
   const [downloadingReceiptId, setDownloadingReceiptId] = useState<string | null>(null);
+  const [downloadingEstimateId, setDownloadingEstimateId] = useState<string | null>(null);
   const downloadReceipt = useCallback(async (b: Booking) => {
     if (!token || downloadingReceiptId) return;
     setDownloadingReceiptId(b.id);
@@ -533,6 +528,38 @@ function EmployeePage() {
     }
   }, [token, downloadingReceiptId, t]);
 
+  const viewEstimate = useCallback(async (b: Booking, estimateId?: number) => {
+    if (!token) return;
+    try {
+      const url = `${API()}/api/employee/bookings/${b.id}/estimate-html`
+        + (estimateId ? `?estimate_id=${estimateId}` : "");
+      await openHtmlDocument({
+        url,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch {
+      window.alert(t("estimateViewError"));
+    }
+  }, [token, t]);
+
+  const downloadEstimate = useCallback(async (b: Booking, estimateId?: number) => {
+    if (!token || downloadingEstimateId) return;
+    setDownloadingEstimateId(b.id);
+    try {
+      const url = `${API()}/api/employee/bookings/${b.id}/estimate-html`
+        + (estimateId ? `?estimate_id=${estimateId}` : "");
+      await downloadReceiptPdf({
+        url,
+        headers: { Authorization: `Bearer ${token}` },
+        filenameBase: `estimate-${b.id.slice(0, 8)}`,
+      });
+    } catch {
+      window.alert(t("estimateViewError"));
+    } finally {
+      setDownloadingEstimateId(null);
+    }
+  }, [token, downloadingEstimateId, t]);
+
   const loadBookings = useCallback(async () => {
     if (!token) return;
     setLoading(true);
@@ -548,7 +575,6 @@ function EmployeePage() {
       const inlineEstimates: Record<string, EstimateRecord | null> = {};
       const needsFetch: string[] = [];
       for (const b of bks) {
-        if (b.status === "completed" || b.employee_archived_at) continue;
         if (b.last_estimate_id != null) {
           inlineEstimates[b.id] = {
             id: b.last_estimate_id,
@@ -1076,15 +1102,11 @@ function EmployeePage() {
         window.speechSynthesis.cancel();
         return;
       }
-      if (window.history.length > 1) {
-        window.history.back();
-      } else {
-        setLocation("/");
-      }
+      window.history.back();
     };
     window.addEventListener("htr-employee-back", onEmployeeBack);
     return () => window.removeEventListener("htr-employee-back", onEmployeeBack);
-  }, [closeTarget, estimateTarget, photoModalId, translatorOpen, stopListening, setLocation]);
+  }, [closeTarget, estimateTarget, photoModalId, translatorOpen, stopListening]);
 
   const loadPricebook = useCallback(async () => {
     if (!token) return;
@@ -1136,13 +1158,8 @@ function EmployeePage() {
 
   const submitEstimate = async () => {
     if (!estimateTarget) return;
-    const validItems = estimateItems
-      .map(i => ({
-        ...i,
-        description: i.description.trim() || (i.category === "Part" ? "Part" : i.category === "Material" ? "Material" : "Labor"),
-      }))
-      .filter(i => i.unit_price > 0);
-    if (!validItems.length) { setEstimateErr(t("estimateItems") + " — укажите цену хотя бы для одной позиции"); return; }
+    const validItems = estimateItems.filter(i => i.description.trim() && i.unit_price >= 0);
+    if (!validItems.length) { setEstimateErr(t("estimateItems") + " required"); return; }
     setEstimateSending(true);
     setEstimateErr("");
     try {
@@ -1408,7 +1425,7 @@ function EmployeePage() {
             {loggingIn ? t("fidRegistering") : t("fidEnable")}
           </button>
           <button
-            onClick={() => setEmpScreen("login")}
+            onClick={() => setEmpScreen("checking")}
             disabled={loggingIn}
             style={{
               width: "100%", padding: "12px",
@@ -1604,7 +1621,7 @@ function EmployeePage() {
       (b.brand_model?.toLowerCase().includes(lq) ?? false)
     );
   };
-  const activeJobs    = bookings.filter(b => (b.status === "pending" || b.status === "approved") && matchesSearch(b, jobSearch));
+  const activeJobs    = bookings.filter(b => b.status !== "completed" && matchesSearch(b, jobSearch));
   const completedJobs = bookings.filter(b => b.status === "completed" && !b.employee_archived_at && matchesSearch(b, jobSearch));
   const archivedJobs  = bookings.filter(b => b.status === "completed" && !!b.employee_archived_at && matchesSearch(b, jobSearch));
 
@@ -1897,6 +1914,9 @@ function EmployeePage() {
                     onEstimate={() => openEstimateModal(b)}
                     onEditEstimate={estimateHistory[b.id] ? () => openEstimateModal(b, estimateHistory[b.id]!) : undefined}
                     lastEstimate={estimateHistory[b.id]}
+                    onViewEstimate={estimateHistory[b.id] ? () => void viewEstimate(b, estimateHistory[b.id]!.id) : undefined}
+                    onDownloadEstimate={estimateHistory[b.id] ? () => void downloadEstimate(b, estimateHistory[b.id]!.id) : undefined}
+                    downloadingEstimate={downloadingEstimateId === b.id}
                     onPhotos={() => openPhotoModal(b.id)}
                     photoCount={(bookingPhotos[b.id] ?? []).length}
                     onDownloadReceipt={() => downloadReceipt(b)}
@@ -1938,6 +1958,10 @@ function EmployeePage() {
                     justClosed={false}
                     isHighlighted={!!jobSearch.trim()}
                     onClose={undefined}
+                    lastEstimate={estimateHistory[b.id]}
+                    onViewEstimate={estimateHistory[b.id] ? () => void viewEstimate(b, estimateHistory[b.id]!.id) : undefined}
+                    onDownloadEstimate={estimateHistory[b.id] ? () => void downloadEstimate(b, estimateHistory[b.id]!.id) : undefined}
+                    downloadingEstimate={downloadingEstimateId === b.id}
                     onArchive={() => void archiveJob(b.id)}
                     archiving={archivingId === b.id}
                     onPhotos={() => openPhotoModal(b.id)}
@@ -1984,6 +2008,10 @@ function EmployeePage() {
                     isHighlighted={!!jobSearch.trim()}
                     onClose={undefined}
                     isArchived
+                    lastEstimate={estimateHistory[b.id]}
+                    onViewEstimate={estimateHistory[b.id] ? () => void viewEstimate(b, estimateHistory[b.id]!.id) : undefined}
+                    onDownloadEstimate={estimateHistory[b.id] ? () => void downloadEstimate(b, estimateHistory[b.id]!.id) : undefined}
+                    downloadingEstimate={downloadingEstimateId === b.id}
                     onRestore={() => void restoreJob(b.id)}
                     archiving={archivingId === b.id}
                     onPhotos={() => openPhotoModal(b.id)}
@@ -3263,7 +3291,9 @@ function ClientMessageBlock({
 
 // ── Job Card ───────────────────────────────────────────────────────────────
 function JobCard({
-  b, justClosed, isHighlighted, onClose, onEstimate, onEditEstimate, lastEstimate, onArchive, onRestore, isArchived,
+  b, justClosed, isHighlighted, onClose, onEstimate, onEditEstimate, lastEstimate,
+  onViewEstimate, onDownloadEstimate, downloadingEstimate,
+  onArchive, onRestore, isArchived,
   archiving, onPhotos, photoCount, onDownloadReceipt, downloadingReceipt, onSendReview, sendingReview,
   onEmpCallback, empCallLoading,
   emailEditId, emailEditVal, emailEditSaving, emailEditMsg,
@@ -3278,6 +3308,9 @@ function JobCard({
   onEstimate?: () => void;
   onEditEstimate?: () => void;
   lastEstimate?: EstimateRecord | null;
+  onViewEstimate?: () => void;
+  onDownloadEstimate?: () => void;
+  downloadingEstimate?: boolean;
   onArchive?: () => void;
   onRestore?: () => void;
   isArchived?: boolean;
@@ -3546,27 +3579,61 @@ function JobCard({
         {/* Last estimate badge */}
         {lastEstimate && (
           <div style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
+            display: "flex", flexDirection: "column", gap: 8,
             background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8,
             padding: "8px 12px", marginTop: 12,
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
-              <FileText style={{ width: 14, height: 14, color: ACCENT, flexShrink: 0 }} />
-              <span style={{ color: "#64748b" }}>{t("estimateSent")}:</span>
-              <span style={{ fontWeight: 800, color: ACCENT }}>${Number(lastEstimate.total).toFixed(2)}</span>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+                <FileText style={{ width: 14, height: 14, color: ACCENT, flexShrink: 0 }} />
+                <span style={{ color: "#64748b" }}>{t("estimateSent")}:</span>
+                <span style={{ fontWeight: 800, color: ACCENT }}>${Number(lastEstimate.total).toFixed(2)}</span>
+              </div>
+              {onEditEstimate && (
+                <button
+                  type="button"
+                  onClick={onEditEstimate}
+                  style={{
+                    background: "none", border: `1px solid ${ACCENT}`, cursor: "pointer",
+                    fontSize: 11, fontWeight: 700, color: ACCENT,
+                    padding: "3px 8px", borderRadius: 6,
+                  }}
+                >
+                  {t("estimateEdit")}
+                </button>
+              )}
             </div>
-            {onEditEstimate && (
-              <button
-                type="button"
-                onClick={onEditEstimate}
-                style={{
-                  background: "none", border: `1px solid ${ACCENT}`, cursor: "pointer",
-                  fontSize: 11, fontWeight: 700, color: ACCENT,
-                  padding: "3px 8px", borderRadius: 6,
-                }}
-              >
-                {t("estimateEdit")}
-              </button>
+            {(onViewEstimate || onDownloadEstimate) && (
+              <div style={{ display: "flex", gap: 8 }}>
+                {onViewEstimate && (
+                  <button
+                    type="button"
+                    onClick={onViewEstimate}
+                    style={{
+                      flex: 1, background: "#fff", border: `1px solid ${ACCENT}`, cursor: "pointer",
+                      fontSize: 11, fontWeight: 700, color: ACCENT,
+                      padding: "6px 8px", borderRadius: 6,
+                    }}
+                  >
+                    {t("estimateView")}
+                  </button>
+                )}
+                {onDownloadEstimate && (
+                  <button
+                    type="button"
+                    onClick={onDownloadEstimate}
+                    disabled={downloadingEstimate}
+                    style={{
+                      flex: 1, background: "#fff", border: `1px solid ${ACCENT}`, cursor: "pointer",
+                      fontSize: 11, fontWeight: 700, color: ACCENT,
+                      padding: "6px 8px", borderRadius: 6,
+                      opacity: downloadingEstimate ? 0.6 : 1,
+                    }}
+                  >
+                    {downloadingEstimate ? t("generating") : t("estimateDownload")}
+                  </button>
+                )}
+              </div>
             )}
           </div>
         )}

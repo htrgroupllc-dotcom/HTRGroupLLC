@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Lock, Unlock, Calendar, RefreshCw, LogOut,
-  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck, ArrowLeftRight, Eye, ChevronLeft,
+  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck, ArrowLeftRight,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLangProvider, useAdminLang } from "@/context/AdminLangContext";
-import { downloadReceiptPdf } from "@/lib/downloadReceipt";
+import { downloadReceiptPdf, openHtmlDocument } from "@/lib/downloadReceipt";
 import EmployeesTab from "@/components/crm/EmployeesTab";
 import ArchiveTab from "@/components/crm/ArchiveTab";
 import BlacklistTab from "@/components/crm/BlacklistTab";
@@ -239,11 +239,6 @@ interface BookingRow {
   client_signed_at?: string | null;
   business_type?: "appliance" | "dental" | string;
   is_remote?: boolean;
-  closed_at?: string | null;
-}
-function bookingHasViewableInvoice(b: BookingRow): boolean {
-  if (b.status !== "completed") return false;
-  return !!(b.stripe_paid || b.payment_status === "paid" || b.payment_status === "cash" || b.payment_amount != null);
 }
 interface AdminEstimateRecord {
   id: number;
@@ -252,61 +247,6 @@ interface AdminEstimateRecord {
   notes: string | null;
   no_tax: boolean;
   sent_at: string;
-}
-
-type AdminEstimateLineItem = {
-  description: string;
-  category: string;
-  qty: number;
-  unit_price: string;
-};
-
-function parseEstimatePrice(raw: string | number | null | undefined): number {
-  if (raw === null || raw === undefined) return 0;
-  const s = String(raw).trim().replace(/,/g, ".");
-  if (!s || s === ".") return 0;
-  const n = parseFloat(s);
-  return Number.isFinite(n) && n >= 0 ? n : 0;
-}
-
-function estimateLineTotal(item: { qty: number; unit_price: string }): number {
-  const qty = Number.isFinite(item.qty) && item.qty > 0 ? item.qty : 1;
-  return qty * parseEstimatePrice(item.unit_price);
-}
-
-function normalizeEstimateLineItem(item: {
-  description?: string;
-  category?: string;
-  qty?: number | string;
-  unit_price?: number | string;
-}): AdminEstimateLineItem {
-  const price = item.unit_price;
-  return {
-    description: item.description ?? "",
-    category: item.category ?? "Labor",
-    qty: Math.max(1, parseInt(String(item.qty ?? 1), 10) || 1),
-    unit_price:
-      price === 0 || price === "0" || price === null || price === undefined
-        ? ""
-        : String(price),
-  };
-}
-
-function defaultEstimateDescription(category: string): string {
-  if (category === "Part") return "Part";
-  if (category === "Material") return "Material";
-  return "Labor";
-}
-
-function toEstimateApiItems(items: AdminEstimateLineItem[]) {
-  return items
-    .map(i => ({
-      description: i.description.trim() || defaultEstimateDescription(i.category),
-      category: i.category,
-      qty: Math.max(1, i.qty),
-      unit_price: parseEstimatePrice(i.unit_price),
-    }))
-    .filter(i => i.unit_price > 0);
 }
 interface ReceiptDownloadRow {
   id: number;
@@ -343,38 +283,13 @@ interface BlockedRow {
   reason: string;
 }
 
-function readAdminSessionInit(): {
-  pin: string;
-  bearer: string | null;
-  fidLabel: string | null;
-  authed: boolean;
-} {
-  try {
-    const authToken = sessionStorage.getItem("adminAuthToken") ?? localStorage.getItem("adminAuthToken");
-    const authPin = sessionStorage.getItem("adminPin") ?? localStorage.getItem("adminPin");
-    if (authToken && authPin) {
-      return { pin: authPin, bearer: null, fidLabel: null, authed: true };
-    }
-    if (authToken) {
-      const sessionLabel = sessionStorage.getItem("adminFidLabel");
-      const credId = localStorage.getItem("htr_fid_cred_id");
-      const fidLabel = sessionLabel ?? (credId ? localStorage.getItem(`htr_fid_label_${credId}`) : null);
-      return { pin: "", bearer: authToken, fidLabel, authed: true };
-    }
-  } catch {
-    /* storage blocked */
-  }
-  return { pin: "", bearer: null, fidLabel: null, authed: false };
-}
-
 function AdminDashboard() {
   const { lang, setLang, t } = useAdminLang();
   const { toast } = useToast();
-  const sessionInit = readAdminSessionInit();
-  const [pin, setPin]             = useState(sessionInit.pin);
-  const [adminBearer, setBearer]  = useState<string | null>(sessionInit.bearer);
-  const [authed, setAuthed]       = useState(sessionInit.authed);
-  const [fidLabel, setFidLabel]   = useState<string | null>(sessionInit.fidLabel);
+  const [pin, setPin]             = useState("");
+  const [adminBearer, setBearer]  = useState<string | null>(null);
+  const [authed, setAuthed]       = useState(false);
+  const [fidLabel, setFidLabel]   = useState<string | null>(null);
 
   // CRM: top-level tab navigation
   const [adminTab, setAdminTab]   = useState<"bookings"|"employees"|"archive"|"blacklist"|"payroll"|"reports"|"settings"|"trash"|"pricebook"|"photos">("bookings");
@@ -423,7 +338,7 @@ function AdminDashboard() {
 
   // ── Admin Estimate Modal ──────────────────────────────────────────────────
   const [adminEstimateTarget, setAdminEstimateTarget] = useState<{ id: string; name: string; email: string; phone: string } | null>(null);
-  const [adminEstimateItems, setAdminEstimateItems] = useState<AdminEstimateLineItem[]>([]);
+  const [adminEstimateItems, setAdminEstimateItems] = useState<{ description: string; category: string; qty: number; unit_price: number }[]>([]);
   const [adminEstimateNotes, setAdminEstimateNotes] = useState("");
   const [adminEstimateNoTax, setAdminEstimateNoTax] = useState(false);
   const [adminEstimateNotify, setAdminEstimateNotify] = useState<"email" | "sms" | "both">("email");
@@ -476,11 +391,11 @@ function AdminDashboard() {
     setAdminEstimateTarget(b);
     setAdminEstimateIsEdit(!!prev);
     if (prev && prev.items.length > 0) {
-      setAdminEstimateItems(prev.items.map(normalizeEstimateLineItem));
+      setAdminEstimateItems(prev.items);
       setAdminEstimateNotes(prev.notes ?? "");
       setAdminEstimateNoTax(prev.no_tax);
     } else {
-      setAdminEstimateItems([{ description: "", category: "Labor", qty: 1, unit_price: "" }]);
+      setAdminEstimateItems([{ description: "", category: "Labor", qty: 1, unit_price: 0 }]);
       setAdminEstimateNotes("");
       setAdminEstimateNoTax(false);
     }
@@ -494,8 +409,8 @@ function AdminDashboard() {
 
   const handleAdminEstimate = useCallback(async () => {
     if (!adminEstimateTarget) return;
-    const validItems = toEstimateApiItems(adminEstimateItems);
-    if (!validItems.length) { setAdminEstimateErr(t.estimateItems + " — укажите цену хотя бы для одной позиции"); return; }
+    const validItems = adminEstimateItems.filter(i => i.description.trim() && i.unit_price >= 0);
+    if (!validItems.length) { setAdminEstimateErr(t.estimateItems + " — требуется хотя бы одна позиция"); return; }
     setAdminEstimateSending(true);
     setAdminEstimateErr("");
     try {
@@ -504,11 +419,28 @@ function AdminDashboard() {
         headers: { ...adminAuthH(), "Content-Type": "application/json" },
         body: JSON.stringify({ items: validItems, notes: adminEstimateNotes.trim() || null, no_tax: adminEstimateNoTax, notify_via: adminEstimateNotify }),
       });
-      const d = await res.json().catch(() => ({})) as { ok?: boolean; error?: string; total?: number };
+      const d = await res.json().catch(() => ({})) as {
+        ok?: boolean; error?: string; total?: number; estimate_id?: number;
+      };
       if (d.ok) {
         setAdminEstimateDone(true);
         toast({ title: `✅ ${t.estimateSuccess} ($${(d.total ?? 0).toFixed(2)})` });
-        if (adminEstimateTarget) void loadAdminLastEstimate(adminEstimateTarget.id);
+        if (adminEstimateTarget && d.estimate_id != null && d.total != null) {
+          const targetId = adminEstimateTarget.id;
+          setAdminEstimateHistory(prev => ({
+            ...prev,
+            [targetId]: {
+              id: d.estimate_id!,
+              total: d.total!,
+              items: validItems,
+              notes: adminEstimateNotes.trim() || null,
+              no_tax: adminEstimateNoTax,
+              sent_at: new Date().toISOString(),
+            },
+          }));
+        } else if (adminEstimateTarget) {
+          void loadAdminLastEstimate(adminEstimateTarget.id);
+        }
         setTimeout(() => setAdminEstimateTarget(null), 1800);
       } else {
         setAdminEstimateErr(d.error ?? t.estimateErr);
@@ -705,11 +637,10 @@ function AdminDashboard() {
 
   // Download receipt PDF
   const [downloadingReceiptId, setDownloadingReceiptId] = useState<string | null>(null);
+  const [downloadingEstimateId, setDownloadingEstimateId] = useState<string | null>(null);
   // Resend paid receipt email (HTML + PDF attachment)
   const [resendingReceiptId, setResendingReceiptId] = useState<string | null>(null);
   const [resendReceiptSentId, setResendReceiptSentId] = useState<string | null>(null);
-  const [sentDocPreview, setSentDocPreview] = useState<{ kind: "estimate" | "invoice"; title: string; html: string } | null>(null);
-  const [sentDocLoadingKey, setSentDocLoadingKey] = useState<string | null>(null);
   // Note: resendPaymentLink and downloadReceipt are defined further below
   // (after `adminAuthH`) because they depend on it.
 
@@ -1003,6 +934,34 @@ function AdminDashboard() {
     }
   }, [adminAuthH, downloadingReceiptId, loadReceiptHistory, getReceiptHistoryFilters, t.downloadReceiptError]);
 
+  const viewEstimate = useCallback(async (b: BookingRow, estimateId?: number) => {
+    try {
+      const url = `${API()}/api/admin/bookings/${b.id}/estimate-html`
+        + (estimateId ? `?estimate_id=${estimateId}` : "");
+      await openHtmlDocument({ url, headers: adminAuthH() });
+    } catch {
+      window.alert(t.estimateViewError);
+    }
+  }, [adminAuthH, t.estimateViewError]);
+
+  const downloadEstimate = useCallback(async (b: BookingRow, estimateId?: number) => {
+    if (downloadingEstimateId) return;
+    setDownloadingEstimateId(b.id);
+    try {
+      const url = `${API()}/api/admin/bookings/${b.id}/estimate-html`
+        + (estimateId ? `?estimate_id=${estimateId}` : "");
+      await downloadReceiptPdf({
+        url,
+        headers: adminAuthH(),
+        filenameBase: `estimate-${b.id.slice(0, 8)}`,
+      });
+    } catch {
+      window.alert(t.estimateViewError);
+    } finally {
+      setDownloadingEstimateId(null);
+    }
+  }, [adminAuthH, downloadingEstimateId, t.estimateViewError]);
+
   const resendReceipt = useCallback(async (b: BookingRow) => {
     if (resendingReceiptId) return;
     setResendingReceiptId(b.id);
@@ -1026,79 +985,6 @@ function AdminDashboard() {
       setResendingReceiptId(null);
     }
   }, [adminAuthH, resendingReceiptId, t.resendReceiptError]);
-
-  const getReceiptLangOverride = useCallback((b: BookingRow): "en" | "es" | null =>
-    b.payment_language === "es" || b.client_lang === "es" ? "es"
-    : b.payment_language === "en" || b.client_lang === "en" ? "en"
-    : null,
-  []);
-
-  const viewSentEstimate = useCallback(async (b: BookingRow, est?: AdminEstimateRecord | null) => {
-    const key = `est-${b.id}`;
-    if (sentDocLoadingKey) return;
-    setSentDocLoadingKey(key);
-    try {
-      const url = `${API()}/api/admin/bookings/${b.id}/estimate-html`
-        + (est?.id ? `?estimate_id=${est.id}` : "");
-      const r = await fetch(url, { headers: adminAuthH(), cache: "no-store" });
-      if (!r.ok) throw new Error(String(r.status));
-      const html = await r.text();
-      setSentDocPreview({
-        kind: "estimate",
-        title: `${t.viewSentEstimateTitle} — ${b.name}`,
-        html,
-      });
-    } catch {
-      window.alert(t.viewSentDocError);
-    } finally {
-      setSentDocLoadingKey(null);
-    }
-  }, [adminAuthH, sentDocLoadingKey, t.viewSentEstimateTitle, t.viewSentDocError]);
-
-  const viewSentInvoice = useCallback(async (b: BookingRow) => {
-    const key = `inv-${b.id}`;
-    if (sentDocLoadingKey) return;
-    setSentDocLoadingKey(key);
-    try {
-      const langOverride = getReceiptLangOverride(b);
-      const url = `${API()}/api/admin/bookings/${b.id}/invoice-html`
-        + (langOverride ? `?lang=${langOverride}` : "");
-      const r = await fetch(url, { headers: adminAuthH(), cache: "no-store" });
-      if (!r.ok) throw new Error(String(r.status));
-      const html = await r.text();
-      setSentDocPreview({
-        kind: "invoice",
-        title: `${t.viewSentInvoiceTitle} — ${b.name}`,
-        html,
-      });
-    } catch {
-      window.alert(t.viewSentDocError);
-    } finally {
-      setSentDocLoadingKey(null);
-    }
-  }, [adminAuthH, getReceiptLangOverride, sentDocLoadingKey, t.viewSentInvoiceTitle, t.viewSentDocError]);
-
-  const closeSentDocPreview = useCallback((fromPopState = false) => {
-    setSentDocPreview(null);
-    if (!fromPopState && history.state?.htrAdminDocPreview) {
-      history.back();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!sentDocPreview) return;
-    history.pushState({ htrAdminDocPreview: true }, "");
-    const onPop = () => closeSentDocPreview(true);
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeSentDocPreview(false);
-    };
-    window.addEventListener("popstate", onPop);
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("popstate", onPop);
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [sentDocPreview, closeSentDocPreview]);
 
   // Silent fetch — no loading spinner (used by auto-refresh)
   const fetchSlots = useCallback(async () => {
@@ -1141,8 +1027,7 @@ function AdminDashboard() {
       }
       setApiError(null);
       setAllBookings(d.bookings ?? []);
-      const nonCompleted = (d.bookings ?? []).filter(b => b.status !== "completed");
-      void Promise.all(nonCompleted.map(b => loadAdminLastEstimate(b.id)));
+      void Promise.all((d.bookings ?? []).map(b => loadAdminLastEstimate(b.id)));
     } catch (e: unknown) {
       setApiError(`${t.errConnectionPrefix}${e instanceof Error ? e.message : String(e)}`);
     }
@@ -1355,16 +1240,12 @@ function AdminDashboard() {
     }
   };
 
-  const MoveBizButton = ({ b, className, fullWidth }: { b: BookingRow; className?: string; fullWidth?: boolean }) => {
+  const MoveBizButton = ({ b, className }: { b: BookingRow; className?: string }) => {
     const current = resolveBookingBiz(b.business_type);
     const target: "appliance" | "dental" = current === "dental" ? "appliance" : "dental";
     const loading = moveBizLoading.has(b.id);
-    const sizeCls = fullWidth
-      ? "w-full inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold leading-snug "
-      : "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ";
     const btnClass = className ?? (
-      sizeCls +
-      "border transition disabled:opacity-50 " +
+      "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold leading-none border transition disabled:opacity-50 " +
       (target === "dental"
         ? "bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100"
         : "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100")
@@ -1772,13 +1653,7 @@ function AdminDashboard() {
     window.location.reload();
   };
 
-  if (!authed) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: PAGE_BG }}>
-        <div className="text-sm text-stone-500">{t.loading}</div>
-      </div>
-    );
-  }
+  if (!authed) return null;
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   const closeManualModal = () => {
@@ -2590,17 +2465,17 @@ function AdminDashboard() {
           {/* ── Business category filter ── */}
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <label className="text-xs font-semibold text-stone-500 whitespace-nowrap">{t.filterCategory}:</label>
-            <div className="flex rounded-lg border border-stone-200 overflow-hidden text-[11px] font-semibold">
+            <div className="flex rounded-lg border border-stone-200 overflow-x-auto max-w-full text-[11px] font-semibold">
               <button onClick={() => setBizFilter("all")}
-                className={`px-3 py-1.5 transition ${bizFilter === "all" ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
+                className={`px-3 py-1.5 shrink-0 transition ${bizFilter === "all" ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
                 {t.filterAll}
               </button>
               <button onClick={() => setBizFilter("appliance")}
-                className={`px-3 py-1.5 border-l border-stone-200 transition ${bizFilter === "appliance" ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
+                className={`px-3 py-1.5 shrink-0 border-l border-stone-200 transition ${bizFilter === "appliance" ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
                 {t.filterAppliance}
               </button>
               <button onClick={() => setBizFilter("dental")}
-                className={`px-3 py-1.5 border-l border-stone-200 transition ${bizFilter === "dental" ? "bg-violet-50 text-violet-700" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
+                className={`px-3 py-1.5 shrink-0 border-l border-stone-200 transition ${bizFilter === "dental" ? "bg-violet-100 text-violet-800" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
                 {t.filterDental}
               </button>
             </div>
@@ -2740,27 +2615,23 @@ function AdminDashboard() {
                         </div>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${statusCls}`}>{statusLabel}</span>
                       </div>
-                      <div className="mb-1">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <User className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
-                          <span className="text-sm font-semibold text-stone-800 break-words">{b.name}</span>
-                          <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none shrink-0 ${resolveBookingBiz(b.business_type) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
-                            {resolveBookingBiz(b.business_type) === "dental" ? t.bizDental : t.bizAppliance}
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <User className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+                        <span className="text-sm font-semibold text-stone-800">{b.name}</span>
+                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${resolveBookingBiz(b.business_type) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
+                          {resolveBookingBiz(b.business_type) === "dental" ? t.bizDental : t.bizAppliance}
+                        </span>
+                        <MoveBizButton b={b} />
+                        {b.is_remote && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-stone-100 text-stone-500 leading-none" title={t.remoteBookingHint}>👁</span>
+                        )}
+                        {b.client_lang && (
+                          <span
+                            className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-sky-100 text-sky-700 leading-none uppercase"
+                            title={b.client_lang === "es" ? t.clientLangEs : b.client_lang === "en" ? t.clientLangEn : b.client_lang}>
+                            {b.client_lang}
                           </span>
-                          {b.is_remote && (
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-stone-100 text-stone-500 leading-none shrink-0" title={t.remoteBookingHint}>👁</span>
-                          )}
-                          {b.client_lang && (
-                            <span
-                              className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-sky-100 text-sky-700 leading-none uppercase shrink-0"
-                              title={b.client_lang === "es" ? t.clientLangEs : b.client_lang === "en" ? t.clientLangEn : b.client_lang}>
-                              {b.client_lang}
-                            </span>
-                          )}
-                        </div>
-                        <div className="mt-1.5">
-                          <MoveBizButton b={b} fullWidth />
-                        </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-1.5 mb-1">
                         <Phone className="w-3.5 h-3.5 flex-shrink-0" style={{ color: ACCENT }} />
@@ -2852,26 +2723,30 @@ function AdminDashboard() {
                             💳 {t.stripePayLink}
                           </button>
                           {adminEstimateHistory[b.id] && (
-                            <div className="flex flex-col gap-1.5 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs">
+                            <div className="flex flex-col gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-blue-500">📋</span>
                                   <span className="text-slate-500">{t.estimateSentBadge}:</span>
                                   <span className="font-bold text-blue-700">${Number(adminEstimateHistory[b.id]!.total).toFixed(2)}</span>
                                 </div>
+                                <button
+                                  onClick={() => openAdminEstimate({ id: b.id, name: b.name, email: b.email ?? "", phone: b.phone ?? "" }, adminEstimateHistory[b.id]!)}
+                                  className="font-bold text-blue-700 border border-blue-300 rounded px-2 py-0.5 hover:bg-blue-100 transition">
+                                  {t.estimateEditBtn}
+                                </button>
                               </div>
                               <div className="flex gap-2">
                                 <button
-                                  disabled={sentDocLoadingKey === `est-${b.id}`}
-                                  onClick={() => void viewSentEstimate(b, adminEstimateHistory[b.id])}
-                                  className="flex-1 flex items-center justify-center gap-1 font-bold text-blue-700 border border-blue-300 rounded-lg px-2 py-1.5 hover:bg-blue-100 transition disabled:opacity-50">
-                                  <Eye className="w-3.5 h-3.5" />
-                                  {sentDocLoadingKey === `est-${b.id}` ? t.viewSentDocLoading : t.viewSentEstimateBtn}
+                                  onClick={() => void viewEstimate(b, adminEstimateHistory[b.id]!.id)}
+                                  className="flex-1 font-bold text-blue-700 border border-blue-300 rounded px-2 py-1 hover:bg-blue-100 transition">
+                                  {t.estimateViewBtn}
                                 </button>
                                 <button
-                                  onClick={() => openAdminEstimate({ id: b.id, name: b.name, email: b.email ?? "", phone: b.phone ?? "" }, adminEstimateHistory[b.id]!)}
-                                  className="flex-1 font-bold text-blue-700 border border-blue-300 rounded-lg px-2 py-1.5 hover:bg-blue-100 transition">
-                                  {t.estimateEditBtn}
+                                  disabled={downloadingEstimateId === b.id}
+                                  onClick={() => void downloadEstimate(b, adminEstimateHistory[b.id]!.id)}
+                                  className="flex-1 font-bold text-blue-700 border border-blue-300 rounded px-2 py-1 hover:bg-blue-100 transition disabled:opacity-50">
+                                  {downloadingEstimateId === b.id ? t.downloadReceiptDownloading : t.estimateDownloadBtn}
                                 </button>
                               </div>
                             </div>
@@ -2935,23 +2810,15 @@ function AdminDashboard() {
                               📧 {resendSentId === b.id ? t.resendPaymentSent : resendingId === b.id ? t.resendPaymentSending : t.resendPaymentBtn}
                             </button>
                           )}
-                          {bookingHasViewableInvoice(b) && (
-                            <>
-                              <button
-                                disabled={sentDocLoadingKey === `inv-${b.id}`}
-                                onClick={() => void viewSentInvoice(b)}
-                                className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-violet-50 text-violet-700 hover:bg-violet-100 transition border border-violet-200 disabled:opacity-50">
-                                <Eye className="w-3.5 h-3.5" />
-                                {sentDocLoadingKey === `inv-${b.id}` ? t.viewSentDocLoading : t.viewSentInvoiceBtn}
-                              </button>
-                              <button
-                                disabled={downloadingReceiptId === b.id}
-                                onClick={() => downloadReceipt(b)}
-                                className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition border border-blue-200 disabled:opacity-50">
-                                <Download className="w-3.5 h-3.5" />
-                                {downloadingReceiptId === b.id ? t.downloadReceiptDownloading : t.downloadReceiptBtn}
-                              </button>
-                            </>
+                          {/* Download receipt for paid bookings */}
+                          {b.status === "completed" && (b.payment_status === "paid" || b.stripe_paid) && (
+                            <button
+                              disabled={downloadingReceiptId === b.id}
+                              onClick={() => downloadReceipt(b)}
+                              className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition border border-blue-200 disabled:opacity-50">
+                              <Download className="w-3.5 h-3.5" />
+                              {downloadingReceiptId === b.id ? t.downloadReceiptDownloading : t.downloadReceiptBtn}
+                            </button>
                           )}
                           {/* Resend receipt email (HTML + PDF) for paid bookings */}
                           {b.status === "completed" && (b.payment_status === "paid" || b.stripe_paid) && b.email && (
@@ -3412,11 +3279,15 @@ function AdminDashboard() {
                                 <div className="flex items-center gap-1 flex-wrap">
                                   <span className="text-[11px] text-blue-700 font-bold">${Number(adminEstimateHistory[b.id]!.total).toFixed(2)}</span>
                                   <button
-                                    disabled={sentDocLoadingKey === `est-${b.id}`}
-                                    onClick={() => void viewSentEstimate(b, adminEstimateHistory[b.id])}
-                                    className="flex items-center gap-0.5 text-[10px] font-bold text-violet-700 hover:underline whitespace-nowrap disabled:opacity-50">
-                                    <Eye className="w-3 h-3" />
-                                    {sentDocLoadingKey === `est-${b.id}` ? t.viewSentDocLoading : t.viewSentEstimateBtn}
+                                    onClick={() => void viewEstimate(b, adminEstimateHistory[b.id]!.id)}
+                                    className="text-[10px] font-bold text-blue-600 hover:underline whitespace-nowrap">
+                                    {t.estimateViewBtn}
+                                  </button>
+                                  <button
+                                    disabled={downloadingEstimateId === b.id}
+                                    onClick={() => void downloadEstimate(b, adminEstimateHistory[b.id]!.id)}
+                                    className="text-[10px] font-bold text-blue-600 hover:underline whitespace-nowrap disabled:opacity-50">
+                                    {downloadingEstimateId === b.id ? "…" : t.estimateDownloadBtn}
                                   </button>
                                   <button
                                     onClick={() => openAdminEstimate({ id: b.id, name: b.name, email: b.email ?? "", phone: b.phone ?? "" }, adminEstimateHistory[b.id]!)}
@@ -3450,23 +3321,14 @@ function AdminDashboard() {
                                 </button>
                               )}
                               {/* Скачать чек */}
-                              {bookingHasViewableInvoice(b) && (
-                                <>
-                                  <button
-                                    disabled={sentDocLoadingKey === `inv-${b.id}`}
-                                    onClick={() => void viewSentInvoice(b)}
-                                    className="flex items-center gap-1 text-[10px] font-semibold text-violet-700 hover:text-violet-900 transition disabled:opacity-50">
-                                    <Eye className="w-3 h-3" />
-                                    {sentDocLoadingKey === `inv-${b.id}` ? t.viewSentDocLoading : t.viewSentInvoiceBtn}
-                                  </button>
-                                  <button
-                                    disabled={downloadingReceiptId === b.id}
-                                    onClick={() => downloadReceipt(b)}
-                                    className="flex items-center gap-1 text-[10px] font-semibold text-blue-700 hover:text-blue-900 transition disabled:opacity-50">
-                                    <Download className="w-3 h-3" />
-                                    {downloadingReceiptId === b.id ? t.downloadReceiptDownloading : t.downloadReceiptBtn}
-                                  </button>
-                                </>
+                              {b.status === "completed" && (b.payment_status === "paid" || b.stripe_paid) && (
+                                <button
+                                  disabled={downloadingReceiptId === b.id}
+                                  onClick={() => downloadReceipt(b)}
+                                  className="flex items-center gap-1 text-[10px] font-semibold text-blue-700 hover:text-blue-900 transition disabled:opacity-50">
+                                  <Download className="w-3 h-3" />
+                                  {downloadingReceiptId === b.id ? t.downloadReceiptDownloading : t.downloadReceiptBtn}
+                                </button>
                               )}
                               {/* Переотправить чек на email */}
                               {b.status === "completed" && (b.payment_status === "paid" || b.stripe_paid) && b.email && (
@@ -3930,37 +3792,6 @@ function AdminDashboard() {
         </div>
       )}
 
-      {/* ── Sent document preview (estimate / invoice as client received) ── */}
-      {sentDocPreview && (
-        <div className="fixed inset-0 z-[60] flex flex-col bg-black/60 touch-none">
-          <div className="relative z-20 flex items-center gap-2 bg-white border-b border-stone-200 px-3 py-3 shrink-0 shadow-sm touch-auto">
-            <button
-              type="button"
-              onClick={() => closeSentDocPreview(false)}
-              className="inline-flex items-center gap-1 rounded-lg px-2.5 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-100 active:bg-stone-200 transition shrink-0 min-h-[44px]">
-              <ChevronLeft className="w-5 h-5 shrink-0" />
-              {t.back}
-            </button>
-            <div className="font-bold text-sm text-stone-800 truncate flex-1 min-w-0">{sentDocPreview.title}</div>
-            <button
-              type="button"
-              onClick={() => closeSentDocPreview(false)}
-              className="p-2.5 rounded-full hover:bg-stone-100 active:bg-stone-200 transition shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              aria-label={t.close}>
-              <X className="w-5 h-5 text-stone-500" />
-            </button>
-          </div>
-          <div className="relative z-0 flex-1 min-h-0 overflow-hidden bg-stone-100 p-2 sm:p-4 touch-auto">
-            <iframe
-              title={sentDocPreview.title}
-              sandbox="allow-same-origin"
-              srcDoc={sentDocPreview.html}
-              className="w-full h-full max-w-3xl mx-auto bg-white rounded-lg shadow-lg border border-stone-200 block"
-            />
-          </div>
-        </div>
-      )}
-
       {/* ── Admin Estimate Modal ── */}
       {adminEstimateTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -4009,7 +3840,7 @@ function AdminDashboard() {
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-xs font-semibold text-stone-500">{t.estimateItems}</label>
                       <button
-                        onClick={() => setAdminEstimateItems(prev => [...prev, { description: "", category: "Labor", qty: 1, unit_price: "" }])}
+                        onClick={() => setAdminEstimateItems(prev => [...prev, { description: "", category: "Labor", qty: 1, unit_price: 0 }])}
                         className="text-xs font-bold text-blue-600 hover:text-blue-800">{t.addItem}</button>
                     </div>
                     <div className="space-y-2">
@@ -4045,14 +3876,9 @@ function AdminDashboard() {
                             <div className="relative">
                               <span className="absolute left-2 top-2 text-stone-400 text-xs">$</span>
                               <input
-                                type="text"
-                                inputMode="decimal"
-                                value={item.unit_price}
-                                onChange={e => setAdminEstimateItems(prev => prev.map((x, idx) => idx === i ? {
-                                  ...x,
-                                  unit_price: e.target.value.replace(/[^\d.,]/g, ""),
-                                } : x))}
-                                placeholder="0.00"
+                                type="number" min="0" step="0.01"
+                                value={item.unit_price === 0 ? "" : item.unit_price}
+                                onChange={e => setAdminEstimateItems(prev => prev.map((x, idx) => idx === i ? { ...x, unit_price: parseFloat(e.target.value) || 0 } : x))}
                                 className="w-full border border-stone-200 rounded-lg pl-5 pr-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
                               />
                             </div>
@@ -4068,8 +3894,8 @@ function AdminDashboard() {
                   </label>
 
                   {(() => {
-                    const labor = adminEstimateItems.filter(i => i.category === "Labor").reduce((s, i) => s + estimateLineTotal(i), 0);
-                    const parts = adminEstimateItems.filter(i => i.category !== "Labor").reduce((s, i) => s + estimateLineTotal(i), 0);
+                    const labor = adminEstimateItems.filter(i => i.category === "Labor").reduce((s, i) => s + i.qty * i.unit_price, 0);
+                    const parts = adminEstimateItems.filter(i => i.category !== "Labor").reduce((s, i) => s + i.qty * i.unit_price, 0);
                     const tax = adminEstimateNoTax ? 0 : (labor + parts) * 0.0825;
                     const total = labor + parts + tax;
                     return (

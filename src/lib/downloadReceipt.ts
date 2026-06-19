@@ -61,3 +61,17 @@ export async function downloadReceiptPdf(opts: {
     document.body.removeChild(iframe);
   }
 }
+
+/** Opens server-rendered HTML in a new browser tab (for estimate preview). */
+export async function openHtmlDocument(opts: {
+  url: string;
+  headers?: Record<string, string>;
+}): Promise<void> {
+  const res = await fetch(opts.url, { headers: opts.headers });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const html = await res.text();
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const blobUrl = URL.createObjectURL(blob);
+  window.open(blobUrl, "_blank", "noopener,noreferrer");
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 120_000);
+}
