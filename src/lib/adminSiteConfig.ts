@@ -14,5 +14,5 @@ export type BookingBiz = "appliance" | "dental";
 export function resolveBookingBiz(businessType?: string | null): BookingBiz {
   if (businessType === "dental") return "dental";
   if (businessType === "appliance") return "appliance";
-  return "appliance";
+  return ADMIN_SITE_CONFIG.bookingBizFallback;
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useLocation } from "wouter";
 import { createPortal } from "react-dom";
 import {
   Wrench, LogOut, CheckCircle2, Phone, MapPin,
@@ -324,6 +325,7 @@ const TRANSLATOR_LANGS = [
 
 function EmployeePage() {
   const { lang, setLang, t } = useEmpLang();
+  const [, setLocation] = useLocation();
 
   // Auth state
   type EmpScreen = "checking" | "login" | "register-fid";
@@ -1074,11 +1076,15 @@ function EmployeePage() {
         window.speechSynthesis.cancel();
         return;
       }
-      window.history.back();
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        setLocation("/");
+      }
     };
     window.addEventListener("htr-employee-back", onEmployeeBack);
     return () => window.removeEventListener("htr-employee-back", onEmployeeBack);
-  }, [closeTarget, estimateTarget, photoModalId, translatorOpen, stopListening]);
+  }, [closeTarget, estimateTarget, photoModalId, translatorOpen, stopListening, setLocation]);
 
   const loadPricebook = useCallback(async () => {
     if (!token) return;
@@ -1598,7 +1604,7 @@ function EmployeePage() {
       (b.brand_model?.toLowerCase().includes(lq) ?? false)
     );
   };
-  const activeJobs    = bookings.filter(b => b.status !== "completed" && matchesSearch(b, jobSearch));
+  const activeJobs    = bookings.filter(b => (b.status === "pending" || b.status === "approved") && matchesSearch(b, jobSearch));
   const completedJobs = bookings.filter(b => b.status === "completed" && !b.employee_archived_at && matchesSearch(b, jobSearch));
   const archivedJobs  = bookings.filter(b => b.status === "completed" && !!b.employee_archived_at && matchesSearch(b, jobSearch));
 
