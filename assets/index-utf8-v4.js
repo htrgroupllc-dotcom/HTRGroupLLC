@@ -89782,7 +89782,7 @@ function AdminDashboard() {
             ] })
           ]
         }
-      )),
+      ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `overflow-y-auto p-4 ${adminTab === "jobsArchive" ? "block" : mobileTab !== "bookings" ? "hidden md:block" : "block"} flex-1`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl shadow-sm p-4 md:p-5", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2 mb-3 flex-wrap", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-sm font-bold text-stone-600 flex items-center gap-1.5", children: [

@@ -131,7 +131,7 @@ mustReplace(
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: \`overflow-y-auto p-4 \${mobileTab !== "bookings" ? "hidden md:block" : "block"} flex-1\`, children:`,
   `        }
-      )),
+      ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: \`overflow-y-auto p-4 \${adminTab === "jobsArchive" ? "block" : mobileTab !== "bookings" ? "hidden md:block" : "block"} flex-1\`, children:`,
   "close slots conditional + right panel visibility",
 );
