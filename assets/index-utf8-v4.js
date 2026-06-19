@@ -93141,10 +93141,10 @@ function EmployeePage() {
     try {
       const langOverride = b.client_lang === "es" ? "es" : b.client_lang === "en" ? "en" : b.payment_language === "es" ? "es" : b.payment_language === "en" ? "en" : null;
       const url = `${API$1()}/api/employee/bookings/${b.id}/invoice-pdf` + (langOverride ? `?lang=${langOverride}` : "");
-      await downloadReceiptPdf({
+      await downloadBinaryPdf({
         url,
         headers: { "Authorization": `Bearer ${token}` },
-        filenameBase: `receipt-${b.id}`
+        filenameBase: `receipt-${b.id.slice(0, 8)}`
       });
     } catch {
       window.alert(t("receiptError"));

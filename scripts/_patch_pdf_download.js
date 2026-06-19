@@ -1,5 +1,6 @@
 /**
- * Patch production bundle: server PDF for invoices + fixed estimate PDF + admin archive estimate buttons.
+ * Patch production bundle: server PDF for invoices + fixed estimate PDF.
+ * Idempotent — safe to re-run after partial patches.
  */
 const fs = require("fs");
 const path = "C:/Projects/HTRGroupLLC/assets/index-utf8-v4.js";
@@ -9,6 +10,10 @@ const NL = t.includes("\r\n") ? "\r\n" : "\n";
 function mustReplace(from, to, label) {
   const fromNl = from.replace(/\n/g, NL);
   const toNl = to.replace(/\n/g, NL);
+  if (t.includes(toNl)) {
+    console.log("SKIP (already patched):", label);
+    return;
+  }
   if (!t.includes(fromNl)) {
     console.error("MISSING:", label || from.slice(0, 100));
     process.exit(1);
@@ -137,21 +142,28 @@ async function downloadReceiptPdf(opts) {
   }
 }`;
 
-mustReplace(OLD_PDF_FN, NEW_PDF_FNS, "downloadReceiptPdf + downloadBinaryPdf");
+if (t.includes("async function downloadBinaryPdf(opts)")) {
+  console.log("SKIP (already patched): downloadReceiptPdf + downloadBinaryPdf");
+} else {
+  mustReplace(OLD_PDF_FN, NEW_PDF_FNS, "downloadReceiptPdf + downloadBinaryPdf");
+}
 
-mustReplace(
-  `async function openHtmlDocument(opts) {
+if (t.includes("const html = fixEmailAssetUrls(await res.text());") && t.includes("async function openHtmlDocument")) {
+  console.log("SKIP (already patched): openHtmlDocument fix cid");
+} else {
+  mustReplace(
+    `async function openHtmlDocument(opts) {
   const res = await fetch(opts.url, { headers: opts.headers });
   if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
   const html = await res.text();`,
-  `async function openHtmlDocument(opts) {
+    `async function openHtmlDocument(opts) {
   const res = await fetch(opts.url, { headers: opts.headers });
   if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
   const html = fixEmailAssetUrls(await res.text());`,
-  "openHtmlDocument fix cid",
-);
+    "openHtmlDocument fix cid",
+  );
+}
 
-// Admin invoice: server PDF
 mustReplace(
   `const url = \`\${API$2()}/api/admin/bookings/\${b.id}/invoice-html\``,
   `const url = \`\${API$2()}/api/admin/bookings/\${b.id}/invoice-pdf\``,
@@ -171,35 +183,29 @@ mustReplace(
   "admin downloadBinaryPdf",
 );
 
-// Employee invoice: server PDF
 mustReplace(
   `const url = \`\${API$1()}/api/employee/bookings/\${b.id}/invoice-html\``,
   `const url = \`\${API$1()}/api/employee/bookings/\${b.id}/invoice-pdf\``,
   "employee invoice-pdf url",
 );
 
-// Employee downloadReceipt - find the downloadReceiptPdf call after employee invoice url
-if (t.includes("await downloadReceiptPdf({\r\n        url,\r\n        headers: { Authorization: `Bearer ${token}` }")) {
-  t = t.replace(
-    `await downloadReceiptPdf({
+mustReplace(
+  `await downloadReceiptPdf({
         url,
-        headers: { Authorization: \`Bearer \${token}\` },
+        headers: { "Authorization": \`Bearer \${token}\` },
         filenameBase: \`receipt-\${b.id}\`
       });`,
-    `await downloadBinaryPdf({
+  `await downloadBinaryPdf({
         url,
-        headers: { Authorization: \`Bearer \${token}\` },
+        headers: { "Authorization": \`Bearer \${token}\` },
         filenameBase: \`receipt-\${b.id.slice(0, 8)}\`
       });`,
-  );
-  console.log("OK: employee downloadBinaryPdf");
-} else {
-  console.error("MISSING: employee downloadReceiptPdf call");
-  process.exit(1);
-}
+  "employee downloadBinaryPdf (quoted Authorization)",
+);
 
-// Payment success public invoice
-if (t.includes("/api/public/invoice-html?session_id=")) {
+if (t.includes("/api/public/invoice-pdf?session_id=")) {
+  console.log("SKIP (already patched): payment-success invoice-pdf");
+} else if (t.includes("/api/public/invoice-html?session_id=")) {
   t = t.replace(/\/api\/public\/invoice-html\?session_id=/g, "/api/public/invoice-pdf?session_id=");
   t = t.replace(
     /await downloadReceiptPdf\(\{ url, filenameBase \}\)/,
