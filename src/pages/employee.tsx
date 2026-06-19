@@ -7,7 +7,7 @@ import {
   Archive, ArchiveRestore, TrendingUp, Search, Star, Mail, MessageSquare, Camera, Pencil,
   PhoneOutgoing, Mic, MicOff, Languages,
 } from "lucide-react";
-import { downloadReceiptPdf, openHtmlDocument } from "@/lib/downloadReceipt";
+import { downloadBinaryPdf, downloadReceiptPdf, openHtmlDocument } from "@/lib/downloadReceipt";
 import { EmpLangProvider, useEmpLang, EmpLang } from "@/context/EmpLangContext";
 import { resolveBookingBiz } from "@/lib/adminSiteConfig";
 import {
@@ -514,12 +514,12 @@ function EmployeePage() {
         : b.payment_language === "es" ? "es"
         : b.payment_language === "en" ? "en"
         : null;
-      const url = `${API()}/api/employee/bookings/${b.id}/invoice-html`
+      const url = `${API()}/api/employee/bookings/${b.id}/invoice-pdf`
         + (langOverride ? `?lang=${langOverride}` : "");
-      await downloadReceiptPdf({
+      await downloadBinaryPdf({
         url,
-        headers: { "Authorization": `Bearer ${token}` },
-        filenameBase: `receipt-${b.id}`,
+        headers: { Authorization: `Bearer ${token}` },
+        filenameBase: `receipt-${b.id.slice(0, 8)}`,
       });
     } catch {
       window.alert(t("receiptError"));

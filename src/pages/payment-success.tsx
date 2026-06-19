@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { CheckCircle2, Home, Phone, Wrench, Loader2, DollarSign, Calendar, MapPin, Settings, Receipt, Download } from "lucide-react";
-import { downloadReceiptPdf } from "../lib/downloadReceipt";
+import { downloadBinaryPdf } from "../lib/downloadReceipt";
 
 const ACCENT = "#1B6FE8";
 
@@ -101,9 +101,9 @@ export default function PaymentSuccess() {
     setDownloading(true);
     try {
       const base = (import.meta.env.VITE_API_BASE as string | undefined ?? "").replace(/\/$/, "");
-      const url = `${base}/api/public/invoice-html?session_id=${encodeURIComponent(sessionId)}&lang=${lang}`;
+      const url = `${base}/api/public/invoice-pdf?session_id=${encodeURIComponent(sessionId)}&lang=${lang}`;
       const filenameBase = invoiceNumber ? `receipt-${invoiceNumber}` : "receipt";
-      await downloadReceiptPdf({ url, filenameBase });
+      await downloadBinaryPdf({ url, filenameBase });
     } catch {
       window.alert(t.downloadError);
     } finally {

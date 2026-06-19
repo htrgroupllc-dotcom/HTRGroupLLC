@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Lock, Unlock, Calendar, RefreshCw, LogOut,
-  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck, ArrowLeftRight,
+  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ArchiveRestore, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck, ArrowLeftRight,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLangProvider, useAdminLang } from "@/context/AdminLangContext";
-import { downloadReceiptPdf, openHtmlDocument } from "@/lib/downloadReceipt";
+import { downloadBinaryPdf, downloadReceiptPdf, openHtmlDocument } from "@/lib/downloadReceipt";
 import EmployeesTab from "@/components/crm/EmployeesTab";
 import ArchiveTab from "@/components/crm/ArchiveTab";
 import BlacklistTab from "@/components/crm/BlacklistTab";
@@ -292,7 +292,7 @@ function AdminDashboard() {
   const [fidLabel, setFidLabel]   = useState<string | null>(null);
 
   // CRM: top-level tab navigation
-  const [adminTab, setAdminTab]   = useState<"bookings"|"employees"|"archive"|"blacklist"|"payroll"|"reports"|"settings"|"trash"|"pricebook"|"photos">("bookings");
+  const [adminTab, setAdminTab]   = useState<"bookings"|"jobsArchive"|"employees"|"archive"|"blacklist"|"payroll"|"reports"|"settings"|"trash"|"pricebook"|"photos">("bookings");
   const [trashCount, setTrashCount] = useState<number>(0);
   // CRM: active employees list for assignment dropdown
   const [employees, setEmployees] = useState<EmployeeLight[]>([]);
@@ -534,8 +534,7 @@ function AdminDashboard() {
   const [reason,        setReason]        = useState("");
   const [actionSlot,    setActionSlot]    = useState<string | null>(null);
   const [mobileTab,      setMobileTab]      = useState<"slots"|"bookings">("slots");
-  const [showCompleted,  setShowCompleted]  = useState(true);
-  const [searchQuery,    setSearchQuery]    = useState("");
+  const [showCompleted,  setShowCompleted]  = useState(false);
   const [bizFilter,      setBizFilter]      = useState<"all" | "appliance" | "dental">(ADMIN_SITE_CONFIG.defaultBizFilter);
 
   // Cancel client booking modal
@@ -912,12 +911,12 @@ function AdminDashboard() {
         b.payment_language === "es" || b.client_lang === "es" ? "es"
         : b.payment_language === "en" || b.client_lang === "en" ? "en"
         : null;
-      const url = `${API()}/api/admin/bookings/${b.id}/invoice-html`
+      const url = `${API()}/api/admin/bookings/${b.id}/invoice-pdf`
         + (langOverride ? `?lang=${langOverride}` : "");
-      await downloadReceiptPdf({
+      await downloadBinaryPdf({
         url,
         headers: adminAuthH(),
-        filenameBase: `receipt-${b.id}`,
+        filenameBase: `receipt-${b.id.slice(0, 8)}`,
       });
       // The download is logged server-side. If the admin already has the
       // history panel open for this booking, refresh it so the new row shows
@@ -1499,13 +1498,12 @@ function AdminDashboard() {
   const historyBookings = allBookings
     .filter(b => b.status === "completed" || b.status === "cancelled")
     .sort(byDateDesc);
-  const visibleBookings = showCompleted
-    ? [...activeBookings, ...historyBookings]
-    : activeBookings;
+  const isJobsArchiveTab = adminTab === "jobsArchive";
+  const listBookings = isJobsArchiveTab ? historyBookings : activeBookings;
 
   const filteredBookings = (() => {
     const sq = searchQuery.trim().toLowerCase();
-    let result = visibleBookings;
+    let result = listBookings;
     if (bizFilter !== "all") {
       result = result.filter(b => resolveBookingBiz(b.business_type) === bizFilter);
     }
@@ -2240,8 +2238,9 @@ function AdminDashboard() {
         <div className="flex min-w-max">
           {([
             { key: "bookings",   icon: <Calendar className="w-3.5 h-3.5" />,  label: t.tabBookings   },
+            { key: "jobsArchive", icon: <Archive className="w-3.5 h-3.5" />, label: t.tabJobsArchive, count: historyBookings.length || undefined },
             { key: "employees",  icon: <Users className="w-3.5 h-3.5" />,     label: t.tabEmployees  },
-            { key: "archive",    icon: <Archive className="w-3.5 h-3.5" />,   label: t.tabArchive    },
+            { key: "archive",    icon: <ArchiveRestore className="w-3.5 h-3.5" />, label: t.tabArchive },
             { key: "blacklist",  icon: <ShieldOff className="w-3.5 h-3.5" />, label: t.tabBlacklist  },
             { key: "payroll",    icon: <span className="text-sm">💰</span>,   label: t.tabPayroll    },
             { key: "reports",    icon: <BarChart3 className="w-3.5 h-3.5" />, label: t.tabReports    },
@@ -2249,7 +2248,7 @@ function AdminDashboard() {
             { key: "photos", icon: <Camera className="w-3.5 h-3.5" />, label: t.tabPhotos ?? "Фото" },
             { key: "settings",   icon: <Settings className="w-3.5 h-3.5" />,  label: t.tabSettings   },
             { key: "trash",      icon: <Trash2 className="w-3.5 h-3.5" />,    label: t.tabTrash, count: trashCount },
-          ] as { key: "bookings"|"employees"|"archive"|"blacklist"|"payroll"|"reports"|"settings"|"trash"|"pricebook"|"photos"; icon: React.ReactNode; label: string; count?: number }[]).map(({ key, icon, label, count }) => (
+          ] as { key: "bookings"|"jobsArchive"|"employees"|"archive"|"blacklist"|"payroll"|"reports"|"settings"|"trash"|"pricebook"|"photos"; icon: React.ReactNode; label: string; count?: number }[]).map(({ key, icon, label, count }) => (
             <button
               key={key}
               onClick={() => setAdminTab(key)}
@@ -2278,7 +2277,7 @@ function AdminDashboard() {
           </button>
           <button onClick={() => setMobileTab("bookings")}
             className={`flex-1 py-3 text-sm font-semibold border-b-2 transition ${mobileTab === "bookings" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"}`}>
-            📋 {t.tabBookings} ({allBookings.length})
+            📋 {t.tabBookings} ({activeBookings.length})
           </button>
         </div>
       )}
@@ -2288,7 +2287,16 @@ function AdminDashboard() {
       {adminTab === "archive"   && <ArchiveTab   apiBase={API()} adminAuthH={adminAuthH} />}
       {adminTab === "blacklist" && <BlacklistTab  apiBase={API()} adminAuthH={adminAuthH} />}
       {adminTab === "payroll"   && <PayrollTab    apiBase={API()} adminAuthH={adminAuthH} />}
-      {adminTab === "reports"   && <ReportsTab    apiBase={API()} adminAuthH={adminAuthH} onOpenBooking={id => { setAdminTab("bookings"); setSearchQuery(id); setHighlightBookingId(id); setShowCompleted(true); setEmpFilter(""); setMobileTab("bookings"); }} />}
+      {adminTab === "reports"   && <ReportsTab    apiBase={API()} adminAuthH={adminAuthH} onOpenBooking={id => {
+        const b = allBookings.find(x => x.id === id);
+        const closed = !!b && (b.status === "completed" || b.status === "cancelled");
+        setAdminTab(closed ? "jobsArchive" : "bookings");
+        setSearchQuery(id);
+        setHighlightBookingId(id);
+        setShowCompleted(false);
+        setEmpFilter("");
+        setMobileTab("bookings");
+      }} />}
       {adminTab === "pricebook" && <PricebookTab  apiBase={API()} adminAuthH={adminAuthH} />}
       {adminTab === "settings" && (
         <div className="space-y-6 pb-8">
@@ -2314,9 +2322,10 @@ function AdminDashboard() {
       )}
 
       {/* ── Two-panel layout (desktop) / Tab content (mobile) — bookings tab only ── */}
-      <div className={`flex gap-0 md:overflow-hidden md:h-[calc(100vh-96px)] ${adminTab !== "bookings" ? "hidden" : ""}`}>
+      <div className={`flex gap-0 md:overflow-hidden md:h-[calc(100vh-96px)] ${adminTab !== "bookings" && adminTab !== "jobsArchive" ? "hidden" : ""}`}>
 
         {/* ═══ LEFT PANEL / Слоты tab ═══ */}
+        {adminTab === "bookings" && (
         <div className={`overflow-y-auto border-r border-stone-200 p-4 space-y-4 ${mobileTab !== "slots" ? "hidden md:block" : "block"} md:w-[300px] md:flex-none`}
           style={{ background: PAGE_BG, paddingBottom: 80 }}>
 
@@ -2442,25 +2451,19 @@ function AdminDashboard() {
             </div>
           </div>
         </div>
+        )}
 
         {/* ═══ RIGHT PANEL / Заявки tab ═══ */}
-        <div className={`overflow-y-auto p-4 ${mobileTab !== "bookings" ? "hidden md:block" : "block"} flex-1`}>
+        <div className={`overflow-y-auto p-4 ${adminTab === "jobsArchive" ? "block" : mobileTab !== "bookings" ? "hidden md:block" : "block"} flex-1`}>
         <div className="bg-white rounded-xl shadow-sm p-4 md:p-5">
           <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
             <h2 className="text-sm font-bold text-stone-600 flex items-center gap-1.5">
               <Wrench className="w-4 h-4" />
-              {showCompleted ? t.allOrders : t.activeOrders} ({visibleBookings.length})
+              {isJobsArchiveTab ? t.jobsArchiveTitle : t.activeOrders} ({listBookings.length})
             </h2>
-            <div className="flex rounded-lg border border-stone-200 overflow-hidden text-[11px] font-semibold">
-              <button onClick={() => setShowCompleted(false)}
-                className={`px-3 py-1.5 transition ${!showCompleted ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
-                {t.activeTab}{activeBookings.length > 0 ? ` (${activeBookings.length})` : ""}
-              </button>
-              <button onClick={() => setShowCompleted(true)}
-                className={`px-3 py-1.5 border-l border-stone-200 transition ${showCompleted ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`}>
-                {t.allOrders}{historyBookings.length > 0 ? ` +${historyBookings.length}` : ""}
-              </button>
-            </div>
+            {isJobsArchiveTab && (
+              <span className="text-[11px] text-stone-400">{t.restoreBtn2}</span>
+            )}
           </div>
           {/* ── Business category filter ── */}
           <div className="flex items-center gap-2 mb-3 flex-wrap">
@@ -2520,7 +2523,7 @@ function AdminDashboard() {
           </div>
           {searchQuery.trim() && (
             <p className="text-[11px] text-stone-400 mb-2 -mt-1">
-              {t.found} <strong className="text-stone-600">{filteredBookings.length}</strong> {t.of} {visibleBookings.length}
+              {t.found} <strong className="text-stone-600">{filteredBookings.length}</strong> {t.of} {listBookings.length}
             </p>
           )}
 
@@ -2571,7 +2574,7 @@ function AdminDashboard() {
           )}
           {filteredBookings.length === 0 && !apiError ? (
             <p className="text-sm text-stone-400 py-4 text-center">
-              {searchQuery.trim() ? t.nothingFound : t.noOrders}
+              {searchQuery.trim() ? t.nothingFound : isJobsArchiveTab ? t.noArchivedJobs : t.noOrders}
             </p>
           ) : filteredBookings.length > 0 && (<>
             {/* ── Mobile: card layout ── */}
@@ -2583,7 +2586,7 @@ function AdminDashboard() {
                 const createdStr = b.created_at ? new Date(b.created_at).toLocaleDateString(t.dateLocale, { day: "2-digit", month: "2-digit", year: "2-digit", timeZone: "America/Chicago" }) : null;
                 // Show separator before first history item
                 const prevIsActive = idx > 0 && (filteredBookings[idx - 1].status === "pending" || filteredBookings[idx - 1].status === "approved");
-                const showSeparator = showCompleted && isHistory && (idx === 0 || prevIsActive);
+                const showSeparator = !isJobsArchiveTab && showCompleted && isHistory && (idx === 0 || prevIsActive);
                 return (
                   <React.Fragment key={b.id}>
                     {showSeparator && (
@@ -2799,6 +2802,35 @@ function AdminDashboard() {
                           {b.status === "completed" && b.client_signed_at && (
                             <div className="flex items-center gap-1 text-[10px] text-purple-700 font-semibold bg-purple-50 rounded-lg px-2 py-1 border border-purple-100">
                               ✍️ {t.clientSigned}
+                            </div>
+                          )}
+                          {adminEstimateHistory[b.id] && (
+                            <div className="flex flex-col gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 text-xs">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-blue-500">📋</span>
+                                  <span className="text-slate-500">{t.estimateSentBadge}:</span>
+                                  <span className="font-bold text-blue-700">${Number(adminEstimateHistory[b.id]!.total).toFixed(2)}</span>
+                                </div>
+                                <button
+                                  onClick={() => openAdminEstimate({ id: b.id, name: b.name, email: b.email ?? "", phone: b.phone ?? "" }, adminEstimateHistory[b.id]!)}
+                                  className="font-bold text-blue-700 border border-blue-300 rounded px-2 py-0.5 hover:bg-blue-100 transition">
+                                  {t.estimateEditBtn}
+                                </button>
+                              </div>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => void viewEstimate(b, adminEstimateHistory[b.id]!.id)}
+                                  className="flex-1 font-bold text-blue-700 border border-blue-300 rounded px-2 py-1 hover:bg-blue-100 transition">
+                                  {t.estimateViewBtn}
+                                </button>
+                                <button
+                                  disabled={downloadingEstimateId === b.id}
+                                  onClick={() => void downloadEstimate(b, adminEstimateHistory[b.id]!.id)}
+                                  className="flex-1 font-bold text-blue-700 border border-blue-300 rounded px-2 py-1 hover:bg-blue-100 transition disabled:opacity-50">
+                                  {downloadingEstimateId === b.id ? t.downloadReceiptDownloading : t.estimateDownloadBtn}
+                                </button>
+                              </div>
                             </div>
                           )}
                           {/* Resend payment link if pending */}
@@ -3048,7 +3080,7 @@ function AdminDashboard() {
                       ? new Date(b.created_at).toLocaleDateString(t.dateLocale, { day: "2-digit", month: "2-digit", year: "2-digit", timeZone: "America/Chicago" })
                       : "—";
                     const prevIsActive = i > 0 && (filteredBookings[i - 1].status === "pending" || filteredBookings[i - 1].status === "approved");
-                    const showSepRow = showCompleted && isHistory && (i === 0 || prevIsActive);
+                    const showSepRow = !isJobsArchiveTab && showCompleted && isHistory && (i === 0 || prevIsActive);
                     const rowBg = highlightBookingId === b.id ? "bg-amber-50 ring-1 ring-inset ring-amber-300" : selectedIds.has(b.id) ? "bg-blue-50 ring-1 ring-inset ring-blue-300" : i % 2 === 0 ? "bg-white" : "bg-stone-50";
                     const rowOpacity = isHistory && !selectedIds.has(b.id) && highlightBookingId !== b.id ? "opacity-50" : "";
                     const detailBg = i % 2 === 0 ? "bg-white" : "bg-stone-50";

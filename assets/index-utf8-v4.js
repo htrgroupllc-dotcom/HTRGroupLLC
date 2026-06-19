@@ -36632,9 +36632,12 @@ const translations$1 = {
     loggedFid: "Вход через",
     // CRM tabs
     tabBookings: "Заявки",
+    tabJobsArchive: "Архив",
     tabEmployees: "Сотрудники",
-    tabArchive: "Архив",
+    tabArchive: "Уволенные",
     tabBlacklist: "Чёрный список",
+    jobsArchiveTitle: "Архив заказов",
+    noArchivedJobs: "Закрытых заказов пока нет",
     // Mobile sub-tabs
     slotsTab: "📅 Слоты",
     // Statuses
@@ -37163,9 +37166,12 @@ const translations$1 = {
     loggedFid: "Logged in with",
     // CRM tabs
     tabBookings: "Orders",
+    tabJobsArchive: "Archive",
     tabEmployees: "Employees",
-    tabArchive: "Archive",
+    tabArchive: "Fired Staff",
     tabBlacklist: "Blacklist",
+    jobsArchiveTitle: "Closed Jobs Archive",
+    noArchivedJobs: "No closed jobs yet",
     // Mobile sub-tabs
     slotsTab: "📅 Slots",
     // Statuses
@@ -82613,44 +82619,76 @@ function requireHtml2pdf() {
 }
 var html2pdfExports = requireHtml2pdf();
 const html2pdf = /* @__PURE__ */ getDefaultExportFromCjs(html2pdfExports);
+const LOGO_INVOICE = "/htr-logo-invoice.png";
+const LOGO_ESTIMATE = "/htr-logo-estimate.png";
+function fixEmailAssetUrls(html) {
+  return html.replace(/cid:htr-invoice-logo@htr/gi, LOGO_INVOICE).replace(/cid:htr-estimate-logo@htr/gi, LOGO_ESTIMATE);
+}
+async function waitForImages(root) {
+  const imgs = Array.from(root.querySelectorAll("img"));
+  await Promise.all(imgs.map((img) => new Promise((resolve) => {
+    if (img.complete && img.naturalWidth > 0) { resolve(); return; }
+    img.addEventListener("load", () => resolve(), { once: true });
+    img.addEventListener("error", () => resolve(), { once: true });
+  })));
+}
+async function downloadBinaryPdf(opts) {
+  const res = await fetch(opts.url, { headers: opts.headers });
+  if (!res.ok) {
+    let msg = `HTTP ${res.status}`;
+    try { const j = await res.json(); if (j.error) msg = j.error; } catch {}
+    throw new Error(msg);
+  }
+  const blob = await res.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = blobUrl;
+  a.download = `${opts.filenameBase}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 6e4);
+}
 async function downloadReceiptPdf(opts) {
   const res = await fetch(opts.url, { headers: opts.headers });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const html = await res.text();
+  const html = fixEmailAssetUrls(await res.text());
   const iframe = document.createElement("iframe");
   iframe.setAttribute("sandbox", "allow-same-origin");
   iframe.style.position = "fixed";
   iframe.style.left = "-10000px";
   iframe.style.top = "0";
-  iframe.style.width = "640px";
-  iframe.style.height = "10px";
+  iframe.style.width = "680px";
+  iframe.style.height = "2400px";
   iframe.style.border = "0";
   iframe.srcdoc = html;
   document.body.appendChild(iframe);
-  await new Promise((resolve) => {
-    iframe.addEventListener("load", () => resolve(), { once: true });
-  });
+  await new Promise((resolve) => { iframe.addEventListener("load", () => resolve(), { once: true }); });
   const innerDoc = iframe.contentDocument;
-  if (!innerDoc) {
-    document.body.removeChild(iframe);
-    throw new Error("iframe load failed");
-  }
+  if (!innerDoc) { document.body.removeChild(iframe); throw new Error("iframe load failed"); }
+  await waitForImages(innerDoc);
+  await new Promise((r) => setTimeout(r, 200));
   const host = document.createElement("div");
-  host.style.position = "fixed";
-  host.style.left = "-10000px";
-  host.style.top = "0";
-  host.style.width = "640px";
-  host.style.background = "#f4f6f9";
-  host.innerHTML = innerDoc.body.innerHTML;
+  host.style.cssText = "position:fixed;left:-10000px;top:0;width:680px;background:#f4f6f9;";
+  innerDoc.querySelectorAll("style").forEach((s) => {
+    const el = document.createElement("style");
+    el.textContent = s.textContent;
+    host.appendChild(el);
+  });
+  const content = document.createElement("div");
+  content.innerHTML = innerDoc.body.innerHTML;
+  host.appendChild(content);
   document.body.appendChild(host);
+  await waitForImages(host);
   try {
     await html2pdf().set({
       margin: 0,
       filename: `${opts.filenameBase}.pdf`,
       image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#f4f6f9" },
-      jsPDF: { unit: "pt", format: "letter", orientation: "portrait" }
-    }).from(host).save();
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: "#f4f6f9", scrollY: 0 },
+      jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
+      pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+    }).from(content).save();
   } finally {
     document.body.removeChild(host);
     document.body.removeChild(iframe);
@@ -82659,7 +82697,7 @@ async function downloadReceiptPdf(opts) {
 async function openHtmlDocument(opts) {
   const res = await fetch(opts.url, { headers: opts.headers });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const html = await res.text();
+  const html = fixEmailAssetUrls(await res.text());
   const blob = new Blob([html], { type: "text/html;charset=utf-8" });
   const blobUrl = URL.createObjectURL(blob);
   window.open(blobUrl, "_blank", "noopener,noreferrer");
@@ -87630,7 +87668,7 @@ function AdminDashboard() {
   const [reason, setReason] = reactExports.useState("");
   const [actionSlot, setActionSlot] = reactExports.useState(null);
   const [mobileTab, setMobileTab] = reactExports.useState("slots");
-  const [showCompleted, setShowCompleted] = reactExports.useState(true);
+  const [showCompleted, setShowCompleted] = reactExports.useState(false);
   const [searchQuery, setSearchQuery] = reactExports.useState("");
   const [bizFilter, setBizFilter] = reactExports.useState(ADMIN_SITE_CONFIG.defaultBizFilter);
   const [confirmCancel, setConfirmCancel] = reactExports.useState(null);
@@ -87984,11 +88022,11 @@ function AdminDashboard() {
     setDownloadingReceiptId(b.id);
     try {
       const langOverride = b.payment_language === "es" || b.client_lang === "es" ? "es" : b.payment_language === "en" || b.client_lang === "en" ? "en" : null;
-      const url = `${API$2()}/api/admin/bookings/${b.id}/invoice-html` + (langOverride ? `?lang=${langOverride}` : "");
-      await downloadReceiptPdf({
+      const url = `${API$2()}/api/admin/bookings/${b.id}/invoice-pdf` + (langOverride ? `?lang=${langOverride}` : "");
+      await downloadBinaryPdf({
         url,
         headers: adminAuthH(),
-        filenameBase: `receipt-${b.id}`
+        filenameBase: `receipt-${b.id.slice(0, 8)}`
       });
       void loadReceiptHistory(b.id, getReceiptHistoryFilters(b.id));
       setReceiptHistoryOpen((prev) => {
@@ -88537,10 +88575,11 @@ function AdminDashboard() {
   const byDateDesc = (a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime();
   const activeBookings = allBookings.filter((b) => b.status === "pending" || b.status === "approved").sort(byDateDesc);
   const historyBookings = allBookings.filter((b) => b.status === "completed" || b.status === "cancelled").sort(byDateDesc);
-  const visibleBookings = showCompleted ? [...activeBookings, ...historyBookings] : activeBookings;
+  const isJobsArchiveTab = adminTab === "jobsArchive";
+  const listBookings = isJobsArchiveTab ? historyBookings : activeBookings;
   const filteredBookings = (() => {
     const sq = searchQuery.trim().toLowerCase();
-    let result = visibleBookings;
+    let result = listBookings;
     if (bizFilter !== "all") {
       result = result.filter((b) => resolveBookingBiz(b.business_type) === bizFilter);
     }
@@ -89488,8 +89527,9 @@ function AdminDashboard() {
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "sticky top-14 z-20 bg-white border-b border-stone-200 shadow-sm overflow-x-auto", style: { scrollbarWidth: "none" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex min-w-max", children: [
       { key: "bookings", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Calendar, { className: "w-3.5 h-3.5" }), label: t.tabBookings },
+      { key: "jobsArchive", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Archive, { className: "w-3.5 h-3.5" }), label: t.tabJobsArchive, count: historyBookings.length || void 0 },
       { key: "employees", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Users, { className: "w-3.5 h-3.5" }), label: t.tabEmployees },
-      { key: "archive", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Archive, { className: "w-3.5 h-3.5" }), label: t.tabArchive },
+      { key: "archive", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(ArchiveRestore, { className: "w-3.5 h-3.5" }), label: t.tabArchive },
       { key: "blacklist", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldOff, { className: "w-3.5 h-3.5" }), label: t.tabBlacklist },
       { key: "payroll", icon: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm", children: "💰" }), label: t.tabPayroll },
       { key: "reports", icon: /* @__PURE__ */ jsxRuntimeExports.jsx(ChartColumn, { className: "w-3.5 h-3.5" }), label: t.tabReports },
@@ -89528,7 +89568,7 @@ function AdminDashboard() {
             "📋 ",
             t.tabBookings,
             " (",
-            allBookings.length,
+            activeBookings.length,
             ")"
           ]
         }
@@ -89539,10 +89579,12 @@ function AdminDashboard() {
     adminTab === "blacklist" && /* @__PURE__ */ jsxRuntimeExports.jsx(BlacklistTab, { apiBase: API$2(), adminAuthH }),
     adminTab === "payroll" && /* @__PURE__ */ jsxRuntimeExports.jsx(PayrollTab, { apiBase: API$2(), adminAuthH }),
     adminTab === "reports" && /* @__PURE__ */ jsxRuntimeExports.jsx(ReportsTab, { apiBase: API$2(), adminAuthH, onOpenBooking: (id2) => {
-      setAdminTab("bookings");
+      const b2 = allBookings.find((x) => x.id === id2);
+      const closed = !!b2 && (b2.status === "completed" || b2.status === "cancelled");
+      setAdminTab(closed ? "jobsArchive" : "bookings");
       setSearchQuery(id2);
       setHighlightBookingId(id2);
-      setShowCompleted(true);
+      setShowCompleted(false);
       setEmpFilter("");
       setMobileTab("bookings");
     } }),
@@ -89559,8 +89601,8 @@ function AdminDashboard() {
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(GalleryPhotoManager, { adminPin: pin, adminBearer, defaultSite: ADMIN_SITE_CONFIG.defaultGallerySite })
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `flex gap-0 md:overflow-hidden md:h-[calc(100vh-96px)] ${adminTab !== "bookings" ? "hidden" : ""}`, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `flex gap-0 md:overflow-hidden md:h-[calc(100vh-96px)] ${adminTab !== "bookings" && adminTab !== "jobsArchive" ? "hidden" : ""}`, children: [
+      adminTab === "bookings" && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
           className: `overflow-y-auto border-r border-stone-200 p-4 space-y-4 ${mobileTab !== "slots" ? "hidden md:block" : "block"} md:w-[300px] md:flex-none`,
@@ -89740,40 +89782,17 @@ function AdminDashboard() {
             ] })
           ]
         }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `overflow-y-auto p-4 ${mobileTab !== "bookings" ? "hidden md:block" : "block"} flex-1`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl shadow-sm p-4 md:p-5", children: [
+      )),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `overflow-y-auto p-4 ${adminTab === "jobsArchive" ? "block" : mobileTab !== "bookings" ? "hidden md:block" : "block"} flex-1`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl shadow-sm p-4 md:p-5", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2 mb-3 flex-wrap", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-sm font-bold text-stone-600 flex items-center gap-1.5", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Wrench, { className: "w-4 h-4" }),
-            showCompleted ? t.allOrders : t.activeOrders,
+            isJobsArchiveTab ? t.jobsArchiveTitle : t.activeOrders,
             " (",
-            visibleBookings.length,
+            listBookings.length,
             ")"
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex rounded-lg border border-stone-200 overflow-hidden text-[11px] font-semibold", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "button",
-              {
-                onClick: () => setShowCompleted(false),
-                className: `px-3 py-1.5 transition ${!showCompleted ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`,
-                children: [
-                  t.activeTab,
-                  activeBookings.length > 0 ? ` (${activeBookings.length})` : ""
-                ]
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "button",
-              {
-                onClick: () => setShowCompleted(true),
-                className: `px-3 py-1.5 border-l border-stone-200 transition ${showCompleted ? "bg-blue-600 text-white" : "bg-white text-stone-500 hover:bg-stone-50"}`,
-                children: [
-                  t.allOrders,
-                  historyBookings.length > 0 ? ` +${historyBookings.length}` : ""
-                ]
-              }
-            )
-          ] })
+          isJobsArchiveTab && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] text-stone-400", children: t.restoreBtn2 })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-3 flex-wrap", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "text-xs font-semibold text-stone-500 whitespace-nowrap", children: [
@@ -89855,7 +89874,7 @@ function AdminDashboard() {
           " ",
           t.of,
           " ",
-          visibleBookings.length
+          listBookings.length
         ] }),
         filteredBookings.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-3 flex-wrap", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -89918,14 +89937,14 @@ function AdminDashboard() {
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-0.5 text-red-600", children: apiError })
           ] })
         ] }),
-        filteredBookings.length === 0 && !apiError ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-400 py-4 text-center", children: searchQuery.trim() ? t.nothingFound : t.noOrders }) : filteredBookings.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        filteredBookings.length === 0 && !apiError ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-stone-400 py-4 text-center", children: searchQuery.trim() ? t.nothingFound : isJobsArchiveTab ? t.noArchivedJobs : t.noOrders }) : filteredBookings.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "md:hidden space-y-3", children: filteredBookings.map((b, idx) => {
             const isHistory = b.status === "completed" || b.status === "cancelled";
             const isWA = /AM–|PM–|AM-|PM-/.test(b.preferred_time ?? "");
             const { cls: statusCls2, label: statusLabel2 } = statusInfo(b.status);
             const createdStr = b.created_at ? new Date(b.created_at).toLocaleDateString(t.dateLocale, { day: "2-digit", month: "2-digit", year: "2-digit", timeZone: "America/Chicago" }) : null;
             const prevIsActive = idx > 0 && (filteredBookings[idx - 1].status === "pending" || filteredBookings[idx - 1].status === "approved");
-            const showSeparator = showCompleted && isHistory && (idx === 0 || prevIsActive);
+            const showSeparator = !isJobsArchiveTab && showCompleted && isHistory && (idx === 0 || prevIsActive);
             return /* @__PURE__ */ jsxRuntimeExports.jsxs(React.Fragment, { children: [
               showSeparator && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 pt-1", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 h-px bg-stone-200" }),
@@ -90480,7 +90499,7 @@ function AdminDashboard() {
               const { cls: stCls, label: stLabel } = statusInfo(b.status);
               const createdStr = b.created_at ? new Date(b.created_at).toLocaleDateString(t.dateLocale, { day: "2-digit", month: "2-digit", year: "2-digit", timeZone: "America/Chicago" }) : "—";
               const prevIsActive = i > 0 && (filteredBookings[i - 1].status === "pending" || filteredBookings[i - 1].status === "approved");
-              const showSepRow = showCompleted && isHistory && (i === 0 || prevIsActive);
+              const showSepRow = !isJobsArchiveTab && showCompleted && isHistory && (i === 0 || prevIsActive);
               const rowBg = highlightBookingId === b.id ? "bg-amber-50 ring-1 ring-inset ring-amber-300" : selectedIds.has(b.id) ? "bg-blue-50 ring-1 ring-inset ring-blue-300" : i % 2 === 0 ? "bg-white" : "bg-stone-50";
               const rowOpacity = isHistory && !selectedIds.has(b.id) && highlightBookingId !== b.id ? "opacity-50" : "";
               const detailBg = i % 2 === 0 ? "bg-white" : "bg-stone-50";
@@ -93121,7 +93140,7 @@ function EmployeePage() {
     setDownloadingReceiptId(b.id);
     try {
       const langOverride = b.client_lang === "es" ? "es" : b.client_lang === "en" ? "en" : b.payment_language === "es" ? "es" : b.payment_language === "en" ? "en" : null;
-      const url = `${API$1()}/api/employee/bookings/${b.id}/invoice-html` + (langOverride ? `?lang=${langOverride}` : "");
+      const url = `${API$1()}/api/employee/bookings/${b.id}/invoice-pdf` + (langOverride ? `?lang=${langOverride}` : "");
       await downloadReceiptPdf({
         url,
         headers: { "Authorization": `Bearer ${token}` },
@@ -96772,9 +96791,9 @@ function PaymentSuccess() {
     setDownloading(true);
     try {
       const base = "https://htr-group-llc-appliance-repair.replit.app".replace(/\/$/, "");
-      const url = `${base}/api/public/invoice-html?session_id=${encodeURIComponent(sessionId)}&lang=${lang}`;
+      const url = `${base}/api/public/invoice-pdf?session_id=${encodeURIComponent(sessionId)}&lang=${lang}`;
       const filenameBase = invoiceNumber ? `receipt-${invoiceNumber}` : "receipt";
-      await downloadReceiptPdf({ url, filenameBase });
+      await downloadBinaryPdf({ url, filenameBase });
     } catch {
       window.alert(t.downloadError);
     } finally {

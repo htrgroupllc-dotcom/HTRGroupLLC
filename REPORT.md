@@ -58,3 +58,18 @@ ok: true, source: cache
 ## 7. Что вам делать
 
 Деплой уже на **v59**. **Ctrl+F5** на https://www.htrgrouptx.com и проверить секцию Reviews + center marquee между services и stats.
+
+---
+
+## 2026-06-19 — Admin: вкладка «Архив заказов» (v96)
+
+### Сделано
+- Вкладка **«Архив»** для завершённых/отменённых заказов; на «Заявки» остаются только активные.
+- Восстановление заказа из архива — кнопка «Восстановить» (существующий API).
+- Старая вкладка «Архив» (уволенные сотрудники) → **«Уволенные»**.
+- Одинаковая логика admin на appliance и dental (`defaultBizFilter: all`).
+- Production: `assets/index-utf8-v4.js` + cache `?v=96` в `index.html`, `admin/`, `pay/`.
+
+### Проверка
+- https://htrgrouptx.com/admin — вкладка «Архив», restore, «Заявки» без закрытых.
+- Dental-сайт: те же правки в `DentalEquipSite/src` (деплой dental отдельно).

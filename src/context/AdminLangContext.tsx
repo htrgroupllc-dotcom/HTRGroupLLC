@@ -11,9 +11,12 @@ export const translations = {
     loggedFid: "Вход через",
     // CRM tabs
     tabBookings: "Заявки",
+    tabJobsArchive: "Архив",
     tabEmployees: "Сотрудники",
-    tabArchive: "Архив",
+    tabArchive: "Уволенные",
     tabBlacklist: "Чёрный список",
+    jobsArchiveTitle: "Архив заказов",
+    noArchivedJobs: "Закрытых заказов пока нет",
     // Mobile sub-tabs
     slotsTab: "📅 Слоты",
     // Statuses
@@ -542,9 +545,12 @@ export const translations = {
     loggedFid: "Logged in with",
     // CRM tabs
     tabBookings: "Orders",
+    tabJobsArchive: "Archive",
     tabEmployees: "Employees",
-    tabArchive: "Archive",
+    tabArchive: "Fired Staff",
     tabBlacklist: "Blacklist",
+    jobsArchiveTitle: "Closed Jobs Archive",
+    noArchivedJobs: "No closed jobs yet",
     // Mobile sub-tabs
     slotsTab: "📅 Slots",
     // Statuses
