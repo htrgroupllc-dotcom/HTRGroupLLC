@@ -73,3 +73,26 @@ ok: true, source: cache
 ### Проверка
 - https://htrgrouptx.com/admin — вкладка «Архив», restore, «Заявки» без закрытых.
 - Dental-сайт: те же правки в `DentalEquipSite/src` (деплой dental отдельно).
+
+---
+
+## 2026-06-19 — Invoice PDF fix (v98)
+
+### Проблема
+Пустой PDF инвойса в admin/employee — клиентский `html2pdf` + iframe 10px + `cid:` логотипы.
+
+### Сделано
+- `_patch_pdf_download.js` — server PDF через `downloadBinaryPdf` + endpoints `invoice-pdf`
+- Исправлена **SyntaxError** в bundle (лишняя `)` от `_patch_jobs_archive.js`, строка ~89785) — CI deploy падал
+- Cache bump **v98**, push → GitHub Actions #173 **success**
+- Prod bundle проверен: `downloadBinaryPdf: true`, `invoice-pdf` admin/employee, старый `invoice-html` убран
+
+### Проверка (ручная)
+1. https://htrgrouptx.com/admin → вкладка «Архив» → оплаченный заказ → кнопка PDF
+2. https://htrgrouptx.com/employee → закрытый job → PDF
+3. Файл должен быть **непустой** server-generated PDF (PDFKit на API)
+
+### Коммиты
+- `ba08f27` — patch v97
+- `0ebd418` — cache v98
+- `d16e4ba` — fix syntax + deploy

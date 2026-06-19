@@ -26,13 +26,49 @@ async function waitForImages(root: ParentNode): Promise<void> {
   );
 }
 
+async function fetchWithTimeout(
+  url: string,
+  init?: RequestInit,
+  ms = 90_000,
+): Promise<Response> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(url, { ...init, signal: ctrl.signal });
+  } catch (err) {
+    if (ctrl.signal.aborted) {
+      throw new Error(`Request timed out after ${Math.round(ms / 1000)}s`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timer = setTimeout(
+          () => reject(new Error(`${label} timed out after ${Math.round(ms / 1000)}s`)),
+          ms,
+        );
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 /** Download a server-generated PDF (invoice). */
 export async function downloadBinaryPdf(opts: {
   url: string;
   headers?: Record<string, string>;
   filenameBase: string;
 }): Promise<void> {
-  const res = await fetch(opts.url, { headers: opts.headers });
+  const res = await fetchWithTimeout(opts.url, { headers: opts.headers });
   if (!res.ok) {
     let msg = `HTTP ${res.status}`;
     try {
@@ -62,7 +98,7 @@ export async function downloadReceiptPdf(opts: {
   headers?: Record<string, string>;
   filenameBase: string;
 }): Promise<void> {
-  const res = await fetch(opts.url, { headers: opts.headers });
+  const res = await fetchWithTimeout(opts.url, { headers: opts.headers });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const html = fixEmailAssetUrls(await res.text());
 
@@ -111,17 +147,21 @@ export async function downloadReceiptPdf(opts: {
   await waitForImages(host);
 
   try {
-    await html2pdf()
-      .set({
-        margin: 0,
-        filename: `${opts.filenameBase}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#f4f6f9", scrollY: 0 },
-        jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
-        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
-      })
-      .from(content)
-      .save();
+    await withTimeout(
+      html2pdf()
+        .set({
+          margin: 0,
+          filename: `${opts.filenameBase}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, backgroundColor: "#f4f6f9", scrollY: 0 },
+          jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
+          pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        })
+        .from(content)
+        .save(),
+      120_000,
+      "PDF generation",
+    );
   } finally {
     document.body.removeChild(host);
     document.body.removeChild(iframe);
@@ -133,7 +173,7 @@ export async function openHtmlDocument(opts: {
   url: string;
   headers?: Record<string, string>;
 }): Promise<void> {
-  const res = await fetch(opts.url, { headers: opts.headers });
+  const res = await fetchWithTimeout(opts.url, { headers: opts.headers });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const html = fixEmailAssetUrls(await res.text());
   const blob = new Blob([html], { type: "text/html;charset=utf-8" });

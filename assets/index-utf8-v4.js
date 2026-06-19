@@ -82632,8 +82632,33 @@ async function waitForImages(root) {
     img.addEventListener("error", () => resolve(), { once: true });
   })));
 }
+async function fetchWithTimeout(url, init, ms = 9e4) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(url, { ...init, signal: ctrl.signal });
+  } catch (err) {
+    if (ctrl.signal.aborted) throw new Error(`Request timed out after ${Math.round(ms / 1e3)}s`);
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+async function withTimeout(promise, ms, label) {
+  let timer;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`${label} timed out after ${Math.round(ms / 1e3)}s`)), ms);
+      })
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
 async function downloadBinaryPdf(opts) {
-  const res = await fetch(opts.url, { headers: opts.headers });
+  const res = await fetchWithTimeout(opts.url, { headers: opts.headers });
   if (!res.ok) {
     let msg = `HTTP ${res.status}`;
     try { const j = await res.json(); if (j.error) msg = j.error; } catch {}
@@ -82650,7 +82675,7 @@ async function downloadBinaryPdf(opts) {
   setTimeout(() => URL.revokeObjectURL(blobUrl), 6e4);
 }
 async function downloadReceiptPdf(opts) {
-  const res = await fetch(opts.url, { headers: opts.headers });
+  const res = await fetchWithTimeout(opts.url, { headers: opts.headers });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const html = fixEmailAssetUrls(await res.text());
   const iframe = document.createElement("iframe");
@@ -82681,14 +82706,14 @@ async function downloadReceiptPdf(opts) {
   document.body.appendChild(host);
   await waitForImages(host);
   try {
-    await html2pdf().set({
+    await withTimeout(html2pdf().set({
       margin: 0,
       filename: `${opts.filenameBase}.pdf`,
       image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, backgroundColor: "#f4f6f9", scrollY: 0 },
       jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
       pagebreak: { mode: ["avoid-all", "css", "legacy"] }
-    }).from(content).save();
+    }).from(content).save(), 12e4, "PDF generation");
   } finally {
     document.body.removeChild(host);
     document.body.removeChild(iframe);
