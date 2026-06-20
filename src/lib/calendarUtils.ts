@@ -148,3 +148,24 @@ export function isSameDay(a: Date, b: Date): boolean {
 export function isSameMonth(a: Date, b: Date): boolean {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
 }
+
+export function isToday(day: Date, now = houstonNow()): boolean {
+  return isSameDay(day, now);
+}
+
+/** Calendar day strictly before today (Houston). Past days remain selectable for history view. */
+export function isPastDay(day: Date, now = houstonNow()): boolean {
+  return startOfDay(day).getTime() < startOfDay(now).getTime();
+}
+
+export function isoFromDaySlot(day: Date, slotIdx: number): string {
+  const d = startOfDay(day);
+  const totalMins = SLOT_START_HOUR * 60 + slotIdx * SLOT_STEP_MINS;
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  const utcGuess = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), h, m));
+  const utcStr = utcGuess.toLocaleString("en-US", { timeZone: "UTC" });
+  const tzStr = utcGuess.toLocaleString("en-US", { timeZone: CALENDAR_TZ });
+  const offset = new Date(tzStr).getTime() - new Date(utcStr).getTime();
+  return new Date(utcGuess.getTime() - offset).toISOString();
+}

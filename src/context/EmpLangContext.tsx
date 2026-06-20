@@ -23,7 +23,7 @@ export const translations: Record<EmpLang, Record<string, string>> = {
     calAllEmployees: "All",
     calNoEvents: "No jobs in this period",
     calLoading: "Loading…",
-    calDragHint: "Drag a job to reschedule (week view)",
+    calDragHint: "Drag a job to another slot to reschedule (week view)",
     calSerial: "Serial #",
     calTechnician: "Technician",
     calOverdue: "Overdue",
