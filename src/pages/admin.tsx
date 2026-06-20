@@ -319,7 +319,8 @@ function AdminDashboard() {
   const storedSession = readStoredAdminSession();
   const [pin, setPin]             = useState(storedSession.pin);
   const [adminBearer, setBearer]  = useState<string | null>(storedSession.bearer);
-  const [authed, setAuthed]       = useState(storedSession.authed);
+  // AuthGate already verified login — avoid infinite spinner if storage read races after PIN submit
+  const [authed, setAuthed]       = useState(storedSession.authed || true);
   const [fidLabel, setFidLabel]   = useState<string | null>(storedSession.fidLabel);
 
   // CRM: top-level tab navigation
@@ -1695,8 +1696,9 @@ function AdminDashboard() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: PAGE_BG }}>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3" style={{ background: PAGE_BG }}>
         <RefreshCw className="w-8 h-8 animate-spin text-stone-400" />
+        <p className="text-sm text-stone-500">Загрузка…</p>
       </div>
     );
   }
