@@ -169,6 +169,9 @@ export default function CalendarTab({
   const [dropHoverWeekKey, setDropHoverWeekKey] = useState<string | null>(null);
   const [touchDragId, setTouchDragId] = useState<string | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Survives dragend→drop ordering; React dragId may still be false on first dragover. */
+  const dragPayloadRef = useRef<{ id: string; slotIdx: number } | null>(null);
+  const dragClearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
   const [bookingFormMode, setBookingFormMode] = useState<"create" | "edit">("create");
@@ -259,11 +262,7 @@ export default function CalendarTab({
       showToast(labels.rescheduleOk);
       setMoveOpen(false);
       setSelected(null);
-      setDragId(null);
-      setDragSlotIdx(null);
-      setTouchDragId(null);
-      setDropHoverKey(null);
-      setDropHoverWeekKey(null);
+      clearDragState();
       void loadEvents();
     } catch (e) {
       showToast(e instanceof Error ? e.message : labels.rescheduleErr);
@@ -272,18 +271,22 @@ export default function CalendarTab({
 
   const slotForEvent = (ev: CalendarEvent) => {
     const s = slotIndexFromIso(ev.start_at);
-    return s >= 0 && s < TIME_SLOTS.length ? s : 2;
+    if (s >= 0 && s < TIME_SLOTS.length) return s;
+    const fromPreferred = TIME_SLOTS.indexOf((ev.preferred_time ?? "").trim());
+    if (fromPreferred >= 0) return fromPreferred;
+    return 2;
   };
 
   const dayKey = (day: Date) => `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
 
-  const onDropDay = (targetDay: Date, slotIdx?: number) => {
-    const id = dragId ?? touchDragId;
-    if (!id) return;
-    const ev = events.find((e) => e.id === id);
-    if (!ev || !canReschedule(ev)) return;
-    const slot = slotIdx ?? dragSlotIdx ?? slotForEvent(ev);
-    void reschedule(id, isoFromDaySlot(targetDay, slot));
+  const activeDragId = dragId ?? touchDragId ?? dragPayloadRef.current?.id ?? null;
+
+  const clearDragState = () => {
+    if (dragClearTimerRef.current) {
+      clearTimeout(dragClearTimerRef.current);
+      dragClearTimerRef.current = null;
+    }
+    dragPayloadRef.current = null;
     setDragId(null);
     setDragSlotIdx(null);
     setTouchDragId(null);
@@ -291,17 +294,49 @@ export default function CalendarTab({
     setDropHoverWeekKey(null);
   };
 
-  const onDropWeekSlot = (dayIdx: number, slotIdx: number) => {
-    const id = dragId ?? touchDragId;
-    if (!id) return;
-    const ev = events.find((e) => e.id === id);
+  const scheduleDragClear = () => {
+    if (dragClearTimerRef.current) clearTimeout(dragClearTimerRef.current);
+    dragClearTimerRef.current = setTimeout(() => {
+      dragClearTimerRef.current = null;
+      dragPayloadRef.current = null;
+      setDragId(null);
+      setDragSlotIdx(null);
+      setDropHoverKey(null);
+      setDropHoverWeekKey(null);
+    }, 50);
+  };
+
+  const resolveDragPayload = (fallbackId?: string) => {
+    const fromRef = dragPayloadRef.current;
+    const id = fromRef?.id ?? dragId ?? touchDragId ?? fallbackId ?? null;
+    const slotIdx = fromRef?.slotIdx ?? dragSlotIdx;
+    return id ? { id, slotIdx } : null;
+  };
+  const onDropDay = (targetDay: Date, slotIdx?: number, fallbackId?: string) => {
+    if (dragClearTimerRef.current) {
+      clearTimeout(dragClearTimerRef.current);
+      dragClearTimerRef.current = null;
+    }
+    const payload = resolveDragPayload(fallbackId);
+    if (!payload) return;
+    const ev = events.find((e) => e.id === payload.id);
     if (!ev || !canReschedule(ev)) return;
-    void reschedule(id, isoFromWeekSlot(weekAnchorStart, dayIdx, slotIdx));
-    setDragId(null);
-    setDragSlotIdx(null);
-    setTouchDragId(null);
-    setDropHoverKey(null);
-    setDropHoverWeekKey(null);
+    const slot = slotIdx ?? payload.slotIdx ?? slotForEvent(ev);
+    void reschedule(payload.id, isoFromDaySlot(targetDay, slot));
+    clearDragState();
+  };
+
+  const onDropWeekSlot = (dayIdx: number, slotIdx: number, fallbackId?: string) => {
+    if (dragClearTimerRef.current) {
+      clearTimeout(dragClearTimerRef.current);
+      dragClearTimerRef.current = null;
+    }
+    const payload = resolveDragPayload(fallbackId);
+    if (!payload) return;
+    const ev = events.find((e) => e.id === payload.id);
+    if (!ev || !canReschedule(ev)) return;
+    void reschedule(payload.id, isoFromWeekSlot(weekAnchorStart, dayIdx, slotIdx));
+    clearDragState();
   };
 
   const weekDropKey = (dayIdx: number, slotIdx: number) => `${dayIdx}-${slotIdx}`;
@@ -315,18 +350,27 @@ export default function CalendarTab({
 
   const startJobDrag = (ev: CalendarEvent, e: React.DragEvent, slotIdx?: number) => {
     if (!canReschedule(ev)) return;
+    const slot = slotIdx ?? slotForEvent(ev);
+    dragPayloadRef.current = { id: ev.id, slotIdx: slot };
     setDragId(ev.id);
-    setDragSlotIdx(slotIdx ?? slotForEvent(ev));
+    setDragSlotIdx(slot);
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/plain", ev.id);
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const endJobDrag = () => {
+    scheduleDragClear();
   };
 
   const startJobTouchDrag = (ev: CalendarEvent, slotIdx?: number) => (e: React.TouchEvent) => {
     if (!canReschedule(ev)) return;
     clearLongPress();
     longPressTimer.current = setTimeout(() => {
+      const slot = slotIdx ?? slotForEvent(ev);
+      dragPayloadRef.current = { id: ev.id, slotIdx: slot };
       setTouchDragId(ev.id);
-      setDragSlotIdx(slotIdx ?? slotForEvent(ev));
+      setDragSlotIdx(slot);
       if (navigator.vibrate) navigator.vibrate(20);
     }, 280);
     e.stopPropagation();
@@ -352,7 +396,7 @@ export default function CalendarTab({
     return map;
   }, [events, weekAnchorStart]);
 
-  const isDragging = !!(dragId || touchDragId);
+  const isDragging = !!activeDragId;
 
   const eventsForDay = (day: Date) =>
     events
@@ -410,29 +454,32 @@ export default function CalendarTab({
     const active = selectedDay ? isSameDay(day, selectedDay) : false;
     const count = dayEvents.length;
     const key = dayKey(day);
-    const isDropHover = dropHoverKey === key && !!(dragId || touchDragId);
-    const isDragging = !!(dragId || touchDragId);
+    const isDropHover = dropHoverKey === key && isDragging;
 
     return (
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={inMonth ? 0 : -1}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && inMonth) openDay(day);
+        }}
         onClick={() => {
-          if (touchDragId) {
+          if (touchDragId || dragPayloadRef.current) {
             onDropDay(day);
             return;
           }
           if (inMonth) openDay(day);
         }}
-        disabled={!inMonth}
+        aria-disabled={!inMonth}
         onDragOver={(e) => {
-          if (!isDragging) return;
           e.preventDefault();
-          setDropHoverKey(key);
+          e.dataTransfer.dropEffect = "move";
+          if (inMonth) setDropHoverKey(key);
         }}
         onDragLeave={() => setDropHoverKey((k) => (k === key ? null : k))}
         onDrop={(e) => {
           e.preventDefault();
-          if (inMonth) onDropDay(day);
+          if (inMonth) onDropDay(day, undefined, e.dataTransfer.getData("text/plain") || undefined);
         }}
         title={count > 0 ? `${day.getDate()}: ${count} job(s)` : String(day.getDate())}
         style={{
@@ -475,7 +522,7 @@ export default function CalendarTab({
             {count}
           </span>
         )}
-      </button>
+      </div>
     );
   };
 
@@ -574,7 +621,7 @@ export default function CalendarTab({
       </div>
 
       <p className="text-[10px] text-stone-400 px-3 pb-1">
-        {dragId || touchDragId ? labels.dragHint : labels.tapHint}
+        {isDragging ? labels.dragHint : labels.tapHint}
       </p>
 
       {loading && (
@@ -669,14 +716,14 @@ export default function CalendarTab({
                           }
                         }}
                         onDragOver={(e) => {
-                          if (!isDragging) return;
                           e.preventDefault();
+                          e.dataTransfer.dropEffect = "move";
                           setDropHoverWeekKey(cellKey);
                         }}
                         onDragLeave={() => setDropHoverWeekKey((k) => (k === cellKey ? null : k))}
                         onDrop={(e) => {
                           e.preventDefault();
-                          onDropWeekSlot(dayIdx, slotIdx);
+                          onDropWeekSlot(dayIdx, slotIdx, e.dataTransfer.getData("text/plain") || undefined);
                         }}
                         style={{
                           height: WEEK_SLOT_H,
@@ -698,7 +745,7 @@ export default function CalendarTab({
                               key={ev.id}
                               draggable={draggable}
                               onDragStart={(e) => startJobDrag(ev, e, slotIdx)}
-                              onDragEnd={() => { setDragId(null); setDragSlotIdx(null); setDropHoverWeekKey(null); }}
+                              onDragEnd={endJobDrag}
                               onTouchStart={startJobTouchDrag(ev, slotIdx)}
                               onTouchEnd={() => clearLongPress()}
                               onClick={(e) => {
@@ -817,7 +864,7 @@ export default function CalendarTab({
                 key={ev.id}
                 draggable={draggable}
                 onDragStart={(e) => startJobDrag(ev, e, slotForEvent(ev))}
-                onDragEnd={() => { setDragId(null); setDragSlotIdx(null); setDropHoverKey(null); }}
+                onDragEnd={endJobDrag}
                 onTouchStart={startJobTouchDrag(ev, slotForEvent(ev))}
                 onTouchEnd={() => clearLongPress()}
                 role="button"
