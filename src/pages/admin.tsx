@@ -340,10 +340,9 @@ function AdminDashboard() {
     if (callbackLoading.has(bookingId)) return;
     setCallbackLoading(prev => new Set(prev).add(bookingId));
     try {
-      const authToken = localStorage.getItem("adminAuthToken") ?? "";
       const res = await fetch(`${API()}/api/admin/voice/callback`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-admin-pin": authToken },
+        headers: adminAuthH({ "Content-Type": "application/json" }),
         body: JSON.stringify({ client_phone: phone, client_name: clientName ?? "", client_language: clientLanguage ?? "en", client_gender: clientGender }),
       });
       const data = await res.json() as { error?: string };
@@ -363,7 +362,7 @@ function AdminDashboard() {
     } finally {
       setCallbackLoading(prev => { const s = new Set(prev); s.delete(bookingId); return s; });
     }
-  }, [callbackLoading, toast]);
+  }, [callbackLoading, toast, adminAuthH]);
 
   const [reviewLoading, setReviewLoading] = useState<string | null>(null);
   const [moveBizLoading, setMoveBizLoading] = useState<Set<string>>(new Set());
