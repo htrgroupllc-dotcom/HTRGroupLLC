@@ -29,6 +29,33 @@ const DEFAULT_API_BASE = "https://htr-group-llc-appliance-repair.replit.app";
 const API = () =>
   ((import.meta.env.VITE_API_BASE as string | undefined) ?? "").replace(/\/$/, "") || DEFAULT_API_BASE;
 
+function readStoredAdminSession(): {
+  authed: boolean;
+  pin: string;
+  bearer: string | null;
+  fidLabel: string | null;
+} {
+  try {
+    const authToken =
+      sessionStorage.getItem("adminAuthToken") ?? localStorage.getItem("adminAuthToken");
+    const authPin = sessionStorage.getItem("adminPin") ?? localStorage.getItem("adminPin");
+    if (authToken && authPin) {
+      return { authed: true, pin: authPin, bearer: null, fidLabel: null };
+    }
+    if (authToken) {
+      const sessionLabel = sessionStorage.getItem("adminFidLabel");
+      const credId = localStorage.getItem("htr_fid_cred_id");
+      const fidLabel =
+        sessionLabel ??
+        (credId ? localStorage.getItem(`htr_fid_label_${credId}`) : null);
+      return { authed: true, pin: "", bearer: authToken, fidLabel };
+    }
+  } catch {
+    /* private mode / blocked storage */
+  }
+  return { authed: false, pin: "", bearer: null, fidLabel: null };
+}
+
 /** Returns current date in Houston (CDT/CST). If after 17:00 → returns tomorrow. */
 function getInitialHoustonDate(): { month: number; day: number; year: number } {
   const houstonStr = new Date().toLocaleString("en-US", { timeZone: "America/Chicago" });
@@ -289,10 +316,11 @@ interface BlockedRow {
 function AdminDashboard() {
   const { lang, setLang, t } = useAdminLang();
   const { toast } = useToast();
-  const [pin, setPin]             = useState("");
-  const [adminBearer, setBearer]  = useState<string | null>(null);
-  const [authed, setAuthed]       = useState(false);
-  const [fidLabel, setFidLabel]   = useState<string | null>(null);
+  const storedSession = readStoredAdminSession();
+  const [pin, setPin]             = useState(storedSession.pin);
+  const [adminBearer, setBearer]  = useState<string | null>(storedSession.bearer);
+  const [authed, setAuthed]       = useState(storedSession.authed);
+  const [fidLabel, setFidLabel]   = useState<string | null>(storedSession.fidLabel);
 
   // CRM: top-level tab navigation
   const [adminTab, setAdminTab]   = useState<"bookings"|"calendar"|"jobsArchive"|"employees"|"archive"|"blacklist"|"payroll"|"reports"|"settings"|"trash"|"pricebook"|"photos">("bookings");
@@ -376,8 +404,17 @@ function AdminDashboard() {
   // Returns admin auth headers: Bearer token if biometric auth, PIN otherwise
   const adminAuthH = useCallback((extra?: Record<string, string>): Record<string, string> => {
     const base = extra ?? {};
-    if (pin) return { ...base, "x-admin-pin": encodeURIComponent(pin) };
-    if (adminBearer) return { ...base, "Authorization": `Bearer ${adminBearer}` };
+    const pinValue =
+      pin ||
+      sessionStorage.getItem("adminPin") ||
+      localStorage.getItem("adminPin") ||
+      "";
+    if (pinValue) return { ...base, "x-admin-pin": encodeURIComponent(pinValue) };
+    const bearer =
+      adminBearer ??
+      sessionStorage.getItem("adminAuthToken") ??
+      localStorage.getItem("adminAuthToken");
+    if (bearer) return { ...base, Authorization: `Bearer ${bearer}` };
     return base;
   }, [pin, adminBearer]);
 
@@ -1655,7 +1692,13 @@ function AdminDashboard() {
     window.location.reload();
   };
 
-  if (!authed) return null;
+  if (!authed) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: PAGE_BG }}>
+        <RefreshCw className="w-8 h-8 animate-spin text-stone-400" />
+      </div>
+    );
+  }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   const closeManualModal = () => {

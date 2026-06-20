@@ -35,9 +35,13 @@ function saveLocalCredId(id: string)     { localStorage.setItem(FID_KEY, id); }
 
 async function isTokenValid(token: string): Promise<boolean> {
   try {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 8000);
     const res = await fetch(`${API}/api/auth/webauthn/credentials`, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal,
     });
+    window.clearTimeout(timer);
     return res.ok;
   } catch {
     return false;
