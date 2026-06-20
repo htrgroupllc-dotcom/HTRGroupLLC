@@ -807,6 +807,7 @@ function EmployeePage() {
     clientName?: string, clientLang?: string,
     clientGender: "male" | "female" = "male",
   ): Promise<{ ok: boolean; text: string }> => {
+    if (!token) return { ok: false, text: "Session expired — please sign in again" };
     if (empCallLoading.has(bookingId)) return { ok: false, text: "Already loading" };
     setEmpCallLoading(prev => new Set(prev).add(bookingId));
     try {
@@ -815,6 +816,7 @@ function EmployeePage() {
         headers: { ...authH(), "Content-Type": "application/json" },
         body: JSON.stringify({ client_phone: clientPhone, client_name: clientName ?? "", client_language: clientLang ?? "en", client_gender: clientGender }),
       });
+      if (r.status === 401) { logout(); return { ok: false, text: "Session expired — please sign in again" }; }
       const d = await r.json() as { ok?: boolean; error?: string };
       if (!r.ok) throw new Error(d.error ?? "Error");
       return { ok: true, text: "📞 Ваш телефон скоро зазвонит с номера (606). Ответьте — система соединит с клиентом." };
@@ -823,7 +825,7 @@ function EmployeePage() {
     } finally {
       setEmpCallLoading(prev => { const s = new Set(prev); s.delete(bookingId); return s; });
     }
-  }, [empCallLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [empCallLoading, token, authH, logout]);
 
   // ── AI Translator ──────────────────────────────────────────────────────────
   const isTokenExpired = useCallback((): boolean => {
