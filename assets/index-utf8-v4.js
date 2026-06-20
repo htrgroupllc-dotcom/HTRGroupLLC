@@ -32164,12 +32164,12 @@ function getPastTimeSlots(dateStr, slots = BOOKING_TIME_SLOTS) {
 }
 const svcDryerImg = "/assets/svc_dryer_nobrand-BbmTIoew.png";
 const svcWasherImg = "/assets/ChatGPT_Image_3_%D0%B0%D0%BF%D1%80._2026_%D0%B3.__21_04_57_1775269648058-CC0M5H-1.png";
-const svcFridgeImg$1 = "/assets/ChatGPT_Image_3_%D0%B0%D0%BF%D1%80._2026_%D0%B3.__21_04_57_1775269648058-CC0M5H-1.png";
+const svcFridgeImg$1 = "/assets/ChatGPT_Image_3_%D0%B0%D0%BF%D1%80._2026_%D0%B3.__21_10_20_1775269648058-DzQgMMeY.png";
 const svcDishImg = "/assets/svc_dishwasher_nobrand-vrvvcJ_M.png";
 const svcMicroImg = "/assets/svc_microwave_nobrand-CQzof57j.png";
 const svcHoodImg = "/assets/svc_rangehood_nobrand-CWTOP_Nf.png";
 const svcOvenImg$1 = "/assets/ChatGPT_Image_3_%D0%B0%D0%BF%D1%80._2026_%D0%B3.__21_18_00_1775269648060-DvFzQgSu.png";
-const svcStoveImg = "/assets/ChatGPT_Image_3_%D0%B0%D0%BF%D1%80._2026_%D0%B3.__21_18_00_1775269648060-DvFzQgSu.png";
+const svcStoveImg = "/assets/ChatGPT_Image_3_%D0%B0%D0%BF%D1%80._2026_%D0%B3.__21_20_14_1775269648060-BKyAYrsQ.png";
 const whyUsBgImg = "/assets/why-us-photo-2pgFqH2h.png";
 const svcIceMakerImg = "/assets/svc_icemaker-B06lmvrc.png";
 const svcCooktopImg = "/assets/svc_cooktop-DEtoCcEz.png";

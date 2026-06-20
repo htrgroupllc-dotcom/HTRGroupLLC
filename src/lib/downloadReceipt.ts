@@ -3,10 +3,38 @@ import html2pdf from "html2pdf.js";
 const LOGO_INVOICE = "/htr-logo-invoice.png";
 const LOGO_ESTIMATE = "/htr-logo-estimate.png";
 
+function previewOrigin(): string {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin;
+  }
+  return "";
+}
+
+function logoUrl(path: string): string {
+  const origin = previewOrigin();
+  if (!origin) return path;
+  return `${origin}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
 function fixEmailAssetUrls(html: string): string {
+  const inv = logoUrl(LOGO_INVOICE);
+  const est = logoUrl(LOGO_ESTIMATE);
   return html
-    .replace(/cid:htr-invoice-logo@htr/gi, LOGO_INVOICE)
-    .replace(/cid:htr-estimate-logo@htr/gi, LOGO_ESTIMATE);
+    .replace(/cid:htr-invoice-logo@htr/gi, inv)
+    .replace(/cid:htr-estimate-logo@htr/gi, est);
+}
+
+function ensurePreviewBase(html: string): string {
+  const origin = previewOrigin();
+  const logoCss = `<style>img[src*="htr-logo"],img[alt*="HTR Group"]{height:auto!important;max-height:72px!important;width:auto!important;max-width:150px!important;object-fit:contain!important;}</style>`;
+  let out = html;
+  if (origin && !/<base\s/i.test(out)) {
+    out = out.replace(/<head([^>]*)>/i, `<head$1><base href="${origin}/">`);
+  }
+  if (!out.includes("htr-doc-logo-css")) {
+    out = out.replace(/<head([^>]*)>/i, `<head$1>${logoCss.replace("<style>", '<style id="htr-doc-logo-css">')}`);
+  }
+  return out;
 }
 
 async function waitForImages(root: ParentNode): Promise<void> {
@@ -62,6 +90,20 @@ async function withTimeout<T>(promise: Promise<T>, ms: number, label: string): P
   }
 }
 
+function fixSignLinksForPreview(html: string): string {
+  return html.replace(
+    /<a\b([^>]*\bhref="[^"]*\/api\/sign\/[^"]*")([^>]*)>/gi,
+    (_match, hrefPart: string, rest: string) => {
+      if (/\btarget\s*=/.test(hrefPart + rest)) return _match;
+      return `<a ${hrefPart} target="_blank" rel="noopener noreferrer"${rest}>`;
+    },
+  );
+}
+
+export function fixDocumentHtmlForPreview(html: string): string {
+  return ensurePreviewBase(fixSignLinksForPreview(fixEmailAssetUrls(html)));
+}
+
 /** Download a server-generated PDF (invoice). */
 export async function downloadBinaryPdf(opts: {
   url: string;
@@ -100,7 +142,7 @@ export async function downloadReceiptPdf(opts: {
 }): Promise<void> {
   const res = await fetchWithTimeout(opts.url, { headers: opts.headers });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const html = fixEmailAssetUrls(await res.text());
+  const html = fixDocumentHtmlForPreview(await res.text());
 
   const iframe = document.createElement("iframe");
   iframe.setAttribute("sandbox", "allow-same-origin");
@@ -175,7 +217,7 @@ export async function openHtmlDocument(opts: {
 }): Promise<void> {
   const res = await fetchWithTimeout(opts.url, { headers: opts.headers });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const html = fixEmailAssetUrls(await res.text());
+  const html = fixDocumentHtmlForPreview(await res.text());
   const blob = new Blob([html], { type: "text/html;charset=utf-8" });
   const blobUrl = URL.createObjectURL(blob);
   window.open(blobUrl, "_blank", "noopener,noreferrer");
