@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
-  ChevronLeft, ChevronRight, RefreshCw, CalendarDays, X, Clock, ChevronDown,
+  ChevronLeft, ChevronRight, RefreshCw, CalendarDays, X, Clock, ChevronDown, GripVertical,
 } from "lucide-react";
 import { resolveBookingBiz } from "@/lib/adminSiteConfig";
 import {
@@ -151,6 +151,10 @@ export default function CalendarTab({
   const [selected, setSelected] = useState<CalendarEvent | null>(null);
   const [moveOpen, setMoveOpen] = useState(false);
   const [moveTargetDay, setMoveTargetDay] = useState<Date>(() => houstonNow());
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [dropHoverKey, setDropHoverKey] = useState<string | null>(null);
+  const [touchDragId, setTouchDragId] = useState<string | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
   const today = useMemo(() => houstonNow(), [anchor, view]);
@@ -231,10 +235,55 @@ export default function CalendarTab({
       showToast(labels.rescheduleOk);
       setMoveOpen(false);
       setSelected(null);
+      setDragId(null);
+      setTouchDragId(null);
+      setDropHoverKey(null);
       void loadEvents();
     } catch (e) {
       showToast(e instanceof Error ? e.message : labels.rescheduleErr);
     }
+  };
+
+  const slotForEvent = (ev: CalendarEvent) => {
+    const s = slotIndexFromIso(ev.start_at);
+    return s >= 0 && s < TIME_SLOTS.length ? s : 2;
+  };
+
+  const dayKey = (day: Date) => `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
+
+  const onDropDay = (targetDay: Date) => {
+    const id = dragId ?? touchDragId;
+    if (!id) return;
+    const ev = events.find((e) => e.id === id);
+    if (!ev || !canReschedule(ev)) return;
+    void reschedule(id, isoFromDaySlot(targetDay, slotForEvent(ev)));
+    setDragId(null);
+    setTouchDragId(null);
+    setDropHoverKey(null);
+  };
+
+  const clearLongPress = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const startJobDrag = (ev: CalendarEvent, e: React.DragEvent) => {
+    if (!canReschedule(ev)) return;
+    setDragId(ev.id);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", ev.id);
+  };
+
+  const startJobTouchDrag = (ev: CalendarEvent) => (e: React.TouchEvent) => {
+    if (!canReschedule(ev)) return;
+    clearLongPress();
+    longPressTimer.current = setTimeout(() => {
+      setTouchDragId(ev.id);
+      if (navigator.vibrate) navigator.vibrate(20);
+    }, 280);
+    e.stopPropagation();
   };
 
   const eventsForDay = (day: Date) =>
@@ -277,22 +326,41 @@ export default function CalendarTab({
     const todayMark = isToday(day, today);
     const active = selectedDay ? isSameDay(day, selectedDay) : false;
     const count = dayEvents.length;
+    const key = dayKey(day);
+    const isDropHover = dropHoverKey === key && !!(dragId || touchDragId);
+    const isDragging = !!(dragId || touchDragId);
 
     return (
       <button
         type="button"
-        onClick={() => inMonth && openDay(day)}
+        onClick={() => {
+          if (touchDragId) {
+            onDropDay(day);
+            return;
+          }
+          if (inMonth) openDay(day);
+        }}
         disabled={!inMonth}
+        onDragOver={(e) => {
+          if (!isDragging) return;
+          e.preventDefault();
+          setDropHoverKey(key);
+        }}
+        onDragLeave={() => setDropHoverKey((k) => (k === key ? null : k))}
+        onDrop={(e) => {
+          e.preventDefault();
+          if (inMonth) onDropDay(day);
+        }}
         title={count > 0 ? `${day.getDate()}: ${count} job(s)` : String(day.getDate())}
         style={{
           width: CAL_CELL,
           height: CAL_CELL,
           padding: 0,
           margin: 0,
-          border: active ? "2px solid #2563eb" : todayMark ? "1px solid #60a5fa" : "1px solid rgba(0,0,0,0.06)",
+          border: isDropHover ? "2px solid #2563eb" : active ? "2px solid #2563eb" : todayMark ? "1px solid #60a5fa" : "1px solid rgba(0,0,0,0.06)",
           borderRadius: 4,
-          background: inMonth ? bg : "#fafaf9",
-          color: fg,
+          background: isDropHover ? "#dbeafe" : inMonth ? bg : "#fafaf9",
+          color: isDropHover ? "#1d4ed8" : fg,
           fontSize: 11,
           fontWeight: 600,
           lineHeight: 1,
@@ -300,10 +368,12 @@ export default function CalendarTab({
           alignItems: "center",
           justifyContent: "center",
           position: "relative",
-          cursor: inMonth ? "pointer" : "default",
+          cursor: inMonth ? (isDragging ? "copy" : "pointer") : "default",
           opacity: inMonth ? 1 : 0.45,
           boxSizing: "border-box",
           touchAction: "manipulation",
+          transform: isDropHover ? "scale(1.08)" : undefined,
+          transition: "transform 0.1s, background 0.1s",
         }}
       >
         <span>{day.getDate()}</span>
@@ -403,7 +473,9 @@ export default function CalendarTab({
         <span className="flex items-center gap-1"><i className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: eventColor("pending", true) }} /> {labels.overdue}</span>
       </div>
 
-      <p className="text-[10px] text-stone-400 px-3 pb-1">{labels.tapHint}</p>
+      <p className="text-[10px] text-stone-400 px-3 pb-1">
+        {dragId || touchDragId ? labels.dragHint : labels.tapHint}
+      </p>
 
       {loading && (
         <div className="py-2 text-center text-stone-400 text-sm">{labels.loading}</div>
@@ -508,21 +580,39 @@ export default function CalendarTab({
           )}
 
           <div className="space-y-2">
-            {dayDetailEvents.map((ev) => (
-              <button
+            {dayDetailEvents.map((ev) => {
+              const dragging = dragId === ev.id || touchDragId === ev.id;
+              const draggable = canReschedule(ev);
+              return (
+              <div
                 key={ev.id}
-                type="button"
-                onClick={() => { setSelected(ev); setMoveOpen(false); setMoveTargetDay(selectedDay); }}
-                className="w-full text-left rounded-xl border border-stone-200 bg-stone-50 p-3 touch-manipulation active:bg-stone-100 transition"
+                draggable={draggable}
+                onDragStart={(e) => startJobDrag(ev, e)}
+                onDragEnd={() => { setDragId(null); setDropHoverKey(null); }}
+                onTouchStart={startJobTouchDrag(ev)}
+                onTouchEnd={() => clearLongPress()}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === "Enter") { setSelected(ev); setMoveOpen(false); setMoveTargetDay(selectedDay!); } }}
+                onClick={() => {
+                  if (touchDragId) return;
+                  setSelected(ev);
+                  setMoveOpen(false);
+                  setMoveTargetDay(selectedDay!);
+                }}
+                className={`w-full text-left rounded-xl border border-stone-200 bg-stone-50 p-3 touch-manipulation active:bg-stone-100 transition ${draggable ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"} ${dragging ? "opacity-50 ring-2 ring-blue-400" : ""}`}
                 style={{ borderLeftWidth: 4, borderLeftColor: eventColor(ev.status, !!ev.is_overdue) }}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 flex items-start gap-1.5">
+                    {draggable && <GripVertical className="w-4 h-4 shrink-0 text-stone-400 mt-0.5" />}
+                    <div className="min-w-0">
                     <div className="font-semibold text-stone-800 text-sm truncate">{ev.client_name}</div>
                     <div className="text-xs text-stone-500 truncate mt-0.5">{ev.appliance}</div>
                     {ev.address && (
                       <div className="text-[10px] text-stone-400 truncate mt-0.5">{ev.address}</div>
                     )}
+                    </div>
                   </div>
                   <div className="text-right shrink-0">
                     <div className="text-xs font-bold text-stone-700">{formatTime(ev.start_at, locale)}</div>
@@ -535,8 +625,8 @@ export default function CalendarTab({
                   </div>
                 </div>
                 <div className="flex gap-1.5 mt-2 flex-wrap">{bizBadge(ev)}</div>
-              </button>
-            ))}
+              </div>
+            );})}
           </div>
         </div>
       )}
