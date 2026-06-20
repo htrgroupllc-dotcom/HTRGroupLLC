@@ -27,13 +27,13 @@ import {
   skipToNextBusinessDay,
 } from "@/lib/bookingDate";
 import svcDryerImg    from "@assets/svc_dryer_nobrand.png";
-import svcWasherImg   from "@assets/ChatGPT_Image_3_Ð°Ð¿Ñ€._2026_Ð³.,_21_04_57_1775269648058.png";
-import svcFridgeImg   from "@assets/ChatGPT_Image_3_Ð°Ð¿Ñ€._2026_Ð³.,_21_10_20_1775269648058.png";
+import svcWasherImg   from "@assets/svc_washer_card.png";
+import svcFridgeImg   from "@assets/svc_refrigerator_card.png";
 import svcDishImg     from "@assets/svc_dishwasher_nobrand.png";
 import svcMicroImg    from "@assets/svc_microwave_nobrand.png";
 import svcHoodImg     from "@assets/svc_rangehood_nobrand.png";
-import svcOvenImg     from "@assets/ChatGPT_Image_3_Ð°Ð¿Ñ€._2026_Ð³.,_21_18_00_1775269648060.png";
-import svcStoveImg    from "@assets/ChatGPT_Image_3_Ð°Ð¿Ñ€._2026_Ð³.,_21_20_14_1775269648060.png";
+import svcOvenImg     from "@assets/svc_gas_range_card.png";
+import svcStoveImg    from "@assets/svc_electric_stove_card.png";
 import whyUsBgImg     from "@assets/why-us-photo.png";
 import svcIceMakerImg from "@assets/svc_icemaker.png";
 import svcCooktopImg  from "@assets/svc_cooktop.png";

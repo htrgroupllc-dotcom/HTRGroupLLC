@@ -6,10 +6,10 @@ import ChatWidget from "@/components/ChatWidget";
 import { FaFacebook, FaInstagram, FaTiktok, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import { useParams } from "wouter";
 
-import svcFridgeImg   from "@assets/ChatGPT_Image_3_апр._2026_г.,_21_10_20_1775269648058.png";
-import svcWashImg     from "@assets/ChatGPT_Image_3_апр._2026_г.,_21_04_57_1775269648058.png";
+import svcFridgeImg   from "@assets/svc_refrigerator_card.png";
+import svcWashImg     from "@assets/svc_washer_card.png";
 import svcDishImg     from "@assets/svc_dishwasher_nobrand.png";
-import svcOvenImg     from "@assets/ChatGPT_Image_3_апр._2026_г.,_21_18_00_1775269648060.png";
+import svcOvenImg     from "@assets/svc_gas_range_card.png";
 import svcDryerImg    from "@assets/svc_dryer_nobrand.png";
 import svcMicroImg    from "@assets/svc_microwave_nobrand.png";
 import svcFreezerImg  from "@assets/svc_freezer.png";
