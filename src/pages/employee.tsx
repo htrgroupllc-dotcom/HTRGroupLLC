@@ -473,6 +473,7 @@ function EmployeePage() {
   const [justClosedId, setJustClosedId]   = useState<string | null>(null);
   const [jobsTab, setJobsTab]             = useState<"active" | "completed" | "archived">("active");
   const [jobSearch, setJobSearch]         = useState("");
+  const [highlightJobId, setHighlightJobId] = useState<string | null>(null);
   const [sendingReviewId, setSendingReviewId] = useState<string | null>(null);
   const greenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -481,6 +482,16 @@ function EmployeePage() {
       if (greenTimerRef.current) clearTimeout(greenTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (!highlightJobId) return;
+    const scrollTimer = setTimeout(() => {
+      document.getElementById(`job-card-${highlightJobId}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 150);
+    const clearTimer = setTimeout(() => setHighlightJobId(null), 3000);
+    return () => { clearTimeout(scrollTimer); clearTimeout(clearTimer); };
+  }, [highlightJobId, tab, jobsTab]);
 
   const authH = useCallback(() => ({
     "Content-Type": "application/json",
@@ -1614,6 +1625,7 @@ function EmployeePage() {
     if (!q.trim()) return true;
     const lq = q.toLowerCase();
     return (
+      b.id.toLowerCase().includes(lq) ||
       b.name.toLowerCase().includes(lq) ||
       b.phone.toLowerCase().includes(lq) ||
       b.address.toLowerCase().includes(lq) ||
@@ -1911,7 +1923,7 @@ function EmployeePage() {
                     key={b.id}
                     b={b}
                     justClosed={b.id === justClosedId}
-                    isHighlighted={!!jobSearch.trim()}
+                    isHighlighted={highlightJobId === b.id || !!jobSearch.trim()}
                     onClose={() => openCloseModal(b)}
                     onEstimate={() => openEstimateModal(b)}
                     onEditEstimate={estimateHistory[b.id] ? () => openEstimateModal(b, estimateHistory[b.id]!) : undefined}
@@ -1958,7 +1970,7 @@ function EmployeePage() {
                     key={b.id}
                     b={b}
                     justClosed={false}
-                    isHighlighted={!!jobSearch.trim()}
+                    isHighlighted={highlightJobId === b.id || !!jobSearch.trim()}
                     onClose={undefined}
                     lastEstimate={estimateHistory[b.id]}
                     onViewEstimate={estimateHistory[b.id] ? () => void viewEstimate(b, estimateHistory[b.id]!.id) : undefined}
@@ -2007,7 +2019,7 @@ function EmployeePage() {
                     key={b.id}
                     b={b}
                     justClosed={false}
-                    isHighlighted={!!jobSearch.trim()}
+                    isHighlighted={highlightJobId === b.id || !!jobSearch.trim()}
                     onClose={undefined}
                     isArchived
                     lastEstimate={estimateHistory[b.id]}
@@ -2075,6 +2087,17 @@ function EmployeePage() {
               moveJob: t("calMoveJob"),
               pickTime: t("calPickTime"),
               openCrm: t("calOpenCrm"),
+            }}
+            onOpenBooking={(id) => {
+              const b = bookings.find(x => x.id === id);
+              if (b) {
+                if (b.status === "completed" && b.employee_archived_at) setJobsTab("archived");
+                else if (b.status === "completed") setJobsTab("completed");
+                else setJobsTab("active");
+              }
+              setTab("jobs");
+              setJobSearch(id);
+              setHighlightJobId(id);
             }}
           />
         )}
@@ -3377,7 +3400,9 @@ function JobCard({
   const [genderPickOpen, setGenderPickOpen] = useState(false);
   const [callMsg, setCallMsg] = useState<{ ok: boolean; text: string } | null>(null);
   return (
-    <div style={{
+    <div
+      id={`job-card-${b.id}`}
+      style={{
       background: justClosed ? "#dcfce7" : "#fff",
       borderRadius: 14,
       border: `2px solid ${justClosed ? SUCCESS : isHighlighted ? ACCENT : "#f1f5f9"}`,

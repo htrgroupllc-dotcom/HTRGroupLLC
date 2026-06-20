@@ -312,7 +312,20 @@ export default function CalendarTab({
     );
   };
 
+  const openFullBooking = (id: string) => {
+    if (!onOpenBooking) return;
+    onOpenBooking(id);
+    setSelectedDay(null);
+    setSelected(null);
+    setMoveOpen(false);
+  };
+
   const openDay = (day: Date) => {
+    const dayEvents = eventsForDay(day);
+    if (onOpenBooking && dayEvents.length === 1) {
+      openFullBooking(dayEvents[0].id);
+      return;
+    }
     setSelectedDay(day);
     setSelected(null);
     setMoveOpen(false);
@@ -593,9 +606,14 @@ export default function CalendarTab({
                 onTouchEnd={() => clearLongPress()}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => { if (e.key === "Enter") { setSelected(ev); setMoveOpen(false); setMoveTargetDay(selectedDay!); } }}
+                onKeyDown={(e) => {
+                  if (e.key !== "Enter" || touchDragId) return;
+                  if (onOpenBooking) openFullBooking(ev.id);
+                  else { setSelected(ev); setMoveOpen(false); setMoveTargetDay(selectedDay!); }
+                }}
                 onClick={() => {
                   if (touchDragId) return;
+                  if (onOpenBooking) { openFullBooking(ev.id); return; }
                   setSelected(ev);
                   setMoveOpen(false);
                   setMoveTargetDay(selectedDay!);
