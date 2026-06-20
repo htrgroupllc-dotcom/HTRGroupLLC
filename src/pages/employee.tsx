@@ -2086,7 +2086,14 @@ function EmployeePage() {
             apiBase={API()}
             authHeaders={() => ({ Authorization: `Bearer ${token}` })}
             mode="employee"
-            locale={lang === "ru" ? "ru-RU" : lang === "es" ? "es-ES" : "en-US"}
+            locale={
+              lang === "ru" ? "ru-RU"
+              : lang === "es" ? "es-ES"
+              : lang === "az" ? "az-AZ"
+              : lang === "tr" ? "tr-TR"
+              : lang === "uk" ? "uk-UA"
+              : "en-US"
+            }
             labels={{
               title: t("calTitle"),
               week: t("calWeek"),
