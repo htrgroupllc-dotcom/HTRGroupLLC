@@ -11,7 +11,7 @@ const SITE_META: Record<VisitFeeSite, { label: string; website: string; accent: 
   },
   dental: {
     label: "Dental",
-    website: "dentequmentfix.com",
+    website: "dentalfixpro.com",
     accent: "#6B7280",
   },
 };
