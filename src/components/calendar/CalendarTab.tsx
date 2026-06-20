@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
-  ChevronLeft, ChevronRight, RefreshCw, CalendarDays, GripVertical, X, Clock,
+  ChevronLeft, ChevronRight, RefreshCw, CalendarDays, X, Clock, ChevronDown,
 } from "lucide-react";
 import { resolveBookingBiz } from "@/lib/adminSiteConfig";
 import {
   type CalendarView,
   houstonNow,
-  startOfWeek,
-  addDays,
   addMonths,
-  formatWeekRange,
   formatMonthYear,
   formatYear,
   formatDayHeader,
@@ -27,8 +24,8 @@ import {
   getMonthGrid,
   isSameDay,
   isSameMonth,
-  isPastDay,
   isToday,
+  startOfWeek,
 } from "@/lib/calendarUtils";
 
 const ACCENT = "#1B6FE8";
@@ -104,44 +101,55 @@ for (let h = SLOT_START_HOUR; h <= SLOT_END_HOUR; h++) {
   }
 }
 
-function useIsMobile(): boolean {
-  const [mobile, setMobile] = useState(() =>
-    typeof window !== "undefined" ? window.matchMedia("(max-width: 767px)").matches : false,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const fn = () => setMobile(mq.matches);
-    mq.addEventListener("change", fn);
-    return () => mq.removeEventListener("change", fn);
-  }, []);
-  return mobile;
+const EMPTY_DAY_BG = "#f5f5f4";
+
+function statusPriority(ev: CalendarEvent): number {
+  if (ev.is_overdue) return 5;
+  if (ev.status === "pending") return 4;
+  if (ev.status === "approved" || ev.status === "confirmed" || ev.status === "scheduled") return 3;
+  if (ev.status === "in_progress") return 2;
+  if (ev.status === "completed") return 1;
+  return 0;
+}
+
+/** Dominant status color for a day cell (highest-priority job). */
+function dayCellColor(events: CalendarEvent[]): string {
+  if (events.length === 0) return EMPTY_DAY_BG;
+  const top = events.reduce((a, b) => (statusPriority(a) >= statusPriority(b) ? a : b));
+  return eventColor(top.status, !!top.is_overdue);
+}
+
+function textOnBg(bg: string): string {
+  if (bg === EMPTY_DAY_BG) return "#57534e";
+  return "#ffffff";
 }
 
 export default function CalendarTab({
   apiBase, authHeaders, mode, labels, locale = "en-US", onOpenBooking,
 }: Props) {
-  const isMobile = useIsMobile();
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const [view, setView] = useState<CalendarView>("week");
+  const [view, setView] = useState<CalendarView>("month");
   const [anchor, setAnchor] = useState(() => houstonNow());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState<EmployeeOpt[]>([]);
   const [empFilter, setEmpFilter] = useState("");
   const [bizFilter, setBizFilter] = useState<"all" | "appliance" | "dental">("all");
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [selected, setSelected] = useState<CalendarEvent | null>(null);
   const [moveOpen, setMoveOpen] = useState(false);
   const [moveTargetDay, setMoveTargetDay] = useState<Date>(() => houstonNow());
-  const [dragId, setDragId] = useState<string | null>(null);
-  const [touchDragId, setTouchDragId] = useState<string | null>(null);
-  const [dropHoverDay, setDropHoverDay] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
-  const [mobileDay, setMobileDay] = useState(() => houstonNow());
 
   const today = useMemo(() => houstonNow(), [anchor, view]);
-  const weekStart = useMemo(() => startOfWeek(anchor), [anchor]);
-  const weekDays = useMemo(() => Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)), [weekStart]);
+  const weekStart = useMemo(() => startOfWeek(selectedDay ?? anchor), [selectedDay, anchor]);
+  const weekDays = useMemo(
+    () => Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(weekStart);
+      d.setDate(d.getDate() + i);
+      return d;
+    }),
+    [weekStart],
+  );
 
   const loadEmployees = useCallback(async () => {
     if (mode !== "admin") return;
@@ -174,7 +182,6 @@ export default function CalendarTab({
 
   useEffect(() => { void loadEmployees(); }, [loadEmployees]);
   useEffect(() => { void loadEvents(); }, [loadEvents]);
-  useEffect(() => { setMobileDay(anchor); }, [weekStart, anchor]);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -182,27 +189,18 @@ export default function CalendarTab({
   };
 
   const navigate = (dir: -1 | 1) => {
-    if (view === "week") setAnchor((a) => addDays(a, dir * 7));
-    else if (view === "month") setAnchor((a) => addMonths(a, dir));
+    if (view === "month") setAnchor((a) => addMonths(a, dir));
     else setAnchor((a) => new Date(a.getFullYear() + dir, a.getMonth(), a.getDate()));
+    setSelectedDay(null);
   };
 
   const goToday = () => {
     const now = houstonNow();
     setAnchor(now);
-    setMobileDay(now);
+    setSelectedDay(now);
   };
 
-  const selectDay = (day: Date) => {
-    setAnchor(day);
-    setMobileDay(day);
-  };
-
-  const headerTitle = view === "week"
-    ? formatWeekRange(weekStart, locale)
-    : view === "month"
-      ? formatMonthYear(anchor, locale)
-      : formatYear(anchor);
+  const headerTitle = view === "month" ? formatMonthYear(anchor, locale) : formatYear(anchor);
 
   const canReschedule = (ev: CalendarEvent) =>
     ev.status !== "completed" && ev.status !== "cancelled";
@@ -220,39 +218,22 @@ export default function CalendarTab({
       showToast(labels.rescheduleOk);
       setMoveOpen(false);
       setSelected(null);
-      setTouchDragId(null);
-      setDragId(null);
-      setDropHoverDay(null);
       void loadEvents();
     } catch (e) {
       showToast(e instanceof Error ? e.message : labels.rescheduleErr);
     }
   };
 
-  const slotForEvent = (ev: CalendarEvent) => {
-    const s = slotIndexFromIso(ev.start_at);
-    return s >= 0 && s < TIME_SLOTS.length ? s : 2;
-  };
-
-  const onDropDay = (targetDay: Date) => {
-    const id = dragId ?? touchDragId;
-    if (!id) return;
-    const ev = events.find((e) => e.id === id);
-    if (!ev) return;
-    void reschedule(id, isoFromDaySlot(targetDay, slotForEvent(ev)));
-    setDragId(null);
-    setTouchDragId(null);
-    setDropHoverDay(null);
-  };
-
   const eventsForDay = (day: Date) =>
-    events.filter((ev) => {
-      const d = new Date(ev.start_at);
-      return isSameDay(
-        new Date(d.toLocaleString("en-US", { timeZone: "America/Chicago" })),
-        day,
-      );
-    });
+    events
+      .filter((ev) => {
+        const d = new Date(ev.start_at);
+        return isSameDay(
+          new Date(d.toLocaleString("en-US", { timeZone: "America/Chicago" })),
+          day,
+        );
+      })
+      .sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime());
 
   const statusLabel = (s: string) => {
     if (s === "completed") return labels.statusCompleted;
@@ -263,167 +244,59 @@ export default function CalendarTab({
   const bizBadge = (ev: CalendarEvent) => {
     const b = resolveBookingBiz(ev.business_type);
     return (
-      <span className={`text-xs px-1.5 py-0.5 rounded ${b === "appliance" ? "bg-sky-100 text-sky-700" : "bg-violet-100 text-violet-700"}`}>
+      <span className={`text-[10px] px-1.5 py-0.5 rounded ${b === "appliance" ? "bg-sky-100 text-sky-700" : "bg-violet-100 text-violet-700"}`}>
         {b === "appliance" ? labels.bizAppliance : labels.bizDental}
       </span>
     );
   };
 
-  const dayChipClass = (day: Date, active: boolean) => {
-    const past = isPastDay(day, today);
-    const todayMark = isToday(day, today);
-    if (active) return "border-blue-600 bg-blue-50 text-blue-700 ring-2 ring-blue-200";
-    if (todayMark) return "border-blue-400 bg-blue-50/60 text-blue-700";
-    if (past) return "border-stone-300 bg-stone-50 text-stone-700 active:bg-stone-100";
-    return "border-stone-200 bg-white text-stone-600 active:bg-stone-50";
+  const openDay = (day: Date) => {
+    setSelectedDay(day);
+    setSelected(null);
+    setMoveOpen(false);
   };
 
-  const dayKey = (day: Date) => `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
-
-  const clearLongPress = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  };
-
-  const handleEventTouchStart = (ev: CalendarEvent) => (e: React.TouchEvent) => {
-    if (!canReschedule(ev)) return;
-    clearLongPress();
-    longPressTimer.current = setTimeout(() => {
-      setTouchDragId(ev.id);
-      setSelected(null);
-      if (navigator.vibrate) navigator.vibrate(20);
-    }, 280);
-    e.stopPropagation();
-  };
-
-  const handleDayClick = (day: Date, inMonth: boolean) => {
-    if (touchDragId) {
-      onDropDay(day);
-      return;
-    }
-    selectDay(day);
-    if (view === "month" && inMonth) setView("week");
-  };
-
-  const EventChip = ({
-    ev, size = "md", inDragMode,
-  }: { ev: CalendarEvent; size?: "sm" | "md"; inDragMode?: boolean }) => {
-    const dragging = dragId === ev.id || touchDragId === ev.id;
-    const color = eventColor(ev.status, !!ev.is_overdue);
-    const textSize = size === "sm" ? "text-[7px] leading-tight" : "text-[9px] leading-tight";
-    const pad = size === "sm" ? "px-0.5 py-px" : "px-1 py-0.5";
-
-    return (
-      <div
-        draggable={canReschedule(ev) && !isMobile}
-        onDragStart={(e) => {
-          if (!canReschedule(ev)) return;
-          setDragId(ev.id);
-          e.dataTransfer.effectAllowed = "move";
-        }}
-        onDragEnd={() => setDragId(null)}
-        onTouchStart={handleEventTouchStart(ev)}
-        onTouchEnd={() => clearLongPress()}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (inDragMode) return;
-          if (!touchDragId) {
-            setSelected(ev);
-            setMoveOpen(false);
-            setMoveTargetDay(mobileDay);
-          }
-        }}
-        className={`${textSize} ${pad} rounded text-white truncate w-full text-left touch-manipulation flex items-center gap-0.5 ${
-          canReschedule(ev) ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"
-        } ${dragging ? "opacity-50 ring-2 ring-white/80 scale-95" : ""}`}
-        style={{ background: color }}
-        title={`${formatTime(ev.start_at, locale)} ${ev.client_name}`}
-      >
-        {canReschedule(ev) && size !== "sm" && (
-          <GripVertical className="w-2 h-2 shrink-0 opacity-70" />
-        )}
-        <span className="truncate">
-          {size === "sm" ? ev.client_name.split(" ")[0] : `${formatTime(ev.start_at, locale)} ${ev.client_name}`}
-        </span>
-      </div>
-    );
-  };
-
-  const DaySquare = ({
-    day,
-    inMonth = true,
-    size = "md",
-    showWeekday = false,
-  }: {
-    day: Date;
-    inMonth?: boolean;
-    size?: "sm" | "md";
-    showWeekday?: boolean;
-  }) => {
+  const CompactDayCell = ({ day }: { day: Date }) => {
+    const inMonth = isSameMonth(day, anchor);
     const dayEvents = eventsForDay(day);
-    const past = isPastDay(day, today);
+    const bg = inMonth ? dayCellColor(dayEvents) : EMPTY_DAY_BG;
+    const fg = inMonth ? textOnBg(bg) : "#d6d3d1";
     const todayMark = isToday(day, today);
-    const key = dayKey(day);
-    const isDropHover = dropHoverDay === key;
-    const isDragging = !!(dragId || touchDragId);
-    const maxEvents = size === "sm" ? 2 : isMobile ? 3 : 5;
+    const active = selectedDay ? isSameDay(day, selectedDay) : false;
+    const count = dayEvents.length;
 
     return (
-      <div
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => { if (e.key === "Enter") handleDayClick(day, inMonth); }}
-        onClick={() => handleDayClick(day, inMonth)}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDropHoverDay(key);
-        }}
-        onDragLeave={() => setDropHoverDay((k) => (k === key ? null : k))}
-        onDrop={(e) => {
-          e.preventDefault();
-          onDropDay(day);
-        }}
+      <button
+        type="button"
+        onClick={() => inMonth && openDay(day)}
+        disabled={!inMonth}
         className={`
-          aspect-square border rounded-md flex flex-col overflow-hidden touch-manipulation transition
-          ${size === "sm" ? "p-0.5" : "p-1"}
-          ${!inMonth ? "bg-stone-50/90 border-stone-100 opacity-60" : past ? "bg-stone-50 border-stone-200" : "bg-white border-stone-200"}
-          ${todayMark ? "ring-2 ring-blue-500 ring-inset bg-blue-50/40" : ""}
-          ${isDropHover && isDragging ? "bg-blue-100 border-blue-400 scale-[1.02] shadow-md" : ""}
-          ${isDragging && inMonth ? "hover:bg-blue-50" : "active:bg-blue-50/60"}
+          relative aspect-square min-w-0 rounded-sm border text-center font-semibold touch-manipulation
+          transition active:scale-95 disabled:cursor-default
+          ${active ? "ring-2 ring-offset-1 ring-blue-600 z-[1]" : "border-black/5"}
+          ${todayMark && !active ? "ring-1 ring-blue-400" : ""}
         `}
+        style={{
+          background: inMonth ? bg : "#fafaf9",
+          color: fg,
+          fontSize: count > 0 && inMonth ? "10px" : "11px",
+        }}
+        title={count > 0 ? `${day.getDate()}: ${count} job(s)` : String(day.getDate())}
       >
-        <div className={`flex items-center justify-between shrink-0 ${size === "sm" ? "mb-0.5" : "mb-1"}`}>
-          {showWeekday && (
-            <span className={`font-semibold uppercase ${size === "sm" ? "text-[7px]" : "text-[8px]"} text-stone-400`}>
-              {WEEKDAYS_SHORT[day.getDay()]}
-            </span>
-          )}
-          <span className={`font-bold ml-auto leading-none ${
-            size === "sm" ? "text-[9px]" : "text-[11px]"
-          } ${
-            todayMark
-              ? "bg-blue-600 text-white rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center text-[9px]"
-              : !inMonth ? "text-stone-300" : past ? "text-stone-500" : "text-stone-700"
-          }`}>
-            {day.getDate()}
+        <span className="leading-none">{day.getDate()}</span>
+        {count > 1 && inMonth && (
+          <span
+            className="absolute bottom-0.5 right-0.5 text-[7px] font-bold leading-none opacity-90"
+            style={{ color: fg }}
+          >
+            {count}
           </span>
-        </div>
-
-        <div className="flex-1 min-h-0 overflow-y-auto space-y-0.5" style={{ scrollbarWidth: "none" }}>
-          {dayEvents.slice(0, maxEvents).map((ev) => (
-            <EventChip key={ev.id} ev={ev} size={size} inDragMode={!!touchDragId} />
-          ))}
-          {dayEvents.length > maxEvents && (
-            <div className={`text-stone-500 font-semibold ${size === "sm" ? "text-[7px]" : "text-[8px]"}`}>
-              +{dayEvents.length - maxEvents}
-            </div>
-          )}
-        </div>
-      </div>
+        )}
+      </button>
     );
   };
+
+  const dayDetailEvents = selectedDay ? eventsForDay(selectedDay) : [];
 
   return (
     <div
@@ -437,26 +310,26 @@ export default function CalendarTab({
           <span className="font-bold text-stone-700 text-sm">{labels.title}</span>
 
           <div className="flex rounded-lg border border-stone-200 overflow-hidden text-xs font-semibold shrink-0">
-            {(["week", "month", "year"] as CalendarView[]).map((v) => (
+            {(["month", "year"] as CalendarView[]).map((v) => (
               <button
                 key={v}
                 type="button"
-                onClick={() => setView(v)}
+                onClick={() => { setView(v); setSelectedDay(null); }}
                 className={`min-h-[44px] md:min-h-0 px-3 py-2 md:py-1.5 transition touch-manipulation ${view === v ? "bg-blue-600 text-white" : "bg-white text-stone-500"}`}
               >
-                {v === "week" ? labels.week : v === "month" ? labels.month : labels.year}
+                {v === "month" ? labels.month : labels.year}
               </button>
             ))}
           </div>
 
           <div className="flex items-center gap-0.5 ml-auto">
-            <button type="button" onClick={() => navigate(-1)} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded hover:bg-stone-100 touch-manipulation" aria-label="Previous">
+            <button type="button" onClick={() => navigate(-1)} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded hover:bg-stone-100 touch-manipulation">
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button type="button" onClick={goToday} className="min-h-[44px] px-2 text-xs font-semibold rounded border border-stone-200 touch-manipulation">
               {labels.today}
             </button>
-            <button type="button" onClick={() => navigate(1)} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded hover:bg-stone-100 touch-manipulation" aria-label="Next">
+            <button type="button" onClick={() => navigate(1)} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded hover:bg-stone-100 touch-manipulation">
               <ChevronRight className="w-5 h-5" />
             </button>
             <button type="button" onClick={() => void loadEvents()} className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded hover:bg-stone-100 touch-manipulation" title={labels.refresh}>
@@ -465,10 +338,10 @@ export default function CalendarTab({
           </div>
         </div>
 
-        <div className="text-xs font-semibold text-stone-600 text-center md:text-left">{headerTitle}</div>
+        <div className="text-xs font-semibold text-stone-600">{headerTitle}</div>
 
-        <div className="flex flex-wrap gap-2">
-          {mode === "admin" && (
+        {mode === "admin" && (
+          <div className="flex flex-wrap gap-2">
             <select
               value={empFilter}
               onChange={(e) => setEmpFilter(e.target.value)}
@@ -479,8 +352,6 @@ export default function CalendarTab({
                 <option key={e.id} value={e.id}>{e.name}</option>
               ))}
             </select>
-          )}
-          {mode === "admin" && (
             <select
               value={bizFilter}
               onChange={(e) => setBizFilter(e.target.value as typeof bizFilter)}
@@ -490,121 +361,142 @@ export default function CalendarTab({
               <option value="appliance">{labels.bizAppliance}</option>
               <option value="dental">{labels.bizDental}</option>
             </select>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
-      <p className="text-[10px] text-stone-400 px-3 py-1">
-        {touchDragId
-          ? (isMobile ? "Tap a day square to move the job" : labels.dragHint)
-          : (isMobile ? labels.tapHint : labels.dragHint)}
-      </p>
+      {/* Legend */}
+      <div className="flex flex-wrap gap-2 px-3 py-1.5 text-[9px] text-stone-500">
+        <span className="flex items-center gap-1"><i className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: eventColor("approved", false) }} /> {labels.statusApproved}</span>
+        <span className="flex items-center gap-1"><i className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: eventColor("pending", false) }} /> {labels.statusPending}</span>
+        <span className="flex items-center gap-1"><i className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: eventColor("completed", false) }} /> {labels.statusCompleted}</span>
+        <span className="flex items-center gap-1"><i className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: eventColor("pending", true) }} /> {labels.overdue}</span>
+      </div>
+
+      <p className="text-[10px] text-stone-400 px-3 pb-1">{labels.tapHint}</p>
 
       {loading && (
-        <div className="p-4 text-center text-stone-400 text-sm">{labels.loading}</div>
+        <div className="py-2 text-center text-stone-400 text-sm">{labels.loading}</div>
       )}
 
-      {/* WEEK — square grid (7 days) */}
-      {view === "week" && (
-        <div className="flex-1 overflow-auto p-2 overscroll-contain" style={{ WebkitOverflowScrolling: "touch" }}>
-          <div className="border border-stone-200 rounded-lg bg-white overflow-hidden p-1 md:p-2">
-            <div className="grid grid-cols-7 gap-0.5 md:gap-1 mb-0.5 md:mb-1">
+      {/* MONTH — compact numbered cells */}
+      {view === "month" && (
+        <div className="px-2 pb-2">
+          <div className="bg-white border border-stone-200 rounded-lg p-1.5 md:p-2">
+            <div className="grid grid-cols-7 gap-0.5 mb-0.5">
               {WEEKDAYS_SHORT.map((wd) => (
-                <div key={wd} className="text-center text-[9px] md:text-[10px] font-semibold text-stone-500 py-1">
-                  {wd}
+                <div key={wd} className="text-center text-[9px] font-semibold text-stone-400 py-0.5">
+                  {wd.charAt(0)}
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-7 gap-0.5 md:gap-1.5">
-              {weekDays.map((d) => (
-                <DaySquare key={d.toISOString()} day={d} size={isMobile ? "sm" : "md"} />
-              ))}
-            </div>
-          </div>
-
-          {!loading && events.length === 0 && (
-            <div className="text-center text-stone-400 text-sm py-6">{labels.noEvents}</div>
-          )}
-        </div>
-      )}
-
-      {/* MONTH — square grid */}
-      {view === "month" && (
-        <div className="flex-1 overflow-auto p-2 md:p-3 overscroll-contain" style={{ WebkitOverflowScrolling: "touch" }}>
-          <div className="border border-stone-200 rounded-lg bg-white overflow-hidden p-1 md:p-2">
-            <div className="grid grid-cols-7 gap-0.5 md:gap-1 mb-0.5 md:mb-1">
-              {WEEKDAYS_SHORT.map((wd) => (
-                <div key={wd} className="text-center text-[9px] md:text-[10px] font-semibold text-stone-500 py-1">{wd}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-0.5 md:gap-1">
+            <div className="grid grid-cols-7 gap-0.5">
               {getMonthGrid(anchor.getFullYear(), anchor.getMonth()).map((day) => (
-                <DaySquare
-                  key={day.toISOString()}
-                  day={day}
-                  inMonth={isSameMonth(day, anchor)}
-                  size="sm"
-                />
+                <CompactDayCell key={day.toISOString()} day={day} />
               ))}
             </div>
           </div>
         </div>
       )}
 
-      {/* YEAR — month squares with mini day grid */}
+      {/* YEAR — 12 mini month grids */}
       {view === "year" && (
-        <div className="flex-1 overflow-auto p-2 md:p-3 overscroll-contain" style={{ WebkitOverflowScrolling: "touch" }}>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
-            {MONTHS_LONG.map((name, mi) => {
-              const monthDate = new Date(anchor.getFullYear(), mi, 1);
-              const monthEvents = events.filter((ev) => {
-                const d = new Date(ev.start_at);
-                return d.getFullYear() === anchor.getFullYear() && d.getMonth() === mi;
-              });
-              const countByDay = new Map<number, number>();
-              monthEvents.forEach((ev) => {
-                const day = new Date(ev.start_at).getDate();
-                countByDay.set(day, (countByDay.get(day) ?? 0) + 1);
-              });
-              return (
-                <button
-                  key={name}
-                  type="button"
-                  onClick={() => { setAnchor(monthDate); setView("month"); }}
-                  className="border border-stone-200 rounded-lg bg-white p-2 text-left hover:border-blue-300 active:bg-stone-50 transition touch-manipulation"
-                >
-                  <div className="text-xs font-bold text-stone-700 mb-2">{name}</div>
-                  <div className="grid grid-cols-7 gap-0.5">
-                    {getMonthGrid(anchor.getFullYear(), mi).slice(0, 35).map((day) => {
-                      const cnt = isSameMonth(day, monthDate) ? (countByDay.get(day.getDate()) ?? 0) : 0;
-                      return (
-                        <div
-                          key={day.toISOString()}
-                          className={`aspect-square rounded-sm flex items-center justify-center ${
-                            cnt > 0 ? "bg-blue-500 text-white" : "bg-stone-100"
-                          }`}
-                          style={{ opacity: cnt > 0 ? Math.min(1, 0.45 + cnt * 0.18) : 0.35 }}
-                        >
-                          {cnt > 0 && isSameMonth(day, monthDate) && (
-                            <span className="text-[6px] font-bold">{day.getDate()}</span>
-                          )}
-                        </div>
-                      );
-                    })}
+        <div className="flex-1 overflow-auto px-2 pb-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+          {MONTHS_LONG.map((name, mi) => {
+            const monthDate = new Date(anchor.getFullYear(), mi, 1);
+            return (
+              <button
+                key={name}
+                type="button"
+                onClick={() => { setAnchor(monthDate); setView("month"); setSelectedDay(null); }}
+                className="bg-white border border-stone-200 rounded-lg p-1.5 text-left hover:border-blue-300 active:bg-stone-50 touch-manipulation"
+              >
+                <div className="text-[10px] font-bold text-stone-700 mb-1">{name.slice(0, 3)}</div>
+                <div className="grid grid-cols-7 gap-px">
+                  {getMonthGrid(anchor.getFullYear(), mi).map((day) => {
+                    const inMonth = day.getMonth() === mi;
+                    const evs = inMonth ? eventsForDay(day) : [];
+                    const bg = inMonth ? dayCellColor(evs) : "transparent";
+                    return (
+                      <div
+                        key={day.toISOString()}
+                        className="aspect-square rounded-[2px]"
+                        style={{
+                          background: inMonth && evs.length > 0 ? bg : inMonth ? EMPTY_DAY_BG : "transparent",
+                          opacity: inMonth ? 1 : 0.2,
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Day detail — opens when a day is tapped */}
+      {selectedDay && view === "month" && (
+        <div className="flex-1 overflow-y-auto px-2 pb-4 border-t border-stone-200 bg-white mx-2 rounded-t-xl shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+          <div className="sticky top-0 bg-white pt-3 pb-2 flex items-center justify-between border-b border-stone-100 mb-2">
+            <div>
+              <div className="text-sm font-bold text-stone-800">{formatDayHeader(selectedDay, locale)}</div>
+              <div className="text-[10px] text-stone-400">
+                {dayDetailEvents.length === 0 ? labels.noEvents : `${dayDetailEvents.length} job(s)`}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedDay(null)}
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-stone-100"
+            >
+              <ChevronDown className="w-5 h-5 text-stone-400" />
+            </button>
+          </div>
+
+          {dayDetailEvents.length === 0 && !loading && (
+            <p className="text-center text-stone-400 text-sm py-6">{labels.noEvents}</p>
+          )}
+
+          <div className="space-y-2">
+            {dayDetailEvents.map((ev) => (
+              <button
+                key={ev.id}
+                type="button"
+                onClick={() => { setSelected(ev); setMoveOpen(false); setMoveTargetDay(selectedDay); }}
+                className="w-full text-left rounded-xl border border-stone-200 bg-stone-50 p-3 touch-manipulation active:bg-stone-100 transition"
+                style={{ borderLeftWidth: 4, borderLeftColor: eventColor(ev.status, !!ev.is_overdue) }}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold text-stone-800 text-sm truncate">{ev.client_name}</div>
+                    <div className="text-xs text-stone-500 truncate mt-0.5">{ev.appliance}</div>
+                    {ev.address && (
+                      <div className="text-[10px] text-stone-400 truncate mt-0.5">{ev.address}</div>
+                    )}
                   </div>
-                  <div className="text-[9px] text-stone-400 mt-1">{monthEvents.length} jobs</div>
-                </button>
-              );
-            })}
+                  <div className="text-right shrink-0">
+                    <div className="text-xs font-bold text-stone-700">{formatTime(ev.start_at, locale)}</div>
+                    <span
+                      className="inline-block mt-1 px-1.5 py-0.5 rounded text-[9px] font-semibold text-white"
+                      style={{ background: eventColor(ev.status, !!ev.is_overdue) }}
+                    >
+                      {ev.is_overdue ? labels.overdue : statusLabel(ev.status)}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex gap-1.5 mt-2 flex-wrap">{bizBadge(ev)}</div>
+              </button>
+            ))}
           </div>
         </div>
       )}
 
-      {/* Job drawer / bottom sheet */}
+      {/* Job detail drawer */}
       {selected && (
         <div
           className="fixed inset-0 z-50 flex items-end md:items-stretch md:justify-end bg-black/40"
-          onClick={() => { setSelected(null); setMoveOpen(false); setTouchDragId(null); }}
+          onClick={() => { setSelected(null); setMoveOpen(false); }}
         >
           <div
             className="w-full md:max-w-sm bg-white md:h-full shadow-xl overflow-y-auto rounded-t-2xl md:rounded-none p-4 max-h-[90dvh]"
@@ -620,6 +512,7 @@ export default function CalendarTab({
             </div>
             <div className="space-y-2 text-sm text-stone-600">
               <p><span className="font-semibold">{selected.appliance}</span></p>
+              {selected.brand_model && <p className="text-xs text-stone-500">{selected.brand_model}</p>}
               {selected.phone && <p>📞 <a href={`tel:${selected.phone}`} className="text-blue-600">{selected.phone}</a></p>}
               {selected.address && (
                 <p>📍 <a href={`https://maps.google.com/?q=${encodeURIComponent(selected.address)}`} target="_blank" rel="noreferrer" className="text-blue-600">{selected.address}</a></p>
@@ -641,7 +534,7 @@ export default function CalendarTab({
                 {!moveOpen ? (
                   <button
                     type="button"
-                    onClick={() => { setMoveOpen(true); setMoveTargetDay(mobileDay); }}
+                    onClick={() => { setMoveOpen(true); setMoveTargetDay(selectedDay ?? anchor); }}
                     className="w-full min-h-[44px] py-2 rounded-lg border-2 border-blue-600 text-blue-600 text-sm font-semibold touch-manipulation flex items-center justify-center gap-2"
                   >
                     <Clock className="w-4 h-4" /> {labels.moveJob}
@@ -650,25 +543,30 @@ export default function CalendarTab({
                   <div className="border border-stone-200 rounded-lg p-3 bg-stone-50">
                     <p className="text-xs font-semibold text-stone-600 mb-2">{labels.pickTime}</p>
                     <div className="grid grid-cols-7 gap-1 mb-2">
-                      {weekDays.map((d) => (
-                        <button
-                          key={d.toISOString()}
-                          type="button"
-                          onClick={() => setMoveTargetDay(d)}
-                          className={`aspect-square rounded-lg border text-center text-[9px] font-bold touch-manipulation flex flex-col items-center justify-center ${dayChipClass(d, isSameDay(d, moveTargetDay))}`}
-                        >
-                          <span className="text-[8px]">{WEEKDAYS_SHORT[d.getDay()]}</span>
-                          <span>{d.getDate()}</span>
-                        </button>
-                      ))}
+                      {weekDays.map((d) => {
+                        const bg = dayCellColor(eventsForDay(d));
+                        return (
+                          <button
+                            key={d.toISOString()}
+                            type="button"
+                            onClick={() => setMoveTargetDay(d)}
+                            className={`aspect-square rounded text-[9px] font-bold touch-manipulation flex flex-col items-center justify-center text-white ${
+                              isSameDay(d, moveTargetDay) ? "ring-2 ring-blue-600 ring-offset-1" : ""
+                            }`}
+                            style={{ background: eventsForDay(d).length ? bg : EMPTY_DAY_BG, color: textOnBg(eventsForDay(d).length ? bg : EMPTY_DAY_BG) }}
+                          >
+                            {d.getDate()}
+                          </button>
+                        );
+                      })}
                     </div>
-                    <div className="grid grid-cols-3 gap-1.5 max-h-[200px] overflow-y-auto">
+                    <div className="grid grid-cols-3 gap-1.5 max-h-[180px] overflow-y-auto">
                       {TIME_SLOTS.map((slot, slotIdx) => (
                         <button
                           key={slot}
                           type="button"
                           onClick={() => { void reschedule(selected.id, isoFromDaySlot(moveTargetDay, slotIdx)); }}
-                          className="min-h-[44px] text-[10px] font-semibold rounded bg-white border border-stone-200 active:bg-blue-50 touch-manipulation"
+                          className="min-h-[40px] text-[10px] font-semibold rounded bg-white border border-stone-200 active:bg-blue-50 touch-manipulation"
                         >
                           {slot}
                         </button>
