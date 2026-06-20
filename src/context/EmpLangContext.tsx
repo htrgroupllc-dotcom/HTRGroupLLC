@@ -35,7 +35,7 @@ export const translations: Record<EmpLang, Record<string, string>> = {
     calBizAll: "All",
     calBizAppliance: "Appliance",
     calBizDental: "Dental",
-    calTapHint: "Tap a job — use Move to reschedule",
+    calTapHint: "Tap to view history — hold ~0.3s and drag to reschedule",
     calMoveJob: "Move",
     calPickTime: "Pick a time",
     calOpenCrm: "Open job",

@@ -1,0 +1,6 @@
+# Cloudflare Pages — SPA fallback
+# SMS intake links → Replit form (works even if old site bundle lacks /book-call route)
+/book-call/*  https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
+/intake/*     https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
+/form/*       https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
+/*    /index.html   200
