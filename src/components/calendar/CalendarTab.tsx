@@ -31,6 +31,7 @@ import {
   isSameMonth,
   isToday,
   startOfWeek,
+  startOfMonth,
 } from "@/lib/calendarUtils";
 
 const ACCENT = "#1B6FE8";
@@ -152,6 +153,18 @@ function textOnBg(bg: string): string {
   return "#ffffff";
 }
 
+/** Houston calendar day for a booking event. */
+function eventDay(ev: CalendarEvent): Date {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Chicago",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  }).formatToParts(new Date(ev.start_at));
+  const get = (t: string) => parseInt(parts.find((p) => p.type === t)?.value ?? "1", 10);
+  return new Date(get("year"), get("month") - 1, get("day"));
+}
+
 export default function CalendarTab({
   apiBase, authHeaders, mode, labels, locale = "en-US", onOpenBooking,
 }: Props) {
@@ -166,6 +179,7 @@ export default function CalendarTab({
   const [selected, setSelected] = useState<CalendarEvent | null>(null);
   const [moveOpen, setMoveOpen] = useState(false);
   const [moveTargetDay, setMoveTargetDay] = useState<Date>(() => houstonNow());
+  const [movePickerMonth, setMovePickerMonth] = useState(() => startOfMonth(houstonNow()));
   const [movePickId, setMovePickId] = useState<string | null>(null);
   const [dropHoverKey, setDropHoverKey] = useState<string | null>(null);
   const [dropHoverWeekKey, setDropHoverWeekKey] = useState<string | null>(null);
@@ -179,15 +193,6 @@ export default function CalendarTab({
 
   const today = useMemo(() => houstonNow(), [anchor, view]);
   const weekAnchorStart = useMemo(() => startOfWeek(anchor), [anchor]);
-  const weekStart = useMemo(() => startOfWeek(selectedDay ?? anchor), [selectedDay, anchor]);
-  const weekDays = useMemo(
-    () => Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(weekStart);
-      d.setDate(d.getDate() + i);
-      return d;
-    }),
-    [weekStart],
-  );
 
   const loadEmployees = useCallback(async () => {
     if (mode !== "admin") return;
@@ -220,6 +225,31 @@ export default function CalendarTab({
 
   useEffect(() => { void loadEmployees(); }, [loadEmployees]);
   useEffect(() => { void loadEvents(); }, [loadEvents]);
+
+  const loadEventsForMonth = useCallback(async (month: Date) => {
+    try {
+      const from = startOfMonth(month);
+      const to = addMonths(from, 1);
+      const q = new URLSearchParams({ from: from.toISOString(), to: to.toISOString() });
+      if (empFilter) q.set("employee_id", empFilter);
+      if (bizFilter !== "all") q.set("business_type", bizFilter);
+      const r = await fetch(`${apiBase}/api/calendar/events?${q}`, {
+        headers: authHeaders(),
+        cache: "no-store",
+      });
+      const d = await r.json() as { events?: CalendarEvent[] };
+      const incoming = d.events ?? [];
+      setEvents((prev) => {
+        const byId = new Map(prev.map((e) => [e.id, e]));
+        for (const e of incoming) byId.set(e.id, e);
+        return [...byId.values()];
+      });
+    } catch { /* ignore */ }
+  }, [apiBase, authHeaders, empFilter, bizFilter]);
+
+  useEffect(() => {
+    if (moveOpen) void loadEventsForMonth(movePickerMonth);
+  }, [moveOpen, movePickerMonth, loadEventsForMonth]);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -442,6 +472,47 @@ export default function CalendarTab({
     setBookingFormDay(day);
     setBookingFormEvent(ev ?? null);
     setBookingFormOpen(true);
+  };
+
+  const openMovePicker = (ev: CalendarEvent) => {
+    if (!canReschedule(ev)) {
+      showToast(labels.moveNotAllowed);
+      return;
+    }
+    const day = eventDay(ev);
+    setMovePickerMonth(startOfMonth(day));
+    setMoveTargetDay(day);
+    setMoveOpen(true);
+  };
+
+  const MovePickerMonthCell = ({ day }: { day: Date }) => {
+    const inMonth = isSameMonth(day, movePickerMonth);
+    const active = isSameDay(day, moveTargetDay);
+    const dayEvents = eventsForDay(day);
+    const bg = inMonth && dayEvents.length ? dayCellColor(dayEvents) : EMPTY_DAY_BG;
+    const fg = inMonth ? (dayEvents.length ? textOnBg(bg) : "#57534e") : "#d6d3d1";
+    return (
+      <button
+        type="button"
+        disabled={!inMonth}
+        onClick={() => { if (inMonth) setMoveTargetDay(day); }}
+        style={{
+          width: CAL_CELL,
+          height: CAL_CELL,
+          padding: 0,
+          border: active ? "2px solid #2563eb" : "1px solid #e7e5e4",
+          borderRadius: 4,
+          background: active ? "#dbeafe" : inMonth ? bg : "#fafaf9",
+          color: active ? "#1d4ed8" : fg,
+          fontSize: 10,
+          fontWeight: 700,
+          cursor: inMonth ? "pointer" : "default",
+          opacity: inMonth ? 1 : 0.35,
+        }}
+      >
+        {day.getDate()}
+      </button>
+    );
   };
 
   const openDay = (day: Date) => {
@@ -935,7 +1006,9 @@ export default function CalendarTab({
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        startMovePick(ev);
+                        setSelected(ev);
+                        setMoveTargetDay(selectedDay!);
+                        openMovePicker(ev);
                       }}
                       className="text-[10px] px-2 py-1 rounded border border-blue-200 bg-blue-50 text-blue-700 font-semibold touch-manipulation min-h-[32px]"
                     >
@@ -1019,7 +1092,7 @@ export default function CalendarTab({
                 {!moveOpen ? (
                   <button
                     type="button"
-                    onClick={() => { startMovePick(selected); setMoveOpen(false); }}
+                    onClick={() => openMovePicker(selected)}
                     className="w-full min-h-[44px] py-2 rounded-lg border-2 border-blue-600 text-blue-600 text-sm font-semibold touch-manipulation flex items-center justify-center gap-2"
                   >
                     <Clock className="w-4 h-4" /> {labels.moveJob}
@@ -1027,45 +1100,85 @@ export default function CalendarTab({
                 ) : (
                   <div className="border border-stone-200 rounded-lg p-3 bg-stone-50">
                     <p className="text-xs font-semibold text-stone-600 mb-2">{labels.pickTime}</p>
-                    <div style={{ ...calGridStyle, marginBottom: 8 }}>
-                      {weekDays.map((d) => {
-                        const bg = dayCellColor(eventsForDay(d));
-                        const evs = eventsForDay(d);
-                        return (
-                          <button
-                            key={d.toISOString()}
-                            type="button"
-                            onClick={() => setMoveTargetDay(d)}
-                            style={{
-                              width: CAL_CELL,
-                              height: CAL_CELL,
-                              borderRadius: 4,
-                              border: isSameDay(d, moveTargetDay) ? "2px solid #2563eb" : "1px solid #e7e5e4",
-                              background: evs.length ? bg : EMPTY_DAY_BG,
-                              color: textOnBg(evs.length ? bg : EMPTY_DAY_BG),
-                              fontSize: 10,
-                              fontWeight: 700,
-                              cursor: "pointer",
-                              padding: 0,
-                            }}
-                          >
-                            {d.getDate()}
-                          </button>
-                        );
-                      })}
+                    <div className="flex items-center justify-between gap-1 mb-2">
+                      <button
+                        type="button"
+                        onClick={() => setMovePickerMonth((m) => addMonths(m, -12))}
+                        className="min-h-[36px] px-1.5 text-[10px] font-bold rounded border border-stone-200 bg-white touch-manipulation"
+                        title={labels.year}
+                      >
+                        ««
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setMovePickerMonth((m) => addMonths(m, -1))}
+                        className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded border border-stone-200 bg-white touch-manipulation"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="text-xs font-bold text-stone-700 text-center flex-1 min-w-0 truncate">
+                        {formatMonthYear(movePickerMonth, locale)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setMovePickerMonth((m) => addMonths(m, 1))}
+                        className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded border border-stone-200 bg-white touch-manipulation"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setMovePickerMonth((m) => addMonths(m, 12))}
+                        className="min-h-[36px] px-1.5 text-[10px] font-bold rounded border border-stone-200 bg-white touch-manipulation"
+                        title={labels.year}
+                      >
+                        »»
+                      </button>
                     </div>
+                    <div style={{ ...calGridStyle, marginBottom: 4 }}>
+                      {WEEKDAYS_SHORT.map((wd) => (
+                        <div
+                          key={wd}
+                          style={{
+                            width: CAL_CELL,
+                            textAlign: "center",
+                            fontSize: 8,
+                            fontWeight: 600,
+                            color: "#a8a29e",
+                            lineHeight: `${CAL_CELL}px`,
+                          }}
+                        >
+                          {wd.charAt(0)}
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ ...calGridStyle, marginBottom: 8 }}>
+                      {getMonthGrid(movePickerMonth.getFullYear(), movePickerMonth.getMonth()).map((day) => (
+                        <MovePickerMonthCell key={day.toISOString()} day={day} />
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-stone-500 mb-2 text-center">
+                      {formatDayHeader(moveTargetDay, locale)}
+                    </p>
                     <div className="grid grid-cols-3 gap-1.5 max-h-[180px] overflow-y-auto">
                       {TIME_SLOTS.map((slot, slotIdx) => (
                         <button
                           key={slot}
                           type="button"
-                          onClick={() => { void reschedule(selected.id, isoFromDaySlot(moveTargetDay, slotIdx)); }}
+                          onClick={() => { void reschedule(selected.id, isoFromDaySlot(moveTargetDay, slotIdx)); setMoveOpen(false); }}
                           className="min-h-[40px] text-[10px] font-semibold rounded bg-white border border-stone-200 active:bg-blue-50 touch-manipulation"
                         >
                           {slot}
                         </button>
                       ))}
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => setMoveOpen(false)}
+                      className="mt-2 w-full min-h-[36px] text-xs text-stone-500 touch-manipulation"
+                    >
+                      {labels.movePickCancel}
+                    </button>
                   </div>
                 )}
               </div>
