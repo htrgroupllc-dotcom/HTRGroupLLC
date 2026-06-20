@@ -819,7 +819,7 @@ function EmployeePage() {
       if (r.status === 401) { logout(); return { ok: false, text: "Session expired — please sign in again" }; }
       const d = await r.json() as { ok?: boolean; error?: string };
       if (!r.ok) throw new Error(d.error ?? "Error");
-      return { ok: true, text: "📞 Ваш телефон скоро зазвонит с номера (606). Ответьте — система соединит с клиентом." };
+      return { ok: true, text: "📞 Звонок с (606) на ваш номер. Ответьте — клиент подключится автоматически. Вы говорите по-русски, клиент слышит на его языке (EN/ES)." };
     } catch (err) {
       return { ok: false, text: err instanceof Error ? err.message : "Ошибка звонка" };
     } finally {
