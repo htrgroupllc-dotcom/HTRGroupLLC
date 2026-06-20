@@ -29,6 +29,19 @@ import {
 } from "@/lib/calendarUtils";
 
 const ACCENT = "#1B6FE8";
+/** Fixed pixel layout — prod CSS bundle lacks grid-cols-7 / gap-0.5 */
+const CAL_CELL = 32;
+const CAL_GAP = 2;
+const CAL_GRID_W = 7 * CAL_CELL + 6 * CAL_GAP;
+
+const calGridStyle: React.CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: `repeat(7, ${CAL_CELL}px)`,
+  gap: CAL_GAP,
+  width: CAL_GRID_W,
+  maxWidth: "100%",
+  margin: "0 auto",
+};
 
 export interface CalendarEvent {
   id: string;
@@ -270,24 +283,41 @@ export default function CalendarTab({
         type="button"
         onClick={() => inMonth && openDay(day)}
         disabled={!inMonth}
-        className={`
-          relative aspect-square min-w-0 rounded-sm border text-center font-semibold touch-manipulation
-          transition active:scale-95 disabled:cursor-default
-          ${active ? "ring-2 ring-offset-1 ring-blue-600 z-[1]" : "border-black/5"}
-          ${todayMark && !active ? "ring-1 ring-blue-400" : ""}
-        `}
+        title={count > 0 ? `${day.getDate()}: ${count} job(s)` : String(day.getDate())}
         style={{
+          width: CAL_CELL,
+          height: CAL_CELL,
+          padding: 0,
+          margin: 0,
+          border: active ? "2px solid #2563eb" : todayMark ? "1px solid #60a5fa" : "1px solid rgba(0,0,0,0.06)",
+          borderRadius: 4,
           background: inMonth ? bg : "#fafaf9",
           color: fg,
-          fontSize: count > 0 && inMonth ? "10px" : "11px",
+          fontSize: 11,
+          fontWeight: 600,
+          lineHeight: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
+          cursor: inMonth ? "pointer" : "default",
+          opacity: inMonth ? 1 : 0.45,
+          boxSizing: "border-box",
+          touchAction: "manipulation",
         }}
-        title={count > 0 ? `${day.getDate()}: ${count} job(s)` : String(day.getDate())}
       >
-        <span className="leading-none">{day.getDate()}</span>
+        <span>{day.getDate()}</span>
         {count > 1 && inMonth && (
           <span
-            className="absolute bottom-0.5 right-0.5 text-[7px] font-bold leading-none opacity-90"
-            style={{ color: fg }}
+            style={{
+              position: "absolute",
+              bottom: 1,
+              right: 2,
+              fontSize: 7,
+              fontWeight: 700,
+              color: fg,
+              lineHeight: 1,
+            }}
           >
             {count}
           </span>
@@ -379,18 +409,28 @@ export default function CalendarTab({
         <div className="py-2 text-center text-stone-400 text-sm">{labels.loading}</div>
       )}
 
-      {/* MONTH — compact numbered cells */}
+      {/* MONTH — compact numbered cells (inline grid — no grid-cols-7 in prod CSS) */}
       {view === "month" && (
         <div className="px-2 pb-2">
-          <div className="bg-white border border-stone-200 rounded-lg p-1.5 md:p-2">
-            <div className="grid grid-cols-7 gap-0.5 mb-0.5">
+          <div className="bg-white border border-stone-200 rounded-lg py-2 px-1">
+            <div style={{ ...calGridStyle, marginBottom: CAL_GAP }}>
               {WEEKDAYS_SHORT.map((wd) => (
-                <div key={wd} className="text-center text-[9px] font-semibold text-stone-400 py-0.5">
+                <div
+                  key={wd}
+                  style={{
+                    width: CAL_CELL,
+                    textAlign: "center",
+                    fontSize: 9,
+                    fontWeight: 600,
+                    color: "#a8a29e",
+                    lineHeight: `${CAL_CELL}px`,
+                  }}
+                >
                   {wd.charAt(0)}
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-7 gap-0.5">
+            <div style={calGridStyle}>
               {getMonthGrid(anchor.getFullYear(), anchor.getMonth()).map((day) => (
                 <CompactDayCell key={day.toISOString()} day={day} />
               ))}
@@ -412,7 +452,14 @@ export default function CalendarTab({
                 className="bg-white border border-stone-200 rounded-lg p-1.5 text-left hover:border-blue-300 active:bg-stone-50 touch-manipulation"
               >
                 <div className="text-[10px] font-bold text-stone-700 mb-1">{name.slice(0, 3)}</div>
-                <div className="grid grid-cols-7 gap-px">
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: `repeat(7, 8px)`,
+                    gap: 1,
+                    width: 7 * 8 + 6,
+                  }}
+                >
                   {getMonthGrid(anchor.getFullYear(), mi).map((day) => {
                     const inMonth = day.getMonth() === mi;
                     const evs = inMonth ? eventsForDay(day) : [];
@@ -420,10 +467,12 @@ export default function CalendarTab({
                     return (
                       <div
                         key={day.toISOString()}
-                        className="aspect-square rounded-[2px]"
                         style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: 1,
                           background: inMonth && evs.length > 0 ? bg : inMonth ? EMPTY_DAY_BG : "transparent",
-                          opacity: inMonth ? 1 : 0.2,
+                          opacity: inMonth ? 1 : 0.15,
                         }}
                       />
                     );
@@ -542,18 +591,27 @@ export default function CalendarTab({
                 ) : (
                   <div className="border border-stone-200 rounded-lg p-3 bg-stone-50">
                     <p className="text-xs font-semibold text-stone-600 mb-2">{labels.pickTime}</p>
-                    <div className="grid grid-cols-7 gap-1 mb-2">
+                    <div style={{ ...calGridStyle, marginBottom: 8 }}>
                       {weekDays.map((d) => {
                         const bg = dayCellColor(eventsForDay(d));
+                        const evs = eventsForDay(d);
                         return (
                           <button
                             key={d.toISOString()}
                             type="button"
                             onClick={() => setMoveTargetDay(d)}
-                            className={`aspect-square rounded text-[9px] font-bold touch-manipulation flex flex-col items-center justify-center text-white ${
-                              isSameDay(d, moveTargetDay) ? "ring-2 ring-blue-600 ring-offset-1" : ""
-                            }`}
-                            style={{ background: eventsForDay(d).length ? bg : EMPTY_DAY_BG, color: textOnBg(eventsForDay(d).length ? bg : EMPTY_DAY_BG) }}
+                            style={{
+                              width: CAL_CELL,
+                              height: CAL_CELL,
+                              borderRadius: 4,
+                              border: isSameDay(d, moveTargetDay) ? "2px solid #2563eb" : "1px solid #e7e5e4",
+                              background: evs.length ? bg : EMPTY_DAY_BG,
+                              color: textOnBg(evs.length ? bg : EMPTY_DAY_BG),
+                              fontSize: 10,
+                              fontWeight: 700,
+                              cursor: "pointer",
+                              padding: 0,
+                            }}
                           >
                             {d.getDate()}
                           </button>
