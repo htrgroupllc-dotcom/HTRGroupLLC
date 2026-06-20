@@ -575,6 +575,7 @@ function AdminDashboard() {
   const [actionSlot,    setActionSlot]    = useState<string | null>(null);
   const [mobileTab,      setMobileTab]      = useState<"slots"|"bookings">("slots");
   const [showCompleted,  setShowCompleted]  = useState(false);
+  const [searchQuery,    setSearchQuery]    = useState("");
   const [bizFilter,      setBizFilter]      = useState<"all" | "appliance" | "dental">(ADMIN_SITE_CONFIG.defaultBizFilter);
 
   // Cancel client booking modal
