@@ -676,10 +676,16 @@ function EmployeePage() {
         method: "POST", headers: authH(),
       });
       if (r.status === 401) { logout(); return; }
-      if (r.ok) {
-        window.alert(tFn("reviewSent"));
+      const d = await r.json().catch(() => ({})) as {
+        ok?: boolean; error?: string; sms?: boolean; email?: boolean; warning?: string;
+      };
+      if (r.ok && d.ok) {
+        const parts: string[] = [];
+        if (d.sms) parts.push("SMS");
+        if (d.email) parts.push("email");
+        window.alert(parts.length ? `${tFn("reviewSent")} (${parts.join(" + ")})` : tFn("reviewSent"));
+        if (d.warning) window.alert(d.warning);
       } else {
-        const d = await r.json().catch(() => ({})) as { error?: string };
         window.alert(d.error ?? `Error ${r.status}`);
       }
     } catch {
@@ -687,7 +693,7 @@ function EmployeePage() {
     } finally {
       setSendingReviewId(null);
     }
-  }, [token, authH, sendingReviewId]);
+  }, [token, authH, sendingReviewId, logout]);
 
   const loadPayroll = useCallback(async () => {
     if (!token) return;
@@ -3842,7 +3848,7 @@ function JobCard({
         )}
 
         {/* Send Review button — completed jobs with phone */}
-        {b.status === "completed" && b.phone && onSendReview && (
+        {b.status === "completed" && (b.phone || b.email) && onSendReview && (
           <div style={{ marginTop: 8 }}>
             <button
               type="button"

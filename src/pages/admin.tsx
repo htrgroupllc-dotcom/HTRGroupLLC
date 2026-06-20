@@ -380,28 +380,6 @@ function AdminDashboard() {
   const [adminEstimateHistory, setAdminEstimateHistory] = useState<Record<string, AdminEstimateRecord | null>>({});
   const [adminEstimateIsEdit, setAdminEstimateIsEdit] = useState(false);
 
-  const handleSendReview = useCallback(async (bookingId: string) => {
-    if (reviewLoading.has(bookingId)) return;
-    setReviewLoading(prev => new Set(prev).add(bookingId));
-    try {
-      const authToken = localStorage.getItem("adminAuthToken") ?? "";
-      const res = await fetch(`${API()}/api/admin/bookings/${bookingId}/send-review`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-admin-pin": authToken },
-      });
-      const d = await res.json().catch(() => ({})) as { ok?: boolean; error?: string };
-      if (d.ok) {
-        toast({ title: "✅ Ссылка на отзыв отправлена клиенту по SMS" });
-      } else {
-        toast({ title: `Ошибка: ${d.error ?? res.status}`, variant: "destructive" });
-      }
-    } catch {
-      toast({ title: "Ошибка сети", variant: "destructive" });
-    } finally {
-      setReviewLoading(prev => { const s = new Set(prev); s.delete(bookingId); return s; });
-    }
-  }, [reviewLoading, toast]);
-
   // Returns admin auth headers: Bearer token if biometric auth, PIN otherwise
   const adminAuthH = useCallback((extra?: Record<string, string>): Record<string, string> => {
     const base = extra ?? {};
@@ -418,6 +396,34 @@ function AdminDashboard() {
     if (bearer) return { ...base, Authorization: `Bearer ${bearer}` };
     return base;
   }, [pin, adminBearer]);
+
+  const handleSendReview = useCallback(async (bookingId: string) => {
+    if (reviewLoading.has(bookingId)) return;
+    setReviewLoading(prev => new Set(prev).add(bookingId));
+    try {
+      const res = await fetch(`${API()}/api/admin/bookings/${bookingId}/send-review`, {
+        method: "POST",
+        headers: adminAuthH({ "Content-Type": "application/json" }),
+      });
+      const d = await res.json().catch(() => ({})) as {
+        ok?: boolean; error?: string; sms?: boolean; email?: boolean; details?: string; warning?: string;
+      };
+      if (d.ok) {
+        const parts: string[] = [];
+        if (d.sms) parts.push("SMS");
+        if (d.email) parts.push("email");
+        const via = parts.length ? parts.join(" + ") : (d.details ?? "SMS + email");
+        toast({ title: `✅ Запрос отзыва отправлен (${via})` });
+        if (d.warning) toast({ title: d.warning, variant: "destructive" });
+      } else {
+        toast({ title: `Ошибка: ${d.error ?? res.status}`, variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Ошибка сети", variant: "destructive" });
+    } finally {
+      setReviewLoading(prev => { const s = new Set(prev); s.delete(bookingId); return s; });
+    }
+  }, [reviewLoading, toast, adminAuthH]);
 
   const loadAdminLastEstimate = useCallback(async (bookingId: string) => {
     try {
@@ -2807,11 +2813,11 @@ function AdminDashboard() {
                           </button>
                           )
                         )}
-                        {b.status === "completed" && b.phone && (
+                        {b.status === "completed" && (b.phone || b.email) && (
                           <button
                             onClick={() => void handleSendReview(b.id)}
                             disabled={reviewLoading.has(b.id)}
-                            title="Отправить ссылку на Google Review клиенту по SMS"
+                            title="Отправить запрос отзыва (SMS + email)"
                             className="ml-0.5 p-0.5 rounded hover:bg-yellow-50 transition-colors disabled:opacity-50"
                           >
                             <Star className="w-3.5 h-3.5" style={{ color: reviewLoading.has(b.id) ? "#aaa" : "#f59e0b" }} />
@@ -2979,6 +2985,15 @@ function AdminDashboard() {
                               onClick={() => resendPaymentLink(b.id)}
                               className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 transition border border-amber-200 disabled:opacity-50">
                               📧 {resendSentId === b.id ? t.resendPaymentSent : resendingId === b.id ? t.resendPaymentSending : t.resendPaymentBtn}
+                            </button>
+                          )}
+                          {b.status === "completed" && (b.phone || b.email) && (
+                            <button
+                              onClick={() => void handleSendReview(b.id)}
+                              disabled={reviewLoading.has(b.id)}
+                              className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-amber-50 text-amber-800 hover:bg-amber-100 transition border border-amber-200 disabled:opacity-50">
+                              <Star className="w-3.5 h-3.5" />
+                              {reviewLoading.has(b.id) ? "Отправка…" : "⭐ Запросить отзыв (SMS + email)"}
                             </button>
                           )}
                           {/* Download receipt for paid bookings */}
@@ -3313,11 +3328,11 @@ function AdminDashboard() {
                                   </button>
                                 )
                               )}
-                              {b.status === "completed" && b.phone && (
+                              {b.status === "completed" && (b.phone || b.email) && (
                                 <button
                                   onClick={() => void handleSendReview(b.id)}
                                   disabled={reviewLoading.has(b.id)}
-                                  title="Отправить ссылку на Google Review по SMS"
+                                  title="Отправить запрос отзыва (SMS + email)"
                                   className="p-0.5 rounded hover:bg-yellow-50 transition-colors disabled:opacity-50"
                                 >
                                   <Star className="w-3 h-3" style={{ color: reviewLoading.has(b.id) ? "#aaa" : "#f59e0b" }} />
