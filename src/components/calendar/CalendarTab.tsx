@@ -411,7 +411,11 @@ export default function CalendarTab({
 
   const dayDetailEvents = selectedDay ? eventsForDay(selectedDay) : [];
 
-  const toolbarStickyTop = mode === "employee" ? 0 : 56;
+  const toolbarStickyTop = mode === "employee" ? undefined : 56;
+  const toolbarClassName =
+    mode === "employee"
+      ? "relative z-0 bg-white border-b border-stone-200 px-2 md:px-3 py-2 flex flex-col gap-2 shadow-sm"
+      : "sticky z-10 bg-white border-b border-stone-200 px-2 md:px-3 py-2 flex flex-col gap-2 shadow-sm";
 
   return (
     <div
@@ -420,8 +424,8 @@ export default function CalendarTab({
     >
       {/* Toolbar */}
       <div
-        className="sticky z-10 bg-white border-b border-stone-200 px-2 md:px-3 py-2 flex flex-col gap-2 shadow-sm"
-        style={{ top: toolbarStickyTop }}
+        className={toolbarClassName}
+        style={toolbarStickyTop != null ? { top: toolbarStickyTop } : undefined}
       >
         <div className="flex flex-wrap items-center gap-2">
           <CalendarDays className="w-5 h-5 text-blue-600 shrink-0 hidden sm:block" />

@@ -1,6 +1,8 @@
 import { useState, useRef, useCallback } from "react";
 
-const API = (import.meta.env.VITE_API_BASE as string | undefined) ?? "";
+const DEFAULT_API_BASE = "https://htr-group-llc-appliance-repair.replit.app";
+const API =
+  ((import.meta.env.VITE_API_BASE as string | undefined) ?? "").replace(/\/$/, "") || DEFAULT_API_BASE;
 
 // Pattern: 2 clicks → pause ≥ 900ms (up to 5s) → 3 clicks
 // 5 rapid equal-interval clicks must NOT trigger the modal
@@ -93,7 +95,7 @@ export default function AdminSecretAccess({ label }: { label: string }) {
         return;
       }
       sessionStorage.setItem("adminPin", pin);
-      window.location.href = "/admin";
+      window.location.href = "/admin/";
     } catch {
       setError("Ошибка соединения");
       setLoading(false);

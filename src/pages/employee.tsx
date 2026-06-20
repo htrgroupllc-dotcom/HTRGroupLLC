@@ -1692,8 +1692,10 @@ function EmployeePage() {
           margin: "0 auto",
           position: "relative",
           zIndex: 1,
+          minHeight: 0,
         }}
       >
+      <div style={{ flexShrink: 0, position: "relative", zIndex: 20, background: "#fff" }}>
       {/* Developer credit */}
       <div style={{
         background: "#0f172a",
@@ -1808,11 +1810,14 @@ function EmployeePage() {
           </button>
         ))}
       </div>
+      </div>
 
       {/* Content */}
       <div style={{
         flex: 1,
+        minHeight: 0,
         overflowY: "auto",
+        WebkitOverflowScrolling: "touch",
         padding: tab === "calendar" ? 0 : 12,
         paddingBottom: 32,
       }}>

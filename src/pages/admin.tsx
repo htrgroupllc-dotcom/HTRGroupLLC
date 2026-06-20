@@ -25,7 +25,9 @@ const TIME_SLOTS = ["9:00 AM","9:30 AM","10:00 AM","10:30 AM","11:00 AM","11:30 
 const MONTHS    = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const MONTHS_S  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-const API = () => (import.meta.env.VITE_API_BASE ?? "").replace(/\/$/, "");
+const DEFAULT_API_BASE = "https://htr-group-llc-appliance-repair.replit.app";
+const API = () =>
+  ((import.meta.env.VITE_API_BASE as string | undefined) ?? "").replace(/\/$/, "") || DEFAULT_API_BASE;
 
 /** Returns current date in Houston (CDT/CST). If after 17:00 → returns tomorrow. */
 function getInitialHoustonDate(): { month: number; day: number; year: number } {

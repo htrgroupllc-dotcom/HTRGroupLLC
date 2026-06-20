@@ -2,7 +2,7 @@
   "name": "HTR Group — Admin Panel",
   "short_name": "HTR Admin",
   "description": "Admin CRM panel for Hi-Tech Repair Group",
-  "start_url": "https://htrgrouptx.com/admin",
+  "start_url": "/admin/",
   "scope": "https://htrgrouptx.com/",
   "display": "standalone",
   "orientation": "portrait",
