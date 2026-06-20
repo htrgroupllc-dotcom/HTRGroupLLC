@@ -24,8 +24,8 @@ import {
   SLOT_END_HOUR,
   SLOT_STEP_MINS,
   DEFAULT_DURATION_MINS,
-  MONTHS_LONG,
-  WEEKDAYS_SHORT,
+  weekdayShortLabels,
+  monthShortName,
   getMonthGrid,
   isSameDay,
   isSameMonth,
@@ -193,6 +193,11 @@ export default function CalendarTab({
 
   const today = useMemo(() => houstonNow(), [anchor, view]);
   const weekAnchorStart = useMemo(() => startOfWeek(anchor), [anchor]);
+  const weekdayLabels = useMemo(() => weekdayShortLabels(locale), [locale]);
+  const yearMonthLabels = useMemo(
+    () => Array.from({ length: 12 }, (_, mi) => monthShortName(new Date(anchor.getFullYear(), mi, 1), locale)),
+    [anchor.getFullYear(), locale],
+  );
 
   const loadEmployees = useCallback(async () => {
     if (mode !== "admin") return;
@@ -722,7 +727,7 @@ export default function CalendarTab({
         <div className="px-2 pb-2">
           <div className="bg-white border border-stone-200 rounded-lg py-2 px-1">
             <div style={{ ...calGridStyle, marginBottom: CAL_GAP }}>
-              {WEEKDAYS_SHORT.map((wd) => (
+              {weekdayLabels.map((wd) => (
                 <div
                   key={wd}
                   style={{
@@ -766,7 +771,7 @@ export default function CalendarTab({
                   onClick={() => openDay(day)}
                   className="border-b border-r border-stone-100 bg-stone-50 px-1 py-2 text-center touch-manipulation min-h-[44px]"
                 >
-                  <div className="text-[10px] font-bold text-stone-600">{WEEKDAYS_SHORT[day.getDay()]}</div>
+                  <div className="text-[10px] font-bold text-stone-600">{weekdayLabels[day.getDay()]}</div>
                   <div className={`text-xs font-bold ${isToday(day, today) ? "text-blue-600" : "text-stone-800"}`}>
                     {day.getDate()}
                   </div>
@@ -870,7 +875,7 @@ export default function CalendarTab({
       {/* YEAR — 12 mini month grids */}
       {view === "year" && (
         <div className="flex-1 overflow-auto px-2 pb-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-          {MONTHS_LONG.map((name, mi) => {
+          {yearMonthLabels.map((name, mi) => {
             const monthDate = new Date(anchor.getFullYear(), mi, 1);
             return (
               <button
@@ -1136,7 +1141,7 @@ export default function CalendarTab({
                       </button>
                     </div>
                     <div style={{ ...calGridStyle, marginBottom: 4 }}>
-                      {WEEKDAYS_SHORT.map((wd) => (
+                      {weekdayLabels.map((wd) => (
                         <div
                           key={wd}
                           style={{

@@ -10,6 +10,51 @@ const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "S
 const MONTHS_LONG = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const WEEKDAYS_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+const MONTH_NAMES_BY_LANG: Record<string, string[]> = {
+  az: ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avqust", "sentyabr", "oktyabr", "noyabr", "dekabr"],
+  tr: ["ocak", "şubat", "mart", "nisan", "mayıs", "haziran", "temmuz", "ağustos", "eylül", "ekim", "kasım", "aralık"],
+  uk: ["січень", "лютий", "березень", "квітень", "травень", "червень", "липень", "серпень", "вересень", "жовтень", "листопад", "грудень"],
+  ru: ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"],
+};
+
+function localeRoot(locale: string): string {
+  return locale.split("-")[0]?.toLowerCase() ?? "en";
+}
+
+function isBadMonthToken(s: string): boolean {
+  const t = s.trim();
+  return /^M?\d{1,2}$/i.test(t);
+}
+
+export function monthLongName(d: Date, locale = "en-US"): string {
+  const mi = d.getMonth();
+  const table = MONTH_NAMES_BY_LANG[localeRoot(locale)];
+  if (table?.[mi]) return table[mi];
+  try {
+    const name = new Intl.DateTimeFormat(locale, { month: "long", timeZone: CALENDAR_TZ }).format(d);
+    if (!isBadMonthToken(name)) return name;
+  } catch { /* fall through */ }
+  return MONTHS_LONG[mi] ?? "";
+}
+
+export function monthShortName(d: Date, locale = "en-US"): string {
+  const long = monthLongName(d, locale);
+  if (long.length <= 4) return long;
+  return long.slice(0, 3);
+}
+
+export function weekdayShortLabels(locale = "en-US"): string[] {
+  const ws = startOfWeek(houstonNow());
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = addDays(ws, i);
+    try {
+      return new Intl.DateTimeFormat(locale, { weekday: "short", timeZone: CALENDAR_TZ }).format(d);
+    } catch {
+      return WEEKDAYS_SHORT[i] ?? "?";
+    }
+  });
+}
+
 export function houstonNow(): Date {
   return new Date(new Date().toLocaleString("en-US", { timeZone: CALENDAR_TZ }));
 }
@@ -51,25 +96,35 @@ export function startOfYear(d: Date): Date {
 }
 
 export function formatMonthYear(d: Date, locale = "en-US"): string {
-  return d.toLocaleDateString(locale, { month: "long", year: "numeric", timeZone: CALENDAR_TZ });
+  const year = new Intl.DateTimeFormat(locale, { year: "numeric", timeZone: CALENDAR_TZ }).format(d);
+  return `${monthLongName(d, locale)} ${year}`;
 }
 
 export function formatYear(d: Date): string {
   return String(d.getFullYear());
 }
 
+function formatWeekDayPart(d: Date, locale: string, withYear: boolean): string {
+  const day = new Intl.DateTimeFormat(locale, { day: "numeric", timeZone: CALENDAR_TZ }).format(d);
+  const month = monthShortName(d, locale);
+  if (withYear) {
+    const year = new Intl.DateTimeFormat(locale, { year: "numeric", timeZone: CALENDAR_TZ }).format(d);
+    return `${day} ${month} ${year}`;
+  }
+  return `${day} ${month}`;
+}
+
 export function formatWeekRange(weekStart: Date, locale = "en-US"): string {
   const end = addDays(weekStart, 6);
-  const opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric", timeZone: CALENDAR_TZ };
-  const yOpts: Intl.DateTimeFormatOptions = { year: "numeric", timeZone: CALENDAR_TZ };
-  const s = weekStart.toLocaleDateString(locale, opts);
-  const e = end.toLocaleDateString(locale, { ...opts, year: weekStart.getFullYear() !== end.getFullYear() ? "numeric" : undefined });
-  const y = weekStart.toLocaleDateString(locale, yOpts);
-  return `${s} – ${e}, ${y}`;
+  const crossYear = weekStart.getFullYear() !== end.getFullYear();
+  const y = new Intl.DateTimeFormat(locale, { year: "numeric", timeZone: CALENDAR_TZ }).format(weekStart);
+  return `${formatWeekDayPart(weekStart, locale, crossYear)} – ${formatWeekDayPart(end, locale, true)}, ${y}`;
 }
 
 export function formatDayHeader(d: Date, locale = "en-US"): string {
-  return d.toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric", timeZone: CALENDAR_TZ });
+  const day = new Intl.DateTimeFormat(locale, { day: "numeric", timeZone: CALENDAR_TZ }).format(d);
+  const wd = new Intl.DateTimeFormat(locale, { weekday: "short", timeZone: CALENDAR_TZ }).format(d);
+  return `${day} ${monthLongName(d, locale)}, ${wd}`;
 }
 
 export function formatTime(iso: string, locale = "en-US"): string {
