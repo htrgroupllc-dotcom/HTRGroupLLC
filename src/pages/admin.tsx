@@ -16,6 +16,7 @@ import TrashTab from "@/components/crm/TrashTab";
 import PricebookTab from "@/components/crm/PricebookTab";
 import GalleryPhotoManager from "@/components/GalleryPhotoManager";
 import VisitFeeSettings from "@/components/admin/VisitFeeSettings";
+import CalendarTab from "@/components/calendar/CalendarTab";
 import { ADMIN_SITE_CONFIG, resolveBookingBiz } from "@/lib/adminSiteConfig";
 
 const ACCENT = ADMIN_SITE_CONFIG.accent;
@@ -292,7 +293,7 @@ function AdminDashboard() {
   const [fidLabel, setFidLabel]   = useState<string | null>(null);
 
   // CRM: top-level tab navigation
-  const [adminTab, setAdminTab]   = useState<"bookings"|"jobsArchive"|"employees"|"archive"|"blacklist"|"payroll"|"reports"|"settings"|"trash"|"pricebook"|"photos">("bookings");
+  const [adminTab, setAdminTab]   = useState<"bookings"|"calendar"|"jobsArchive"|"employees"|"archive"|"blacklist"|"payroll"|"reports"|"settings"|"trash"|"pricebook"|"photos">("bookings");
   const [trashCount, setTrashCount] = useState<number>(0);
   // CRM: active employees list for assignment dropdown
   const [employees, setEmployees] = useState<EmployeeLight[]>([]);
@@ -2238,6 +2239,7 @@ function AdminDashboard() {
         <div className="flex min-w-max">
           {([
             { key: "bookings",   icon: <Calendar className="w-3.5 h-3.5" />,  label: t.tabBookings   },
+            { key: "calendar",   icon: <CalendarDays className="w-3.5 h-3.5" />, label: t.tabCalendar },
             { key: "jobsArchive", icon: <Archive className="w-3.5 h-3.5" />, label: t.tabJobsArchive, count: historyBookings.length || undefined },
             { key: "employees",  icon: <Users className="w-3.5 h-3.5" />,     label: t.tabEmployees  },
             { key: "archive",    icon: <ArchiveRestore className="w-3.5 h-3.5" />, label: t.tabArchive },
@@ -2248,7 +2250,7 @@ function AdminDashboard() {
             { key: "photos", icon: <Camera className="w-3.5 h-3.5" />, label: t.tabPhotos ?? "Фото" },
             { key: "settings",   icon: <Settings className="w-3.5 h-3.5" />,  label: t.tabSettings   },
             { key: "trash",      icon: <Trash2 className="w-3.5 h-3.5" />,    label: t.tabTrash, count: trashCount },
-          ] as { key: "bookings"|"jobsArchive"|"employees"|"archive"|"blacklist"|"payroll"|"reports"|"settings"|"trash"|"pricebook"|"photos"; icon: React.ReactNode; label: string; count?: number }[]).map(({ key, icon, label, count }) => (
+          ] as { key: "bookings"|"calendar"|"jobsArchive"|"employees"|"archive"|"blacklist"|"payroll"|"reports"|"settings"|"trash"|"pricebook"|"photos"; icon: React.ReactNode; label: string; count?: number }[]).map(({ key, icon, label, count }) => (
             <button
               key={key}
               onClick={() => setAdminTab(key)}
@@ -2284,6 +2286,51 @@ function AdminDashboard() {
 
       {/* ── Non-bookings CRM tabs ── */}
       {adminTab === "employees" && <EmployeesTab apiBase={API()} adminAuthH={adminAuthH} />}
+      {adminTab === "calendar" && (
+        <CalendarTab
+          apiBase={API()}
+          authHeaders={adminAuthH}
+          mode="admin"
+          locale={lang === "ru" ? "ru-RU" : "en-US"}
+          labels={{
+            title: t.calTitle,
+            week: t.calWeek,
+            month: t.calMonth,
+            year: t.calYear,
+            today: t.calToday,
+            refresh: t.refresh,
+            allEmployees: t.calAllEmployees,
+            noEvents: t.calNoEvents,
+            loading: t.calLoading,
+            dragHint: t.calDragHint,
+            serialNumber: t.calSerial,
+            technician: t.calTechnician,
+            statusCompleted: t.statusCompleted,
+            statusApproved: t.statusApproved,
+            statusPending: t.statusPending,
+            overdue: t.calOverdue,
+            rescheduleOk: t.calRescheduleOk,
+            rescheduleErr: t.calRescheduleErr,
+            bizAll: t.calBizAll,
+            bizAppliance: t.calBizAppliance,
+            bizDental: t.calBizDental,
+            tapHint: t.calTapHint,
+            moveJob: t.calMoveJob,
+            pickTime: t.calPickTime,
+            openCrm: t.calOpenCrm,
+          }}
+          onOpenBooking={(id) => {
+            const b = allBookings.find(x => x.id === id);
+            const closed = !!b && (b.status === "completed" || b.status === "cancelled");
+            setAdminTab(closed ? "jobsArchive" : "bookings");
+            setSearchQuery(id);
+            setHighlightBookingId(id);
+            setShowCompleted(false);
+            setEmpFilter("");
+            setMobileTab("bookings");
+          }}
+        />
+      )}
       {adminTab === "archive"   && <ArchiveTab   apiBase={API()} adminAuthH={adminAuthH} />}
       {adminTab === "blacklist" && <BlacklistTab  apiBase={API()} adminAuthH={adminAuthH} />}
       {adminTab === "payroll"   && <PayrollTab    apiBase={API()} adminAuthH={adminAuthH} />}

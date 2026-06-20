@@ -10,6 +10,7 @@ import {
 import { downloadBinaryPdf, downloadReceiptPdf, openHtmlDocument } from "@/lib/downloadReceipt";
 import { EmpLangProvider, useEmpLang, EmpLang } from "@/context/EmpLangContext";
 import { resolveBookingBiz } from "@/lib/adminSiteConfig";
+import CalendarTab from "@/components/calendar/CalendarTab";
 import {
   startRegistration,
   startAuthentication,
@@ -145,7 +146,7 @@ interface EmployeeProfile {
   car_model?: string;
 }
 
-type Tab = "jobs" | "stats" | "payroll" | "profile";
+type Tab = "jobs" | "calendar" | "stats" | "payroll" | "profile";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 function statusLabel(s: string, t: (k: string) => string): string {
@@ -1766,7 +1767,7 @@ function EmployeePage() {
         background: "#fff",
         borderBottom: "1px solid #f1f5f9",
       }}>
-        {(["jobs", "stats", "payroll", "profile"] as Tab[]).map(tb => (
+        {(["jobs", "calendar", "stats", "payroll", "profile"] as Tab[]).map(tb => (
           <button
             key={tb}
             onClick={() => setTab(tb)}
@@ -1780,6 +1781,7 @@ function EmployeePage() {
             }}
           >
             {tb === "jobs" ? t("myJobs")
+              : tb === "calendar" ? t("calendarTab")
               : tb === "stats" ? t("statsTab")
               : tb === "payroll" ? t("payroll")
               : t("profile")}
@@ -2038,6 +2040,43 @@ function EmployeePage() {
               </>
             )}
           </div>
+        )}
+
+        {/* ── CALENDAR TAB ── */}
+        {tab === "calendar" && token && (
+          <CalendarTab
+            apiBase={API()}
+            authHeaders={() => ({ Authorization: `Bearer ${token}` })}
+            mode="employee"
+            locale={lang === "ru" ? "ru-RU" : lang === "es" ? "es-ES" : "en-US"}
+            labels={{
+              title: t("calTitle"),
+              week: t("calWeek"),
+              month: t("calMonth"),
+              year: t("calYear"),
+              today: t("calToday"),
+              refresh: t("refresh"),
+              allEmployees: t("calAllEmployees"),
+              noEvents: t("calNoEvents"),
+              loading: t("calLoading"),
+              dragHint: t("calDragHint"),
+              serialNumber: t("calSerial"),
+              technician: t("calTechnician"),
+              statusCompleted: t("calStatusCompleted"),
+              statusApproved: t("calStatusApproved"),
+              statusPending: t("calStatusPending"),
+              overdue: t("calOverdue"),
+              rescheduleOk: t("calRescheduleOk"),
+              rescheduleErr: t("calRescheduleErr"),
+              bizAll: t("calBizAll"),
+              bizAppliance: t("calBizAppliance"),
+              bizDental: t("calBizDental"),
+              tapHint: t("calTapHint"),
+              moveJob: t("calMoveJob"),
+              pickTime: t("calPickTime"),
+              openCrm: t("calOpenCrm"),
+            }}
+          />
         )}
 
         {/* ── STATS TAB ── */}
