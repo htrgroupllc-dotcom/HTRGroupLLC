@@ -2373,6 +2373,7 @@ function AdminDashboard() {
             openCrm: t.calOpenCrm,
             movePickActive: t.calMovePickActive,
             movePickCancel: t.calMovePickCancel,
+            moveNotAllowed: t.calMoveNotAllowed,
             newBooking: t.calNewBooking,
             editBooking: t.calEditBooking,
             bookingForm: {

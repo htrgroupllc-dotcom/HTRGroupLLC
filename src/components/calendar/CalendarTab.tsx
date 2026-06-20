@@ -104,6 +104,7 @@ interface Labels {
   openCrm: string;
   movePickActive: string;
   movePickCancel: string;
+  moveNotAllowed: string;
   newBooking: string;
   editBooking: string;
   bookingForm: CalendarBookingFormLabels;
@@ -305,10 +306,17 @@ export default function CalendarTab({
   };
 
   const startMovePick = (ev: CalendarEvent) => {
-    if (!canReschedule(ev)) return;
+    if (!canReschedule(ev)) {
+      showToast(labels.moveNotAllowed);
+      return;
+    }
+    setSelected(null);
+    setMoveOpen(false);
+    setBookingFormOpen(false);
     const slot = slotForEvent(ev);
     movePayloadRef.current = { id: ev.id, slotIdx: slot };
     setMovePickId(ev.id);
+    showToast(labels.movePickActive);
   };
 
   const completeMoveDay = (targetDay: Date, slotIdx?: number) => {
@@ -620,8 +628,8 @@ export default function CalendarTab({
 
       {isMoveMode && (
         <div
-          className="mx-2 mb-2 flex items-center justify-between gap-2 rounded-lg bg-blue-600 text-white px-3 py-2.5 text-xs font-semibold shadow-md"
-          style={{ zIndex: 20 }}
+          className="sticky top-0 mx-2 mb-2 flex items-center justify-between gap-2 rounded-lg bg-blue-600 text-white px-3 py-2.5 text-xs font-semibold shadow-md"
+          style={{ zIndex: 60 }}
         >
           <span className="flex-1">{labels.movePickActive}</span>
           <button
@@ -953,8 +961,8 @@ export default function CalendarTab({
         </div>
       )}
 
-      {/* Job detail drawer */}
-      {selected && (
+      {/* Job detail drawer — hidden during move-pick so calendar stays clickable */}
+      {selected && !isMoveMode && (
         <div
           className="fixed inset-0 z-50 flex items-end md:items-stretch md:justify-end bg-black/40"
           onClick={() => { setSelected(null); setMoveOpen(false); }}
@@ -989,6 +997,12 @@ export default function CalendarTab({
                 {bizBadge(selected)}
               </p>
             </div>
+
+            {!canReschedule(selected) && (
+              <p className="mt-3 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5">
+                {labels.moveNotAllowed}
+              </p>
+            )}
 
             {canReschedule(selected) && (
               <button
