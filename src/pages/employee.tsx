@@ -11,6 +11,7 @@ import { downloadBinaryPdf, downloadReceiptPdf, openHtmlDocument } from "@/lib/d
 import { EmpLangProvider, useEmpLang, EmpLang } from "@/context/EmpLangContext";
 import { resolveBookingBiz } from "@/lib/adminSiteConfig";
 import ReviewRequestButtons, { reviewLoadingKey, type ReviewChannel } from "@/components/ReviewRequestButtons";
+import CalendarTab from "@/components/calendar/CalendarTab";
 import {
   startRegistration,
   startAuthentication,
