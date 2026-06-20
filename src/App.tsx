@@ -74,7 +74,7 @@ const WA_HREF_ES = "https://wa.me/15559554342?text=%C2%A1Hola%21%20Necesito%20ay
 
 function GlobalUI() {
   const [location] = useLocation();
-  const isAdmin   = location === "/admin";
+  const isAdmin   = location === "/admin" || location.startsWith("/admin/");
   const isGallery = location === "/gallery";
   const isEmployee = location === "/employee";
   const isPay = location === "/pay" || location === "/payment-success";
