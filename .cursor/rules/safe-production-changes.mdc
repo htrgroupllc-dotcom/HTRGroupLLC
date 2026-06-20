@@ -25,6 +25,12 @@ Live sites: **htrgrouptx.com** / **appfixpro.com** (appliance), **dentequmentfix
 - Deploying bundle that references assets not present in `assets/`.
 - Changing Vite `assetFileNames` / base URL without full asset sync test on production URL.
 
+## Text encoding (home.tsx TR strings)
+
+1. Keep `src/pages/home.tsx` saved as **UTF-8**; never double-encode smart quotes, em dashes, or emoji.
+2. Promo bar and other user-visible strings: prefer plain ASCII quotes and hyphens (`"`, `-`) unless verified in browser after deploy.
+3. If text shows `â€`, `Ã³`, or similar mojibake — fix source string, rebuild bundle, bump `?v=`.
+
 ## After deploy
 
 Verify on **old and new** domain: homepage, service card images, booking form, `/admin` login.

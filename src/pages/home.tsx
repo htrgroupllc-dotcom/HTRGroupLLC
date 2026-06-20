@@ -465,7 +465,7 @@ const TR = {
   en: {
     nav:       ["Home", "Services", "About Us", "Reviews", "FAQ", "Contact"],
     bookNow:   "Book Now",
-    promoBar:  "â­ Returning customers save $50 on any repair â€” mention this offer when booking!",
+    promoBar:  "Returning customers save $50 on any repair - mention this offer when booking!",
     ourSvcs:   "Our Services",
     trust:     ["Same-Day Service", "Licensed & Insured", "90-Day Warranty"],
     heroH1:    ["Your Local", "Appliance Repair"],
@@ -546,7 +546,7 @@ const TR = {
   es: {
     nav:       ["Inicio", "Servicios", "Nosotros", "ReseÃ±as", "FAQ", "Contacto"],
     bookNow:   "Reservar",
-    promoBar:  "â­ Clientes frecuentes ahorran $50 en cualquier reparaciÃ³n â€” Â¡mencione esta oferta al reservar!",
+    promoBar:  "Clientes frecuentes ahorran $50 en cualquier reparacion - mencione esta oferta al reservar!",
     ourSvcs:   "Nuestros Servicios",
     trust:     ["Servicio el Mismo DÃ­a", "Licenciados y Asegurados", "GarantÃ­a 90 DÃ­as"],
     heroH1:    ["ReparaciÃ³n de", "ElectrodomÃ©sticos"],
