@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { DollarSign, RefreshCw, Save } from "lucide-react";
+import { APPLIANCE_PRIMARY_DOMAIN, DENTAL_PRIMARY_DOMAIN } from "../../lib/siteDomains";
 
 type VisitFeeSite = "appliance" | "dental";
 
 const SITE_META: Record<VisitFeeSite, { label: string; website: string; accent: string }> = {
   appliance: {
     label: "Appliance",
-    website: "appfixpro.com",
+    website: APPLIANCE_PRIMARY_DOMAIN,
     accent: "#1B6FE8",
   },
   dental: {
     label: "Dental",
-    website: "dentalfixpro.com",
+    website: DENTAL_PRIMARY_DOMAIN,
     accent: "#6B7280",
   },
 };

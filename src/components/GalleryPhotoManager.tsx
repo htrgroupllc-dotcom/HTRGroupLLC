@@ -1,13 +1,14 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Camera, X } from "lucide-react";
+import { APPLIANCE_PRIMARY_DOMAIN, DENTAL_PRIMARY_DOMAIN } from "../lib/siteDomains";
 
 const API = (import.meta.env.VITE_API_BASE as string | undefined ?? "https://htr-group-llc-appliance-repair.replit.app").replace(/\/$/, "");
 
 export type GalleryUploadSite = "appliance" | "dental";
 
 const SITE_META: Record<GalleryUploadSite, { label: string; website: string; accent: string }> = {
-  appliance: { label: "Appliance", website: "appfixpro.com", accent: "#1B6FE8" },
-  dental:    { label: "Dental", website: "dentalfixpro.com", accent: "#6B7280" },
+  appliance: { label: "Appliance", website: APPLIANCE_PRIMARY_DOMAIN, accent: "#1B6FE8" },
+  dental:    { label: "Dental", website: DENTAL_PRIMARY_DOMAIN, accent: "#6B7280" },
 };
 
 export interface DynamicPhoto {

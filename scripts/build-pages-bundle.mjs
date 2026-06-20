@@ -101,9 +101,35 @@ if (fs.existsSync(distAssetsDir)) {
   }
 }
 console.log(`Copied ${copiedAssets} static asset(s) from dist-build/assets`);
-console.log("CSS unchanged (reusing existing index-_bdQPowM.css)");
+
+/** Fail deploy if bundle references missing files (prevents broken service-card images). */
+function verifyBundleAssets(jsText, assetsDir) {
+  const refs = new Set();
+  const re = /\/assets\/((?:[^"'`\\]|\\u[0-9a-fA-F]{4})+\.(?:png|jpe?g|webp|gif|svg))/g;
+  let m;
+  while ((m = re.exec(jsText)) !== null) {
+    try {
+      refs.add(decodeURIComponent(m[1].replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) =>
+        String.fromCharCode(parseInt(hex, 16)),
+      )));
+    } catch {
+      refs.add(m[1]);
+    }
+  }
+  const missing = [...refs].filter((name) => !fs.existsSync(path.join(assetsDir, name)));
+  if (missing.length > 0) {
+    console.error("Build verification failed: bundle references missing assets:");
+    for (const name of missing.slice(0, 20)) console.error("  -", name);
+    if (missing.length > 20) console.error(`  ... and ${missing.length - 20} more`);
+    process.exit(1);
+  }
+  console.log(`OK: ${refs.size} bundle asset reference(s) present in assets/`);
+}
 
 const jsText = fs.readFileSync(outJs, "utf8");
+verifyBundleAssets(jsText, outAssetsDir);
+console.log("CSS unchanged (reusing existing index-_bdQPowM.css)");
+
 if (!jsText.includes("/api/calendar/events") && !jsText.includes("calendarTab")) {
   console.error("Build verification failed: calendar code not found in bundle");
   process.exit(1);

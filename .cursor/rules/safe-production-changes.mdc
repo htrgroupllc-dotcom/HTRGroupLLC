@@ -1,0 +1,30 @@
+---
+description: Safe production changes — never break live sites (deploy, domains, assets)
+alwaysApply: true
+---
+
+# Safe production changes (HTR sites)
+
+Live sites: **htrgrouptx.com** / **appfixpro.com** (appliance), **dentequmentfix.com** / **dentalfixpro.com** (dental).
+
+## Before any deploy
+
+1. Run `node scripts/build-pages-bundle.mjs` — it must pass asset verification (no missing `/assets/*` files).
+2. Commit **both** `assets/index-utf8-v4.js` **and** all PNG/JPG copied into `assets/` (never JS-only deploy).
+3. Do not bump HTML `?v=` without pushing matching static files.
+
+## Domain / brand changes
+
+1. Add new domain in code; **keep legacy domain** in `siteDomains.ts` / `businessType` until old DNS redirects 301 to new.
+2. DNS: add Cloudflare Pages custom domain **before** removing old records; never point A/CNAME to registrar parking IPs.
+3. Prefer env overrides (`PUBLIC_BASE_URL`, `WEBAUTHN_RP_ID`) over hard-breaking defaults.
+
+## Forbidden without explicit user approval
+
+- Removing legacy hostname detection while old domain still serves traffic.
+- Deploying bundle that references assets not present in `assets/`.
+- Changing Vite `assetFileNames` / base URL without full asset sync test on production URL.
+
+## After deploy
+
+Verify on **old and new** domain: homepage, service card images, booking form, `/admin` login.
