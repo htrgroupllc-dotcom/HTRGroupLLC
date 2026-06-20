@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Lock, Unlock, Calendar, RefreshCw, LogOut,
-  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ArchiveRestore, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck, ArrowLeftRight,
+  Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ArchiveRestore, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck, ArrowLeftRight, ChevronLeft,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLangProvider, useAdminLang } from "@/context/AdminLangContext";
@@ -552,6 +552,7 @@ function AdminDashboard() {
 
   // Highlight booking (navigated from Downloads report)
   const [highlightBookingId, setHighlightBookingId] = useState<string | null>(null);
+  const [bookingFromCalendar, setBookingFromCalendar] = useState(false);
 
   useEffect(() => {
     if (!highlightBookingId) return;
@@ -2322,6 +2323,7 @@ function AdminDashboard() {
           onOpenBooking={(id) => {
             const b = allBookings.find(x => x.id === id);
             const closed = !!b && (b.status === "completed" || b.status === "cancelled");
+            setBookingFromCalendar(true);
             setAdminTab(closed ? "jobsArchive" : "bookings");
             setSearchQuery(id);
             setHighlightBookingId(id);
@@ -2503,6 +2505,22 @@ function AdminDashboard() {
         {/* ═══ RIGHT PANEL / Заявки tab ═══ */}
         <div className={`overflow-y-auto p-4 ${adminTab === "jobsArchive" ? "block" : mobileTab !== "bookings" ? "hidden md:block" : "block"} flex-1`}>
         <div className="bg-white rounded-xl shadow-sm p-4 md:p-5">
+          {bookingFromCalendar && (adminTab === "bookings" || adminTab === "jobsArchive") && (
+            <button
+              type="button"
+              onClick={() => {
+                setAdminTab("calendar");
+                setSearchQuery("");
+                setHighlightBookingId(null);
+                setBookingFromCalendar(false);
+              }}
+              className="mb-3 w-full min-h-[44px] flex items-center justify-center gap-1.5 rounded-lg border-2 text-sm font-semibold touch-manipulation"
+              style={{ borderColor: ACCENT, color: ACCENT, background: "#eff6ff" }}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              {t.calBackToCalendar}
+            </button>
+          )}
           <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
             <h2 className="text-sm font-bold text-stone-600 flex items-center gap-1.5">
               <Wrench className="w-4 h-4" />

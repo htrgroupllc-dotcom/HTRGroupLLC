@@ -39,6 +39,7 @@ export const translations = {
     calMoveJob: "Перенести",
     calPickTime: "Выберите время",
     calOpenCrm: "Открыть в CRM",
+    calBackToCalendar: "Назад к календарю",
     // Mobile sub-tabs
     slotsTab: "📅 Слоты",
     // Statuses
@@ -595,6 +596,7 @@ export const translations = {
     calMoveJob: "Move",
     calPickTime: "Pick a time",
     calOpenCrm: "Open in CRM",
+    calBackToCalendar: "Back to calendar",
     // Mobile sub-tabs
     slotsTab: "📅 Slots",
     // Statuses

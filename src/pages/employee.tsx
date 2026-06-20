@@ -2,10 +2,10 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
   Wrench, LogOut, CheckCircle2, Phone, MapPin,
-  Package, DollarSign, ChevronRight, CalendarDays,
+  Package, DollarSign,   ChevronRight, CalendarDays,
   RefreshCw, X, Banknote, Navigation, Download, FileText, Plus, Minus,
   Archive, ArchiveRestore, TrendingUp, Search, Star, Mail, MessageSquare, Camera, Pencil,
-  PhoneOutgoing, Mic, MicOff, Languages,
+  PhoneOutgoing, Mic, MicOff, Languages, ChevronLeft,
 } from "lucide-react";
 import { downloadBinaryPdf, downloadReceiptPdf, openHtmlDocument } from "@/lib/downloadReceipt";
 import { EmpLangProvider, useEmpLang, EmpLang } from "@/context/EmpLangContext";
@@ -474,6 +474,7 @@ function EmployeePage() {
   const [jobsTab, setJobsTab]             = useState<"active" | "completed" | "archived">("active");
   const [jobSearch, setJobSearch]         = useState("");
   const [highlightJobId, setHighlightJobId] = useState<string | null>(null);
+  const [jobFromCalendar, setJobFromCalendar] = useState(false);
   const [sendingReviewId, setSendingReviewId] = useState<string | null>(null);
   const greenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -1620,6 +1621,13 @@ function EmployeePage() {
     );
   }
 
+  const returnToCalendarFromJob = () => {
+    setTab("calendar");
+    setJobSearch("");
+    setHighlightJobId(null);
+    setJobFromCalendar(false);
+  };
+
   // ── Main portal ─────────────────────────────────────────────────────────────
   const matchesSearch = (b: Booking, q: string): boolean => {
     if (!q.trim()) return true;
@@ -1807,6 +1815,24 @@ function EmployeePage() {
         {/* ── JOBS TAB ── */}
         {tab === "jobs" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+
+            {jobFromCalendar && (
+              <button
+                type="button"
+                onClick={returnToCalendarFromJob}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  minHeight: 44, padding: "0 12px",
+                  background: "#eff6ff", border: `1.5px solid ${ACCENT}`,
+                  borderRadius: 10, color: ACCENT,
+                  fontSize: 13, fontWeight: 700, cursor: "pointer",
+                  width: "100%", boxSizing: "border-box",
+                }}
+              >
+                <ChevronLeft style={{ width: 18, height: 18, flexShrink: 0 }} />
+                {t("calBackToCalendar")}
+              </button>
+            )}
 
             {/* Search bar */}
             <div style={{ position: "relative" }}>
@@ -2095,6 +2121,7 @@ function EmployeePage() {
                 else if (b.status === "completed") setJobsTab("completed");
                 else setJobsTab("active");
               }
+              setJobFromCalendar(true);
               setTab("jobs");
               setJobSearch(id);
               setHighlightJobId(id);
