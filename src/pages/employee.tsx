@@ -10,7 +10,7 @@ import {
 import { downloadBinaryPdf, downloadReceiptPdf, openHtmlDocument } from "@/lib/downloadReceipt";
 import { EmpLangProvider, useEmpLang, EmpLang } from "@/context/EmpLangContext";
 import { resolveBookingBiz } from "@/lib/adminSiteConfig";
-import CalendarTab from "@/components/calendar/CalendarTab";
+import ReviewRequestButtons, { reviewLoadingKey, type ReviewChannel } from "@/components/ReviewRequestButtons";
 import {
   startRegistration,
   startAuthentication,
@@ -475,7 +475,7 @@ function EmployeePage() {
   const [jobSearch, setJobSearch]         = useState("");
   const [highlightJobId, setHighlightJobId] = useState<string | null>(null);
   const [jobFromCalendar, setJobFromCalendar] = useState(false);
-  const [sendingReviewId, setSendingReviewId] = useState<string | null>(null);
+  const [reviewLoading, setReviewLoading] = useState<string | null>(null);
   const greenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -668,32 +668,30 @@ function EmployeePage() {
     }
   }, [token, authH]);
 
-  const sendReviewSms = useCallback(async (id: string, tFn: (k: string) => string) => {
-    if (!token || sendingReviewId) return;
-    setSendingReviewId(id);
+  const sendReview = useCallback(async (id: string, channel: ReviewChannel, tFn: (k: string) => string) => {
+    const key = reviewLoadingKey(id, channel);
+    if (!token || reviewLoading === key) return;
+    setReviewLoading(key);
     try {
       const r = await fetch(`${API()}/api/employee/bookings/${id}/send-review`, {
-        method: "POST", headers: authH(),
+        method: "POST",
+        headers: { ...authH(), "Content-Type": "application/json" },
+        body: JSON.stringify({ channel }),
       });
       if (r.status === 401) { logout(); return; }
-      const d = await r.json().catch(() => ({})) as {
-        ok?: boolean; error?: string; sms?: boolean; email?: boolean; warning?: string;
-      };
+      const d = await r.json().catch(() => ({})) as { ok?: boolean; error?: string; channel?: ReviewChannel };
       if (r.ok && d.ok) {
-        const parts: string[] = [];
-        if (d.sms) parts.push("SMS");
-        if (d.email) parts.push("email");
-        window.alert(parts.length ? `${tFn("reviewSent")} (${parts.join(" + ")})` : tFn("reviewSent"));
-        if (d.warning) window.alert(d.warning);
+        const via = channel === "sms" ? tFn("viaSMS") : channel === "email" ? tFn("viaEmail") : tFn("sendReviewWa");
+        window.alert(`${tFn("reviewSent")} (${via})`);
       } else {
         window.alert(d.error ?? `Error ${r.status}`);
       }
     } catch {
       window.alert("Network error");
     } finally {
-      setSendingReviewId(null);
+      setReviewLoading(null);
     }
-  }, [token, authH, sendingReviewId, logout]);
+  }, [token, authH, reviewLoading, logout]);
 
   const loadPayroll = useCallback(async () => {
     if (!token) return;
@@ -2024,8 +2022,8 @@ function EmployeePage() {
                     photoCount={(bookingPhotos[b.id] ?? []).length}
                     onDownloadReceipt={() => downloadReceipt(b)}
                     downloadingReceipt={downloadingReceiptId === b.id}
-                    onSendReview={() => void sendReviewSms(b.id, t)}
-                    sendingReview={sendingReviewId === b.id}
+                    reviewLoading={reviewLoading}
+                    onSendReview={(ch) => void sendReview(b.id, ch, t)}
                     onEmpCallback={b.phone ? (gender) => handleEmpCallback(b.phone!, b.id, b.name, b.client_lang ?? "en", gender) : undefined}
                     empCallLoading={empCallLoading.has(b.id)}
                     emailEditId={emailEditId}
@@ -2074,8 +2072,8 @@ function EmployeePage() {
                     photoCount={(bookingPhotos[b.id] ?? []).length}
                     onDownloadReceipt={() => downloadReceipt(b)}
                     downloadingReceipt={downloadingReceiptId === b.id}
-                    onSendReview={() => void sendReviewSms(b.id, t)}
-                    sendingReview={sendingReviewId === b.id}
+                    reviewLoading={reviewLoading}
+                    onSendReview={(ch) => void sendReview(b.id, ch, t)}
                     onEmpCallback={b.phone ? (gender) => handleEmpCallback(b.phone!, b.id, b.name, b.client_lang ?? "en", gender) : undefined}
                     empCallLoading={empCallLoading.has(b.id)}
                     emailEditId={emailEditId}
@@ -3432,7 +3430,7 @@ function JobCard({
   b, justClosed, isHighlighted, onClose, onEstimate, onEditEstimate, lastEstimate,
   onViewEstimate, onDownloadEstimate, downloadingEstimate,
   onArchive, onRestore, isArchived,
-  archiving, onPhotos, photoCount, onDownloadReceipt, downloadingReceipt, onSendReview, sendingReview,
+  archiving, onPhotos, photoCount, onDownloadReceipt, downloadingReceipt, onSendReview, reviewLoading,
   onEmpCallback, empCallLoading,
   emailEditId, emailEditVal, emailEditSaving, emailEditMsg,
   setEmailEditId, setEmailEditVal, setEmailEditMsg, saveClientEmail,
@@ -3457,8 +3455,8 @@ function JobCard({
   photoCount?: number;
   onDownloadReceipt: () => void;
   downloadingReceipt: boolean;
-  onSendReview?: () => void;
-  sendingReview?: boolean;
+  onSendReview?: (channel: ReviewChannel) => void;
+  reviewLoading?: string | null;
   onEmpCallback?: (gender: "male" | "female") => Promise<{ ok: boolean; text: string }>;
   empCallLoading?: boolean;
   emailEditId: string | null;
@@ -3847,26 +3845,22 @@ function JobCard({
           </div>
         )}
 
-        {/* Send Review button — completed jobs with phone */}
         {b.status === "completed" && (b.phone || b.email) && onSendReview && (
           <div style={{ marginTop: 8 }}>
-            <button
-              type="button"
-              onClick={onSendReview}
-              disabled={sendingReview}
-              style={{
-                width: "100%", minHeight: 40,
-                background: "#fffbeb", color: "#b45309",
-                border: "1.5px solid #fcd34d", borderRadius: 10,
-                fontSize: 13, fontWeight: 700,
-                cursor: sendingReview ? "wait" : "pointer",
-                opacity: sendingReview ? 0.6 : 1,
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+            <ReviewRequestButtons
+              phone={b.phone}
+              email={b.email}
+              bookingId={b.id}
+              loadingKey={reviewLoading ?? null}
+              onSend={onSendReview}
+              labels={{
+                sms: t("viaSMS"),
+                email: t("viaEmail"),
+                wa: t("sendReviewWa"),
+                sending: t("sendingReview"),
               }}
-            >
-              <Star style={{ width: 15, height: 15 }} />
-              {sendingReview ? t("sendingReview") : t("sendReview")}
-            </button>
+              layout="stack"
+            />
           </div>
         )}
 

@@ -12,7 +12,7 @@ import BlacklistTab from "@/components/crm/BlacklistTab";
 import PayrollTab from "@/components/crm/PayrollTab";
 import SettingsTab from "@/components/crm/SettingsTab";
 import ReportsTab from "@/components/crm/ReportsTab";
-import TrashTab from "@/components/crm/TrashTab";
+import ReviewRequestButtons, { reviewLoadingKey, type ReviewChannel } from "@/components/ReviewRequestButtons";
 import PricebookTab from "@/components/crm/PricebookTab";
 import GalleryPhotoManager from "@/components/GalleryPhotoManager";
 import VisitFeeSettings from "@/components/admin/VisitFeeSettings";
@@ -365,7 +365,7 @@ function AdminDashboard() {
     }
   }, [callbackLoading, toast]);
 
-  const [reviewLoading, setReviewLoading] = useState<Set<string>>(new Set());
+  const [reviewLoading, setReviewLoading] = useState<string | null>(null);
   const [moveBizLoading, setMoveBizLoading] = useState<Set<string>>(new Set());
 
   // ── Admin Estimate Modal ──────────────────────────────────────────────────
@@ -397,33 +397,31 @@ function AdminDashboard() {
     return base;
   }, [pin, adminBearer]);
 
-  const handleSendReview = useCallback(async (bookingId: string) => {
-    if (reviewLoading.has(bookingId)) return;
-    setReviewLoading(prev => new Set(prev).add(bookingId));
+  const handleSendReview = useCallback(async (bookingId: string, channel: ReviewChannel) => {
+    const key = reviewLoadingKey(bookingId, channel);
+    if (reviewLoading === key) return;
+    setReviewLoading(key);
     try {
       const res = await fetch(`${API()}/api/admin/bookings/${bookingId}/send-review`, {
         method: "POST",
         headers: adminAuthH({ "Content-Type": "application/json" }),
+        body: JSON.stringify({ channel }),
       });
       const d = await res.json().catch(() => ({})) as {
-        ok?: boolean; error?: string; sms?: boolean; email?: boolean; details?: string; warning?: string;
+        ok?: boolean; error?: string; channel?: ReviewChannel;
       };
       if (d.ok) {
-        const parts: string[] = [];
-        if (d.sms) parts.push("SMS");
-        if (d.email) parts.push("email");
-        const via = parts.length ? parts.join(" + ") : (d.details ?? "SMS + email");
-        toast({ title: `✅ Запрос отзыва отправлен (${via})` });
-        if (d.warning) toast({ title: d.warning, variant: "destructive" });
+        const via = channel === "sms" ? t.sendReviewSms : channel === "email" ? t.sendReviewEmail : t.sendReviewWa;
+        toast({ title: `✅ ${t.reviewSentOk} (${via})` });
       } else {
         toast({ title: `Ошибка: ${d.error ?? res.status}`, variant: "destructive" });
       }
     } catch {
       toast({ title: "Ошибка сети", variant: "destructive" });
     } finally {
-      setReviewLoading(prev => { const s = new Set(prev); s.delete(bookingId); return s; });
+      setReviewLoading(null);
     }
-  }, [reviewLoading, toast, adminAuthH]);
+  }, [reviewLoading, toast, adminAuthH, t.sendReviewSms, t.sendReviewEmail, t.sendReviewWa, t.reviewSentOk]);
 
   const loadAdminLastEstimate = useCallback(async (bookingId: string) => {
     try {
@@ -2813,16 +2811,6 @@ function AdminDashboard() {
                           </button>
                           )
                         )}
-                        {b.status === "completed" && (b.phone || b.email) && (
-                          <button
-                            onClick={() => void handleSendReview(b.id)}
-                            disabled={reviewLoading.has(b.id)}
-                            title="Отправить запрос отзыва (SMS + email)"
-                            className="ml-0.5 p-0.5 rounded hover:bg-yellow-50 transition-colors disabled:opacity-50"
-                          >
-                            <Star className="w-3.5 h-3.5" style={{ color: reviewLoading.has(b.id) ? "#aaa" : "#f59e0b" }} />
-                          </button>
-                        )}
                       </div>
                       {b.email && (
                         <div className="flex items-center gap-1.5 mb-1">
@@ -2987,15 +2975,24 @@ function AdminDashboard() {
                               📧 {resendSentId === b.id ? t.resendPaymentSent : resendingId === b.id ? t.resendPaymentSending : t.resendPaymentBtn}
                             </button>
                           )}
-                          {b.status === "completed" && (b.phone || b.email) && (
-                            <button
-                              onClick={() => void handleSendReview(b.id)}
-                              disabled={reviewLoading.has(b.id)}
-                              className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-amber-50 text-amber-800 hover:bg-amber-100 transition border border-amber-200 disabled:opacity-50">
-                              <Star className="w-3.5 h-3.5" />
-                              {reviewLoading.has(b.id) ? "Отправка…" : "⭐ Запросить отзыв (SMS + email)"}
-                            </button>
-                          )}
+                        {b.status === "completed" && (b.phone || b.email) && (
+                          <div className="mt-2">
+                            <ReviewRequestButtons
+                              phone={b.phone}
+                              email={b.email}
+                              bookingId={b.id}
+                              loadingKey={reviewLoading}
+                              onSend={(ch) => void handleSendReview(b.id, ch)}
+                              labels={{
+                                sms: t.sendReviewSms,
+                                email: t.sendReviewEmail,
+                                wa: t.sendReviewWa,
+                                sending: t.sendingReview,
+                              }}
+                              layout="stack"
+                            />
+                          </div>
+                        )}
                           {/* Download receipt for paid bookings */}
                           {b.status === "completed" && (b.payment_status === "paid" || b.stripe_paid) && (
                             <button
@@ -3328,16 +3325,6 @@ function AdminDashboard() {
                                   </button>
                                 )
                               )}
-                              {b.status === "completed" && (b.phone || b.email) && (
-                                <button
-                                  onClick={() => void handleSendReview(b.id)}
-                                  disabled={reviewLoading.has(b.id)}
-                                  title="Отправить запрос отзыва (SMS + email)"
-                                  className="p-0.5 rounded hover:bg-yellow-50 transition-colors disabled:opacity-50"
-                                >
-                                  <Star className="w-3 h-3" style={{ color: reviewLoading.has(b.id) ? "#aaa" : "#f59e0b" }} />
-                                </button>
-                              )}
                             </div>
                           </td>
 
@@ -3418,21 +3405,39 @@ function AdminDashboard() {
                               </div>
                             )}
                             {(b.status === "cancelled" || b.status === "completed") && (
-                              <div className="flex items-center gap-2">
-                                <button
-                                  onClick={() => openRestoreModal(b)}
-                                  className="flex items-center gap-1 font-semibold transition-all duration-150 hover:scale-110 origin-left"
-                                  style={{ color: "#f97316" }}
-                                  title={t.titleRestore}>
-                                  <RotateCcw className="w-3.5 h-3.5" /> {t.restoreBtn2}
-                                </button>
-                                <span className="text-stone-300">|</span>
-                                <button
-                                  onClick={() => setConfirmDelete({ id: b.id, name: b.name })}
-                                  className="flex items-center gap-1 text-amber-600 hover:text-amber-800 font-semibold transition"
-                                  title={t.moveToTrashTitle}>
-                                  <Trash2 className="w-3.5 h-3.5" /> {t.moveToTrashBtn}
-                                </button>
+                              <div className="flex flex-col gap-2">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => openRestoreModal(b)}
+                                    className="flex items-center gap-1 font-semibold transition-all duration-150 hover:scale-110 origin-left"
+                                    style={{ color: "#f97316" }}
+                                    title={t.titleRestore}>
+                                    <RotateCcw className="w-3.5 h-3.5" /> {t.restoreBtn2}
+                                  </button>
+                                  <span className="text-stone-300">|</span>
+                                  <button
+                                    onClick={() => setConfirmDelete({ id: b.id, name: b.name })}
+                                    className="flex items-center gap-1 text-amber-600 hover:text-amber-800 font-semibold transition"
+                                    title={t.moveToTrashTitle}>
+                                    <Trash2 className="w-3.5 h-3.5" /> {t.moveToTrashBtn}
+                                  </button>
+                                </div>
+                                {b.status === "completed" && (b.phone || b.email) && (
+                                  <ReviewRequestButtons
+                                    phone={b.phone}
+                                    email={b.email}
+                                    bookingId={b.id}
+                                    loadingKey={reviewLoading}
+                                    onSend={(ch) => void handleSendReview(b.id, ch)}
+                                    labels={{
+                                      sms: t.sendReviewSms,
+                                      email: t.sendReviewEmail,
+                                      wa: t.sendReviewWa,
+                                      sending: t.sendingReview,
+                                    }}
+                                    layout="stack"
+                                  />
+                                )}
                               </div>
                             )}
                           </td>
