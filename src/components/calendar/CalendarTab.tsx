@@ -16,8 +16,6 @@ import {
   formatTime,
   isoRangeForView,
   slotIndexFromIso,
-  dayIndexInWeek,
-  isoFromWeekSlot,
   isoFromDaySlot,
   eventColor,
   SLOT_START_HOUR,
@@ -34,7 +32,6 @@ import {
 } from "@/lib/calendarUtils";
 
 const ACCENT = "#1B6FE8";
-const SLOT_HEIGHT = 32;
 
 export interface CalendarEvent {
   id: string;
@@ -120,16 +117,10 @@ function useIsMobile(): boolean {
   return mobile;
 }
 
-function slotIdxFromClientY(clientY: number, gridTop: number): number {
-  const relY = clientY - gridTop;
-  return Math.max(0, Math.min(TIME_SLOTS.length - 1, Math.floor(relY / SLOT_HEIGHT)));
-}
-
 export default function CalendarTab({
   apiBase, authHeaders, mode, labels, locale = "en-US", onOpenBooking,
 }: Props) {
   const isMobile = useIsMobile();
-  const gridRef = useRef<HTMLDivElement>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [view, setView] = useState<CalendarView>("week");
@@ -144,7 +135,7 @@ export default function CalendarTab({
   const [moveTargetDay, setMoveTargetDay] = useState<Date>(() => houstonNow());
   const [dragId, setDragId] = useState<string | null>(null);
   const [touchDragId, setTouchDragId] = useState<string | null>(null);
-  const [hoverSlot, setHoverSlot] = useState<number | null>(null);
+  const [dropHoverDay, setDropHoverDay] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [mobileDay, setMobileDay] = useState(() => houstonNow());
 
@@ -230,21 +221,28 @@ export default function CalendarTab({
       setMoveOpen(false);
       setSelected(null);
       setTouchDragId(null);
-      setHoverSlot(null);
+      setDragId(null);
+      setDropHoverDay(null);
       void loadEvents();
     } catch (e) {
       showToast(e instanceof Error ? e.message : labels.rescheduleErr);
     }
   };
 
-  const onDropSlot = (day: Date, slotIdx: number) => {
-    if (!dragId && !touchDragId) return;
+  const slotForEvent = (ev: CalendarEvent) => {
+    const s = slotIndexFromIso(ev.start_at);
+    return s >= 0 && s < TIME_SLOTS.length ? s : 2;
+  };
+
+  const onDropDay = (targetDay: Date) => {
     const id = dragId ?? touchDragId;
     if (!id) return;
-    void reschedule(id, isoFromDaySlot(day, slotIdx));
+    const ev = events.find((e) => e.id === id);
+    if (!ev) return;
+    void reschedule(id, isoFromDaySlot(targetDay, slotForEvent(ev)));
     setDragId(null);
     setTouchDragId(null);
-    setHoverSlot(null);
+    setDropHoverDay(null);
   };
 
   const eventsForDay = (day: Date) =>
@@ -280,6 +278,8 @@ export default function CalendarTab({
     return "border-stone-200 bg-white text-stone-600 active:bg-stone-50";
   };
 
+  const dayKey = (day: Date) => `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
+
   const clearLongPress = () => {
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
@@ -287,7 +287,7 @@ export default function CalendarTab({
     }
   };
 
-  const handleTouchStart = (ev: CalendarEvent) => (e: React.TouchEvent) => {
+  const handleEventTouchStart = (ev: CalendarEvent) => (e: React.TouchEvent) => {
     if (!canReschedule(ev)) return;
     clearLongPress();
     longPressTimer.current = setTimeout(() => {
@@ -298,144 +298,129 @@ export default function CalendarTab({
     e.stopPropagation();
   };
 
-  const handleTouchMoveGrid = (day: Date) => (e: React.TouchEvent) => {
-    if (!touchDragId || !gridRef.current) return;
-    e.preventDefault();
-    const rect = gridRef.current.getBoundingClientRect();
-    setHoverSlot(slotIdxFromClientY(e.touches[0]!.clientY, rect.top));
-    setMobileDay(day);
-  };
-
-  const handleTouchEndGrid = (day: Date) => () => {
-    clearLongPress();
-    if (touchDragId && hoverSlot !== null) {
-      onDropSlot(day, hoverSlot);
-    } else {
-      setTouchDragId(null);
-      setHoverSlot(null);
+  const handleDayClick = (day: Date, inMonth: boolean) => {
+    if (touchDragId) {
+      onDropDay(day);
+      return;
     }
+    selectDay(day);
+    if (view === "month" && inMonth) setView("week");
   };
 
-  const EventCard = ({ ev, compact }: { ev: CalendarEvent; compact?: boolean }) => (
-    <button
-      type="button"
-      onClick={() => { if (!touchDragId) { setSelected(ev); setMoveOpen(false); setMoveTargetDay(mobileDay); } }}
-      className={`w-full text-left rounded-lg border border-stone-200 bg-white shadow-sm active:scale-[0.99] transition ${compact ? "p-2" : "p-3"}`}
-      style={{ borderLeftWidth: 4, borderLeftColor: eventColor(ev.status, !!ev.is_overdue) }}
-    >
-      <div className="flex items-center justify-between gap-2">
-        <span className="font-semibold text-stone-800 text-sm truncate">{ev.client_name}</span>
-        <span className="text-xs text-stone-500 shrink-0">{formatTime(ev.start_at, locale)}</span>
-      </div>
-      <div className="text-xs text-stone-500 truncate mt-0.5">{ev.appliance}</div>
-      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-        {bizBadge(ev)}
-        {ev.status === "completed" && (
-          <span className="text-[10px] text-green-700 font-semibold">{labels.statusCompleted}</span>
-        )}
-        {ev.is_overdue && <span className="text-[10px] text-orange-600 font-semibold">{labels.overdue}</span>}
-      </div>
-    </button>
-  );
+  const EventChip = ({
+    ev, size = "md", inDragMode,
+  }: { ev: CalendarEvent; size?: "sm" | "md"; inDragMode?: boolean }) => {
+    const dragging = dragId === ev.id || touchDragId === ev.id;
+    const color = eventColor(ev.status, !!ev.is_overdue);
+    const textSize = size === "sm" ? "text-[7px] leading-tight" : "text-[9px] leading-tight";
+    const pad = size === "sm" ? "px-0.5 py-px" : "px-1 py-0.5";
 
-  const DayTimeGrid = ({ day, singleColumn }: { day: Date; singleColumn?: boolean }) => {
-    const dayEvents = singleColumn ? eventsForDay(day) : events;
     return (
       <div
-        ref={singleColumn ? gridRef : undefined}
-        className={`relative border border-stone-200 rounded-lg bg-white overflow-hidden ${touchDragId ? "ring-2 ring-blue-300" : ""}`}
-        style={{ minHeight: TIME_SLOTS.length * SLOT_HEIGHT }}
-        onTouchMove={singleColumn ? handleTouchMoveGrid(day) : undefined}
-        onTouchEnd={singleColumn ? handleTouchEndGrid(day) : undefined}
-        onTouchCancel={singleColumn ? handleTouchEndGrid(day) : undefined}
-      >
-        {TIME_SLOTS.map((label, slotIdx) => (
-          <div
-            key={label}
-            className={`grid ${singleColumn ? "grid-cols-4" : "grid-cols-8"} border-b border-stone-100 min-h-[32px] ${
-              hoverSlot === slotIdx ? "bg-blue-100/70" : "hover:bg-blue-50/40"
-            } transition`}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={() => onDropSlot(day, slotIdx)}
-          >
-            <div className="text-[9px] text-stone-400 p-1 pr-2 text-right border-r border-stone-100 col-span-1">{label}</div>
-            {singleColumn ? (
-              <div className="col-span-3 border-r border-stone-50 min-h-[32px]" />
-            ) : (
-              Array.from({ length: 7 }, (_, dayIdx) => (
-                <div
-                  key={`${dayIdx}-${slotIdx}`}
-                  className="border-r border-stone-50 hover:bg-blue-50/40 transition"
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={() => onDropSlot(addDays(weekStart, dayIdx), slotIdx)}
-                />
-              ))
-            )}
-          </div>
-        ))}
-        {dayEvents.map((ev) => {
-          const slotStart = slotIndexFromIso(ev.start_at);
-          const slotEnd = slotIndexFromIso(ev.end_at);
-          if (slotStart < 0 || slotStart >= TIME_SLOTS.length) return null;
-          const height = Math.max(1, slotEnd - slotStart) * SLOT_HEIGHT;
-          const top = slotStart * SLOT_HEIGHT;
-          const color = eventColor(ev.status, !!ev.is_overdue);
-          const dragging = dragId === ev.id || touchDragId === ev.id;
-
-          if (!singleColumn) {
-            const dayIdx = dayIndexInWeek(ev.start_at, weekStart);
-            if (dayIdx < 0 || dayIdx > 6) return null;
-            return (
-              <div
-                key={ev.id}
-                draggable={canReschedule(ev)}
-                onDragStart={() => setDragId(ev.id)}
-                onDragEnd={() => setDragId(null)}
-                onClick={() => setSelected(ev)}
-                className="absolute text-white text-[9px] rounded px-1 py-0.5 cursor-grab active:cursor-grabbing overflow-hidden shadow-sm z-10 flex items-start gap-0.5 touch-manipulation"
-                style={{
-                  left: `calc(12.5% + ${dayIdx} * 12.5%)`,
-                  width: "calc(12.5% - 4px)",
-                  top: top + 2,
-                  height: height - 4,
-                  background: color,
-                  opacity: dragging ? 0.55 : 1,
-                }}
-                title={ev.title}
-              >
-                <GripVertical className="w-2.5 h-2.5 shrink-0 opacity-60 mt-0.5" />
-                <span className="truncate leading-tight">
-                  {formatTime(ev.start_at, locale)} {ev.client_name}
-                </span>
-              </div>
-            );
+        draggable={canReschedule(ev) && !isMobile}
+        onDragStart={(e) => {
+          if (!canReschedule(ev)) return;
+          setDragId(ev.id);
+          e.dataTransfer.effectAllowed = "move";
+        }}
+        onDragEnd={() => setDragId(null)}
+        onTouchStart={handleEventTouchStart(ev)}
+        onTouchEnd={() => clearLongPress()}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (inDragMode) return;
+          if (!touchDragId) {
+            setSelected(ev);
+            setMoveOpen(false);
+            setMoveTargetDay(mobileDay);
           }
+        }}
+        className={`${textSize} ${pad} rounded text-white truncate w-full text-left touch-manipulation flex items-center gap-0.5 ${
+          canReschedule(ev) ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"
+        } ${dragging ? "opacity-50 ring-2 ring-white/80 scale-95" : ""}`}
+        style={{ background: color }}
+        title={`${formatTime(ev.start_at, locale)} ${ev.client_name}`}
+      >
+        {canReschedule(ev) && size !== "sm" && (
+          <GripVertical className="w-2 h-2 shrink-0 opacity-70" />
+        )}
+        <span className="truncate">
+          {size === "sm" ? ev.client_name.split(" ")[0] : `${formatTime(ev.start_at, locale)} ${ev.client_name}`}
+        </span>
+      </div>
+    );
+  };
 
-          const left = "calc(25% + 2px)";
-          const width = "calc(75% - 6px)";
-          return (
-            <div
-              key={ev.id}
-              onTouchStart={handleTouchStart(ev)}
-              onClick={() => { if (!touchDragId) setSelected(ev); }}
-              className="absolute text-white text-[10px] rounded px-1.5 py-1 overflow-hidden shadow-sm z-10 flex items-start gap-1 touch-manipulation select-none"
-              style={{
-                left,
-                width,
-                top: top + 2,
-                height: height - 4,
-                background: color,
-                opacity: dragging ? 0.55 : 1,
-                transform: dragging ? "scale(1.02)" : undefined,
-              }}
-            >
-              <GripVertical className="w-3 h-3 shrink-0 opacity-70 mt-0.5" />
-              <span className="truncate leading-tight font-semibold">
-                {formatTime(ev.start_at, locale)} {ev.client_name}
-              </span>
+  const DaySquare = ({
+    day,
+    inMonth = true,
+    size = "md",
+    showWeekday = false,
+  }: {
+    day: Date;
+    inMonth?: boolean;
+    size?: "sm" | "md";
+    showWeekday?: boolean;
+  }) => {
+    const dayEvents = eventsForDay(day);
+    const past = isPastDay(day, today);
+    const todayMark = isToday(day, today);
+    const key = dayKey(day);
+    const isDropHover = dropHoverDay === key;
+    const isDragging = !!(dragId || touchDragId);
+    const maxEvents = size === "sm" ? 2 : isMobile ? 3 : 5;
+
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter") handleDayClick(day, inMonth); }}
+        onClick={() => handleDayClick(day, inMonth)}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDropHoverDay(key);
+        }}
+        onDragLeave={() => setDropHoverDay((k) => (k === key ? null : k))}
+        onDrop={(e) => {
+          e.preventDefault();
+          onDropDay(day);
+        }}
+        className={`
+          aspect-square border rounded-md flex flex-col overflow-hidden touch-manipulation transition
+          ${size === "sm" ? "p-0.5" : "p-1"}
+          ${!inMonth ? "bg-stone-50/90 border-stone-100 opacity-60" : past ? "bg-stone-50 border-stone-200" : "bg-white border-stone-200"}
+          ${todayMark ? "ring-2 ring-blue-500 ring-inset bg-blue-50/40" : ""}
+          ${isDropHover && isDragging ? "bg-blue-100 border-blue-400 scale-[1.02] shadow-md" : ""}
+          ${isDragging && inMonth ? "hover:bg-blue-50" : "active:bg-blue-50/60"}
+        `}
+      >
+        <div className={`flex items-center justify-between shrink-0 ${size === "sm" ? "mb-0.5" : "mb-1"}`}>
+          {showWeekday && (
+            <span className={`font-semibold uppercase ${size === "sm" ? "text-[7px]" : "text-[8px]"} text-stone-400`}>
+              {WEEKDAYS_SHORT[day.getDay()]}
+            </span>
+          )}
+          <span className={`font-bold ml-auto leading-none ${
+            size === "sm" ? "text-[9px]" : "text-[11px]"
+          } ${
+            todayMark
+              ? "bg-blue-600 text-white rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center text-[9px]"
+              : !inMonth ? "text-stone-300" : past ? "text-stone-500" : "text-stone-700"
+          }`}>
+            {day.getDate()}
+          </span>
+        </div>
+
+        <div className="flex-1 min-h-0 overflow-y-auto space-y-0.5" style={{ scrollbarWidth: "none" }}>
+          {dayEvents.slice(0, maxEvents).map((ev) => (
+            <EventChip key={ev.id} ev={ev} size={size} inDragMode={!!touchDragId} />
+          ))}
+          {dayEvents.length > maxEvents && (
+            <div className={`text-stone-500 font-semibold ${size === "sm" ? "text-[7px]" : "text-[8px]"}`}>
+              +{dayEvents.length - maxEvents}
             </div>
-          );
-        })}
+          )}
+        </div>
       </div>
     );
   };
@@ -510,142 +495,63 @@ export default function CalendarTab({
       </div>
 
       <p className="text-[10px] text-stone-400 px-3 py-1">
-        {isMobile ? labels.tapHint : labels.dragHint}
+        {touchDragId
+          ? (isMobile ? "Tap a day square to move the job" : labels.dragHint)
+          : (isMobile ? labels.tapHint : labels.dragHint)}
       </p>
-
-      {touchDragId && isMobile && (
-        <p className="text-[10px] text-blue-600 font-semibold px-3 pb-1 animate-pulse">
-          ↕ {labels.dragHint}
-        </p>
-      )}
 
       {loading && (
         <div className="p-4 text-center text-stone-400 text-sm">{labels.loading}</div>
       )}
 
-      {/* WEEK — mobile: day picker + time grid with touch drag */}
-      {view === "week" && isMobile && (
-        <div className="flex-1 overflow-y-auto px-2 pb-4 overscroll-contain" style={{ WebkitOverflowScrolling: "touch" }}>
-          <div className="flex gap-1.5 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory" style={{ scrollbarWidth: "none" }}>
-            {weekDays.map((d) => {
-              const active = isSameDay(d, mobileDay);
-              const cnt = eventsForDay(d).length;
-              return (
-                <button
-                  key={d.toISOString()}
-                  type="button"
-                  onClick={() => selectDay(d)}
-                  className={`snap-start shrink-0 min-w-[52px] min-h-[56px] rounded-xl border text-center py-1.5 touch-manipulation ${dayChipClass(d, active)}`}
-                >
-                  <div className="text-[10px] font-semibold uppercase">{WEEKDAYS_SHORT[d.getDay()]}</div>
-                  <div className="text-lg font-bold leading-none">{d.getDate()}</div>
-                  {cnt > 0 && <div className="text-[9px] mt-0.5 font-semibold">{cnt}</div>}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="text-xs font-semibold text-stone-500 mb-1 px-1">
-            {formatDayHeader(mobileDay, locale)}
-          </div>
-
-          <DayTimeGrid day={mobileDay} singleColumn />
-
-          {eventsForDay(mobileDay).length === 0 && !loading && (
-            <div className="text-center text-stone-400 text-sm py-4">{labels.noEvents}</div>
-          )}
-
-          <div className="space-y-2 mt-3">
-            {eventsForDay(mobileDay)
-              .filter((ev) => {
-                const s = slotIndexFromIso(ev.start_at);
-                return s < 0 || s >= TIME_SLOTS.length;
-              })
-              .map((ev) => (
-                <EventCard key={ev.id} ev={ev} compact />
-              ))}
-          </div>
-        </div>
-      )}
-
-      {/* WEEK — desktop: grid + drag */}
-      {view === "week" && !isMobile && (
-        <div className="flex-1 overflow-auto p-2 overscroll-contain">
-          <div className="min-w-[700px] border border-stone-200 rounded-lg bg-white overflow-hidden">
-            <div className="grid grid-cols-8 border-b border-stone-200 bg-stone-50 text-[10px] font-semibold text-stone-500">
-              <div className="p-2" />
-              {weekDays.map((d) => (
-                <button
-                  key={d.toISOString()}
-                  type="button"
-                  onClick={() => selectDay(d)}
-                  className={`p-2 text-center touch-manipulation hover:bg-stone-100 rounded-t ${
-                    isToday(d, today) ? "text-blue-600 bg-blue-50/50" : isPastDay(d, today) ? "text-stone-600" : "text-stone-500"
-                  }`}
-                >
-                  {formatDayHeader(d, locale)}
-                </button>
+      {/* WEEK — square grid (7 days) */}
+      {view === "week" && (
+        <div className="flex-1 overflow-auto p-2 overscroll-contain" style={{ WebkitOverflowScrolling: "touch" }}>
+          <div className="border border-stone-200 rounded-lg bg-white overflow-hidden p-1 md:p-2">
+            <div className="grid grid-cols-7 gap-0.5 md:gap-1 mb-0.5 md:mb-1">
+              {WEEKDAYS_SHORT.map((wd) => (
+                <div key={wd} className="text-center text-[9px] md:text-[10px] font-semibold text-stone-500 py-1">
+                  {wd}
+                </div>
               ))}
             </div>
-            <DayTimeGrid day={weekStart} />
+            <div className="grid grid-cols-7 gap-0.5 md:gap-1.5">
+              {weekDays.map((d) => (
+                <DaySquare key={d.toISOString()} day={d} size={isMobile ? "sm" : "md"} />
+              ))}
+            </div>
           </div>
+
           {!loading && events.length === 0 && (
             <div className="text-center text-stone-400 text-sm py-6">{labels.noEvents}</div>
           )}
         </div>
       )}
 
-      {/* MONTH */}
+      {/* MONTH — square grid */}
       {view === "month" && (
         <div className="flex-1 overflow-auto p-2 md:p-3 overscroll-contain" style={{ WebkitOverflowScrolling: "touch" }}>
-          <div className="border border-stone-200 rounded-lg bg-white overflow-hidden">
-            <div className="grid grid-cols-7 bg-stone-50 border-b border-stone-200">
+          <div className="border border-stone-200 rounded-lg bg-white overflow-hidden p-1 md:p-2">
+            <div className="grid grid-cols-7 gap-0.5 md:gap-1 mb-0.5 md:mb-1">
               {WEEKDAYS_SHORT.map((wd) => (
-                <div key={wd} className="text-center text-[10px] font-semibold text-stone-500 py-2">{wd}</div>
+                <div key={wd} className="text-center text-[9px] md:text-[10px] font-semibold text-stone-500 py-1">{wd}</div>
               ))}
             </div>
-            <div className="grid grid-cols-7">
-              {getMonthGrid(anchor.getFullYear(), anchor.getMonth()).map((day) => {
-                const inMonth = isSameMonth(day, anchor);
-                const dayEvents = eventsForDay(day);
-                const past = isPastDay(day, today);
-                const todayMark = isToday(day, today);
-                return (
-                  <button
-                    type="button"
-                    key={day.toISOString()}
-                    className={`min-h-[64px] md:min-h-[80px] border-b border-r border-stone-100 p-1 text-left touch-manipulation cursor-pointer active:bg-blue-50/60 transition ${
-                      !inMonth ? "bg-stone-50/80" : past ? "bg-stone-50/40 hover:bg-stone-100/60" : "hover:bg-stone-50"
-                    } ${todayMark ? "ring-2 ring-inset ring-blue-400 bg-blue-50/30" : ""}`}
-                    onClick={() => { selectDay(day); setView("week"); }}
-                  >
-                    <div className={`text-[10px] font-semibold mb-0.5 ${
-                      !inMonth ? "text-stone-300" : todayMark ? "text-blue-700" : past ? "text-stone-600" : "text-stone-700"
-                    }`}>
-                      {day.getDate()}
-                    </div>
-                    {dayEvents.slice(0, isMobile ? 2 : 3).map((ev) => (
-                      <div
-                        key={ev.id}
-                        className="text-[8px] text-white rounded px-0.5 mb-0.5 truncate"
-                        style={{ background: eventColor(ev.status, !!ev.is_overdue) }}
-                        onClick={(e) => { e.stopPropagation(); setSelected(ev); }}
-                      >
-                        {formatTime(ev.start_at, locale)} {ev.client_name}
-                      </div>
-                    ))}
-                    {dayEvents.length > (isMobile ? 2 : 3) && (
-                      <div className="text-[8px] text-stone-500 font-medium">+{dayEvents.length - (isMobile ? 2 : 3)}</div>
-                    )}
-                  </button>
-                );
-              })}
+            <div className="grid grid-cols-7 gap-0.5 md:gap-1">
+              {getMonthGrid(anchor.getFullYear(), anchor.getMonth()).map((day) => (
+                <DaySquare
+                  key={day.toISOString()}
+                  day={day}
+                  inMonth={isSameMonth(day, anchor)}
+                  size="sm"
+                />
+              ))}
             </div>
           </div>
         </div>
       )}
 
-      {/* YEAR */}
+      {/* YEAR — month squares with mini day grid */}
       {view === "year" && (
         <div className="flex-1 overflow-auto p-2 md:p-3 overscroll-contain" style={{ WebkitOverflowScrolling: "touch" }}>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
@@ -660,15 +566,12 @@ export default function CalendarTab({
                 const day = new Date(ev.start_at).getDate();
                 countByDay.set(day, (countByDay.get(day) ?? 0) + 1);
               });
-              const monthPast = mi < today.getMonth() && anchor.getFullYear() === today.getFullYear();
               return (
                 <button
                   key={name}
                   type="button"
                   onClick={() => { setAnchor(monthDate); setView("month"); }}
-                  className={`border rounded-lg bg-white p-2 text-left hover:border-blue-300 active:bg-stone-50 transition min-h-[44px] touch-manipulation ${
-                    monthPast ? "border-stone-200" : "border-stone-200"
-                  }`}
+                  className="border border-stone-200 rounded-lg bg-white p-2 text-left hover:border-blue-300 active:bg-stone-50 transition touch-manipulation"
                 >
                   <div className="text-xs font-bold text-stone-700 mb-2">{name}</div>
                   <div className="grid grid-cols-7 gap-0.5">
@@ -677,9 +580,15 @@ export default function CalendarTab({
                       return (
                         <div
                           key={day.toISOString()}
-                          className={`h-2 rounded-sm ${cnt > 0 ? "bg-blue-500" : "bg-stone-100"}`}
-                          style={{ opacity: cnt > 2 ? 1 : cnt > 0 ? 0.5 + cnt * 0.2 : 0.3 }}
-                        />
+                          className={`aspect-square rounded-sm flex items-center justify-center ${
+                            cnt > 0 ? "bg-blue-500 text-white" : "bg-stone-100"
+                          }`}
+                          style={{ opacity: cnt > 0 ? Math.min(1, 0.45 + cnt * 0.18) : 0.35 }}
+                        >
+                          {cnt > 0 && isSameMonth(day, monthDate) && (
+                            <span className="text-[6px] font-bold">{day.getDate()}</span>
+                          )}
+                        </div>
                       );
                     })}
                   </div>
@@ -695,7 +604,7 @@ export default function CalendarTab({
       {selected && (
         <div
           className="fixed inset-0 z-50 flex items-end md:items-stretch md:justify-end bg-black/40"
-          onClick={() => { setSelected(null); setMoveOpen(false); }}
+          onClick={() => { setSelected(null); setMoveOpen(false); setTouchDragId(null); }}
         >
           <div
             className="w-full md:max-w-sm bg-white md:h-full shadow-xl overflow-y-auto rounded-t-2xl md:rounded-none p-4 max-h-[90dvh]"
@@ -740,16 +649,16 @@ export default function CalendarTab({
                 ) : (
                   <div className="border border-stone-200 rounded-lg p-3 bg-stone-50">
                     <p className="text-xs font-semibold text-stone-600 mb-2">{labels.pickTime}</p>
-                    <div className="flex gap-1 overflow-x-auto pb-2 mb-2 -mx-1 px-1">
+                    <div className="grid grid-cols-7 gap-1 mb-2">
                       {weekDays.map((d) => (
                         <button
                           key={d.toISOString()}
                           type="button"
                           onClick={() => setMoveTargetDay(d)}
-                          className={`shrink-0 min-w-[44px] min-h-[44px] rounded-lg border text-center text-[10px] font-bold touch-manipulation ${dayChipClass(d, isSameDay(d, moveTargetDay))}`}
+                          className={`aspect-square rounded-lg border text-center text-[9px] font-bold touch-manipulation flex flex-col items-center justify-center ${dayChipClass(d, isSameDay(d, moveTargetDay))}`}
                         >
-                          <div>{WEEKDAYS_SHORT[d.getDay()]}</div>
-                          <div className="text-sm">{d.getDate()}</div>
+                          <span className="text-[8px]">{WEEKDAYS_SHORT[d.getDay()]}</span>
+                          <span>{d.getDate()}</span>
                         </button>
                       ))}
                     </div>
