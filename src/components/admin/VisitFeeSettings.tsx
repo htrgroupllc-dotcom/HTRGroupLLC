@@ -6,7 +6,7 @@ type VisitFeeSite = "appliance" | "dental";
 const SITE_META: Record<VisitFeeSite, { label: string; website: string; accent: string }> = {
   appliance: {
     label: "Appliance",
-    website: "htrgrouptx.com",
+    website: "appfixpro.com",
     accent: "#1B6FE8",
   },
   dental: {

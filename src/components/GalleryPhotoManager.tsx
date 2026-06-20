@@ -6,7 +6,7 @@ const API = (import.meta.env.VITE_API_BASE as string | undefined ?? "https://htr
 export type GalleryUploadSite = "appliance" | "dental";
 
 const SITE_META: Record<GalleryUploadSite, { label: string; website: string; accent: string }> = {
-  appliance: { label: "Appliance", website: "htrgrouptx.com", accent: "#1B6FE8" },
+  appliance: { label: "Appliance", website: "appfixpro.com", accent: "#1B6FE8" },
   dental:    { label: "Dental", website: "dentalfixpro.com", accent: "#6B7280" },
 };
 

@@ -177,7 +177,7 @@ async function checkDuplicateSlots() {
     sendWA(
       `🚨 HTRGroupTX ВНИМАНИЕ!\n\n` +
       `Обнаружены дублирующиеся активные слоты (${rows.length}):\n${details}\n\n` +
-      `Требуется ручная проверка на htrgrouptx.com/admin`
+      `Требуется ручная проверка на appfixpro.com/admin`
     );
 
     await sendEmail(
@@ -191,7 +191,7 @@ async function checkDuplicateSlots() {
       )}
       <p style="font-family:sans-serif;color:#0B1A3F;">
         Пожалуйста, зайдите на 
-        <a href="https://htrgrouptx.com/admin">htrgrouptx.com/admin</a> 
+        <a href="https://appfixpro.com/admin">appfixpro.com/admin</a> 
         и вручную отмените лишние брони.
       </p>`
     );
@@ -663,7 +663,7 @@ async function sendHealthReport() {
       `• Зависших WA-блоков: ${stale}\n\n` +
       (healthy
         ? `Всё в порядке 👍`
-        : `⚠️ Требуется проверка на htrgrouptx.com/admin`);
+        : `⚠️ Требуется проверка на appfixpro.com/admin`);
 
     sendWA(waMsg);
 
@@ -707,7 +707,7 @@ async function sendHealthReport() {
         ${!healthy ? `
         <p style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px 16px;margin-top:20px;color:#92400e;">
           ⚠️ Обнаружены проблемы. Проверьте 
-          <a href="https://htrgrouptx.com/admin" style="color:#1B6FE8;">панель администратора</a>.
+          <a href="https://appfixpro.com/admin" style="color:#1B6FE8;">панель администратора</a>.
         </p>` : `
         <p style="background:#ecfdf5;border-left:4px solid #10b981;padding:12px 16px;margin-top:20px;color:#065f46;">
           ✅ Все системы работают нормально.

@@ -1,4 +1,4 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import pg from "pg";
@@ -49,7 +49,7 @@ function normalizeToWaPhone(raw: string): string | null {
 
 /**
  * Send an appointment confirmation WhatsApp message to the client.
- * Non-blocking — errors are logged but never throw.
+ * Non-blocking � errors are logged but never throw.
  */
 function sendClientConfirmWA(booking: Booking, log?: NotifyLog): void {
   const sid   = process.env["TWILIO_ACCOUNT_SID"];
@@ -58,24 +58,24 @@ function sendClientConfirmWA(booking: Booking, log?: NotifyLog): void {
 
   const waTo = normalizeToWaPhone(booking.phone ?? "");
   if (!waTo) {
-    (log ?? console).warn(`[WA-CLIENT] Cannot normalize phone "${booking.phone}" — skipping`);
+    (log ?? console).warn(`[WA-CLIENT] Cannot normalize phone "${booking.phone}" � skipping`);
     return;
   }
 
   const isEs = booking.language === "es";
   const body = isEs
-    ? `✅ *¡Cita confirmada!*\n\n` +
-      `👤 ${booking.name}\n` +
-      `🔧 ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
-      `📅 ${booking.preferredDate} · ${booking.preferredTime}\n\n` +
+    ? `? *�Cita confirmada!*\n\n` +
+      `?? ${booking.name}\n` +
+      `?? ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
+      `?? ${booking.preferredDate} � ${booking.preferredTime}\n\n` +
       `Le contactaremos antes de la visita.\n` +
-      `¡Gracias por elegir *HTRGroup*! 🙏`
-    : `✅ *Appointment Confirmed!*\n\n` +
-      `👤 ${booking.name}\n` +
-      `🔧 ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
-      `📅 ${booking.preferredDate} · ${booking.preferredTime}\n\n` +
+      `�Gracias por elegir *HTRGroup*! ??`
+    : `? *Appointment Confirmed!*\n\n` +
+      `?? ${booking.name}\n` +
+      `?? ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
+      `?? ${booking.preferredDate} � ${booking.preferredTime}\n\n` +
       `Our technician will contact you before the visit.\n` +
-      `Thank you for choosing *HTRGroup*! 🙏`;
+      `Thank you for choosing *HTRGroup*! ??`;
 
   const client = twilio(sid, token);
   void client.messages
@@ -89,7 +89,7 @@ function sendClientConfirmWA(booking: Booking, log?: NotifyLog): void {
 
 /**
  * Notify client via WhatsApp that their cancelled booking has been restored by admin.
- * Non-blocking — errors are logged but never throw.
+ * Non-blocking � errors are logged but never throw.
  */
 function sendClientRestoreWA(booking: Booking, log?: NotifyLog): void {
   const sid   = process.env["TWILIO_ACCOUNT_SID"];
@@ -98,26 +98,26 @@ function sendClientRestoreWA(booking: Booking, log?: NotifyLog): void {
 
   const waTo = normalizeToWaPhone(booking.phone ?? "");
   if (!waTo) {
-    (log ?? console).warn(`[WA-CLIENT] Cannot normalize phone "${booking.phone}" — skipping restore WA`);
+    (log ?? console).warn(`[WA-CLIENT] Cannot normalize phone "${booking.phone}" � skipping restore WA`);
     return;
   }
 
   const isEs = booking.language === "es";
   const body = isEs
-    ? `🔄 *¡Su cita ha sido restaurada!*\n\n` +
-      `👤 ${booking.name}\n` +
-      `🔧 ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
-      `📅 ${booking.preferredDate} · ${booking.preferredTime}\n\n` +
+    ? `?? *�Su cita ha sido restaurada!*\n\n` +
+      `?? ${booking.name}\n` +
+      `?? ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
+      `?? ${booking.preferredDate} � ${booking.preferredTime}\n\n` +
       `Su solicitud ha sido reactivada por el administrador.\n` +
       `Le contactaremos para confirmar.\n` +
-      `¡Gracias por elegir *HTRGroup*! 🙏`
-    : `🔄 *Your appointment has been restored!*\n\n` +
-      `👤 ${booking.name}\n` +
-      `🔧 ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
-      `📅 ${booking.preferredDate} · ${booking.preferredTime}\n\n` +
+      `�Gracias por elegir *HTRGroup*! ??`
+    : `?? *Your appointment has been restored!*\n\n` +
+      `?? ${booking.name}\n` +
+      `?? ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
+      `?? ${booking.preferredDate} � ${booking.preferredTime}\n\n` +
       `Your request has been reactivated by our admin.\n` +
       `We will contact you shortly to confirm.\n` +
-      `Thank you for choosing *HTRGroup*! 🙏`;
+      `Thank you for choosing *HTRGroup*! ??`;
 
   const client = twilio(sid, token);
   void client.messages
@@ -134,19 +134,19 @@ function sendClientRestoreWA(booking: Booking, log?: NotifyLog): void {
  * Includes direct Google Maps link and Zillow property page.
  */
 function ownerAddrBlock(address: string | undefined): string {
-  if (!address || address.trim().length < 3) return "📍 не указан";
+  if (!address || address.trim().length < 3) return "?? ?? ??????";
   const enc     = encodeURIComponent(address);
   const zilSlug = address.trim().replace(/,/g, "").replace(/\s+/g, "-").replace(/-{2,}/g, "-");
   return (
-    `📍 *${address}*\n\n` +
-    `🗺 Google Maps:\nhttps://maps.google.com/?q=${enc}\n\n` +
-    `🏠 Zillow:\nhttps://www.zillow.com/homes/${zilSlug}/`
+    `?? *${address}*\n\n` +
+    `?? Google Maps:\nhttps://maps.google.com/?q=${enc}\n\n` +
+    `?? Zillow:\nhttps://www.zillow.com/homes/${zilSlug}/`
   );
 }
 
 const bookingRouter = Router();
 
-// ─── Database pool ─────────────────────────────────────────────────────────────
+// --- Database pool -------------------------------------------------------------
 const pool = new pg.Pool({ connectionString: process.env["DATABASE_URL"] });
 
 interface Booking {
@@ -212,11 +212,11 @@ async function approveBooking(id: string): Promise<void> {
   await pool.query("UPDATE bookings SET status='approved' WHERE id=$1", [id]);
 }
 
-// ─── Date normalization ───────────────────────────────────────────────────────
+// --- Date normalization -------------------------------------------------------
 // Converts any date format to the canonical "Mon DD, YYYY" used by the website.
 // Supports:
-//   "2026-04-14"     → "Apr 14, 2026"
-//   "Apr 14, 2026"   → "Apr 14, 2026" (unchanged)
+//   "2026-04-14"     ? "Apr 14, 2026"
+//   "Apr 14, 2026"   ? "Apr 14, 2026" (unchanged)
 const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 function normalizeDateStr(raw: string): string {
@@ -237,7 +237,7 @@ function dateMatchClause(col: string, paramIdx: number): string {
   return `(${col} = $${paramIdx} OR ${col} = $${paramIdx + 1})`;
 }
 
-// ─── POST /api/booking ────────────────────────────────────────────────────────
+// --- POST /api/booking --------------------------------------------------------
 bookingRouter.post("/booking", async (req, res) => {
   const {
     name, phone, email, address, appliance,
@@ -296,7 +296,7 @@ bookingRouter.post("/booking", async (req, res) => {
   await saveBooking(booking);
   req.log.info({ bookingId: booking.id }, "Booking saved to database (pending)");
 
-  // ── HubSpot sync — synchronous so hs_deal_id is in DB before response ───────
+  // -- HubSpot sync � synchronous so hs_deal_id is in DB before response -------
   try {
     const hsResult = await syncBookingToHubSpot({
       id:            booking.id,
@@ -321,7 +321,7 @@ bookingRouter.post("/booking", async (req, res) => {
     req.log.error({ err: hsErr, bookingId: booking.id }, "HubSpot sync error at booking creation (non-fatal)");
   }
 
-  // Always use PUBLIC_BASE_URL for the approve link — ensures the URL is stable
+  // Always use PUBLIC_BASE_URL for the approve link � ensures the URL is stable
   // regardless of reverse-proxy / x-forwarded-host variations.
   const publicBase  = (process.env["PUBLIC_BASE_URL"] ?? "").replace(/\/$/, "")
     || "https://htr-group-llc-appliance-repair.replit.app";
@@ -332,7 +332,7 @@ bookingRouter.post("/booking", async (req, res) => {
   const emailTo   = process.env["EMAIL_TO"]   ?? "";
 
   if (!emailUser || !emailPass || !emailTo) {
-    req.log.error("EMAIL_USER / EMAIL_PASS / EMAIL_TO not configured — skipping email");
+    req.log.error("EMAIL_USER / EMAIL_PASS / EMAIL_TO not configured � skipping email");
     res.json({ ok: true, id: booking.id });
     return;
   }
@@ -342,7 +342,7 @@ bookingRouter.post("/booking", async (req, res) => {
     auth: { user: emailUser, pass: emailPass },
   });
 
-  const subject = `📋 New Booking [${booking.id.slice(0, 8).toUpperCase()}] — ${booking.appliance || "Appliance Repair"}`;
+  const subject = `?? New Booking [${booking.id.slice(0, 8).toUpperCase()}] � ${booking.appliance || "Appliance Repair"}`;
 
   const rowHtml = (label: string, value: string) =>
     value
@@ -355,9 +355,9 @@ bookingRouter.post("/booking", async (req, res) => {
   const html = `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#1B6FE8;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">📋 New Repair Booking</h2>
+    <h2 style="color:#fff;margin:0;font-size:20px;">?? New Repair Booking</h2>
     <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">
-      Hi-Tech Repair Group &nbsp;·&nbsp; ID: <strong style="color:#fff;">${booking.id.slice(0, 8).toUpperCase()}</strong>
+      Hi-Tech Repair Group &nbsp;�&nbsp; ID: <strong style="color:#fff;">${booking.id.slice(0, 8).toUpperCase()}</strong>
     </p>
   </div>
   <div style="padding:24px;">
@@ -370,7 +370,7 @@ bookingRouter.post("/booking", async (req, res) => {
       ${rowHtml("Brand / Model", booking.brandModel)}
       ${rowHtml("Preferred Date",booking.preferredDate)}
       ${rowHtml("Preferred Time",booking.preferredTime)}
-      ${rowHtml("Language",      booking.language === "es" ? "Español" : "English")}
+      ${rowHtml("Language",      booking.language === "es" ? "Espa�ol" : "English")}
     </table>
 
     ${booking.message ? `
@@ -392,7 +392,7 @@ bookingRouter.post("/booking", async (req, res) => {
       return `
     <div style="margin:20px 0;border:1px solid #ddd;border-radius:10px;overflow:hidden;background:#f8f9ff;">
       <div style="background:#0B1A3F;padding:9px 14px;">
-        <span style="font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.6px;">📍 Property Location</span>
+        <span style="font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.6px;">?? Property Location</span>
       </div>
       <div style="padding:12px 14px 4px;">
         <p style="margin:0;font-size:15px;font-weight:600;color:#0B1A3F;">${addr}</p>
@@ -400,19 +400,19 @@ bookingRouter.post("/booking", async (req, res) => {
       <div style="padding:10px 14px 14px;display:flex;gap:8px;flex-wrap:wrap;">
         <a href="${svUrl}"  target="_blank"
            style="flex:1;min-width:110px;background:#34a853;color:#fff;padding:9px 10px;border-radius:7px;text-decoration:none;font-size:12px;font-weight:700;text-align:center;display:inline-block;">
-          🚶 Street View
+          ?? Street View
         </a>
         <a href="${gmUrl}"  target="_blank"
            style="flex:1;min-width:110px;background:#4285F4;color:#fff;padding:9px 10px;border-radius:7px;text-decoration:none;font-size:12px;font-weight:700;text-align:center;display:inline-block;">
-          🗺 Google Maps
+          ?? Google Maps
         </a>
         <a href="${zilUrl}" target="_blank"
            style="flex:1;min-width:110px;background:#006AFF;color:#fff;padding:9px 10px;border-radius:7px;text-decoration:none;font-size:12px;font-weight:700;text-align:center;display:inline-block;">
-          🏠 Zillow $
+          ?? Zillow $
         </a>
         <a href="${rfUrl}"  target="_blank"
            style="flex:1;min-width:110px;background:#d73b2f;color:#fff;padding:9px 10px;border-radius:7px;text-decoration:none;font-size:12px;font-weight:700;text-align:center;display:inline-block;">
-          🔴 Redfin $
+          ?? Redfin $
         </a>
       </div>
     </div>`;
@@ -422,10 +422,10 @@ bookingRouter.post("/booking", async (req, res) => {
       <a href="${approvalUrl}"
          style="display:inline-block;background:#16a34a;color:#fff;text-decoration:none;
                 font-weight:bold;font-size:15px;padding:14px 40px;border-radius:6px;letter-spacing:.5px;">
-        ✅ Approve Booking
+        ? Approve Booking
       </a>
       <p style="margin-top:8px;font-size:12px;color:#f97316;font-weight:600;">
-        ⚠️ After clicking — confirm on the page that opens (auto-confirms in 5 sec).
+        ?? After clicking � confirm on the page that opens (auto-confirms in 5 sec).
       </p>
       <p style="margin-top:6px;font-size:11px;color:#999;">
         Link: <a href="${approvalUrl}" style="color:#1B6FE8;">${approvalUrl}</a>
@@ -433,17 +433,17 @@ bookingRouter.post("/booking", async (req, res) => {
     </div>
 
     <div style="margin-top:20px;padding:12px 16px;background:#eff6ff;border-radius:6px;font-size:13px;color:#1B6FE8;">
-      ⏱ Call customer within 15 minutes to confirm appointment.
+      ? Call customer within 15 minutes to confirm appointment.
     </div>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
+    Hi-Tech Repair Group � Houston Metropolitan Area � (346) 696-8751<br>
     Received: ${new Date(booking.createdAt).toLocaleString("en-US", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`;
 
   const text = [
-    `New Booking — ${booking.id.slice(0, 8).toUpperCase()}`,
+    `New Booking � ${booking.id.slice(0, 8).toUpperCase()}`,
     `Name:          ${booking.name}`,
     `Phone:         ${booking.phone}`,
     `Email:         ${booking.email}`,
@@ -474,22 +474,22 @@ bookingRouter.post("/booking", async (req, res) => {
 
   res.json({ ok: true, id: booking.id });
 
-  // ── WhatsApp notification to owner (fire-and-forget) ───────────────────
+  // -- WhatsApp notification to owner (fire-and-forget) -------------------
   sendOwnerWA(
-    `📋 NEW BOOKING — ${booking.id.slice(0, 8).toUpperCase()}\n` +
-    `👤 ${booking.name}\n` +
-    `📞 ${booking.phone}\n` +
-    `🔧 ${booking.appliance}${booking.brandModel ? ` · ${booking.brandModel}` : ""}\n` +
-    `📅 ${booking.preferredDate} · ${booking.preferredTime}\n` +
-    (booking.message ? `💬 ${booking.message}\n` : "") +
+    `?? NEW BOOKING � ${booking.id.slice(0, 8).toUpperCase()}\n` +
+    `?? ${booking.name}\n` +
+    `?? ${booking.phone}\n` +
+    `?? ${booking.appliance}${booking.brandModel ? ` � ${booking.brandModel}` : ""}\n` +
+    `?? ${booking.preferredDate} � ${booking.preferredTime}\n` +
+    (booking.message ? `?? ${booking.message}\n` : "") +
     `\n${ownerAddrBlock(booking.address)}\n` +
-    `\n✅ Approve: ${approvalUrl}`,
+    `\n? Approve: ${approvalUrl}`,
     req.log,
   );
 
 });
 
-// ─── HubSpot sync ─────────────────────────────────────────────────────────────
+// --- HubSpot sync -------------------------------------------------------------
 async function syncToHubSpot(
   booking: Booking,
   log: { info: (obj: object, msg?: string) => void; error: (obj: object, msg?: string) => void },
@@ -567,7 +567,7 @@ async function syncToHubSpot(
   }
 }
 
-// ─── Admin PIN middleware (scrypt-hashed comparison) ─────────────────────────
+// --- Admin PIN middleware (scrypt-hashed comparison) -------------------------
 async function verifyPin(provided: string, stored: string): Promise<boolean> {
   // Support both plain (legacy/dev) and hashed (salt:hash) formats
   if (!stored.includes(":")) {
@@ -590,7 +590,7 @@ function requireAdminPin(req: import("express").Request, res: import("express").
   if (bearer && verifyAdminToken(bearer)) { next(); return; }
 
   const adminPin = process.env["ADMIN_PIN"] ?? "";
-  if (!adminPin) { next(); return; } // no pin set → open (dev only)
+  if (!adminPin) { next(); return; } // no pin set ? open (dev only)
   const rawPin = (req.headers["x-admin-pin"] as string | undefined) ?? (req.query["pin"] as string | undefined) ?? "";
   const pin = (() => { try { return decodeURIComponent(rawPin); } catch { return rawPin; } })();
   verifyPin(pin, adminPin).then(ok => {
@@ -599,7 +599,7 @@ function requireAdminPin(req: import("express").Request, res: import("express").
   }).catch(() => res.status(401).json({ error: "Unauthorized" }));
 }
 
-// ─── GET /api/availability ───────────────────────────────────────────────────
+// --- GET /api/availability ---------------------------------------------------
 // Returns booked and blocked time slots for a given date
 // Query: ?date=Apr+10,+2026  OR  ?date=2026-04-10  (both formats supported)
 bookingRouter.get("/availability", async (req, res) => {
@@ -633,7 +633,7 @@ bookingRouter.get("/availability", async (req, res) => {
   res.json({ date: norm, bookedSlots, bookedDetails, blockedSlots });
 });
 
-// ─── POST /api/admin/hs-sync ──────────────────────────────────────────────────
+// --- POST /api/admin/hs-sync --------------------------------------------------
 // Checks HubSpot for deleted/archived deals and cancels the corresponding
 // local bookings so the admin panel always reflects the true state.
 // Sends WhatsApp to owner for each auto-cancelled booking.
@@ -663,7 +663,7 @@ bookingRouter.post("/admin/hs-sync", requireAdminPin, async (req, res) => {
       body:    JSON.stringify({ inputs, properties: ["dealstage"] }),
     });
 
-    // Safety: if HubSpot returns a server error — abort, cancel nothing
+    // Safety: if HubSpot returns a server error � abort, cancel nothing
     if (hsRes.status >= 500) {
       req.log.warn({ status: hsRes.status }, "hs-sync: HubSpot server error, skipping to avoid false cancellations");
       res.json({ ok: true, synced: 0, note: "hs api error" });
@@ -691,12 +691,12 @@ bookingRouter.post("/admin/hs-sync", requireAdminPin, async (req, res) => {
           // Notify owner via WhatsApp
           const shortId = row.id.slice(0, 8).toUpperCase();
           sendOwnerNotification(
-            `🗑️ ЗАЯВКА УДАЛЕНА — ${shortId}\n` +
-            `👤 ${row.name}\n` +
-            `📞 ${row.phone}\n` +
-            `🔧 ${row.appliance || "—"}\n` +
-            `📅 ${row.preferred_date} · ${row.preferred_time}\n` +
-            `ℹ️ Сделка удалена в HubSpot — бронь автоматически отменена`,
+            `??? ?????? ??????? � ${shortId}\n` +
+            `?? ${row.name}\n` +
+            `?? ${row.phone}\n` +
+            `?? ${row.appliance || "�"}\n` +
+            `?? ${row.preferred_date} � ${row.preferred_time}\n` +
+            `?? ?????? ??????? ? HubSpot � ????? ????????????? ????????`,
             req.log,
           );
         }
@@ -710,7 +710,7 @@ bookingRouter.post("/admin/hs-sync", requireAdminPin, async (req, res) => {
   }
 });
 
-// ─── GET /api/admin/schedule ──────────────────────────────────────────────────
+// --- GET /api/admin/schedule --------------------------------------------------
 // Returns all bookings + blocked slots for a given date range
 // Also auto-completes past approved bookings (date has passed)
 bookingRouter.get("/admin/schedule", requireAdminPin, async (req, res) => {
@@ -721,7 +721,7 @@ bookingRouter.get("/admin/schedule", requireAdminPin, async (req, res) => {
        WHERE status = 'approved'
          AND preferred_date IS NOT NULL
          AND preferred_date <> ''
-         AND preferred_date NOT LIKE '%–%'
+         AND preferred_date NOT LIKE '%�%'
          AND preferred_date NOT LIKE '%-%PM'
          AND preferred_date NOT LIKE '%-%AM'
          AND to_date(
@@ -730,7 +730,7 @@ bookingRouter.get("/admin/schedule", requireAdminPin, async (req, res) => {
          ) < (CURRENT_TIMESTAMP AT TIME ZONE 'America/Chicago')::date - interval '2 days'`,
     );
   } catch (_) {
-    // Non-fatal: some dates may not parse (e.g. WhatsApp ranges like "9 AM–12 PM")
+    // Non-fatal: some dates may not parse (e.g. WhatsApp ranges like "9 AM�12 PM")
   }
 
   const [bookings, blocked] = await Promise.all([
@@ -744,7 +744,7 @@ bookingRouter.get("/admin/schedule", requireAdminPin, async (req, res) => {
   res.json({ bookings: bookings.rows, blocked: blocked.rows });
 });
 
-// ─── POST /api/admin/complete-booking ────────────────────────────────────────
+// --- POST /api/admin/complete-booking ----------------------------------------
 // Manually mark a booking as completed (job done)
 bookingRouter.post("/admin/complete-booking", requireAdminPin, async (req, res) => {
   const { id } = req.body as { id?: string };
@@ -763,7 +763,7 @@ bookingRouter.post("/admin/complete-booking", requireAdminPin, async (req, res) 
   if (!rowCount) { res.status(404).json({ error: "booking not found or already completed/cancelled" }); return; }
   req.log.info({ bookingId: id }, "Booking marked as completed by admin");
 
-  // ── HubSpot: update deal stage to closedwon ─────────────────────────────
+  // -- HubSpot: update deal stage to closedwon -----------------------------
   const hsDealId: string | undefined = booking.hsDealId;
   if (hsDealId) {
     updateDealStageInHubSpot(hsDealId, "closedwon", req.log).then(r => {
@@ -771,10 +771,10 @@ bookingRouter.post("/admin/complete-booking", requireAdminPin, async (req, res) 
       else      req.log.warn({ error: r.error }, "HubSpot stage update failed on completion (non-fatal)");
     }).catch(() => {});
   } else {
-    req.log.info({ bookingId: id }, "HubSpot stage update skipped on completion — no hs_deal_id");
+    req.log.info({ bookingId: id }, "HubSpot stage update skipped on completion � no hs_deal_id");
   }
 
-  // ── Email to owner ──────────────────────────────────────────────────────
+  // -- Email to owner ------------------------------------------------------
   const emailUser = process.env["EMAIL_USER"] ?? "";
   const emailPass = process.env["EMAIL_PASS"] ?? "";
   const emailTo   = process.env["EMAIL_TO"]   ?? "";
@@ -792,29 +792,29 @@ bookingRouter.post("/admin/complete-booking", requireAdminPin, async (req, res) 
         await transporter.sendMail({
           from:    `"Hi-Tech Repair Group" <${emailUser}>`,
           to:      emailTo,
-          subject: `✅ Заказ выполнен [${shortId}] — ${booking.name}`,
+          subject: `? ????? ???????? [${shortId}] � ${booking.name}`,
           html: `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#16a34a;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">✅ Заказ выполнен</h2>
-    <p style="color:#bbf7d0;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group · ID: <strong style="color:#fff;">${shortId}</strong></p>
+    <h2 style="color:#fff;margin:0;font-size:20px;">? ????? ????????</h2>
+    <p style="color:#bbf7d0;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group � ID: <strong style="color:#fff;">${shortId}</strong></p>
   </div>
   <div style="padding:24px;">
     <table style="width:100%;border-collapse:collapse;font-size:14px;">
-      ${rowHtml("Клиент",   booking.name)}
-      ${rowHtml("Телефон",  booking.phone)}
-      ${rowHtml("Техника",  booking.appliance)}
-      ${rowHtml("Дата",     booking.preferredDate)}
-      ${rowHtml("Время",    booking.preferredTime)}
-      ${rowHtml("Адрес",    booking.address)}
+      ${rowHtml("??????",   booking.name)}
+      ${rowHtml("???????",  booking.phone)}
+      ${rowHtml("???????",  booking.appliance)}
+      ${rowHtml("????",     booking.preferredDate)}
+      ${rowHtml("?????",    booking.preferredTime)}
+      ${rowHtml("?????",    booking.address)}
     </table>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
-    Завершено: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
+    Hi-Tech Repair Group � Houston Metropolitan Area � (346) 696-8751<br>
+    ?????????: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`,
-          text: `Заказ выполнен.\nID: ${shortId}\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nДата: ${booking.preferredDate} · ${booking.preferredTime}`,
+          text: `????? ????????.\nID: ${shortId}\n??????: ${booking.name}\n???????: ${booking.phone}\n????: ${booking.preferredDate} � ${booking.preferredTime}`,
         });
         req.log.info({ bookingId: id }, "Completion email sent to owner");
       } catch (err) {
@@ -823,22 +823,22 @@ bookingRouter.post("/admin/complete-booking", requireAdminPin, async (req, res) 
     })();
   }
 
-  // ── WhatsApp notification to owner ──────────────────────────────────────
+  // -- WhatsApp notification to owner --------------------------------------
   sendOwnerWA(
-    `✅ ЗАКАЗ ВЫПОЛНЕН\n` +
-    `👤 ${booking.name}\n` +
-    `📞 ${booking.phone}\n` +
-    `🔧 ${booking.appliance || "—"}\n` +
-    `📅 ${booking.preferredDate} · ${booking.preferredTime}\n` +
-    `🆔 ID: ${booking.id.slice(0, 8).toUpperCase()}\n` +
-    `📌 Отмечено выполненным в панели управления`,
+    `? ????? ????????\n` +
+    `?? ${booking.name}\n` +
+    `?? ${booking.phone}\n` +
+    `?? ${booking.appliance || "�"}\n` +
+    `?? ${booking.preferredDate} � ${booking.preferredTime}\n` +
+    `?? ID: ${booking.id.slice(0, 8).toUpperCase()}\n` +
+    `?? ???????? ??????????? ? ?????? ??????????`,
     req.log,
   );
 
   res.json({ ok: true });
 });
 
-// ─── POST /api/admin/approve-booking ─────────────────────────────────────────
+// --- POST /api/admin/approve-booking -----------------------------------------
 // Admin approves a pending booking (sends confirmation email to client)
 bookingRouter.post("/admin/approve-booking", requireAdminPin, async (req, res) => {
   const { id } = req.body as { id?: string };
@@ -859,18 +859,18 @@ bookingRouter.post("/admin/approve-booking", requireAdminPin, async (req, res) =
   await approveBooking(id);
   req.log.info({ bookingId: id }, "Booking approved by admin panel");
 
-  // ── WhatsApp confirmation to client ────────────────────────────────────────
+  // -- WhatsApp confirmation to client ----------------------------------------
   sendClientConfirmWA(booking, req.log);
 
-  // ── HubSpot — update existing deal stage OR create new if no deal yet ────
+  // -- HubSpot � update existing deal stage OR create new if no deal yet ----
   if (booking.hsDealId) {
-    // Deal already created at booking-submission time → just update stage to "closedwon"
+    // Deal already created at booking-submission time ? just update stage to "closedwon"
     updateDealStageInHubSpot(booking.hsDealId, "closedwon", req.log).then(r => {
       if (r.ok) req.log.info({ hsDealId: booking.hsDealId, bookingId: id }, "HubSpot deal stage updated to closedwon on approval");
       else      req.log.warn({ error: r.error, bookingId: id }, "HubSpot stage update failed (non-fatal)");
     }).catch(() => {});
   } else {
-    // No deal yet (legacy booking or HubSpot was down at creation) → create new
+    // No deal yet (legacy booking or HubSpot was down at creation) ? create new
     const hsSource = booking.message === "Via WhatsApp Bot" ? "whatsapp" : "website";
     syncBookingToHubSpot({
       id:            booking.id,
@@ -894,7 +894,7 @@ bookingRouter.post("/admin/approve-booking", requireAdminPin, async (req, res) =
     }).catch((err: unknown) => req.log.error({ err, bookingId: id }, "HubSpot sync error on admin approval"));
   }
 
-  // ── Confirmation email to client ───────────────────────────────────────────
+  // -- Confirmation email to client -------------------------------------------
   const emailUser = process.env["EMAIL_USER"] ?? "";
   const emailPass = process.env["EMAIL_PASS"] ?? "";
   const API_BASE  = "https://htr-group-llc-appliance-repair.replit.app";
@@ -909,35 +909,35 @@ bookingRouter.post("/admin/approve-booking", requireAdminPin, async (req, res) =
   const clientHtml2 = isEs ? `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#1B6FE8;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">✅ ¡Su cita ha sido confirmada!</h2>
-    <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group · Área Metropolitana de Houston</p>
+    <h2 style="color:#fff;margin:0;font-size:20px;">? �Su cita ha sido confirmada!</h2>
+    <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group � �rea Metropolitana de Houston</p>
   </div>
   <div style="padding:24px;">
-    <p style="font-size:15px;color:#1a1a1a;line-height:1.6;">Estimado/a <strong>${booking.name}</strong>,<br><br>Nos complace confirmar su cita de reparación de electrodomésticos en el hogar.</p>
+    <p style="font-size:15px;color:#1a1a1a;line-height:1.6;">Estimado/a <strong>${booking.name}</strong>,<br><br>Nos complace confirmar su cita de reparaci�n de electrodom�sticos en el hogar.</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:18px;">
       ${clientRowHtml2("Nombre",           booking.name)}
-      ${clientRowHtml2("Teléfono",         booking.phone)}
-      ${clientRowHtml2("Dirección",        booking.address)}
-      ${clientRowHtml2("Electrodoméstico", booking.appliance)}
+      ${clientRowHtml2("Tel�fono",         booking.phone)}
+      ${clientRowHtml2("Direcci�n",        booking.address)}
+      ${clientRowHtml2("Electrodom�stico", booking.appliance)}
       ${clientRowHtml2("Marca / Modelo",   booking.brandModel)}
       ${clientRowHtml2("Fecha programada", booking.preferredDate)}
       ${clientRowHtml2("Hora programada",  booking.preferredTime)}
     </table>
     <div style="margin-top:24px;padding:16px 20px;background:#fff7ed;border-left:4px solid #f97316;border-radius:6px;font-size:14px;line-height:1.7;color:#7c2d12;">
-      <strong>🐾 Aviso importante — Seguridad de mascotas y técnico:</strong><br>
-      Por razones de seguridad, tanto para nuestro técnico como para sus mascotas, le pedimos que <strong>aísle en una habitación separada</strong> a todos los animales grandes, reptiles, animales exóticos y gatos antes de la llegada del técnico.
+      <strong>?? Aviso importante � Seguridad de mascotas y t�cnico:</strong><br>
+      Por razones de seguridad, tanto para nuestro t�cnico como para sus mascotas, le pedimos que <strong>a�sle en una habitaci�n separada</strong> a todos los animales grandes, reptiles, animales ex�ticos y gatos antes de la llegada del t�cnico.
     </div>
     <p style="margin-top:24px;font-size:14px;color:#444;">Preguntas: <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a></p>
     <div style="margin-top:20px;padding:14px 18px;background:#fef2f2;border-radius:8px;font-size:13px;color:#666;text-align:center;">
-      ¿Necesita cancelar? <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">Cancelar mi cita</a>
+      �Necesita cancelar? <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">Cancelar mi cita</a>
     </div>
   </div>
-  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group · Houston · (346) 696-8751</div>
+  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group � Houston � (346) 696-8751</div>
 </div>` : `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#1B6FE8;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">✅ Your Appointment is Confirmed!</h2>
-    <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group · Houston Metropolitan Area</p>
+    <h2 style="color:#fff;margin:0;font-size:20px;">? Your Appointment is Confirmed!</h2>
+    <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group � Houston Metropolitan Area</p>
   </div>
   <div style="padding:24px;">
     <p style="font-size:15px;color:#1a1a1a;line-height:1.6;">Dear <strong>${booking.name}</strong>,<br><br>We are pleased to confirm your home appliance repair appointment.</p>
@@ -951,7 +951,7 @@ bookingRouter.post("/admin/approve-booking", requireAdminPin, async (req, res) =
       ${clientRowHtml2("Scheduled Time", booking.preferredTime)}
     </table>
     <div style="margin-top:24px;padding:16px 20px;background:#fff7ed;border-left:4px solid #f97316;border-radius:6px;font-size:14px;line-height:1.7;color:#7c2d12;">
-      <strong>🐾 Important — Pet & Technician Safety Notice:</strong><br>
+      <strong>?? Important � Pet & Technician Safety Notice:</strong><br>
       For the safety of both our technician and your pets, please <strong>isolate in a separate room</strong> all large animals, reptiles, exotic animals, and cats before our technician arrives.
     </div>
     <p style="margin-top:24px;font-size:14px;color:#444;">Questions: <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a></p>
@@ -959,7 +959,7 @@ bookingRouter.post("/admin/approve-booking", requireAdminPin, async (req, res) =
       Need to cancel? <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">Cancel my appointment</a>
     </div>
   </div>
-  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751</div>
+  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group � Houston Metropolitan Area � (346) 696-8751</div>
 </div>`;
 
   let emailSent = false;
@@ -969,7 +969,7 @@ bookingRouter.post("/admin/approve-booking", requireAdminPin, async (req, res) =
       await t.sendMail({
         from:    `"Hi-Tech Repair Group" <${emailUser}>`,
         to:      booking.email,
-        subject: isEs ? "✅ Cita confirmada — Hi-Tech Repair Group" : "✅ Appointment Confirmed — Hi-Tech Repair Group",
+        subject: isEs ? "? Cita confirmada � Hi-Tech Repair Group" : "? Appointment Confirmed � Hi-Tech Repair Group",
         html:    clientHtml2,
       });
       emailSent = true;
@@ -982,7 +982,7 @@ bookingRouter.post("/admin/approve-booking", requireAdminPin, async (req, res) =
   res.json({ ok: true, emailSent });
 });
 
-// ─── POST /api/admin/block ────────────────────────────────────────────────────
+// --- POST /api/admin/block ----------------------------------------------------
 bookingRouter.post("/admin/block", requireAdminPin, async (req, res) => {
   const { date, time, reason } = req.body as { date?: string; time?: string; reason?: string };
   if (!date || !time) {
@@ -997,7 +997,7 @@ bookingRouter.post("/admin/block", requireAdminPin, async (req, res) => {
     [date.trim(), time.trim(), reasonTrimmed],
   );
 
-  // ── Send notification email in background (non-blocking) ───────────────
+  // -- Send notification email in background (non-blocking) ---------------
   res.json({ ok: true });
   const emailUser = process.env["EMAIL_USER"] ?? "";
   const emailPass = process.env["EMAIL_PASS"] ?? "";
@@ -1009,38 +1009,38 @@ bookingRouter.post("/admin/block", requireAdminPin, async (req, res) => {
           service: "gmail",
           auth: { user: emailUser, pass: emailPass },
         });
-        const subject = `🔒 Slot Blocked — ${date.trim()} · ${time.trim()}`;
+        const subject = `?? Slot Blocked � ${date.trim()} � ${time.trim()}`;
         const html = `
 <div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#0B1A3F;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">🔒 Slot Blocked by Administrator</h2>
-    <p style="color:#8ba3cc;margin:6px 0 0;font-size:13px;">HTRGroup &nbsp;·&nbsp; Admin Action</p>
+    <h2 style="color:#fff;margin:0;font-size:20px;">?? Slot Blocked by Administrator</h2>
+    <p style="color:#8ba3cc;margin:6px 0 0;font-size:13px;">HTRGroup &nbsp;�&nbsp; Admin Action</p>
   </div>
   <div style="padding:24px;">
     <div style="display:inline-block;background:#f97316;color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:.5px;margin-bottom:20px;">
-      ЗАБЛОКИРОВАН АДМИНИСТРАТОРОМ
+      ???????????? ???????????????
     </div>
     <table style="width:100%;border-collapse:collapse;font-size:14px;">
       <tr style="border-bottom:1px solid #eee;">
-        <td style="padding:10px 8px;color:#666;width:130px;">📅 Дата</td>
+        <td style="padding:10px 8px;color:#666;width:130px;">?? ????</td>
         <td style="padding:10px 8px;font-weight:600;">${date.trim()}</td>
       </tr>
       <tr style="border-bottom:1px solid #eee;">
-        <td style="padding:10px 8px;color:#666;">🕐 Время</td>
+        <td style="padding:10px 8px;color:#666;">?? ?????</td>
         <td style="padding:10px 8px;font-weight:600;">${time.trim()}</td>
       </tr>
       ${reasonTrimmed ? `<tr style="border-bottom:1px solid #eee;">
-        <td style="padding:10px 8px;color:#666;">📝 Причина</td>
+        <td style="padding:10px 8px;color:#666;">?? ???????</td>
         <td style="padding:10px 8px;font-weight:600;">${reasonTrimmed}</td>
       </tr>` : ""}
     </table>
     <p style="margin:20px 0 0;font-size:12px;color:#999;">
-      Этот слот заблокирован вручную и недоступен для онлайн-бронирования.<br>
-      Чтобы разблокировать — войдите в Admin Panel и нажмите «Разблокировать».
+      ???? ???? ???????????? ??????? ? ?????????? ??? ??????-????????????.<br>
+      ????? ?????????????? � ??????? ? Admin Panel ? ??????? �??????????????�.
     </p>
   </div>
   <div style="background:#f5f5f5;padding:12px 24px;font-size:11px;color:#aaa;text-align:center;">
-    HTRGroup · (346) 696-8751 · htrgrouptx.com
+    HTRGroup � (346) 696-8751 � appfixpro.com
   </div>
 </div>`;
         await transporter.sendMail({ from: `"HTRGroup Admin" <${emailUser}>`, to: emailTo, subject, html });
@@ -1051,7 +1051,7 @@ bookingRouter.post("/admin/block", requireAdminPin, async (req, res) => {
   }
 });
 
-// ─── DELETE /api/admin/block ──────────────────────────────────────────────────
+// --- DELETE /api/admin/block --------------------------------------------------
 bookingRouter.delete("/admin/block", requireAdminPin, async (req, res) => {
   const { date, time } = req.body as { date?: string; time?: string };
   if (!date || !time) {
@@ -1063,7 +1063,7 @@ bookingRouter.delete("/admin/block", requireAdminPin, async (req, res) => {
     [date.trim(), time.trim()],
   );
 
-  // ── Send notification email in background (non-blocking) ───────────────
+  // -- Send notification email in background (non-blocking) ---------------
   res.json({ ok: true });
   const emailUser = process.env["EMAIL_USER"] ?? "";
   const emailPass = process.env["EMAIL_PASS"] ?? "";
@@ -1075,33 +1075,33 @@ bookingRouter.delete("/admin/block", requireAdminPin, async (req, res) => {
           service: "gmail",
           auth: { user: emailUser, pass: emailPass },
         });
-        const subject = `🔓 Slot Unblocked — ${date.trim()} · ${time.trim()}`;
+        const subject = `?? Slot Unblocked � ${date.trim()} � ${time.trim()}`;
         const html = `
 <div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#0B1A3F;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">🔓 Slot Unblocked by Administrator</h2>
-    <p style="color:#8ba3cc;margin:6px 0 0;font-size:13px;">HTRGroup &nbsp;·&nbsp; Admin Action</p>
+    <h2 style="color:#fff;margin:0;font-size:20px;">?? Slot Unblocked by Administrator</h2>
+    <p style="color:#8ba3cc;margin:6px 0 0;font-size:13px;">HTRGroup &nbsp;�&nbsp; Admin Action</p>
   </div>
   <div style="padding:24px;">
     <div style="display:inline-block;background:#16a34a;color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:.5px;margin-bottom:20px;">
-      РАЗБЛОКИРОВАН АДМИНИСТРАТОРОМ
+      ????????????? ???????????????
     </div>
     <table style="width:100%;border-collapse:collapse;font-size:14px;">
       <tr style="border-bottom:1px solid #eee;">
-        <td style="padding:10px 8px;color:#666;width:130px;">📅 Дата</td>
+        <td style="padding:10px 8px;color:#666;width:130px;">?? ????</td>
         <td style="padding:10px 8px;font-weight:600;">${date.trim()}</td>
       </tr>
       <tr style="border-bottom:1px solid #eee;">
-        <td style="padding:10px 8px;color:#666;">🕐 Время</td>
+        <td style="padding:10px 8px;color:#666;">?? ?????</td>
         <td style="padding:10px 8px;font-weight:600;">${time.trim()}</td>
       </tr>
     </table>
     <p style="margin:20px 0 0;font-size:12px;color:#999;">
-      Этот слот разблокирован и снова доступен для онлайн-бронирования.
+      ???? ???? ????????????? ? ????? ???????? ??? ??????-????????????.
     </p>
   </div>
   <div style="background:#f5f5f5;padding:12px 24px;font-size:11px;color:#aaa;text-align:center;">
-    HTRGroup · (346) 696-8751 · htrgrouptx.com
+    HTRGroup � (346) 696-8751 � appfixpro.com
   </div>
 </div>`;
         await transporter.sendMail({ from: `"HTRGroup Admin" <${emailUser}>`, to: emailTo, subject, html });
@@ -1112,7 +1112,7 @@ bookingRouter.delete("/admin/block", requireAdminPin, async (req, res) => {
   }
 });
 
-// ─── POST /api/admin/booking ─────────────────────────────────────────────────
+// --- POST /api/admin/booking -------------------------------------------------
 // Manually create a booking (admin only, auto-approved, sends notification email)
 bookingRouter.post("/admin/booking", requireAdminPin, async (req, res) => {
   const { name, phone, email, address, date, time, appliance, message } =
@@ -1160,7 +1160,7 @@ bookingRouter.post("/admin/booking", requireAdminPin, async (req, res) => {
   );
   req.log.info({ bookingId: id }, "Manual booking created by admin");
 
-  // ── HubSpot sync (fire-and-forget) ────────────────────────────────────
+  // -- HubSpot sync (fire-and-forget) ------------------------------------
   syncBookingToHubSpot({
     id,
     name:          name.trim(),
@@ -1177,9 +1177,9 @@ bookingRouter.post("/admin/booking", requireAdminPin, async (req, res) => {
       req.log.info({ dealId: r.dealId }, "HubSpot deal created (admin booking)");
       if (r.dealId) {
         pool.query(`UPDATE bookings SET hs_deal_id=$1 WHERE id=$2`, [r.dealId, id]).catch(() => {});
-        // Admin bookings are immediately approved → move deal to closedwon
+        // Admin bookings are immediately approved ? move deal to closedwon
         updateDealStageInHubSpot(r.dealId, "closedwon", req.log).then(upd => {
-          if (upd.ok) req.log.info({ dealId: r.dealId }, "HubSpot admin booking deal → closedwon");
+          if (upd.ok) req.log.info({ dealId: r.dealId }, "HubSpot admin booking deal ? closedwon");
           else req.log.warn({ error: upd.error }, "HubSpot closedwon update failed (non-fatal)");
         }).catch(() => {});
       }
@@ -1188,7 +1188,7 @@ bookingRouter.post("/admin/booking", requireAdminPin, async (req, res) => {
     }
   }).catch(() => {});
 
-  // ── Send notification email ─────────────────────────────────────────────
+  // -- Send notification email ---------------------------------------------
   const emailUser = process.env["EMAIL_USER"] ?? "";
   const emailPass = process.env["EMAIL_PASS"] ?? "";
   const emailTo   = process.env["EMAIL_TO"]   ?? "";
@@ -1201,7 +1201,7 @@ bookingRouter.post("/admin/booking", requireAdminPin, async (req, res) => {
       });
 
       const shortId = id.slice(0, 8).toUpperCase();
-      const subject = `🛠️ Admin Booking [${shortId}] — ${(appliance ?? "Appliance Repair").trim()}`;
+      const subject = `??? Admin Booking [${shortId}] � ${(appliance ?? "Appliance Repair").trim()}`;
 
       const rowHtml = (label: string, value: string) =>
         value
@@ -1214,36 +1214,36 @@ bookingRouter.post("/admin/booking", requireAdminPin, async (req, res) => {
       const html = `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#0D47B0;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">🛠️ Забронировано администратором</h2>
+    <h2 style="color:#fff;margin:0;font-size:20px;">??? ????????????? ???????????????</h2>
     <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">
-      Hi-Tech Repair Group &nbsp;·&nbsp; ID: <strong style="color:#fff;">${shortId}</strong>
+      Hi-Tech Repair Group &nbsp;�&nbsp; ID: <strong style="color:#fff;">${shortId}</strong>
     </p>
   </div>
   <div style="background:#fff3cd;border-left:4px solid #f59e0b;padding:12px 20px;font-size:13px;color:#92400e;font-weight:600;">
-    ⚠️ Это бронирование создано вручную администратором. Статус: ПОДТВЕРЖДЕНО
+    ?? ??? ???????????? ??????? ??????? ???????????????. ??????: ????????????
   </div>
   <div style="padding:24px;">
     <table style="width:100%;border-collapse:collapse;font-size:14px;">
-      ${rowHtml("Имя клиента",  name.trim())}
-      ${rowHtml("Телефон",      `<a href="tel:${phone.trim()}" style="color:#1B6FE8;">${phone.trim()}</a>`)}
-      ${rowHtml("Техника",      (appliance ?? "").trim())}
-      ${rowHtml("Дата",         date.trim())}
-      ${rowHtml("Время",        time.trim())}
+      ${rowHtml("??? ???????",  name.trim())}
+      ${rowHtml("???????",      `<a href="tel:${phone.trim()}" style="color:#1B6FE8;">${phone.trim()}</a>`)}
+      ${rowHtml("???????",      (appliance ?? "").trim())}
+      ${rowHtml("????",         date.trim())}
+      ${rowHtml("?????",        time.trim())}
     </table>
     ${msgTrimmed ? `
     <div style="margin-top:18px;">
-      <p style="font-size:13px;color:#666;margin:0 0 6px;font-weight:600;">Заметка / Адрес:</p>
+      <p style="font-size:13px;color:#666;margin:0 0 6px;font-weight:600;">??????? / ?????:</p>
       <div style="background:#f8fafc;border-left:4px solid #0D47B0;padding:12px 16px;border-radius:4px;font-size:14px;line-height:1.65;">
         ${msgTrimmed.replace(/\n/g, "<br>")}
       </div>
     </div>` : ""}
     <div style="margin-top:24px;padding:14px 18px;background:#eff6ff;border-radius:6px;font-size:13px;color:#1B6FE8;">
-      ✅ Слот уже подтверждён — дополнительного одобрения не требуется.
+      ? ???? ??? ??????????? � ??????????????? ????????? ?? ?????????.
     </div>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
-    Создано: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
+    Hi-Tech Repair Group � Houston Metropolitan Area � (346) 696-8751<br>
+    ???????: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`;
 
@@ -1254,12 +1254,12 @@ bookingRouter.post("/admin/booking", requireAdminPin, async (req, res) => {
         html,
         text: [
           `[ADMIN BOOKING] ID: ${shortId}`,
-          `Имя: ${name.trim()}`,
-          `Телефон: ${phone.trim()}`,
-          `Техника: ${(appliance ?? "").trim()}`,
-          `Дата: ${date.trim()} · Время: ${time.trim()}`,
-          msgTrimmed ? `Заметка: ${msgTrimmed}` : "",
-          `Статус: ПОДТВЕРЖДЕНО (создано администратором)`,
+          `???: ${name.trim()}`,
+          `???????: ${phone.trim()}`,
+          `???????: ${(appliance ?? "").trim()}`,
+          `????: ${date.trim()} � ?????: ${time.trim()}`,
+          msgTrimmed ? `???????: ${msgTrimmed}` : "",
+          `??????: ???????????? (??????? ???????????????)`,
         ].filter(Boolean).join("\n"),
       });
       req.log.info({ bookingId: id }, "Admin booking notification email sent");
@@ -1270,23 +1270,23 @@ bookingRouter.post("/admin/booking", requireAdminPin, async (req, res) => {
 
   res.json({ ok: true, id });
 
-  // ── WA+SMS notification to owner (fire-and-forget) ─────────────────────────
+  // -- WA+SMS notification to owner (fire-and-forget) -------------------------
   sendOwnerNotification(
-    `🛠️ ADMIN BOOKING — ${id.slice(0, 8).toUpperCase()}\n` +
-    `👤 ${name.trim()}\n` +
-    `📞 ${phone.trim()}\n` +
-    (emailTrim ? `📧 ${emailTrim}\n` : "") +
-    `🔧 ${(appliance ?? "").trim() || "—"}\n` +
-    `📅 ${date.trim()} · ${time.trim()}\n` +
-    (addressTrim ? `📍 ${addressTrim}\n` : "") +
-    (msgTrimmed  ? `💬 ${msgTrimmed}\n` : "") +
-    `✅ Создано администратором — статус: ПОДТВЕРЖДЕНО`,
+    `??? ADMIN BOOKING � ${id.slice(0, 8).toUpperCase()}\n` +
+    `?? ${name.trim()}\n` +
+    `?? ${phone.trim()}\n` +
+    (emailTrim ? `?? ${emailTrim}\n` : "") +
+    `?? ${(appliance ?? "").trim() || "�"}\n` +
+    `?? ${date.trim()} � ${time.trim()}\n` +
+    (addressTrim ? `?? ${addressTrim}\n` : "") +
+    (msgTrimmed  ? `?? ${msgTrimmed}\n` : "") +
+    `? ??????? ??????????????? � ??????: ????????????`,
     req.log,
   );
 });
 
-// ─── POST /api/admin/edit-booking ────────────────────────────────────────────
-// Edit an existing booking. Sends email + WA+SMS. Updates HubSpot (archive old → create new).
+// --- POST /api/admin/edit-booking --------------------------------------------
+// Edit an existing booking. Sends email + WA+SMS. Updates HubSpot (archive old ? create new).
 bookingRouter.post("/admin/edit-booking", requireAdminPin, async (req, res) => {
   const { id, name, phone, email, address, date, time, appliance, message } =
     req.body as Record<string, string | undefined>;
@@ -1339,7 +1339,7 @@ bookingRouter.post("/admin/edit-booking", requireAdminPin, async (req, res) => {
 
   res.json({ ok: true });
 
-  // ── HubSpot: archive old deal, create new ────────────────────────────────
+  // -- HubSpot: archive old deal, create new --------------------------------
   const oldDealId = booking.hsDealId;
   if (oldDealId) {
     cancelDealInHubSpot(oldDealId, req.log).then(r => {
@@ -1368,7 +1368,7 @@ bookingRouter.post("/admin/edit-booking", requireAdminPin, async (req, res) => {
     }
   }).catch(() => {});
 
-  // ── Email to owner ────────────────────────────────────────────────────────
+  // -- Email to owner --------------------------------------------------------
   const emailUser = process.env["EMAIL_USER"] ?? "";
   const emailPass = process.env["EMAIL_PASS"] ?? "";
   const emailTo   = process.env["EMAIL_TO"]   ?? "";
@@ -1383,33 +1383,33 @@ bookingRouter.post("/admin/edit-booking", requireAdminPin, async (req, res) => {
         await transporter.sendMail({
           from:    `"Hi-Tech Repair Group" <${emailUser}>`,
           to:      emailTo,
-          subject: `✏️ Бронирование изменено [${shortId}] — ${name.trim()}`,
+          subject: `?? ???????????? ???????? [${shortId}] � ${name.trim()}`,
           html: `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#7c3aed;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">✏️ Бронирование изменено</h2>
-    <p style="color:#ddd6fe;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group · ID: <strong style="color:#fff;">${shortId}</strong></p>
+    <h2 style="color:#fff;margin:0;font-size:20px;">?? ???????????? ????????</h2>
+    <p style="color:#ddd6fe;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group � ID: <strong style="color:#fff;">${shortId}</strong></p>
   </div>
   <div style="background:#f5f3ff;border-left:4px solid #7c3aed;padding:12px 20px;font-size:13px;color:#5b21b6;font-weight:600;">
-    ✏️ Данные брони изменены администратором
+    ?? ?????? ????? ???????? ???????????????
   </div>
   <div style="padding:24px;">
     <table style="width:100%;border-collapse:collapse;font-size:14px;">
-      ${rowHtml("Клиент",   name.trim())}
-      ${rowHtml("Телефон",  `<a href="tel:${phone.trim()}" style="color:#1B6FE8;">${phone.trim()}</a>`)}
+      ${rowHtml("??????",   name.trim())}
+      ${rowHtml("???????",  `<a href="tel:${phone.trim()}" style="color:#1B6FE8;">${phone.trim()}</a>`)}
       ${rowHtml("Email",    emailTrim)}
-      ${rowHtml("Адрес",    addressTrim)}
-      ${rowHtml("Техника",  applianceTrim)}
-      ${rowHtml("Дата",     date.trim())}
-      ${rowHtml("Время",    time.trim())}
+      ${rowHtml("?????",    addressTrim)}
+      ${rowHtml("???????",  applianceTrim)}
+      ${rowHtml("????",     date.trim())}
+      ${rowHtml("?????",    time.trim())}
     </table>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
-    Изменено: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
+    Hi-Tech Repair Group � Houston Metropolitan Area � (346) 696-8751<br>
+    ????????: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`,
-          text: `Бронирование изменено.\nID: ${shortId}\nКлиент: ${name.trim()}\nТелефон: ${phone.trim()}\nДата: ${date.trim()} · ${time.trim()}`,
+          text: `???????????? ????????.\nID: ${shortId}\n??????: ${name.trim()}\n???????: ${phone.trim()}\n????: ${date.trim()} � ${time.trim()}`,
         });
         req.log.info({ bookingId: id }, "Edit notification email sent to owner");
       } catch (err) {
@@ -1418,22 +1418,22 @@ bookingRouter.post("/admin/edit-booking", requireAdminPin, async (req, res) => {
     })();
   }
 
-  // ── WA+SMS to owner ───────────────────────────────────────────────────────
+  // -- WA+SMS to owner -------------------------------------------------------
   sendOwnerNotification(
-    `✏️ БРОНЬ ИЗМЕНЕНА — ${id.slice(0, 8).toUpperCase()}\n` +
-    `👤 ${name.trim()}\n` +
-    `📞 ${phone.trim()}\n` +
-    (emailTrim    ? `📧 ${emailTrim}\n`    : "") +
-    `🔧 ${applianceTrim || "—"}\n` +
-    `📅 ${date.trim()} · ${time.trim()}\n` +
-    (addressTrim  ? `📍 ${addressTrim}\n`  : "") +
-    `✏️ Данные обновлены администратором`,
+    `?? ????? ???????? � ${id.slice(0, 8).toUpperCase()}\n` +
+    `?? ${name.trim()}\n` +
+    `?? ${phone.trim()}\n` +
+    (emailTrim    ? `?? ${emailTrim}\n`    : "") +
+    `?? ${applianceTrim || "�"}\n` +
+    `?? ${date.trim()} � ${time.trim()}\n` +
+    (addressTrim  ? `?? ${addressTrim}\n`  : "") +
+    `?? ?????? ????????? ???????????????`,
     req.log,
   );
 });
 
-// ─── POST /api/admin/cancel-booking ──────────────────────────────────────────
-// Cancel a client booking — sets status to 'cancelled' and sends notification emails
+// --- POST /api/admin/cancel-booking ------------------------------------------
+// Cancel a client booking � sets status to 'cancelled' and sends notification emails
 bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) => {
   const { id } = req.body as { id?: string };
   if (!id) {
@@ -1458,7 +1458,7 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
   }
   req.log.info({ bookingId: id }, "Booking cancelled by admin");
 
-  // ── HubSpot: delete the deal (booking cancelled) ────────────────────────────
+  // -- HubSpot: delete the deal (booking cancelled) ----------------------------
   const hsDealId: string | undefined = booking.hsDealId;
   if (hsDealId) {
     cancelDealInHubSpot(hsDealId, req.log).then(r => {
@@ -1466,17 +1466,17 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
       else      req.log.warn({ error: r.error }, "HubSpot deal delete failed (non-fatal)");
     }).catch(() => {});
   } else {
-    req.log.info({ bookingId: id }, "HubSpot cancel skipped — no hs_deal_id (booking pre-dates HubSpot sync)");
+    req.log.info({ bookingId: id }, "HubSpot cancel skipped � no hs_deal_id (booking pre-dates HubSpot sync)");
   }
 
-  // ── Also free blocked_slots linked to this booking ─────────────────────────
+  // -- Also free blocked_slots linked to this booking -------------------------
   // WA bookings block individual hourly slots; clear them when booking is cancelled
   try {
     const WA_MORNING   = ["9:00 AM","10:00 AM","11:00 AM","12:00 PM"];
     const WA_AFTERNOON = ["1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM"];
     const pt = booking.preferredTime ?? "";
-    const isWAMorning   = pt.includes("9 AM") || pt.includes("AM–12") || pt.includes("AM-12");
-    const isWAAfternoon = pt.includes("1 PM") || pt.includes("PM–5") || pt.includes("PM-5");
+    const isWAMorning   = pt.includes("9 AM") || pt.includes("AM�12") || pt.includes("AM-12");
+    const isWAAfternoon = pt.includes("1 PM") || pt.includes("PM�5") || pt.includes("PM-5");
     if (isWAMorning || isWAAfternoon) {
       const hours = isWAMorning ? WA_MORNING : WA_AFTERNOON;
       for (const h of hours) {
@@ -1491,7 +1491,7 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
     req.log.warn({ err: e }, "Could not clear blocked_slots on cancel (non-fatal)");
   }
 
-  // ── Send notification emails (non-fatal) ──────────────────────────────────
+  // -- Send notification emails (non-fatal) ----------------------------------
   const emailUser = process.env["EMAIL_USER"] ?? "";
   const emailPass = process.env["EMAIL_PASS"] ?? "";
   const emailTo   = process.env["EMAIL_TO"]   ?? "";
@@ -1512,51 +1512,51 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
              </tr>`
           : "";
 
-      // ── Email to admin ──────────────────────────────────────────────────
+      // -- Email to admin --------------------------------------------------
       const adminHtml = `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#dc2626;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">❌ Бронирование отменено</h2>
+    <h2 style="color:#fff;margin:0;font-size:20px;">? ???????????? ????????</h2>
     <p style="color:#fecaca;margin:6px 0 0;font-size:13px;">
-      Hi-Tech Repair Group &nbsp;·&nbsp; ID: <strong style="color:#fff;">${shortId}</strong>
+      Hi-Tech Repair Group &nbsp;�&nbsp; ID: <strong style="color:#fff;">${shortId}</strong>
     </p>
   </div>
   <div style="background:#fef2f2;border-left:4px solid #dc2626;padding:12px 20px;font-size:13px;color:#991b1b;font-weight:600;">
-    ⚠️ Слот освобождён администратором — доступен для новых бронирований
+    ?? ???? ?????????? ??????????????? � ???????? ??? ????? ????????????
   </div>
   <div style="padding:24px;">
     <table style="width:100%;border-collapse:collapse;font-size:14px;">
-      ${rowHtml("Клиент",    booking.name)}
-      ${rowHtml("Телефон",   `<a href="tel:${booking.phone}" style="color:#1B6FE8;">${booking.phone}</a>`)}
+      ${rowHtml("??????",    booking.name)}
+      ${rowHtml("???????",   `<a href="tel:${booking.phone}" style="color:#1B6FE8;">${booking.phone}</a>`)}
       ${rowHtml("Email",     booking.email && booking.email !== "" ? `<a href="mailto:${booking.email}" style="color:#1B6FE8;">${booking.email}</a>` : "")}
-      ${rowHtml("Техника",   booking.appliance)}
-      ${rowHtml("Дата",      booking.preferredDate)}
-      ${rowHtml("Время",     booking.preferredTime)}
+      ${rowHtml("???????",   booking.appliance)}
+      ${rowHtml("????",      booking.preferredDate)}
+      ${rowHtml("?????",     booking.preferredTime)}
     </table>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
-    Отменено: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
+    Hi-Tech Repair Group � Houston Metropolitan Area � (346) 696-8751<br>
+    ????????: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`;
 
       await transporter.sendMail({
         from:    `"Hi-Tech Repair Group" <${emailUser}>`,
         to:      emailTo,
-        subject: `❌ Бронирование отменено [${shortId}] — ${booking.name}`,
+        subject: `? ???????????? ???????? [${shortId}] � ${booking.name}`,
         html:    adminHtml,
-        text:    `Бронирование отменено.\nID: ${shortId}\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nДата: ${booking.preferredDate} · ${booking.preferredTime}\nСлот освобождён.`,
+        text:    `???????????? ????????.\nID: ${shortId}\n??????: ${booking.name}\n???????: ${booking.phone}\n????: ${booking.preferredDate} � ${booking.preferredTime}\n???? ??????????.`,
       });
       req.log.info({ bookingId: id }, "Admin cancellation email sent to owner");
 
-      // ── Email to client (only if they have a real email address) ────────
+      // -- Email to client (only if they have a real email address) --------
       const clientEmail = booking.email?.trim();
       if (clientEmail && clientEmail !== "" && clientEmail.includes("@")) {
         const isEs = booking.language === "es";
 
         const clientSubject = isEs
-          ? `Su cita ha sido cancelada — HTRGroup`
-          : `Your appointment has been cancelled — HTRGroup`;
+          ? `Su cita ha sido cancelada � HTRGroup`
+          : `Your appointment has been cancelled � HTRGroup`;
 
         const clientHtml = `
 <div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
@@ -1564,7 +1564,7 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
     <h2 style="color:#fff;margin:0;font-size:18px;">
       ${isEs ? "Su cita ha sido cancelada" : "Your appointment has been cancelled"}
     </h2>
-    <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">HTRGroup · Hi-Tech Repair Group</p>
+    <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">HTRGroup � Hi-Tech Repair Group</p>
   </div>
   <div style="padding:24px;font-size:14px;color:#333;line-height:1.7;">
     <p>${isEs ? "Estimado/a" : "Dear"} <strong>${booking.name}</strong>,</p>
@@ -1579,15 +1579,15 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
         : `If you have any questions or would like to reschedule, please don't hesitate to contact us:`}
     </p>
     <div style="background:#eff6ff;border-radius:8px;padding:14px 18px;margin:16px 0;font-size:14px;">
-      📞 <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a><br>
-      ✉️ <a href="mailto:htrgroupllc@gmail.com" style="color:#1B6FE8;">htrgroupllc@gmail.com</a>
+      ?? <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a><br>
+      ?? <a href="mailto:htrgroupllc@gmail.com" style="color:#1B6FE8;">htrgroupllc@gmail.com</a>
     </div>
     <p style="font-size:13px;color:#666;">
       ${isEs ? "Gracias por elegir HTRGroup." : "Thank you for choosing HTRGroup."}
     </p>
   </div>
   <div style="background:#f8fafc;padding:12px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751
+    Hi-Tech Repair Group � Houston Metropolitan Area � (346) 696-8751
   </div>
 </div>`;
 
@@ -1606,22 +1606,22 @@ bookingRouter.post("/admin/cancel-booking", requireAdminPin, async (req, res) =>
     }
   }
 
-  // ── WhatsApp notification to owner — admin cancelled ──────────────────────
+  // -- WhatsApp notification to owner � admin cancelled ----------------------
   sendOwnerWA(
-    `❌ ОТМЕНЕНО АДМИНИСТРАТОРОМ\n` +
-    `👤 ${booking.name}\n` +
-    `📞 ${booking.phone}\n` +
-    `🔧 ${booking.appliance || "—"}\n` +
-    `📅 ${booking.preferredDate} · ${booking.preferredTime}\n` +
-    `🆔 ID: ${booking.id.slice(0, 8).toUpperCase()}\n` +
-    `📌 Слот освобождён (отмена из панели управления)`,
+    `? ???????? ???????????????\n` +
+    `?? ${booking.name}\n` +
+    `?? ${booking.phone}\n` +
+    `?? ${booking.appliance || "�"}\n` +
+    `?? ${booking.preferredDate} � ${booking.preferredTime}\n` +
+    `?? ID: ${booking.id.slice(0, 8).toUpperCase()}\n` +
+    `?? ???? ?????????? (?????? ?? ?????? ??????????)`,
     req.log,
   );
 
   res.json({ ok: true });
 });
 
-// ─── POST /api/admin/delete-booking ──────────────────────────────────────────
+// --- POST /api/admin/delete-booking ------------------------------------------
 // Permanently delete a booking from the database (irreversible).
 bookingRouter.post("/admin/delete-booking", requireAdminPin, async (req, res) => {
   const { id } = req.body as { id?: string };
@@ -1649,7 +1649,7 @@ bookingRouter.post("/admin/delete-booking", requireAdminPin, async (req, res) =>
   res.json({ ok: true });
 });
 
-// ─── POST /api/admin/bulk-delete-bookings ────────────────────────────────────
+// --- POST /api/admin/bulk-delete-bookings ------------------------------------
 // Permanently delete multiple bookings in one request.
 bookingRouter.post("/admin/bulk-delete-bookings", requireAdminPin, async (req, res) => {
   const { ids } = req.body as { ids?: string[] };
@@ -1685,7 +1685,7 @@ bookingRouter.post("/admin/bulk-delete-bookings", requireAdminPin, async (req, r
   res.json({ ok: true, deleted: rowCount });
 });
 
-// ─── POST /api/admin/restore-booking ─────────────────────────────────────────
+// --- POST /api/admin/restore-booking -----------------------------------------
 // Restore a cancelled booking back to 'pending' status.
 // Accepts optional newDate / newTime to reschedule on conflict.
 bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) => {
@@ -1707,7 +1707,7 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
   const restoreDate = (newDate ?? booking.preferredDate).trim();
   const restoreTime = (newTime ?? booking.preferredTime).trim();
 
-  // ── Conflict check (only when not explicitly rescheduling) ─────────────────
+  // -- Conflict check (only when not explicitly rescheduling) -----------------
   if (!newDate && !newTime) {
     const [conflictBook, conflictBlock] = await Promise.all([
       pool.query<{ name: string }>(
@@ -1725,13 +1725,13 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
       ),
     ]);
     if ((conflictBook.rowCount ?? 0) > 0 || (conflictBlock.rowCount ?? 0) > 0) {
-      const conflictName = conflictBook.rows[0]?.name ?? "Заблокировано";
+      const conflictName = conflictBook.rows[0]?.name ?? "?????????????";
       res.json({ conflict: true, conflictWith: { name: conflictName, date: restoreDate, time: restoreTime } });
       return;
     }
   }
 
-  // ── Update date/time if rescheduled ────────────────────────────────────────
+  // -- Update date/time if rescheduled ----------------------------------------
   if (newDate || newTime) {
     await pool.query(
       `UPDATE bookings SET preferred_date = $1, preferred_time = $2 WHERE id = $3`,
@@ -1740,7 +1740,7 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
     req.log.info({ bookingId: id, restoreDate, restoreTime }, "Booking rescheduled before restore");
   }
 
-  // ── Update other fields if admin edited them ────────────────────────────
+  // -- Update other fields if admin edited them ----------------------------
   const hasFieldEdits = newName || newPhone || newEmail !== undefined || newAddress !== undefined || newAppliance !== undefined || newMessage !== undefined;
   if (hasFieldEdits) {
     await pool.query(
@@ -1765,8 +1765,8 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
     req.log.info({ bookingId: id }, "Booking fields updated on restore");
   }
 
-  // ── Restore status to pending, clear old HubSpot deal ID so watchdog
-  //    doesn't re-cancel it when checking the now-deleted original deal ─────
+  // -- Restore status to pending, clear old HubSpot deal ID so watchdog
+  //    doesn't re-cancel it when checking the now-deleted original deal -----
   const { rowCount } = await pool.query(
     `UPDATE bookings SET status = 'pending', hs_deal_id = NULL WHERE id = $1 AND status IN ('cancelled','completed')`,
     [id],
@@ -1787,7 +1787,7 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
     preferredTime: restoreTime,
   };
 
-  // ── Re-create HubSpot deal ─────────────────────────────────────────────────
+  // -- Re-create HubSpot deal -------------------------------------------------
   syncBookingToHubSpot({
     id:            effectiveBooking.id,
     name:          effectiveBooking.name,
@@ -1807,13 +1807,13 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
     }
   }).catch(() => {});
 
-  // ── Re-block WA half-day slots (reverse of cancel logic) ──────────────────
+  // -- Re-block WA half-day slots (reverse of cancel logic) ------------------
   try {
     const WA_MORNING   = ["9:00 AM","10:00 AM","11:00 AM","12:00 PM"];
     const WA_AFTERNOON = ["1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM"];
     const pt = restoreTime;
-    const isWAMorning   = pt.includes("9 AM") || pt.includes("AM–12") || pt.includes("AM-12");
-    const isWAAfternoon = pt.includes("1 PM") || pt.includes("PM–5") || pt.includes("PM-5");
+    const isWAMorning   = pt.includes("9 AM") || pt.includes("AM�12") || pt.includes("AM-12");
+    const isWAAfternoon = pt.includes("1 PM") || pt.includes("PM�5") || pt.includes("PM-5");
     if (isWAMorning || isWAAfternoon) {
       const hours = isWAMorning ? WA_MORNING : WA_AFTERNOON;
       for (const h of hours) {
@@ -1830,7 +1830,7 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
     req.log.warn({ err: e }, "Could not re-block WA slots on restore (non-fatal)");
   }
 
-  // ── Email notifications ────────────────────────────────────────────────────
+  // -- Email notifications ----------------------------------------------------
   const emailUser = process.env["EMAIL_USER"] ?? "";
   const emailPass = process.env["EMAIL_PASS"] ?? "";
   const emailTo   = process.env["EMAIL_TO"]   ?? "";
@@ -1851,33 +1851,33 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
         const adminHtml = `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#f97316;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">♻️ Заявка восстановлена</h2>
-    <p style="color:#ffe8d6;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group · ID: <strong style="color:#fff;">${shortId}</strong></p>
+    <h2 style="color:#fff;margin:0;font-size:20px;">?? ?????? ?????????????</h2>
+    <p style="color:#ffe8d6;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group � ID: <strong style="color:#fff;">${shortId}</strong></p>
   </div>
   ${rescheduled ? `<div style="background:#fff7ed;border-left:4px solid #f97316;padding:12px 20px;font-size:13px;color:#9a3412;font-weight:600;">
-    📅 Перенесено на: ${restoreDate} · ${restoreTime}
+    ?? ?????????? ??: ${restoreDate} � ${restoreTime}
   </div>` : ""}
   <div style="padding:24px;">
     <table style="width:100%;border-collapse:collapse;font-size:14px;">
-      ${rowHtml("Клиент",    effectiveBooking.name)}
-      ${rowHtml("Телефон",   `<a href="tel:${effectiveBooking.phone}" style="color:#1B6FE8;">${effectiveBooking.phone}</a>`)}
+      ${rowHtml("??????",    effectiveBooking.name)}
+      ${rowHtml("???????",   `<a href="tel:${effectiveBooking.phone}" style="color:#1B6FE8;">${effectiveBooking.phone}</a>`)}
       ${rowHtml("Email",     effectiveBooking.email)}
-      ${rowHtml("Техника",   effectiveBooking.appliance)}
-      ${rowHtml("Дата",      restoreDate)}
-      ${rowHtml("Время",     restoreTime)}
+      ${rowHtml("???????",   effectiveBooking.appliance)}
+      ${rowHtml("????",      restoreDate)}
+      ${rowHtml("?????",     restoreTime)}
     </table>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
-    Восстановлено: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
+    Hi-Tech Repair Group � Houston Metropolitan Area � (346) 696-8751<br>
+    ?????????????: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`;
         await transporter.sendMail({
           from:    `"Hi-Tech Repair Group" <${emailUser}>`,
           to:      emailTo,
-          subject: `♻️ Заявка восстановлена [${shortId}] — ${effectiveBooking.name}`,
+          subject: `?? ?????? ????????????? [${shortId}] � ${effectiveBooking.name}`,
           html:    adminHtml,
-          text:    `Заявка восстановлена.\nID: ${shortId}\nКлиент: ${effectiveBooking.name}\nТелефон: ${effectiveBooking.phone}\nДата: ${restoreDate} · ${restoreTime}`,
+          text:    `?????? ?????????????.\nID: ${shortId}\n??????: ${effectiveBooking.name}\n???????: ${effectiveBooking.phone}\n????: ${restoreDate} � ${restoreTime}`,
         });
         req.log.info({ bookingId: id }, "Admin restore email sent to owner");
 
@@ -1892,9 +1892,9 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
 <div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#f97316;padding:20px 24px;">
     <h2 style="color:#fff;margin:0;font-size:18px;">
-      ${isEs ? "♻️ Su cita ha sido reactivada" : "♻️ Your appointment has been restored"}
+      ${isEs ? "?? Su cita ha sido reactivada" : "?? Your appointment has been restored"}
     </h2>
-    <p style="color:#ffe8d6;margin:6px 0 0;font-size:13px;">HTRGroup · Hi-Tech Repair Group</p>
+    <p style="color:#ffe8d6;margin:6px 0 0;font-size:13px;">HTRGroup � Hi-Tech Repair Group</p>
   </div>
   <div style="padding:24px;font-size:14px;color:#333;line-height:1.7;">
     <p>${isEs ? "Estimado/a" : "Dear"} <strong>${effectiveBooking.name}</strong>,</p>
@@ -1910,21 +1910,21 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
     </table>
     <p style="margin-top:20px;">${isEs ? "Preguntas:" : "Questions:"} <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a></p>
     <div style="margin-top:16px;padding:12px 16px;background:#fef2f2;border-radius:8px;font-size:13px;color:#666;text-align:center;">
-      ${isEs ? "¿Necesita cancelar?" : "Need to cancel?"} <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">${isEs ? "Cancelar mi cita" : "Cancel my appointment"}</a>
+      ${isEs ? "�Necesita cancelar?" : "Need to cancel?"} <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">${isEs ? "Cancelar mi cita" : "Cancel my appointment"}</a>
     </div>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751
+    Hi-Tech Repair Group � Houston Metropolitan Area � (346) 696-8751
   </div>
 </div>`;
           await transporter.sendMail({
             from:    `"Hi-Tech Repair Group" <${emailUser}>`,
             to:      clientEmail,
-            subject: isEs ? "♻️ Su cita ha sido restaurada — HTRGroup" : "♻️ Your appointment has been restored — HTRGroup",
+            subject: isEs ? "?? Su cita ha sido restaurada � HTRGroup" : "?? Your appointment has been restored � HTRGroup",
             html:    clientHtml,
             text:    isEs
-              ? `Su cita ha sido restaurada. Fecha: ${restoreDate} · ${restoreTime}. Servicio: ${effectiveBooking.appliance}. Preguntas: (346) 696-8751`
-              : `Your appointment has been restored. Date: ${restoreDate} · ${restoreTime}. Service: ${effectiveBooking.appliance}. Questions: (346) 696-8751`,
+              ? `Su cita ha sido restaurada. Fecha: ${restoreDate} � ${restoreTime}. Servicio: ${effectiveBooking.appliance}. Preguntas: (346) 696-8751`
+              : `Your appointment has been restored. Date: ${restoreDate} � ${restoreTime}. Service: ${effectiveBooking.appliance}. Questions: (346) 696-8751`,
           });
           req.log.info({ bookingId: id, clientEmail }, "Restore email sent to client");
         }
@@ -1934,26 +1934,26 @@ bookingRouter.post("/admin/restore-booking", requireAdminPin, async (req, res) =
     })();
   }
 
-  // ── WhatsApp: notify owner ─────────────────────────────────────────────────
+  // -- WhatsApp: notify owner -------------------------------------------------
   sendOwnerWA(
-    `♻️ ЗАЯВКА ВОССТАНОВЛЕНА\n` +
-    `👤 ${effectiveBooking.name}\n` +
-    `📞 ${effectiveBooking.phone}\n` +
-    `🔧 ${effectiveBooking.appliance || "—"}\n` +
-    `📅 ${restoreDate} · ${restoreTime}\n` +
-    `🆔 ID: ${shortId}\n` +
-    (rescheduled ? `🔄 Перенесено админом\n` : "") +
-    `📌 Статус: ожидает подтверждения`,
+    `?? ?????? ?????????????\n` +
+    `?? ${effectiveBooking.name}\n` +
+    `?? ${effectiveBooking.phone}\n` +
+    `?? ${effectiveBooking.appliance || "�"}\n` +
+    `?? ${restoreDate} � ${restoreTime}\n` +
+    `?? ID: ${shortId}\n` +
+    (rescheduled ? `?? ?????????? ???????\n` : "") +
+    `?? ??????: ??????? ?????????????`,
     req.log,
   );
 
-  // ── WhatsApp: notify client ────────────────────────────────────────────────
+  // -- WhatsApp: notify client ------------------------------------------------
   sendClientRestoreWA(effectiveBooking, req.log);
 
   res.json({ ok: true });
 });
 
-// ─── POST /api/admin/reschedule-booking ──────────────────────────────────────
+// --- POST /api/admin/reschedule-booking --------------------------------------
 // Move an active (pending/approved) booking to a new date/time.
 bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res) => {
   const { id, newDate, newTime } = req.body as { id?: string; newDate?: string; newTime?: string };
@@ -1971,7 +1971,7 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
   const rsDate = newDate.trim();
   const rsTime = newTime.trim();
 
-  // ── Conflict check ────────────────────────────────────────────────────────
+  // -- Conflict check --------------------------------------------------------
   const [conflictBook, conflictBlock] = await Promise.all([
     pool.query<{ name: string }>(
       `SELECT name FROM bookings
@@ -1988,12 +1988,12 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
     ),
   ]);
   if ((conflictBook.rowCount ?? 0) > 0 || (conflictBlock.rowCount ?? 0) > 0) {
-    const conflictName = conflictBook.rows[0]?.name ?? "Заблокировано";
+    const conflictName = conflictBook.rows[0]?.name ?? "?????????????";
     res.json({ conflict: true, conflictWith: { name: conflictName, date: rsDate, time: rsTime } });
     return;
   }
 
-  // ── Update DB ─────────────────────────────────────────────────────────────
+  // -- Update DB -------------------------------------------------------------
   const oldDate = booking.preferredDate;
   const oldTime = booking.preferredTime;
   await pool.query(
@@ -2004,7 +2004,7 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
 
   const updatedBooking = { ...booking, preferredDate: rsDate, preferredTime: rsTime };
 
-  // ── HubSpot: update deal date/name async ──────────────────────────────────
+  // -- HubSpot: update deal date/name async ----------------------------------
   if (booking.hsDealId) {
     updateDealDateInHubSpot(booking.hsDealId, {
       id:            updatedBooking.id,
@@ -2021,7 +2021,7 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
     }, req.log).catch(() => {});
   }
 
-  // ── Email notifications ───────────────────────────────────────────────────
+  // -- Email notifications ---------------------------------------------------
   const emailUser = process.env["EMAIL_USER"] ?? "";
   const emailPass = process.env["EMAIL_PASS"] ?? "";
   const emailTo   = process.env["EMAIL_TO"]   ?? "";
@@ -2038,26 +2038,26 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
         await transporter.sendMail({
           from: `"Hi-Tech Repair Group" <${emailUser}>`,
           to:   emailTo,
-          subject: `📅 Перенос заявки [${shortId}] — ${updatedBooking.name}`,
+          subject: `?? ??????? ?????? [${shortId}] � ${updatedBooking.name}`,
           html: `<div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
-  <div style="background:#1B6FE8;padding:22px 24px;"><h2 style="color:#fff;margin:0;font-size:20px;">📅 Перенос заявки</h2>
-  <p style="color:#dbeafe;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group · ID: <strong style="color:#fff;">${shortId}</strong></p></div>
+  <div style="background:#1B6FE8;padding:22px 24px;"><h2 style="color:#fff;margin:0;font-size:20px;">?? ??????? ??????</h2>
+  <p style="color:#dbeafe;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group � ID: <strong style="color:#fff;">${shortId}</strong></p></div>
   <div style="background:#eff6ff;border-left:4px solid #1B6FE8;padding:12px 20px;font-size:13px;color:#1e40af;font-weight:600;">
-    📅 Было: ${oldDate} · ${oldTime}<br>📅 Стало: ${rsDate} · ${rsTime}
+    ?? ????: ${oldDate} � ${oldTime}<br>?? ?????: ${rsDate} � ${rsTime}
   </div>
   <div style="padding:24px;"><table style="width:100%;border-collapse:collapse;font-size:14px;">
-    ${rowHtml("Клиент",  updatedBooking.name)}
-    ${rowHtml("Телефон", `<a href="tel:${updatedBooking.phone}" style="color:#1B6FE8;">${updatedBooking.phone}</a>`)}
+    ${rowHtml("??????",  updatedBooking.name)}
+    ${rowHtml("???????", `<a href="tel:${updatedBooking.phone}" style="color:#1B6FE8;">${updatedBooking.phone}</a>`)}
     ${rowHtml("Email",   updatedBooking.email ?? "")}
-    ${rowHtml("Техника", updatedBooking.appliance ?? "")}
-    ${rowHtml("Новая дата",  rsDate)}
-    ${rowHtml("Новое время", rsTime)}
+    ${rowHtml("???????", updatedBooking.appliance ?? "")}
+    ${rowHtml("????? ????",  rsDate)}
+    ${rowHtml("????? ?????", rsTime)}
   </table></div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751<br>
-    Перенесено: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
+    Hi-Tech Repair Group � Houston Metropolitan Area � (346) 696-8751<br>
+    ??????????: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div></div>`,
-          text: `Заявка перенесена.\nID: ${shortId}\nКлиент: ${updatedBooking.name}\nБыло: ${oldDate} · ${oldTime}\nСтало: ${rsDate} · ${rsTime}`,
+          text: `?????? ??????????.\nID: ${shortId}\n??????: ${updatedBooking.name}\n????: ${oldDate} � ${oldTime}\n?????: ${rsDate} � ${rsTime}`,
         });
         req.log.info({ bookingId: id }, "Admin reschedule email sent to owner");
 
@@ -2069,12 +2069,12 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
             from: `"HTRGroup" <${emailUser}>`,
             to:   clientEmail,
             subject: isEs
-              ? `📅 Su cita ha sido reprogramada — HTRGroup`
-              : `📅 Your appointment has been rescheduled — HTRGroup`,
+              ? `?? Su cita ha sido reprogramada � HTRGroup`
+              : `?? Your appointment has been rescheduled � HTRGroup`,
             html: `<div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#1B6FE8;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">${isEs ? "📅 Cita Reprogramada" : "📅 Appointment Rescheduled"}</h2>
-    <p style="color:#dbeafe;margin:4px 0 0;font-size:13px;">HTRGroup · Houston Metropolitan Area</p>
+    <h2 style="color:#fff;margin:0;font-size:20px;">${isEs ? "?? Cita Reprogramada" : "?? Appointment Rescheduled"}</h2>
+    <p style="color:#dbeafe;margin:4px 0 0;font-size:13px;">HTRGroup � Houston Metropolitan Area</p>
   </div>
   <div style="padding:24px;">
     <p style="font-size:15px;color:#1e293b;">${isEs ? `Estimado/a <strong>${updatedBooking.name}</strong>,` : `Dear <strong>${updatedBooking.name}</strong>,`}</p>
@@ -2083,21 +2083,21 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
       : "We are writing to let you know that your appointment has been moved to a new date and time."
     }</p>
     <div style="background:#eff6ff;border-left:4px solid #1B6FE8;border-radius:6px;padding:16px 20px;margin:20px 0;">
-      <p style="margin:4px 0;font-size:13px;color:#94a3b8;text-decoration:line-through;">${isEs ? "Fecha anterior" : "Previous"}: ${oldDate} · ${oldTime}</p>
-      <p style="margin:8px 0 4px;font-size:16px;color:#1B6FE8;font-weight:700;">📅 ${rsDate} · ${rsTime}</p>
+      <p style="margin:4px 0;font-size:13px;color:#94a3b8;text-decoration:line-through;">${isEs ? "Fecha anterior" : "Previous"}: ${oldDate} � ${oldTime}</p>
+      <p style="margin:8px 0 4px;font-size:16px;color:#1B6FE8;font-weight:700;">?? ${rsDate} � ${rsTime}</p>
     </div>
     <p style="font-size:13px;color:#64748b;">${isEs
-      ? "Si tiene preguntas, comuníquese con nosotros al (346) 696-8751."
+      ? "Si tiene preguntas, comun�quese con nosotros al (346) 696-8751."
       : "If you have any questions, please contact us at (346) 696-8751."
     }</p>
-    <p style="font-size:14px;color:#1e293b;">${isEs ? "¡Gracias por confiar en HTRGroup!" : "Thank you for choosing HTRGroup!"}</p>
+    <p style="font-size:14px;color:#1e293b;">${isEs ? "�Gracias por confiar en HTRGroup!" : "Thank you for choosing HTRGroup!"}</p>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    HTRGroup · Houston Metropolitan Area · (346) 696-8751
+    HTRGroup � Houston Metropolitan Area � (346) 696-8751
   </div></div>`,
             text: isEs
-              ? `Estimado/a ${updatedBooking.name},\n\nSu cita ha sido reprogramada.\nNueva fecha: ${rsDate} · ${rsTime}\n\nHTRGroup`
-              : `Dear ${updatedBooking.name},\n\nYour appointment has been rescheduled.\nNew date: ${rsDate} · ${rsTime}\n\nHTRGroup`,          });
+              ? `Estimado/a ${updatedBooking.name},\n\nSu cita ha sido reprogramada.\nNueva fecha: ${rsDate} � ${rsTime}\n\nHTRGroup`
+              : `Dear ${updatedBooking.name},\n\nYour appointment has been rescheduled.\nNew date: ${rsDate} � ${rsTime}\n\nHTRGroup`,          });
           req.log.info({ bookingId: id }, "Client reschedule email sent");
         }
       } catch (e) {
@@ -2106,22 +2106,22 @@ bookingRouter.post("/admin/reschedule-booking", requireAdminPin, async (req, res
     })();
   }
 
-  // ── WhatsApp to owner ─────────────────────────────────────────────────────
+  // -- WhatsApp to owner -----------------------------------------------------
   sendOwnerWA(
-    `📅 *Перенос заявки*\n` +
-    `👤 ${updatedBooking.name}\n` +
-    `📱 ${updatedBooking.phone}\n` +
-    `🔧 ${updatedBooking.appliance ?? "—"}\n` +
-    `⬅️ Было: ${oldDate} · ${oldTime}\n` +
-    `✅ Стало: ${rsDate} · ${rsTime}\n` +
-    `🆔 ID: ${shortId}`,
+    `?? *??????? ??????*\n` +
+    `?? ${updatedBooking.name}\n` +
+    `?? ${updatedBooking.phone}\n` +
+    `?? ${updatedBooking.appliance ?? "�"}\n` +
+    `?? ????: ${oldDate} � ${oldTime}\n` +
+    `? ?????: ${rsDate} � ${rsTime}\n` +
+    `?? ID: ${shortId}`,
     req.log,
   );
 
   res.json({ ok: true });
 });
 
-// ─── GET /api/cancel ──────────────────────────────────────────────────────────
+// --- GET /api/cancel ----------------------------------------------------------
 // Client self-cancellation via email link: /api/cancel?id=...&token=...
 bookingRouter.get("/cancel", async (req, res) => {
   const { id, token } = req.query as { id?: string; token?: string };
@@ -2152,7 +2152,7 @@ bookingRouter.get("/cancel", async (req, res) => {
     return;
   }
 
-  // ── Cancel in DB ──────────────────────────────────────────────────────────
+  // -- Cancel in DB ----------------------------------------------------------
   const { rowCount } = await pool.query(
     `UPDATE bookings SET status = 'cancelled' WHERE id = $1 AND status IN ('pending','approved')`,
     [id],
@@ -2164,18 +2164,18 @@ bookingRouter.get("/cancel", async (req, res) => {
   }
   req.log.info({ bookingId: id }, "Booking cancelled by client (self-cancel)");
 
-  // ── HubSpot: mark deal closed lost ───────────────────────────────────────
+  // -- HubSpot: mark deal closed lost ---------------------------------------
   if (booking.hsDealId) {
     cancelDealInHubSpot(booking.hsDealId, req.log).catch(() => {});
   }
 
-  // ── Free any WA-blocked slots ─────────────────────────────────────────────
+  // -- Free any WA-blocked slots ---------------------------------------------
   try {
     const WA_MORNING   = ["9:00 AM","10:00 AM","11:00 AM","12:00 PM"];
     const WA_AFTERNOON = ["1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM"];
     const pt = booking.preferredTime ?? "";
-    const isWAMorning   = pt.includes("9 AM") || pt.includes("AM–12") || pt.includes("AM-12");
-    const isWAAfternoon = pt.includes("1 PM") || pt.includes("PM–5") || pt.includes("PM-5");
+    const isWAMorning   = pt.includes("9 AM") || pt.includes("AM�12") || pt.includes("AM-12");
+    const isWAAfternoon = pt.includes("1 PM") || pt.includes("PM�5") || pt.includes("PM-5");
     if (isWAMorning || isWAAfternoon) {
       const hours = isWAMorning ? WA_MORNING : WA_AFTERNOON;
       for (const h of hours) {
@@ -2185,19 +2185,19 @@ bookingRouter.get("/cancel", async (req, res) => {
     }
   } catch {}
 
-  // ── WhatsApp to owner — client cancelled ─────────────────────────────────
+  // -- WhatsApp to owner � client cancelled ---------------------------------
   sendOwnerWA(
-    `⚠️ КЛИЕНТ САМ ОТМЕНИЛ\n` +
-    `👤 ${booking.name}\n` +
-    `📞 ${booking.phone}\n` +
-    `🔧 ${booking.appliance || "—"}\n` +
-    `📅 ${booking.preferredDate} · ${booking.preferredTime}\n` +
-    `🆔 ID: ${booking.id.slice(0, 8).toUpperCase()}\n` +
-    `📌 Клиент перешёл по ссылке отмены — слот освобождён`,
+    `?? ?????? ??? ???????\n` +
+    `?? ${booking.name}\n` +
+    `?? ${booking.phone}\n` +
+    `?? ${booking.appliance || "�"}\n` +
+    `?? ${booking.preferredDate} � ${booking.preferredTime}\n` +
+    `?? ID: ${booking.id.slice(0, 8).toUpperCase()}\n` +
+    `?? ?????? ??????? ?? ?????? ?????? � ???? ??????????`,
     req.log,
   );
 
-  // ── Email to owner — client cancelled ────────────────────────────────────
+  // -- Email to owner � client cancelled ------------------------------------
   const emailUser = process.env["EMAIL_USER"] ?? "";
   const emailPass = process.env["EMAIL_PASS"] ?? "";
   const emailTo   = process.env["EMAIL_TO"]   ?? "";
@@ -2212,30 +2212,30 @@ bookingRouter.get("/cancel", async (req, res) => {
         await transporter.sendMail({
           from:    `"Hi-Tech Repair Group" <${emailUser}>`,
           to:      emailTo,
-          subject: `⚠️ Клиент отменил сам [${shortId}] — ${booking.name}`,
+          subject: `?? ?????? ??????? ??? [${shortId}] � ${booking.name}`,
           html: `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#b45309;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">⚠️ Клиент самостоятельно отменил запись</h2>
-    <p style="color:#fde68a;margin:6px 0 0;font-size:13px;">HTRGroup · ID: <strong style="color:#fff;">${shortId}</strong></p>
+    <h2 style="color:#fff;margin:0;font-size:20px;">?? ?????? ?????????????? ??????? ??????</h2>
+    <p style="color:#fde68a;margin:6px 0 0;font-size:13px;">HTRGroup � ID: <strong style="color:#fff;">${shortId}</strong></p>
   </div>
   <div style="background:#fffbeb;border-left:4px solid #b45309;padding:12px 20px;font-size:13px;color:#92400e;font-weight:600;">
-    ℹ️ Клиент нажал ссылку «Отменить запись» в письме подтверждения — слот освобождён
+    ?? ?????? ????? ?????? �???????? ??????� ? ?????? ????????????? � ???? ??????????
   </div>
   <div style="padding:24px;">
     <table style="width:100%;border-collapse:collapse;font-size:14px;">
-      <tr style="border-bottom:1px solid #eee;"><td style="padding:10px 8px;color:#666;width:140px;">Клиент</td><td style="padding:10px 8px;font-weight:600;">${booking.name}</td></tr>
-      <tr style="border-bottom:1px solid #eee;"><td style="padding:10px 8px;color:#666;">Телефон</td><td style="padding:10px 8px;font-weight:600;"><a href="tel:${booking.phone}" style="color:#1B6FE8;">${booking.phone}</a></td></tr>
-      <tr style="border-bottom:1px solid #eee;"><td style="padding:10px 8px;color:#666;">Техника</td><td style="padding:10px 8px;font-weight:600;">${booking.appliance || "—"}</td></tr>
-      <tr style="border-bottom:1px solid #eee;"><td style="padding:10px 8px;color:#666;">Дата</td><td style="padding:10px 8px;font-weight:600;">${booking.preferredDate}</td></tr>
-      <tr><td style="padding:10px 8px;color:#666;">Время</td><td style="padding:10px 8px;font-weight:600;">${booking.preferredTime}</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:10px 8px;color:#666;width:140px;">??????</td><td style="padding:10px 8px;font-weight:600;">${booking.name}</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:10px 8px;color:#666;">???????</td><td style="padding:10px 8px;font-weight:600;"><a href="tel:${booking.phone}" style="color:#1B6FE8;">${booking.phone}</a></td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:10px 8px;color:#666;">???????</td><td style="padding:10px 8px;font-weight:600;">${booking.appliance || "�"}</td></tr>
+      <tr style="border-bottom:1px solid #eee;"><td style="padding:10px 8px;color:#666;">????</td><td style="padding:10px 8px;font-weight:600;">${booking.preferredDate}</td></tr>
+      <tr><td style="padding:10px 8px;color:#666;">?????</td><td style="padding:10px 8px;font-weight:600;">${booking.preferredTime}</td></tr>
     </table>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751
+    Hi-Tech Repair Group � Houston Metropolitan Area � (346) 696-8751
   </div>
 </div>`,
-          text: `⚠️ Клиент ${booking.name} (${booking.phone}) самостоятельно отменил запись.\nДата: ${booking.preferredDate} · ${booking.preferredTime}\nID: ${shortId}`,
+          text: `?? ?????? ${booking.name} (${booking.phone}) ?????????????? ??????? ??????.\n????: ${booking.preferredDate} � ${booking.preferredTime}\nID: ${shortId}`,
         });
       } catch (err) {
         req.log.warn({ err }, "Failed to send client-cancel owner email (non-fatal)");
@@ -2248,14 +2248,14 @@ bookingRouter.get("/cancel", async (req, res) => {
     isEs ? "Cita Cancelada" : "Appointment Cancelled",
     isEs
       ? `<p>Su cita del <strong>${booking.preferredDate}</strong> a las <strong>${booking.preferredTime}</strong> ha sido cancelada exitosamente.</p>
-         <p>Si desea reagendar, llámenos al <a href="tel:3466968751" style="color:#1B6FE8;">(346) 696-8751</a>.</p>`
+         <p>Si desea reagendar, ll�menos al <a href="tel:3466968751" style="color:#1B6FE8;">(346) 696-8751</a>.</p>`
       : `<p>Your appointment on <strong>${booking.preferredDate}</strong> at <strong>${booking.preferredTime}</strong> has been successfully cancelled.</p>
          <p>To reschedule, please call us at <a href="tel:3466968751" style="color:#1B6FE8;">(346) 696-8751</a>.</p>`,
   ));
 });
 
-// ─── GET /api/approve ─────────────────────────────────────────────────────────
-// Shows a confirmation PAGE — does NOT approve. Prevents email-scanner auto-clicks.
+// --- GET /api/approve ---------------------------------------------------------
+// Shows a confirmation PAGE � does NOT approve. Prevents email-scanner auto-clicks.
 bookingRouter.get("/approve", async (req, res) => {
   const { id, token } = req.query as { id?: string; token?: string };
   req.log.info({ bookingId: id }, "Approve link opened (confirmation page shown)");
@@ -2289,14 +2289,14 @@ bookingRouter.get("/approve", async (req, res) => {
     ].filter(([, v]) => v)
      .map(([l, v]) => `<tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:8px;color:#666;width:140px;">${l}</td><td style="padding:8px;font-weight:600;">${v}</td></tr>`)
      .join("");
-    const adminLink = `<div style="margin-top:20px;text-align:center;"><a href="https://htrgrouptx.com/admin" style="display:inline-block;background:#1B6FE8;color:#fff;font-weight:600;font-size:14px;padding:11px 28px;border-radius:8px;text-decoration:none;">Open Admin Panel →</a></div>`;
-    res.send(statusPage("success", "Already Confirmed ✓",
-      `<p style="color:#15803d;font-weight:600;margin-bottom:16px;">This booking was already approved — no action needed.</p>
+    const adminLink = `<div style="margin-top:20px;text-align:center;"><a href="https://appfixpro.com/admin" style="display:inline-block;background:#1B6FE8;color:#fff;font-weight:600;font-size:14px;padding:11px 28px;border-radius:8px;text-decoration:none;">Open Admin Panel ?</a></div>`;
+    res.send(statusPage("success", "Already Confirmed ?",
+      `<p style="color:#15803d;font-weight:600;margin-bottom:16px;">This booking was already approved � no action needed.</p>
        <table style="width:100%;border-collapse:collapse;font-size:14px;">${alreadyRows}</table>${adminLink}`));
     return;
   }
 
-  // Show confirmation page — human must click the button (or wait 5s auto-confirm)
+  // Show confirmation page � human must click the button (or wait 5s auto-confirm)
   const previewRows = [
     ["Client", booking.name], ["Phone", booking.phone],
     ["Appliance", booking.appliance],
@@ -2313,7 +2313,7 @@ bookingRouter.get("/approve", async (req, res) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Confirm Appointment — HTRGroup</title>
+  <title>Confirm Appointment � HTRGroup</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:Arial,sans-serif;background:#f0f4f8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
@@ -2346,13 +2346,13 @@ bookingRouter.get("/approve", async (req, res) => {
 <body>
   <div class="card">
     <div class="hdr">
-      <div class="ico">📋</div>
+      <div class="ico">??</div>
       <h1>Confirm Appointment</h1>
-      <p>Hi-Tech Repair Group · Houston, TX</p>
+      <p>Hi-Tech Repair Group � Houston, TX</p>
     </div>
     <div class="body">
       <div class="alert">
-        <strong>📋 Review the booking below</strong>
+        <strong>?? Review the booking below</strong>
         Check the details and click the green button when ready to confirm.
       </div>
       <table>${previewRows}</table>
@@ -2368,38 +2368,38 @@ bookingRouter.get("/approve", async (req, res) => {
         const rfLink  = `https://www.redfin.com/search#location=${enc}`;
         return `
       <div class="prop-box">
-        <div class="prop-header">🏠 Client Property</div>
-        <div class="prop-addr">📍 ${addr}</div>
+        <div class="prop-header">?? Client Property</div>
+        <div class="prop-addr">?? ${addr}</div>
         <iframe class="prop-map"
           src="${mapEmbed}"
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"
           allowfullscreen></iframe>
         <div class="prop-links">
-          <a href="${svLink}"  target="_blank" class="plink plink-sv">🚶 Street View</a>
-          <a href="${gmLink}"  target="_blank" class="plink plink-gm">🗺 Maps</a>
-          <a href="${zilLink}" target="_blank" class="plink plink-zl">🏠 Zillow $</a>
-          <a href="${rfLink}"  target="_blank" class="plink plink-rf">🔴 Redfin $</a>
+          <a href="${svLink}"  target="_blank" class="plink plink-sv">?? Street View</a>
+          <a href="${gmLink}"  target="_blank" class="plink plink-gm">?? Maps</a>
+          <a href="${zilLink}" target="_blank" class="plink plink-zl">?? Zillow $</a>
+          <a href="${rfLink}"  target="_blank" class="plink plink-rf">?? Redfin $</a>
         </div>
       </div>`;
       })() : ""}
 
       <form method="POST" action="${API_BASE}/api/approve" id="approveForm"
-            onsubmit="document.getElementById('approveBtn').disabled=true;document.getElementById('approveBtn').textContent='Confirming…'">
+            onsubmit="document.getElementById('approveBtn').disabled=true;document.getElementById('approveBtn').textContent='Confirming�'">
         <input type="hidden" name="id"    value="${id}">
         <input type="hidden" name="token" value="${token}">
-        <button type="submit" id="approveBtn" class="btn">✅ Confirm Appointment</button>
+        <button type="submit" id="approveBtn" class="btn">? Confirm Appointment</button>
       </form>
       <p class="note">This action notifies the client and syncs to your CRM.</p>
     </div>
-    <div class="footer">Hi-Tech Repair Group · (346) 696-8751</div>
+    <div class="footer">Hi-Tech Repair Group � (346) 696-8751</div>
   </div>
 </body>
 </html>`);
 });
 
-// ─── POST /api/approve ────────────────────────────────────────────────────────
-// Actual approval — only triggered by a human clicking the button on the GET page.
+// --- POST /api/approve --------------------------------------------------------
+// Actual approval � only triggered by a human clicking the button on the GET page.
 bookingRouter.post("/approve", async (req, res) => {
   const { id, token } = req.body as { id?: string; token?: string };
   req.log.info({ bookingId: id }, "Approve confirmed by human click");
@@ -2424,29 +2424,29 @@ bookingRouter.post("/approve", async (req, res) => {
   }
 
   if (booking.status === "approved") {
-    const adminLink = `<div style="margin-top:20px;text-align:center;"><a href="https://htrgrouptx.com/admin" style="display:inline-block;background:#1B6FE8;color:#fff;font-weight:600;font-size:14px;padding:11px 28px;border-radius:8px;text-decoration:none;">Open Admin Panel →</a></div>`;
-    res.send(statusPage("success", "Already Confirmed ✓",
-      `<p style="color:#15803d;font-weight:600;margin-bottom:16px;">This booking was already approved — no action needed.</p>${adminLink}`));
+    const adminLink = `<div style="margin-top:20px;text-align:center;"><a href="https://appfixpro.com/admin" style="display:inline-block;background:#1B6FE8;color:#fff;font-weight:600;font-size:14px;padding:11px 28px;border-radius:8px;text-decoration:none;">Open Admin Panel ?</a></div>`;
+    res.send(statusPage("success", "Already Confirmed ?",
+      `<p style="color:#15803d;font-weight:600;margin-bottom:16px;">This booking was already approved � no action needed.</p>${adminLink}`));
     return;
   }
 
   await approveBooking(id);
   req.log.info({ bookingId: id }, "Booking approved in database");
 
-  // ── WhatsApp confirmation to client ────────────────────────────────────────
+  // -- WhatsApp confirmation to client ----------------------------------------
   sendClientConfirmWA(booking, req.log);
 
-  // ── HubSpot sync — update stage if deal exists, create only if no prior deal ─
+  // -- HubSpot sync � update stage if deal exists, create only if no prior deal -
   let hubspotOk = false;
   try {
     if (booking.hsDealId) {
-      // Deal already created at booking time — just update stage to closedwon
+      // Deal already created at booking time � just update stage to closedwon
       const r = await updateDealStageInHubSpot(booking.hsDealId, "closedwon", req.log);
       hubspotOk = r.ok;
       if (r.ok) req.log.info({ hsDealId: booking.hsDealId, bookingId: id }, "HubSpot deal stage updated to closedwon on email approval");
       else      req.log.warn({ error: r.error, bookingId: id }, "HubSpot stage update failed on email approval (non-fatal)");
     } else {
-      // No deal yet — create one now
+      // No deal yet � create one now
       const emailHsSource = booking.message === "Via WhatsApp Bot" ? "whatsapp" : "website";
       const hsResult = await syncBookingToHubSpot({
         id:            booking.id,
@@ -2471,7 +2471,7 @@ bookingRouter.post("/approve", async (req, res) => {
     req.log.error({ err, bookingId: id }, "HubSpot sync error on email approval");
   }
 
-  // ── Send confirmation email to client ──────────────────────────────────────
+  // -- Send confirmation email to client --------------------------------------
   const isEs = booking.language === "es";
   const emailUser = process.env["EMAIL_USER"] ?? "";
   const emailPass = process.env["EMAIL_PASS"] ?? "";
@@ -2490,35 +2490,35 @@ bookingRouter.post("/approve", async (req, res) => {
   const clientHtml = isEs ? `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#1B6FE8;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">✅ ¡Su cita ha sido confirmada!</h2>
-    <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group · Área Metropolitana de Houston</p>
+    <h2 style="color:#fff;margin:0;font-size:20px;">? �Su cita ha sido confirmada!</h2>
+    <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group � �rea Metropolitana de Houston</p>
   </div>
   <div style="padding:24px;">
-    <p style="font-size:15px;color:#1a1a1a;line-height:1.6;">Estimado/a <strong>${booking.name}</strong>,<br><br>Nos complace confirmar su cita de reparación de electrodomésticos en el hogar.</p>
+    <p style="font-size:15px;color:#1a1a1a;line-height:1.6;">Estimado/a <strong>${booking.name}</strong>,<br><br>Nos complace confirmar su cita de reparaci�n de electrodom�sticos en el hogar.</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:18px;">
       ${clientRowHtml("Nombre",           booking.name)}
-      ${clientRowHtml("Teléfono",         booking.phone)}
-      ${clientRowHtml("Dirección",        booking.address)}
-      ${clientRowHtml("Electrodoméstico", booking.appliance)}
+      ${clientRowHtml("Tel�fono",         booking.phone)}
+      ${clientRowHtml("Direcci�n",        booking.address)}
+      ${clientRowHtml("Electrodom�stico", booking.appliance)}
       ${clientRowHtml("Marca / Modelo",   booking.brandModel)}
       ${clientRowHtml("Fecha programada", booking.preferredDate)}
       ${clientRowHtml("Hora programada",  booking.preferredTime)}
     </table>
     <div style="margin-top:24px;padding:16px 20px;background:#fff7ed;border-left:4px solid #f97316;border-radius:6px;font-size:14px;line-height:1.7;color:#7c2d12;">
-      <strong>🐾 Aviso importante — Seguridad de mascotas y técnico:</strong><br>
-      Por razones de seguridad, tanto para nuestro técnico como para sus mascotas, le pedimos que <strong>aísle en una habitación separada</strong> a todos los animales grandes, reptiles, animales exóticos y gatos antes de la llegada del técnico.
+      <strong>?? Aviso importante � Seguridad de mascotas y t�cnico:</strong><br>
+      Por razones de seguridad, tanto para nuestro t�cnico como para sus mascotas, le pedimos que <strong>a�sle en una habitaci�n separada</strong> a todos los animales grandes, reptiles, animales ex�ticos y gatos antes de la llegada del t�cnico.
     </div>
     <p style="margin-top:24px;font-size:14px;color:#444;">Preguntas: <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a></p>
     <div style="margin-top:20px;padding:14px 18px;background:#fef2f2;border-radius:8px;font-size:13px;color:#666;text-align:center;">
-      ¿Necesita cancelar? <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">Cancelar mi cita</a>
+      �Necesita cancelar? <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">Cancelar mi cita</a>
     </div>
   </div>
-  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group · Houston · (346) 696-8751</div>
+  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group � Houston � (346) 696-8751</div>
 </div>` : `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#1B6FE8;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">✅ Your Appointment is Confirmed!</h2>
-    <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group · Houston Metropolitan Area</p>
+    <h2 style="color:#fff;margin:0;font-size:20px;">? Your Appointment is Confirmed!</h2>
+    <p style="color:#b3d4ff;margin:6px 0 0;font-size:13px;">Hi-Tech Repair Group � Houston Metropolitan Area</p>
   </div>
   <div style="padding:24px;">
     <p style="font-size:15px;color:#1a1a1a;line-height:1.6;">Dear <strong>${booking.name}</strong>,<br><br>We are pleased to confirm your home appliance repair appointment.</p>
@@ -2532,7 +2532,7 @@ bookingRouter.post("/approve", async (req, res) => {
       ${clientRowHtml("Scheduled Time", booking.preferredTime)}
     </table>
     <div style="margin-top:24px;padding:16px 20px;background:#fff7ed;border-left:4px solid #f97316;border-radius:6px;font-size:14px;line-height:1.7;color:#7c2d12;">
-      <strong>🐾 Important — Pet & Technician Safety Notice:</strong><br>
+      <strong>?? Important � Pet & Technician Safety Notice:</strong><br>
       For the safety of both our technician and your pets, please <strong>isolate in a separate room</strong> all large animals, reptiles, exotic animals, and cats before our technician arrives.
     </div>
     <p style="margin-top:24px;font-size:14px;color:#444;">Questions: <a href="tel:3466968751" style="color:#1B6FE8;font-weight:600;">(346) 696-8751</a></p>
@@ -2540,7 +2540,7 @@ bookingRouter.post("/approve", async (req, res) => {
       Need to cancel? <a href="${cancelUrl}" style="color:#dc2626;font-weight:600;">Cancel my appointment</a>
     </div>
   </div>
-  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group · Houston Metropolitan Area · (346) 696-8751</div>
+  <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;text-align:center;">Hi-Tech Repair Group � Houston Metropolitan Area � (346) 696-8751</div>
 </div>`;
 
   let clientEmailOk = false;
@@ -2550,7 +2550,7 @@ bookingRouter.post("/approve", async (req, res) => {
       await t.sendMail({
         from:    `"Hi-Tech Repair Group" <${emailUser}>`,
         to:      booking.email,
-        subject: isEs ? "✅ Cita confirmada — Hi-Tech Repair Group" : "✅ Appointment Confirmed — Hi-Tech Repair Group",
+        subject: isEs ? "? Cita confirmada � Hi-Tech Repair Group" : "? Appointment Confirmed � Hi-Tech Repair Group",
         html:    clientHtml,
       });
       clientEmailOk = true;
@@ -2560,18 +2560,18 @@ bookingRouter.post("/approve", async (req, res) => {
     }
   }
 
-  // ── Send WA + email to owner ──────────────────────────────────────────────
+  // -- Send WA + email to owner ----------------------------------------------
   const emailTo = process.env["EMAIL_TO"] ?? "";
   const shortId = booking.id.slice(0, 8).toUpperCase();
 
   // WA to owner
   sendOwnerNotification(
-    `✅ БРОНИРОВАНИЕ ПОДТВЕРЖДЕНО\n` +
+    `? ???????????? ????????????\n` +
     `ID: ${shortId}\n` +
-    `Клиент: ${booking.name}\n` +
-    `Телефон: ${booking.phone}\n` +
-    `Техника: ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
-    `Дата: ${booking.preferredDate} · ${booking.preferredTime}\n` +
+    `??????: ${booking.name}\n` +
+    `???????: ${booking.phone}\n` +
+    `???????: ${booking.appliance}${booking.brandModel ? ` (${booking.brandModel})` : ""}\n` +
+    `????: ${booking.preferredDate} � ${booking.preferredTime}\n` +
     `\n${ownerAddrBlock(booking.address)}`,
     req.log,
   );
@@ -2588,26 +2588,26 @@ bookingRouter.post("/approve", async (req, res) => {
     const ownerHtml = `
 <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
   <div style="background:#16a34a;padding:22px 24px;">
-    <h2 style="color:#fff;margin:0;font-size:20px;">✅ Бронирование подтверждено</h2>
+    <h2 style="color:#fff;margin:0;font-size:20px;">? ???????????? ????????????</h2>
     <p style="color:#bbf7d0;margin:6px 0 0;font-size:13px;">
-      Hi-Tech Repair Group &nbsp;·&nbsp; ID: <strong style="color:#fff;">${shortId}</strong>
+      Hi-Tech Repair Group &nbsp;�&nbsp; ID: <strong style="color:#fff;">${shortId}</strong>
     </p>
   </div>
   <div style="padding:24px;">
     <table style="width:100%;border-collapse:collapse;font-size:14px;">
-      ${ownerRowHtml("Клиент",    booking.name)}
-      ${ownerRowHtml("Телефон",   `<a href="tel:${booking.phone}" style="color:#1B6FE8;">${booking.phone}</a>`)}
+      ${ownerRowHtml("??????",    booking.name)}
+      ${ownerRowHtml("???????",   `<a href="tel:${booking.phone}" style="color:#1B6FE8;">${booking.phone}</a>`)}
       ${ownerRowHtml("Email",     booking.email ? `<a href="mailto:${booking.email}" style="color:#1B6FE8;">${booking.email}</a>` : "")}
-      ${ownerRowHtml("Адрес",     booking.address)}
-      ${ownerRowHtml("Техника",   booking.appliance)}
-      ${ownerRowHtml("Марка",     booking.brandModel)}
-      ${ownerRowHtml("Дата",      booking.preferredDate)}
-      ${ownerRowHtml("Время",     booking.preferredTime)}
+      ${ownerRowHtml("?????",     booking.address)}
+      ${ownerRowHtml("???????",   booking.appliance)}
+      ${ownerRowHtml("?????",     booking.brandModel)}
+      ${ownerRowHtml("????",      booking.preferredDate)}
+      ${ownerRowHtml("?????",     booking.preferredTime)}
     </table>
   </div>
   <div style="background:#f8fafc;padding:14px 24px;border-top:1px solid #eee;font-size:12px;color:#999;">
-    Hi-Tech Repair Group · Houston · (346) 696-8751 &nbsp;·&nbsp;
-    Подтверждено: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
+    Hi-Tech Repair Group � Houston � (346) 696-8751 &nbsp;�&nbsp;
+    ????????????: ${new Date().toLocaleString("ru-RU", { timeZone: "America/Chicago" })} CT
   </div>
 </div>`;
     try {
@@ -2615,9 +2615,9 @@ bookingRouter.post("/approve", async (req, res) => {
       await t2.sendMail({
         from:    `"Hi-Tech Repair Group" <${emailUser}>`,
         to:      emailTo,
-        subject: `✅ Бронирование подтверждено [${shortId}] — ${booking.name}`,
+        subject: `? ???????????? ???????????? [${shortId}] � ${booking.name}`,
         html:    ownerHtml,
-        text:    `Бронирование подтверждено.\nID: ${shortId}\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nДата: ${booking.preferredDate} · ${booking.preferredTime}`,
+        text:    `???????????? ????????????.\nID: ${shortId}\n??????: ${booking.name}\n???????: ${booking.phone}\n????: ${booking.preferredDate} � ${booking.preferredTime}`,
       });
       req.log.info({ bookingId: id }, "Approval confirmation email sent to owner");
     } catch (err) {
@@ -2635,27 +2635,27 @@ bookingRouter.post("/approve", async (req, res) => {
    .join("");
 
   const hubNote = hubspotOk
-    ? `<div style="margin-top:16px;padding:10px 14px;background:#f0fdf4;border-left:4px solid #16a34a;border-radius:4px;font-size:13px;color:#15803d;">✅ Contact synced to HubSpot successfully.</div>`
-    : `<div style="margin-top:16px;padding:10px 14px;background:#fef2f2;border-left:4px solid #dc2626;border-radius:4px;font-size:13px;color:#b91c1c;">⚠️ Approved, but HubSpot sync failed.</div>`;
+    ? `<div style="margin-top:16px;padding:10px 14px;background:#f0fdf4;border-left:4px solid #16a34a;border-radius:4px;font-size:13px;color:#15803d;">? Contact synced to HubSpot successfully.</div>`
+    : `<div style="margin-top:16px;padding:10px 14px;background:#fef2f2;border-left:4px solid #dc2626;border-radius:4px;font-size:13px;color:#b91c1c;">?? Approved, but HubSpot sync failed.</div>`;
 
   const clientNote = clientEmailOk
-    ? `<div style="margin-top:12px;padding:10px 14px;background:#f0fdf4;border-left:4px solid #16a34a;border-radius:4px;font-size:13px;color:#15803d;">📧 Confirmation email sent to: ${booking.email}</div>`
-    : `<div style="margin-top:12px;padding:10px 14px;background:#fef2f2;border-left:4px solid #dc2626;border-radius:4px;font-size:13px;color:#b91c1c;">⚠️ Could not send confirmation to client.</div>`;
+    ? `<div style="margin-top:12px;padding:10px 14px;background:#f0fdf4;border-left:4px solid #16a34a;border-radius:4px;font-size:13px;color:#15803d;">?? Confirmation email sent to: ${booking.email}</div>`
+    : `<div style="margin-top:12px;padding:10px 14px;background:#fef2f2;border-left:4px solid #dc2626;border-radius:4px;font-size:13px;color:#b91c1c;">?? Could not send confirmation to client.</div>`;
 
-  const adminPanelBtn = `<div style="margin-top:24px;text-align:center;"><a href="https://htrgrouptx.com/admin" style="display:inline-block;background:#1B6FE8;color:#fff;font-weight:600;font-size:14px;padding:11px 28px;border-radius:8px;text-decoration:none;">Open Admin Panel →</a></div>`;
+  const adminPanelBtn = `<div style="margin-top:24px;text-align:center;"><a href="https://appfixpro.com/admin" style="display:inline-block;background:#1B6FE8;color:#fff;font-weight:600;font-size:14px;padding:11px 28px;border-radius:8px;text-decoration:none;">Open Admin Panel ?</a></div>`;
 
-  res.send(statusPage("success", "Booking Approved ✅",
+  res.send(statusPage("success", "Booking Approved ?",
     `<table style="width:100%;border-collapse:collapse;font-size:14px;">${detailRows}</table>${hubNote}${clientNote}${adminPanelBtn}`,
   ));
 });
 
-// ─── POST /api/hubspot/webhook ────────────────────────────────────────────────
-// Called by HubSpot when a deal property changes (e.g. dealstage → closedlost)
-// Setup: HubSpot → Settings → Integrations → Private Apps → Webhooks
+// --- POST /api/hubspot/webhook ------------------------------------------------
+// Called by HubSpot when a deal property changes (e.g. dealstage ? closedlost)
+// Setup: HubSpot ? Settings ? Integrations ? Private Apps ? Webhooks
 //        Subscribe to: deal.propertyChange (property: dealstage)
 //        Target URL: https://htr-group-llc-appliance-repair.replit.app/api/hubspot/webhook
 bookingRouter.post("/hubspot/webhook", async (req, res) => {
-  // ── Optional signature verification ────────────────────────────────────────
+  // -- Optional signature verification ----------------------------------------
   const secret = process.env["HUBSPOT_WEBHOOK_SECRET"];
   if (secret) {
     const sig = req.headers["x-hubspot-signature"] as string | undefined;
@@ -2670,7 +2670,7 @@ bookingRouter.post("/hubspot/webhook", async (req, res) => {
     }
   }
 
-  // ── Parse event array ───────────────────────────────────────────────────────
+  // -- Parse event array -------------------------------------------------------
   const events = Array.isArray(req.body) ? req.body : [req.body];
 
   interface HsWebhookEvent {
@@ -2680,7 +2680,7 @@ bookingRouter.post("/hubspot/webhook", async (req, res) => {
     propertyValue?: string;
   }
 
-  // Match both: dealstage→closedlost (property change) AND deal.deletion
+  // Match both: dealstage?closedlost (property change) AND deal.deletion
   const cancelEvents = (events as HsWebhookEvent[]).filter(
     e =>
       (e.propertyName === "dealstage" && e.propertyValue === "closedlost") ||
@@ -2697,7 +2697,7 @@ bookingRouter.post("/hubspot/webhook", async (req, res) => {
   // Respond immediately so HubSpot doesn't retry
   res.json({ ok: true, processed: cancelEvents.length });
 
-  // ── Process each cancel/delete deal event ────────────────────────────────────
+  // -- Process each cancel/delete deal event ------------------------------------
   for (const event of cancelEvents) {
     const dealId = String(event.objectId ?? "");
     if (!dealId) continue;
@@ -2747,8 +2747,8 @@ bookingRouter.post("/hubspot/webhook", async (req, res) => {
         const WA_MORNING   = ["9:00 AM","10:00 AM","11:00 AM","12:00 PM"];
         const WA_AFTERNOON = ["1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM"];
         const pt = booking.preferredTime ?? "";
-        const isWAMorning   = pt.includes("9 AM") || pt.includes("AM–12") || pt.includes("AM-12");
-        const isWAAfternoon = pt.includes("1 PM") || pt.includes("PM–5") || pt.includes("PM-5");
+        const isWAMorning   = pt.includes("9 AM") || pt.includes("AM�12") || pt.includes("AM-12");
+        const isWAAfternoon = pt.includes("1 PM") || pt.includes("PM�5") || pt.includes("PM-5");
         if (isWAMorning || isWAAfternoon) {
           const hours = isWAMorning ? WA_MORNING : WA_AFTERNOON;
           for (const h of hours) {
@@ -2776,17 +2776,17 @@ bookingRouter.post("/hubspot/webhook", async (req, res) => {
             await transporter.sendMail({
               from:    `"Hi-Tech Repair Group" <${emailUser}>`,
               to:      emailTo,
-              subject: `❌ [HubSpot] Бронирование отменено [${shortId}] — ${booking.name}`,
+              subject: `? [HubSpot] ???????????? ???????? [${shortId}] � ${booking.name}`,
               html: `<div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;padding:24px;border:1px solid #ddd;border-radius:8px;">
-                <h2 style="color:#dc2626;">❌ Бронирование отменено через HubSpot</h2>
-                <p><strong>Клиент:</strong> ${booking.name}</p>
-                <p><strong>Телефон:</strong> ${booking.phone}</p>
-                <p><strong>Техника:</strong> ${booking.appliance}</p>
-                <p><strong>Дата:</strong> ${booking.preferredDate} · ${booking.preferredTime}</p>
-                <p><strong>ID сделки HubSpot:</strong> ${dealId}</p>
-                <p style="color:#6b7280;font-size:13px;margin-top:16px;">Слот освобождён автоматически.</p>
+                <h2 style="color:#dc2626;">? ???????????? ???????? ????? HubSpot</h2>
+                <p><strong>??????:</strong> ${booking.name}</p>
+                <p><strong>???????:</strong> ${booking.phone}</p>
+                <p><strong>???????:</strong> ${booking.appliance}</p>
+                <p><strong>????:</strong> ${booking.preferredDate} � ${booking.preferredTime}</p>
+                <p><strong>ID ?????? HubSpot:</strong> ${dealId}</p>
+                <p style="color:#6b7280;font-size:13px;margin-top:16px;">???? ?????????? ?????????????.</p>
               </div>`,
-              text: `Бронирование отменено через HubSpot.\nКлиент: ${booking.name}\nТелефон: ${booking.phone}\nДата: ${booking.preferredDate} · ${booking.preferredTime}\nHubSpot Deal ID: ${dealId}\nСлот освобождён.`,
+              text: `???????????? ???????? ????? HubSpot.\n??????: ${booking.name}\n???????: ${booking.phone}\n????: ${booking.preferredDate} � ${booking.preferredTime}\nHubSpot Deal ID: ${dealId}\n???? ??????????.`,
             });
           } catch (err) {
             console.warn("[HS-Webhook] Email failed:", err);
@@ -2806,7 +2806,7 @@ bookingRouter.post("/hubspot/webhook", async (req, res) => {
               await transporter.sendMail({
                 from:    `"Hi-Tech Repair Group" <${emailUser}>`,
                 to:      clientEmail,
-                subject: isEs ? `Su cita ha sido cancelada — HTRGroup` : `Your appointment has been cancelled — HTRGroup`,
+                subject: isEs ? `Su cita ha sido cancelada � HTRGroup` : `Your appointment has been cancelled � HTRGroup`,
                 text: isEs
                   ? `Estimado/a ${booking.name},\nSu cita del ${booking.preferredDate} a las ${booking.preferredTime} ha sido cancelada.\nContacto: (346) 696-8751 | htrgroupllc@gmail.com`
                   : `Dear ${booking.name},\nYour appointment on ${booking.preferredDate} at ${booking.preferredTime} has been cancelled.\nContact: (346) 696-8751 | htrgroupllc@gmail.com`,
@@ -2818,15 +2818,15 @@ bookingRouter.post("/hubspot/webhook", async (req, res) => {
 
       // Notify owner via WhatsApp
       const waReason = event.subscriptionType === "deal.deletion"
-        ? "🗑️ СДЕЛКА УДАЛЕНА В HUBSPOT"
-        : "📉 СДЕЛКА ЗАКРЫТА КАК ПРОИГРЫШ (closedlost)";
+        ? "??? ?????? ??????? ? HUBSPOT"
+        : "?? ?????? ??????? ??? ???????? (closedlost)";
       sendOwnerWA(
-        `❌ БРОНЬ ОТМЕНЕНА\n${waReason}\n` +
-        `👤 ${booking.name}\n` +
-        `📞 ${booking.phone}\n` +
-        `📅 ${booking.preferredDate} · ${booking.preferredTime}\n` +
-        `🔧 ${booking.appliance}\n` +
-        `🆔 Deal: ${dealId}`,
+        `? ????? ????????\n${waReason}\n` +
+        `?? ${booking.name}\n` +
+        `?? ${booking.phone}\n` +
+        `?? ${booking.preferredDate} � ${booking.preferredTime}\n` +
+        `?? ${booking.appliance}\n` +
+        `?? Deal: ${dealId}`,
         req.log,
       );
 
@@ -2836,16 +2836,16 @@ bookingRouter.post("/hubspot/webhook", async (req, res) => {
   }
 });
 
-// ─── Status HTML page helper ──────────────────────────────────────────────────
+// --- Status HTML page helper --------------------------------------------------
 function statusPage(type: "success" | "already" | "error", title: string, bodyHtml: string): string {
   const colors = { success: "#16a34a", already: "#d97706", error: "#dc2626" };
-  const icons  = { success: "✅", already: "⚠️", error: "❌" };
+  const icons  = { success: "?", already: "??", error: "?" };
   return `<!DOCTYPE html>
 <html lang="en-US">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>${title} — Hi-Tech Repair Group</title>
+  <title>${title} � Hi-Tech Repair Group</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:Arial,sans-serif;background:#f0f4f8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
@@ -2861,7 +2861,7 @@ function statusPage(type: "success" | "already" | "error", title: string, bodyHt
   <div class="card">
     <div class="hdr"><div class="ico">${icons[type]}</div><h1>${title}</h1></div>
     <div class="body">${bodyHtml}</div>
-    <div class="footer">Hi-Tech Repair Group · Houston, TX · (346) 696-8751</div>
+    <div class="footer">Hi-Tech Repair Group � Houston, TX � (346) 696-8751</div>
   </div>
 </body>
 </html>`;
