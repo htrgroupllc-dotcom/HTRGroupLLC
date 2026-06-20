@@ -87,6 +87,20 @@ if (!fs.existsSync(distJs)) {
 
 fs.copyFileSync(distJs, outJs);
 console.log("Copied JS", (fs.statSync(outJs).size / 1048576).toFixed(2), "MiB");
+
+const distAssetsDir = path.join(root, "dist-build/assets");
+const outAssetsDir = path.join(root, "assets");
+const assetExt = /\.(png|jpe?g|webp|gif|svg|woff2?|ttf|ico)$/i;
+let copiedAssets = 0;
+if (fs.existsSync(distAssetsDir)) {
+  for (const name of fs.readdirSync(distAssetsDir)) {
+    if (name === "index-utf8-v4.js" || name === "index-_bdQPowM.css") continue;
+    if (!assetExt.test(name)) continue;
+    fs.copyFileSync(path.join(distAssetsDir, name), path.join(outAssetsDir, name));
+    copiedAssets++;
+  }
+}
+console.log(`Copied ${copiedAssets} static asset(s) from dist-build/assets`);
 console.log("CSS unchanged (reusing existing index-_bdQPowM.css)");
 
 const jsText = fs.readFileSync(outJs, "utf8");
