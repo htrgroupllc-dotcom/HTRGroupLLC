@@ -3,6 +3,7 @@ import {
   ChevronLeft, ChevronRight, RefreshCw, CalendarDays, X, Clock, ChevronDown, GripVertical,
 } from "lucide-react";
 import { resolveBookingBiz } from "@/lib/adminSiteConfig";
+import CalendarBookingFormModal, { type CalendarBookingFormLabels } from "./CalendarBookingFormModal";
 import {
   type CalendarView,
   houstonNow,
@@ -56,6 +57,7 @@ export interface CalendarEvent {
   serial_number?: string | null;
   preferred_date?: string;
   preferred_time?: string;
+  message?: string;
   start_at: string;
   end_at: string;
   duration_minutes: number;
@@ -93,6 +95,9 @@ interface Labels {
   moveJob: string;
   pickTime: string;
   openCrm: string;
+  newBooking: string;
+  editBooking: string;
+  bookingForm: CalendarBookingFormLabels;
 }
 
 interface Props {
@@ -156,6 +161,10 @@ export default function CalendarTab({
   const [touchDragId, setTouchDragId] = useState<string | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [bookingFormOpen, setBookingFormOpen] = useState(false);
+  const [bookingFormMode, setBookingFormMode] = useState<"create" | "edit">("create");
+  const [bookingFormDay, setBookingFormDay] = useState<Date>(() => houstonNow());
+  const [bookingFormEvent, setBookingFormEvent] = useState<CalendarEvent | null>(null);
 
   const today = useMemo(() => houstonNow(), [anchor, view]);
   const weekStart = useMemo(() => startOfWeek(selectedDay ?? anchor), [selectedDay, anchor]);
@@ -320,15 +329,18 @@ export default function CalendarTab({
     setMoveOpen(false);
   };
 
+  const openBookingForm = (mode: "create" | "edit", day: Date, ev?: CalendarEvent | null) => {
+    setBookingFormMode(mode);
+    setBookingFormDay(day);
+    setBookingFormEvent(ev ?? null);
+    setBookingFormOpen(true);
+  };
+
   const openDay = (day: Date) => {
-    const dayEvents = eventsForDay(day);
-    if (onOpenBooking && dayEvents.length === 1) {
-      openFullBooking(dayEvents[0].id);
-      return;
-    }
     setSelectedDay(day);
     setSelected(null);
     setMoveOpen(false);
+    openBookingForm("create", day);
   };
 
   const CompactDayCell = ({ day }: { day: Date }) => {
@@ -410,6 +422,14 @@ export default function CalendarTab({
   };
 
   const dayDetailEvents = selectedDay ? eventsForDay(selectedDay) : [];
+
+  const defaultBookingBiz = useMemo((): "appliance" | "dental" => {
+    if (bizFilter === "dental") return "dental";
+    if (bizFilter === "appliance") return "appliance";
+    return "appliance";
+  }, [bizFilter]);
+
+  const showBizPicker = mode === "employee" || bizFilter === "all";
 
   const toolbarStickyTop = mode === "employee" ? undefined : 56;
   const toolbarClassName =
@@ -581,20 +601,30 @@ export default function CalendarTab({
       {/* Day detail — opens when a day is tapped */}
       {selectedDay && view === "month" && (
         <div className={`overflow-y-auto px-2 pb-4 border-t border-stone-200 bg-white mx-2 rounded-t-xl shadow-[0_-4px_12px_rgba(0,0,0,0.06)] ${mode === "employee" ? "" : "flex-1"}`}>
-          <div className="sticky top-0 bg-white pt-3 pb-2 flex items-center justify-between border-b border-stone-100 mb-2">
-            <div>
+          <div className="sticky top-0 bg-white pt-3 pb-2 flex items-center justify-between border-b border-stone-100 mb-2 gap-2">
+            <div className="min-w-0">
               <div className="text-sm font-bold text-stone-800">{formatDayHeader(selectedDay, locale)}</div>
               <div className="text-[10px] text-stone-400">
                 {dayDetailEvents.length === 0 ? labels.noEvents : `${dayDetailEvents.length} job(s)`}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setSelectedDay(null)}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-stone-100"
-            >
-              <ChevronDown className="w-5 h-5 text-stone-400" />
-            </button>
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                type="button"
+                onClick={() => openBookingForm("create", selectedDay)}
+                className="min-h-[44px] px-3 rounded-lg text-white text-xs font-semibold touch-manipulation"
+                style={{ background: ACCENT }}
+              >
+                {labels.newBooking}
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedDay(null)}
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-stone-100"
+              >
+                <ChevronDown className="w-5 h-5 text-stone-400" />
+              </button>
+            </div>
           </div>
 
           {dayDetailEvents.length === 0 && !loading && (
@@ -651,7 +681,21 @@ export default function CalendarTab({
                     </span>
                   </div>
                 </div>
-                <div className="flex gap-1.5 mt-2 flex-wrap">{bizBadge(ev)}</div>
+                <div className="flex gap-1.5 mt-2 flex-wrap items-center">
+                  {bizBadge(ev)}
+                  {canReschedule(ev) && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openBookingForm("edit", selectedDay!, ev);
+                      }}
+                      className="text-[10px] px-2 py-1 rounded border border-violet-200 text-violet-700 font-semibold touch-manipulation min-h-[32px]"
+                    >
+                      {labels.editBooking}
+                    </button>
+                  )}
+                </div>
               </div>
             );})}
           </div>
@@ -694,6 +738,16 @@ export default function CalendarTab({
                 {bizBadge(selected)}
               </p>
             </div>
+
+            {canReschedule(selected) && (
+              <button
+                type="button"
+                onClick={() => openBookingForm("edit", selectedDay ?? anchor, selected)}
+                className="mt-3 w-full min-h-[44px] py-2 rounded-lg border-2 border-violet-600 text-violet-700 text-sm font-semibold touch-manipulation"
+              >
+                {labels.editBooking}
+              </button>
+            )}
 
             {canReschedule(selected) && (
               <div className="mt-4">
@@ -765,6 +819,25 @@ export default function CalendarTab({
           </div>
         </div>
       )}
+
+      <CalendarBookingFormModal
+        open={bookingFormOpen}
+        mode={bookingFormMode}
+        day={bookingFormDay}
+        event={bookingFormEvent}
+        defaultBiz={defaultBookingBiz}
+        showBizPicker={showBizPicker}
+        apiBase={apiBase}
+        authHeaders={authHeaders}
+        actorMode={mode}
+        timeSlots={TIME_SLOTS}
+        labels={labels.bookingForm}
+        onClose={() => setBookingFormOpen(false)}
+        onSaved={() => {
+          showToast(labels.bookingForm.savedOk);
+          void loadEvents();
+        }}
+      />
 
       {toast && (
         <div

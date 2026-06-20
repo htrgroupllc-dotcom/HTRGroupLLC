@@ -158,6 +158,13 @@ export function isPastDay(day: Date, now = houstonNow()): boolean {
   return startOfDay(day).getTime() < startOfDay(now).getTime();
 }
 
+/** Booking API date format, e.g. "Apr 15, 2026" (Houston). */
+export function formatBookingDate(day: Date): string {
+  const houstonStr = day.toLocaleString("en-US", { timeZone: CALENDAR_TZ });
+  const d = new Date(houstonStr);
+  return `${MONTHS_SHORT[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
 export function isoFromDaySlot(day: Date, slotIdx: number): string {
   const d = startOfDay(day);
   const totalMins = SLOT_START_HOUR * 60 + slotIdx * SLOT_STEP_MINS;
