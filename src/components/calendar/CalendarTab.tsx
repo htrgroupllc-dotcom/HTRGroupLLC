@@ -102,6 +102,8 @@ interface Labels {
   moveJob: string;
   pickTime: string;
   openCrm: string;
+  movePickActive: string;
+  movePickCancel: string;
   newBooking: string;
   editBooking: string;
   bookingForm: CalendarBookingFormLabels;
@@ -163,15 +165,11 @@ export default function CalendarTab({
   const [selected, setSelected] = useState<CalendarEvent | null>(null);
   const [moveOpen, setMoveOpen] = useState(false);
   const [moveTargetDay, setMoveTargetDay] = useState<Date>(() => houstonNow());
-  const [dragId, setDragId] = useState<string | null>(null);
-  const [dragSlotIdx, setDragSlotIdx] = useState<number | null>(null);
+  const [movePickId, setMovePickId] = useState<string | null>(null);
   const [dropHoverKey, setDropHoverKey] = useState<string | null>(null);
   const [dropHoverWeekKey, setDropHoverWeekKey] = useState<string | null>(null);
-  const [touchDragId, setTouchDragId] = useState<string | null>(null);
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  /** Survives dragend→drop ordering; React dragId may still be false on first dragover. */
-  const dragPayloadRef = useRef<{ id: string; slotIdx: number } | null>(null);
-  const dragClearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const movePayloadRef = useRef<{ id: string; slotIdx: number } | null>(null);
+  const pointerMoveRef = useRef(false);
   const [toast, setToast] = useState<string | null>(null);
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
   const [bookingFormMode, setBookingFormMode] = useState<"create" | "edit">("create");
@@ -262,118 +260,117 @@ export default function CalendarTab({
       showToast(labels.rescheduleOk);
       setMoveOpen(false);
       setSelected(null);
-      clearDragState();
+      clearMoveState();
       void loadEvents();
     } catch (e) {
       showToast(e instanceof Error ? e.message : labels.rescheduleErr);
     }
   };
 
+  const normalizeSlotLabel = (t: string) =>
+    t.trim().replace(/\s+/g, " ").toUpperCase().replace(/^0(\d:)/, "$1");
+
   const slotForEvent = (ev: CalendarEvent) => {
     const s = slotIndexFromIso(ev.start_at);
     if (s >= 0 && s < TIME_SLOTS.length) return s;
-    const fromPreferred = TIME_SLOTS.indexOf((ev.preferred_time ?? "").trim());
-    if (fromPreferred >= 0) return fromPreferred;
+    const pref = normalizeSlotLabel(ev.preferred_time ?? "");
+    for (let i = 0; i < TIME_SLOTS.length; i++) {
+      if (normalizeSlotLabel(TIME_SLOTS[i]!) === pref) return i;
+    }
+    const m = pref.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/);
+    if (m) {
+      const h = parseInt(m[1]!, 10);
+      const min = parseInt(m[2]!, 10);
+      const ampm = m[3]!;
+      for (let i = 0; i < TIME_SLOTS.length; i++) {
+        const tm = TIME_SLOTS[i]!.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        if (tm && parseInt(tm[1]!, 10) === h && parseInt(tm[2]!, 10) === min && tm[3]!.toUpperCase() === ampm) {
+          return i;
+        }
+      }
+    }
     return 2;
   };
 
   const dayKey = (day: Date) => `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
 
-  const activeDragId = dragId ?? touchDragId ?? dragPayloadRef.current?.id ?? null;
+  const isMoveMode = !!movePickId;
 
-  const clearDragState = () => {
-    if (dragClearTimerRef.current) {
-      clearTimeout(dragClearTimerRef.current);
-      dragClearTimerRef.current = null;
-    }
-    dragPayloadRef.current = null;
-    setDragId(null);
-    setDragSlotIdx(null);
-    setTouchDragId(null);
+  const clearMoveState = () => {
+    movePayloadRef.current = null;
+    pointerMoveRef.current = false;
+    setMovePickId(null);
     setDropHoverKey(null);
     setDropHoverWeekKey(null);
   };
 
-  const scheduleDragClear = () => {
-    if (dragClearTimerRef.current) clearTimeout(dragClearTimerRef.current);
-    dragClearTimerRef.current = setTimeout(() => {
-      dragClearTimerRef.current = null;
-      dragPayloadRef.current = null;
-      setDragId(null);
-      setDragSlotIdx(null);
-      setDropHoverKey(null);
-      setDropHoverWeekKey(null);
-    }, 50);
-  };
-
-  const resolveDragPayload = (fallbackId?: string) => {
-    const fromRef = dragPayloadRef.current;
-    const id = fromRef?.id ?? dragId ?? touchDragId ?? fallbackId ?? null;
-    const slotIdx = fromRef?.slotIdx ?? dragSlotIdx;
-    return id ? { id, slotIdx } : null;
-  };
-  const onDropDay = (targetDay: Date, slotIdx?: number, fallbackId?: string) => {
-    if (dragClearTimerRef.current) {
-      clearTimeout(dragClearTimerRef.current);
-      dragClearTimerRef.current = null;
-    }
-    const payload = resolveDragPayload(fallbackId);
-    if (!payload) return;
-    const ev = events.find((e) => e.id === payload.id);
-    if (!ev || !canReschedule(ev)) return;
-    const slot = slotIdx ?? payload.slotIdx ?? slotForEvent(ev);
-    void reschedule(payload.id, isoFromDaySlot(targetDay, slot));
-    clearDragState();
-  };
-
-  const onDropWeekSlot = (dayIdx: number, slotIdx: number, fallbackId?: string) => {
-    if (dragClearTimerRef.current) {
-      clearTimeout(dragClearTimerRef.current);
-      dragClearTimerRef.current = null;
-    }
-    const payload = resolveDragPayload(fallbackId);
-    if (!payload) return;
-    const ev = events.find((e) => e.id === payload.id);
-    if (!ev || !canReschedule(ev)) return;
-    void reschedule(payload.id, isoFromWeekSlot(weekAnchorStart, dayIdx, slotIdx));
-    clearDragState();
-  };
-
-  const weekDropKey = (dayIdx: number, slotIdx: number) => `${dayIdx}-${slotIdx}`;
-
-  const clearLongPress = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  };
-
-  const startJobDrag = (ev: CalendarEvent, e: React.DragEvent, slotIdx?: number) => {
+  const startMovePick = (ev: CalendarEvent) => {
     if (!canReschedule(ev)) return;
-    const slot = slotIdx ?? slotForEvent(ev);
-    dragPayloadRef.current = { id: ev.id, slotIdx: slot };
-    setDragId(ev.id);
-    setDragSlotIdx(slot);
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", ev.id);
-    e.dataTransfer.dropEffect = "move";
+    const slot = slotForEvent(ev);
+    movePayloadRef.current = { id: ev.id, slotIdx: slot };
+    setMovePickId(ev.id);
   };
 
-  const endJobDrag = () => {
-    scheduleDragClear();
+  const completeMoveDay = (targetDay: Date, slotIdx?: number) => {
+    const id = movePickId ?? movePayloadRef.current?.id;
+    if (!id) return;
+    const ev = events.find((e) => e.id === id);
+    if (!ev || !canReschedule(ev)) return;
+    const slot = slotIdx ?? movePayloadRef.current?.slotIdx ?? slotForEvent(ev);
+    void reschedule(id, isoFromDaySlot(targetDay, slot));
+    clearMoveState();
   };
 
-  const startJobTouchDrag = (ev: CalendarEvent, slotIdx?: number) => (e: React.TouchEvent) => {
+  const completeMoveWeek = (dayIdx: number, slotIdx: number) => {
+    const id = movePickId ?? movePayloadRef.current?.id;
+    if (!id) return;
+    const ev = events.find((e) => e.id === id);
+    if (!ev || !canReschedule(ev)) return;
+    void reschedule(id, isoFromWeekSlot(weekAnchorStart, dayIdx, slotIdx));
+    clearMoveState();
+  };
+
+  const tryDropAtPoint = useCallback((clientX: number, clientY: number) => {
+    if (!movePickId) return;
+    const el = document.elementFromPoint(clientX, clientY)?.closest("[data-cal-drop]") as HTMLElement | null;
+    if (!el) return;
+    if (el.dataset.calDrop === "day" && el.dataset.calDay) {
+      completeMoveDay(new Date(el.dataset.calDay));
+      return;
+    }
+    if (el.dataset.calDrop === "week") {
+      const di = Number(el.dataset.calDayIdx);
+      const si = Number(el.dataset.calSlotIdx);
+      if (Number.isFinite(di) && Number.isFinite(si)) completeMoveWeek(di, si);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- weekAnchorStart/events read at call time
+  }, [movePickId, weekAnchorStart, events]);
+
+  useEffect(() => {
+    if (!movePickId) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") clearMoveState();
+    };
+    const onUp = (e: PointerEvent) => {
+      if (!pointerMoveRef.current) return;
+      tryDropAtPoint(e.clientX, e.clientY);
+      pointerMoveRef.current = false;
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("pointerup", onUp);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerup", onUp);
+    };
+  }, [movePickId, tryDropAtPoint]);
+
+  const onGripPointerDown = (ev: CalendarEvent, e: React.PointerEvent) => {
     if (!canReschedule(ev)) return;
-    clearLongPress();
-    longPressTimer.current = setTimeout(() => {
-      const slot = slotIdx ?? slotForEvent(ev);
-      dragPayloadRef.current = { id: ev.id, slotIdx: slot };
-      setTouchDragId(ev.id);
-      setDragSlotIdx(slot);
-      if (navigator.vibrate) navigator.vibrate(20);
-    }, 280);
+    e.preventDefault();
     e.stopPropagation();
+    pointerMoveRef.current = true;
+    startMovePick(ev);
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch { /* ignore */ }
   };
 
   const weekDaysForView = useMemo(
@@ -386,7 +383,7 @@ export default function CalendarTab({
     for (const ev of events) {
       const dayIdx = dayIndexInWeek(ev.start_at, weekAnchorStart);
       if (dayIdx < 0 || dayIdx > 6) continue;
-      const slotIdx = slotIndexFromIso(ev.start_at);
+      const slotIdx = slotForEvent(ev);
       if (slotIdx < 0 || slotIdx >= TIME_SLOTS.length) continue;
       const key = `${dayIdx}-${slotIdx}`;
       const list = map.get(key) ?? [];
@@ -396,7 +393,7 @@ export default function CalendarTab({
     return map;
   }, [events, weekAnchorStart]);
 
-  const isDragging = !!activeDragId;
+  const weekDropKey = (dayIdx: number, slotIdx: number) => `${dayIdx}-${slotIdx}`;
 
   const eventsForDay = (day: Date) =>
     events
@@ -454,42 +451,39 @@ export default function CalendarTab({
     const active = selectedDay ? isSameDay(day, selectedDay) : false;
     const count = dayEvents.length;
     const key = dayKey(day);
-    const isDropHover = dropHoverKey === key && isDragging;
+    const isDropHover = dropHoverKey === key && isMoveMode;
 
     return (
       <div
         role="button"
         tabIndex={inMonth ? 0 : -1}
+        data-cal-drop="day"
+        data-cal-day={day.toISOString()}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && inMonth) openDay(day);
+          if (e.key === "Enter" && inMonth) {
+            if (isMoveMode) completeMoveDay(day);
+            else openDay(day);
+          }
         }}
         onClick={() => {
-          if (touchDragId || dragPayloadRef.current) {
-            onDropDay(day);
+          if (isMoveMode && inMonth) {
+            completeMoveDay(day);
             return;
           }
           if (inMonth) openDay(day);
         }}
         aria-disabled={!inMonth}
-        onDragOver={(e) => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = "move";
-          if (inMonth) setDropHoverKey(key);
-        }}
-        onDragLeave={() => setDropHoverKey((k) => (k === key ? null : k))}
-        onDrop={(e) => {
-          e.preventDefault();
-          if (inMonth) onDropDay(day, undefined, e.dataTransfer.getData("text/plain") || undefined);
-        }}
+        onPointerEnter={() => { if (isMoveMode && inMonth) setDropHoverKey(key); }}
+        onPointerLeave={() => setDropHoverKey((k) => (k === key ? null : k))}
         title={count > 0 ? `${day.getDate()}: ${count} job(s)` : String(day.getDate())}
         style={{
           width: CAL_CELL,
           height: CAL_CELL,
           padding: 0,
           margin: 0,
-          border: isDropHover ? "2px solid #2563eb" : active ? "2px solid #2563eb" : todayMark ? "1px solid #60a5fa" : "1px solid rgba(0,0,0,0.06)",
+          border: isDropHover ? "2px solid #2563eb" : active ? "2px solid #2563eb" : todayMark ? "1px solid #60a5fa" : isMoveMode && inMonth ? "1px dashed #93c5fd" : "1px solid rgba(0,0,0,0.06)",
           borderRadius: 4,
-          background: isDropHover ? "#dbeafe" : inMonth ? bg : "#fafaf9",
+          background: isDropHover ? "#dbeafe" : isMoveMode && inMonth ? "#eff6ff" : inMonth ? bg : "#fafaf9",
           color: isDropHover ? "#1d4ed8" : fg,
           fontSize: 11,
           fontWeight: 600,
@@ -498,7 +492,7 @@ export default function CalendarTab({
           alignItems: "center",
           justifyContent: "center",
           position: "relative",
-          cursor: inMonth ? (isDragging ? "copy" : "pointer") : "default",
+          cursor: inMonth ? (isMoveMode ? "copy" : "pointer") : "default",
           opacity: inMonth ? 1 : 0.45,
           boxSizing: "border-box",
           touchAction: "manipulation",
@@ -621,8 +615,24 @@ export default function CalendarTab({
       </div>
 
       <p className="text-[10px] text-stone-400 px-3 pb-1">
-        {isDragging ? labels.dragHint : labels.tapHint}
+        {isMoveMode ? labels.dragHint : labels.tapHint}
       </p>
+
+      {isMoveMode && (
+        <div
+          className="mx-2 mb-2 flex items-center justify-between gap-2 rounded-lg bg-blue-600 text-white px-3 py-2.5 text-xs font-semibold shadow-md"
+          style={{ zIndex: 20 }}
+        >
+          <span className="flex-1">{labels.movePickActive}</span>
+          <button
+            type="button"
+            onClick={clearMoveState}
+            className="shrink-0 min-h-[36px] px-3 rounded-md bg-white/20 hover:bg-white/30 touch-manipulation"
+          >
+            {labels.movePickCancel}
+          </button>
+        </div>
+      )}
 
       {loading && (
         <div className="py-2 text-center text-stone-400 text-sm">{labels.loading}</div>
@@ -694,68 +704,59 @@ export default function CalendarTab({
                   {weekDaysForView.map((day, dayIdx) => {
                     const cellKey = weekDropKey(dayIdx, slotIdx);
                     const cellEvents = eventsByWeekSlot.get(cellKey) ?? [];
-                    const dropHover = dropHoverWeekKey === cellKey && isDragging;
+                    const dropHover = dropHoverWeekKey === cellKey && isMoveMode;
                     return (
                       <div
                         key={cellKey}
                         role="button"
                         tabIndex={0}
+                        data-cal-drop="week"
+                        data-cal-day-idx={String(dayIdx)}
+                        data-cal-slot-idx={String(slotIdx)}
                         onClick={() => {
-                          if (touchDragId) {
-                            onDropWeekSlot(dayIdx, slotIdx);
+                          if (isMoveMode) {
+                            completeMoveWeek(dayIdx, slotIdx);
                             return;
                           }
-                          if (cellEvents.length === 1 && !isDragging) {
+                          if (cellEvents.length === 1) {
                             setSelected(cellEvents[0]!);
                             setMoveOpen(false);
                             setMoveTargetDay(day);
                             return;
                           }
-                          if (cellEvents.length === 0 && !isDragging) {
+                          if (cellEvents.length === 0) {
                             openBookingForm("create", day);
                           }
                         }}
-                        onDragOver={(e) => {
-                          e.preventDefault();
-                          e.dataTransfer.dropEffect = "move";
-                          setDropHoverWeekKey(cellKey);
-                        }}
-                        onDragLeave={() => setDropHoverWeekKey((k) => (k === cellKey ? null : k))}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          onDropWeekSlot(dayIdx, slotIdx, e.dataTransfer.getData("text/plain") || undefined);
-                        }}
+                        onPointerEnter={() => { if (isMoveMode) setDropHoverWeekKey(cellKey); }}
+                        onPointerLeave={() => setDropHoverWeekKey((k) => (k === cellKey ? null : k))}
                         style={{
                           height: WEEK_SLOT_H,
                           boxSizing: "border-box",
                           borderBottom: "1px solid #f5f5f4",
                           borderRight: "1px solid #f5f5f4",
-                          background: dropHover ? "#dbeafe" : cellEvents.length ? "#fafaf9" : "#fff",
+                          background: dropHover ? "#dbeafe" : isMoveMode ? "#eff6ff" : cellEvents.length ? "#fafaf9" : "#fff",
+                          outline: dropHover ? "2px solid #2563eb" : isMoveMode ? "1px dashed #93c5fd" : undefined,
                           position: "relative",
                           padding: 1,
-                          cursor: isDragging ? "copy" : "pointer",
+                          cursor: isMoveMode ? "copy" : "pointer",
                           touchAction: "manipulation",
                         }}
                       >
                         {cellEvents.map((ev) => {
-                          const dragging = dragId === ev.id || touchDragId === ev.id;
-                          const draggable = canReschedule(ev);
+                          const isMovingThis = movePickId === ev.id;
+                          const movable = canReschedule(ev);
                           return (
                             <div
                               key={ev.id}
-                              draggable={draggable}
-                              onDragStart={(e) => startJobDrag(ev, e, slotIdx)}
-                              onDragEnd={endJobDrag}
-                              onTouchStart={startJobTouchDrag(ev, slotIdx)}
-                              onTouchEnd={() => clearLongPress()}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                if (touchDragId) return;
+                                if (isMoveMode) return;
                                 setSelected(ev);
                                 setMoveOpen(false);
                                 setMoveTargetDay(day);
                               }}
-                              className={`rounded px-1 py-0.5 text-[9px] font-semibold truncate touch-manipulation ${draggable ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"} ${dragging ? "opacity-50 ring-1 ring-blue-400" : ""}`}
+                              className={`rounded px-1 py-0.5 text-[9px] font-semibold truncate touch-manipulation flex items-center gap-0.5 ${movable ? "cursor-pointer" : "cursor-pointer"} ${isMovingThis ? "opacity-50 ring-1 ring-blue-400" : ""}`}
                               style={{
                                 background: eventColor(ev.status, !!ev.is_overdue),
                                 color: "#fff",
@@ -763,7 +764,17 @@ export default function CalendarTab({
                               }}
                               title={`${ev.client_name} · ${slot}`}
                             >
-                              {ev.client_name}
+                              {movable && (
+                                <span
+                                  role="presentation"
+                                  onPointerDown={(e) => onGripPointerDown(ev, e)}
+                                  className="shrink-0 touch-none cursor-grab active:cursor-grabbing px-0.5"
+                                  aria-label={labels.moveJob}
+                                >
+                                  ⋮⋮
+                                </span>
+                              )}
+                              <span className="truncate">{ev.client_name}</span>
                             </div>
                           );
                         })}
@@ -857,36 +868,40 @@ export default function CalendarTab({
 
           <div className="space-y-2">
             {dayDetailEvents.map((ev) => {
-              const dragging = dragId === ev.id || touchDragId === ev.id;
-              const draggable = canReschedule(ev);
+              const isMovingThis = movePickId === ev.id;
+              const movable = canReschedule(ev);
               return (
               <div
                 key={ev.id}
-                draggable={draggable}
-                onDragStart={(e) => startJobDrag(ev, e, slotForEvent(ev))}
-                onDragEnd={endJobDrag}
-                onTouchStart={startJobTouchDrag(ev, slotForEvent(ev))}
-                onTouchEnd={() => clearLongPress()}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key !== "Enter" || touchDragId) return;
+                  if (e.key !== "Enter" || isMoveMode) return;
                   setSelected(ev);
                   setMoveOpen(false);
                   setMoveTargetDay(selectedDay!);
                 }}
                 onClick={() => {
-                  if (touchDragId) return;
+                  if (isMoveMode) return;
                   setSelected(ev);
                   setMoveOpen(false);
                   setMoveTargetDay(selectedDay!);
                 }}
-                className={`w-full text-left rounded-xl border border-stone-200 bg-stone-50 p-3 touch-manipulation active:bg-stone-100 transition ${draggable ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"} ${dragging ? "opacity-50 ring-2 ring-blue-400" : ""}`}
+                className={`w-full text-left rounded-xl border border-stone-200 bg-stone-50 p-3 touch-manipulation active:bg-stone-100 transition cursor-pointer ${isMovingThis ? "opacity-50 ring-2 ring-blue-400" : ""}`}
                 style={{ borderLeftWidth: 4, borderLeftColor: eventColor(ev.status, !!ev.is_overdue) }}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1 flex items-start gap-1.5">
-                    {draggable && <GripVertical className="w-4 h-4 shrink-0 text-stone-400 mt-0.5" />}
+                    {movable && (
+                      <span
+                        role="presentation"
+                        onPointerDown={(e) => onGripPointerDown(ev, e)}
+                        className="shrink-0 touch-none cursor-grab active:cursor-grabbing p-1 -ml-1"
+                        aria-label={labels.moveJob}
+                      >
+                        <GripVertical className="w-4 h-4 text-stone-400" />
+                      </span>
+                    )}
                     <div className="min-w-0">
                     <div className="font-semibold text-stone-800 text-sm truncate">{ev.client_name}</div>
                     <div className="text-xs text-stone-500 truncate mt-0.5">{ev.appliance}</div>
@@ -907,6 +922,18 @@ export default function CalendarTab({
                 </div>
                 <div className="flex gap-1.5 mt-2 flex-wrap items-center">
                   {bizBadge(ev)}
+                  {movable && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startMovePick(ev);
+                      }}
+                      className="text-[10px] px-2 py-1 rounded border border-blue-200 bg-blue-50 text-blue-700 font-semibold touch-manipulation min-h-[32px]"
+                    >
+                      ⇄ {labels.moveJob}
+                    </button>
+                  )}
                   {canReschedule(ev) && (
                     <button
                       type="button"
@@ -978,7 +1005,7 @@ export default function CalendarTab({
                 {!moveOpen ? (
                   <button
                     type="button"
-                    onClick={() => { setMoveOpen(true); setMoveTargetDay(selectedDay ?? anchor); }}
+                    onClick={() => { startMovePick(selected); setMoveOpen(false); }}
                     className="w-full min-h-[44px] py-2 rounded-lg border-2 border-blue-600 text-blue-600 text-sm font-semibold touch-manipulation flex items-center justify-center gap-2"
                   >
                     <Clock className="w-4 h-4" /> {labels.moveJob}

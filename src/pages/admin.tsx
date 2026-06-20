@@ -2371,6 +2371,8 @@ function AdminDashboard() {
             moveJob: t.calMoveJob,
             pickTime: t.calPickTime,
             openCrm: t.calOpenCrm,
+            movePickActive: t.calMovePickActive,
+            movePickCancel: t.calMovePickCancel,
             newBooking: t.calNewBooking,
             editBooking: t.calEditBooking,
             bookingForm: {
