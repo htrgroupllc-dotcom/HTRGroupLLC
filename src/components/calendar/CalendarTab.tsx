@@ -411,13 +411,18 @@ export default function CalendarTab({
 
   const dayDetailEvents = selectedDay ? eventsForDay(selectedDay) : [];
 
+  const toolbarStickyTop = mode === "employee" ? 0 : 56;
+
   return (
     <div
-      className="flex flex-col h-full min-h-[calc(100dvh-56px)] md:min-h-[calc(100vh-120px)] bg-stone-50"
+      className={mode === "employee" ? "flex flex-col bg-stone-50" : "flex flex-col h-full min-h-[calc(100dvh-56px)] md:min-h-[calc(100vh-120px)] bg-stone-50"}
       style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
     >
       {/* Toolbar */}
-      <div className="sticky top-14 md:top-28 z-10 bg-white border-b border-stone-200 px-2 md:px-3 py-2 flex flex-col gap-2 shadow-sm">
+      <div
+        className="sticky z-10 bg-white border-b border-stone-200 px-2 md:px-3 py-2 flex flex-col gap-2 shadow-sm"
+        style={{ top: toolbarStickyTop }}
+      >
         <div className="flex flex-wrap items-center gap-2">
           <CalendarDays className="w-5 h-5 text-blue-600 shrink-0 hidden sm:block" />
           <span className="font-bold text-stone-700 text-sm">{labels.title}</span>
@@ -571,7 +576,7 @@ export default function CalendarTab({
 
       {/* Day detail — opens when a day is tapped */}
       {selectedDay && view === "month" && (
-        <div className="flex-1 overflow-y-auto px-2 pb-4 border-t border-stone-200 bg-white mx-2 rounded-t-xl shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+        <div className={`overflow-y-auto px-2 pb-4 border-t border-stone-200 bg-white mx-2 rounded-t-xl shadow-[0_-4px_12px_rgba(0,0,0,0.06)] ${mode === "employee" ? "" : "flex-1"}`}>
           <div className="sticky top-0 bg-white pt-3 pb-2 flex items-center justify-between border-b border-stone-100 mb-2">
             <div>
               <div className="text-sm font-bold text-stone-800">{formatDayHeader(selectedDay, locale)}</div>

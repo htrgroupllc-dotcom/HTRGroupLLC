@@ -1810,7 +1810,12 @@ function EmployeePage() {
       </div>
 
       {/* Content */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "12px", paddingBottom: 32 }}>
+      <div style={{
+        flex: 1,
+        overflowY: "auto",
+        padding: tab === "calendar" ? 0 : 12,
+        paddingBottom: 32,
+      }}>
 
         {/* ── JOBS TAB ── */}
         {tab === "jobs" && (
