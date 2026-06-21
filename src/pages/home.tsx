@@ -1375,9 +1375,10 @@ export default function Home() {
             </a>
           </div>
 
-          <button className="md:hidden p-2 rounded" onClick={() => setMenuOpen(!menuOpen)}>
+          <button className="md:hidden p-2 rounded flex-shrink-0" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
+        </div>
 
         <div className="htr-header-mobile-strip md:hidden">
           <div className="container mx-auto px-4 py-2 flex flex-col gap-2">
@@ -1386,7 +1387,6 @@ export default function Home() {
               {T.bookNow}
             </a>
           </div>
-        </div>
         </div>
 
         {menuOpen && (
