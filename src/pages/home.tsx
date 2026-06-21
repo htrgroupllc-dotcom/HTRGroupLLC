@@ -204,6 +204,7 @@ import ctaBg          from "@assets/photo_18_2026-04-03_01-13-35_1775196883895.j
 import heroImg        from "@assets/ChatGPT_Image_12_Ð°Ð¿Ñ€._2026_Ð³.,_02_07_40_1775977673189.png";
 
 import { PHONE_DISPLAY, PHONE_HREF, COMPANY_PHONE_DISPLAY, COMPANY_PHONE_HREF } from "@/lib/sitePhones";
+import { SITE_EMAIL, SITE_EMAIL_ALT } from "@/lib/siteBrand";
 
 /* â”€â”€ Brand / Model data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 

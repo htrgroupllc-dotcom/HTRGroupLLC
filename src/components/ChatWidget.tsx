@@ -7,8 +7,9 @@ import {
 
 const API_BASE = import.meta.env.VITE_API_URL as string ?? "https://htr-group-llc-appliance-repair.replit.app";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/sitePhones";
-const EMAIL_DISPLAY = "htrgroupllc@gmail.com";
-const EMAIL_HREF = "mailto:htrgroupllc@gmail.com";
+import { SITE_EMAIL, SITE_EMAIL_ALT } from "@/lib/siteBrand";
+const EMAIL_DISPLAY = `${SITE_EMAIL} · ${SITE_EMAIL_ALT}`;
+const EMAIL_HREF = `mailto:${SITE_EMAIL}`;
 
 interface Message { id: string; role: "user" | "assistant"; content: string; }
 interface UserInfo { name: string; email: string; phone: string; }
