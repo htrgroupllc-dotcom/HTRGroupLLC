@@ -3,7 +3,7 @@ import AdminSecretAccess from "@/components/AdminSecretAccess";
 import { onGlobeSecretClick, queueGalleryAdminOpen } from "@/lib/gallerySecretUnlock";
 import { motion } from "framer-motion";
 import {
-  Phone, Wrench, ShieldCheck, Clock, Star, CheckCircle2,
+  Phone, Wrench, ShieldCheck, Clock, Star, CheckCircle2, MapPin,
   ChevronLeft, ChevronRight, Menu, X, Users, Award, RefreshCw, ExternalLink, ThumbsUp, Globe,
   CalendarCheck, Truck, SearchCode, Hammer, BadgeCheck,
 } from "lucide-react";
@@ -501,8 +501,8 @@ const TR = {
     ctaSub:  "Expert Appliance Repair For Every Major Brand.",
     contactH2: "Contact Us Today",
     address:  "Houston, TX & surrounding areas (Sugar Land, Katy, Pearland, The Woodlands, Pasadena)",
-    hours1:   "Monâ€“Fri: 9:00 AM â€“ 5:00 PM",
-    hours2:   "Satâ€“Sun: Closed",
+    hours1:   "Mon-Fri: 9:00 AM - 5:00 PM",
+    hours2:   "Sat-Sun: Closed",
     learnMore: "Learn More",
     bookH2:   "Book a Repair",
     bookSub:  "We'll call you within 15 minutes to confirm your appointment.",
@@ -582,8 +582,8 @@ const TR = {
     ctaSub:  "ReparaciÃ³n Experta Para Todas Las Marcas.",
     contactH2: "ContÃ¡ctenos Hoy",
     address:  "Houston, TX y Ã¡reas cercanas (Sugar Land, Katy, Pearland, The Woodlands, Pasadena)",
-    hours1:   "Lunâ€“Vie: 9:00 AM â€“ 5:00 PM",
-    hours2:   "SÃ¡bâ€“Dom: Cerrado",
+    hours1:   "Lun-Vie: 9:00 AM - 5:00 PM",
+    hours2:   "Sab-Dom: Cerrado",
     learnMore: "MÃ¡s InformaciÃ³n",
     bookH2:   "Reserve una ReparaciÃ³n",
     bookSub:  "Le llamaremos en 15 minutos para confirmar su cita.",
@@ -1867,7 +1867,7 @@ export default function Home() {
                 </a>
                 <h3 className="font-bold uppercase tracking-wider text-xs mb-3" style={{ color: K.accent }}>{T.contactH2}</h3>
                 <ul className="space-y-3 text-sm text-stone-600">
-                  <li className="flex items-start gap-2"><span style={{ color: K.accent }}>ðŸ“</span> {T.address}</li>
+                  <li className="flex items-start gap-2"><MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: K.accent }} /> {T.address}</li>
                   <li className="flex items-start gap-2">
                     <Phone className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: K.accent }} />
                     <div>
@@ -2074,7 +2074,7 @@ export default function Home() {
                 {["Houston", "Sugar Land", "Katy", "Pearland", "The Woodlands", "Pasadena", "Baytown", "League City", "Missouri City", "Conroe", "Friendswood", "Rosenberg"].map(city => (
                   <span key={city} className="text-xs font-medium px-3 py-1 rounded-full border"
                     style={{ borderColor: K.accent, color: K.accent, backgroundColor: `${K.accent}12` }}>
-                    ðŸ“ {city}
+                    <MapPin className="h-3 w-3 inline mr-1" style={{ color: K.accent }} />{city}
                   </span>
                 ))}
               </div>
