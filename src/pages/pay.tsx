@@ -8,8 +8,19 @@ import {
 } from "@stripe/react-stripe-js";
 
 const ACCENT = "#1B6FE8";
+const STRIPE_TAP_TO_PAY_URL = "https://dashboard.stripe.com/terminal/payments/create";
 const DEFAULT_API = "https://htr-group-llc-appliance-repair.replit.app";
 const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined ?? "").replace(/\/$/, "") || DEFAULT_API;
+
+function openStripeTapToPay(e: React.MouseEvent<HTMLAnchorElement>) {
+  e.preventDefault();
+  const isMobile = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+  if (isMobile) {
+    window.location.assign(STRIPE_TAP_TO_PAY_URL);
+    return;
+  }
+  window.open(STRIPE_TAP_TO_PAY_URL, "_blank", "noopener");
+}
 
 type StripePromise = ReturnType<typeof loadStripe>;
 
@@ -46,6 +57,9 @@ const T = {
     successMsg:   "Thank you! Your payment has been received.",
     cardTitle:    "Payment Details",
     doneBtn:      "Done",
+    tapToPayBtn:  "Open Stripe — Tap to Pay",
+    tapToPayHint: "Charge in the Stripe app: enter amount → Tap to Pay → client taps card",
+    orOnline:     "or pay online with card",
   },
   es: {
     title:       "Pagar su Reparación",
@@ -69,6 +83,9 @@ const T = {
     successMsg:   "¡Gracias! Su pago ha sido recibido.",
     cardTitle:    "Datos de Pago",
     doneBtn:      "Listo",
+    tapToPayBtn:  "Abrir Stripe — Tap to Pay",
+    tapToPayHint: "Cobra en la app Stripe: monto → Tap to Pay → el cliente acerca la tarjeta",
+    orOnline:     "o pagar en línea con tarjeta",
   },
 };
 
@@ -470,14 +487,45 @@ export default function PayPage() {
               </div>
             )}
 
+            <div style={{
+              background: "#eff6ff", border: "1.5px solid #93c5fd", borderRadius: 12,
+              padding: "14px 16px", marginBottom: 16,
+            }}>
+              <div style={{ fontSize: 12, color: "#3b82f6", marginBottom: 12, lineHeight: 1.45 }}>
+                {t.tapToPayHint}
+              </div>
+              <a
+                href={STRIPE_TAP_TO_PAY_URL}
+                rel="noopener noreferrer"
+                onClick={openStripeTapToPay}
+                style={{
+                  width: "100%", padding: "16px",
+                  background: ACCENT, color: "#fff", borderRadius: 12, border: "none",
+                  fontSize: 16, fontWeight: 800, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  textDecoration: "none", boxSizing: "border-box",
+                }}
+              >
+                <span style={{ fontSize: 20 }}>📱</span>
+                {t.tapToPayBtn}
+              </a>
+            </div>
+
+            <div style={{
+              textAlign: "center", fontSize: 12, color: "#94a3b8", fontWeight: 600,
+              marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.04em",
+            }}>
+              {t.orOnline}
+            </div>
+
             <button
               onClick={handleContinue}
               disabled={loadingIntent}
               style={{
-                width: "100%", padding: "16px",
-                background: loadingIntent ? "#94a3b8" : ACCENT,
+                width: "100%", padding: "14px",
+                background: loadingIntent ? "#94a3b8" : "#635BFF",
                 color: "#fff", borderRadius: 12, border: "none",
-                fontSize: 16, fontWeight: 800, cursor: loadingIntent ? "not-allowed" : "pointer",
+                fontSize: 15, fontWeight: 700, cursor: loadingIntent ? "not-allowed" : "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 transition: "background 0.2s",
               }}
@@ -504,7 +552,7 @@ export default function PayPage() {
                 <rect x="3" y="11" width="18" height="11" rx="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
-              {t.secure} · Google Pay · Apple Pay · Card
+              {t.secure} · Tap to Pay · Card · Apple Pay
             </div>
           </>
         )}
