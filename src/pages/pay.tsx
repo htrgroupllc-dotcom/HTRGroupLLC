@@ -296,6 +296,23 @@ export default function PayPage() {
     return () => { cancelled = true; };
   }, []);
 
+  useEffect(() => {
+    const onPayBack = () => {
+      if (clientSecret) {
+        setClientSecret(null);
+        setError("");
+        return;
+      }
+      if (window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+      window.location.href = "/";
+    };
+    window.addEventListener("htr-pay-back", onPayBack);
+    return () => window.removeEventListener("htr-pay-back", onPayBack);
+  }, [clientSecret]);
+
   // PWA / home-screen manifest swap
   useEffect(() => {
     const prev = document.querySelector("link[rel='manifest']") as HTMLLinkElement | null;

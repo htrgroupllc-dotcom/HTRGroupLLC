@@ -11,6 +11,10 @@ export default function BackButton() {
       window.dispatchEvent(new CustomEvent("htr-employee-back"));
       return;
     }
+    if (location === "/pay" || location.startsWith("/pay/")) {
+      window.dispatchEvent(new CustomEvent("htr-pay-back"));
+      return;
+    }
     window.history.back();
   };
 
