@@ -1,0 +1,34 @@
+---
+description: Паритет admin + employee между appliance и dental; правки осторожно, без поломок
+alwaysApply: true
+---
+
+# Appliance ↔ Dental: admin + employee
+
+## Правило
+
+При **любой** правке портала **сотрудника** (`/employee`) или **админки** (`/admin`):
+
+1. **Сравнивай обе версии** — appliance и dental (исходники + что реально в проде).
+2. **Вноси изменения в обе админки** — `HTRGroupLLC` и `DentalEquipSite` (admin + employee, если задача касается обоих).
+3. **Сравнивай admin и employee** внутри одного бренда: шапка, кнопки, фон, язык, мобильная вёрстка — чтобы не повторять баги (overlap RU/имя и т.п.).
+4. **Минимальный diff** — только запрошенное; не рефакторить соседний код.
+
+## Осторожно (appliance admin)
+
+- Admin appliance использует **отдельный pinned bundle** `assets/admin-index-utf8-v4.js` — **не** подменять целиком site-бандлом без проверки.
+- После правок в `src/pages/admin.tsx` — убедиться, что изменение попало в **live admin bundle** (патч или отдельная сборка), иначе на prod будет старый UI.
+- Dental admin обычно идёт через общий site bundle — поведение деплоя **разное**; сверять результат, а не только diff в `src/`.
+
+## Чеклист перед «готово»
+
+- [ ] Appliance admin + employee проверены (mobile 375px и desktop).
+- [ ] Dental admin + employee синхронизированы, если задача про UI/функцию портала.
+- [ ] Не сломан pinned admin, PWA, auth, оплата, голос (см. `fix-without-breaking.mdc`, `STABLE-BASELINE.md`).
+
+## Репозитории
+
+| Бренд | Путь | Деплой |
+|-------|------|--------|
+| Appliance | `C:\Projects\HTRGroupLLC` | htrgrouptx.com |
+| Dental | `C:\Projects\DentalEquipSite` | dentequmentfix.com |

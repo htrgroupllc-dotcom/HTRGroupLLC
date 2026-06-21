@@ -1,7 +1,8 @@
 # Stable baseline — HTRGroupLLC (htrgrouptx.com)
 
-**Зафиксировано:** 2026-06-21  
-**Git commit:** `549d4c3aef8bd0aec2bf89b61a21a593b6615dc1`  
+**Зафиксировано:** 2026-06-21 (обновлено: bundle versions v156/v150)  
+**Git commit:** `549d4c3aef8bd0aec2bf89b61a21a593b6615dc1` (baseline tag)  
+**Текущий prod admin restore:** `11f9b38` — admin-index v150  
 **Git tag:** `stable-baseline-jun-2026`  
 **Branch:** `main`  
 **Repo:** https://github.com/htrgroupllc-dotcom/HTRGroupLLC
@@ -28,9 +29,9 @@
 
 | Страница | JS файл | Cache v |
 |----------|---------|---------|
-| Сайт `index.html` | `/assets/index-utf8-v4.js` | **151** |
-| Pay `pay/index.html` | `/assets/index-utf8-v4.js` | **151** (тот же что сайт) |
-| Admin `admin/index.html` | `/assets/admin-index-utf8-v4.js` | **149** (отдельный, pinned) |
+| Сайт `index.html` | `/assets/index-utf8-v4.js` | **156** |
+| Pay `pay/index.html` | `/assets/index-utf8-v4.js` | **156** (тот же что сайт) |
+| Admin `admin/index.html` | `/assets/admin-index-utf8-v4.js` | **150** (отдельный, pinned) |
 
 - **Admin НЕ использует** `index-utf8-v4.js` — иначе ломается mobile PWA.
 - Сборка (`scripts/build-pages-bundle.mjs`) **не должна** менять `admin/index.html`.
