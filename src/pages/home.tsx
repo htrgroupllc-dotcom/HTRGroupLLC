@@ -1877,7 +1877,10 @@ export default function Home() {
                     </div>
                   </li>
                   <li className="flex items-start gap-2"><span style={{ color: K.accent }}>@</span>
-                    <a href="mailto:htrgroupllc@gmail.com" className="hover:opacity-70 transition-opacity">htrgroupllc@gmail.com</a>
+                    <div>
+                      <a href={`mailto:${SITE_EMAIL}`} className="hover:opacity-70 transition-opacity block">{SITE_EMAIL}</a>
+                      <a href={`mailto:${SITE_EMAIL_ALT}`} className="hover:opacity-70 transition-opacity block mt-1">{SITE_EMAIL_ALT}</a>
+                    </div>
                   </li>
                   <li className="flex items-start gap-2"><Clock className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: K.accent }} /> {T.hours1}</li>
                   <li className="flex items-start gap-2"><Clock className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: K.accent }} /> {T.hours2}</li>
