@@ -4,10 +4,10 @@ import {
   MessageCircle, X, Send, Bot, User, Loader2,
   Phone, Mail, CalendarCheck, AlertTriangle, UserCircle, ArrowRight,
 } from "lucide-react";
-
-const API_BASE = import.meta.env.VITE_API_URL as string ?? "https://htr-group-llc-appliance-repair.replit.app";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/sitePhones";
 import { SITE_EMAIL, SITE_EMAIL_ALT } from "@/lib/siteBrand";
+
+const API_BASE = import.meta.env.VITE_API_URL as string ?? "https://htr-group-llc-appliance-repair.replit.app";
 const EMAIL_DISPLAY = `${SITE_EMAIL} · ${SITE_EMAIL_ALT}`;
 const EMAIL_HREF = `mailto:${SITE_EMAIL}`;
 
