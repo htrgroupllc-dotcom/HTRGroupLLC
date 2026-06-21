@@ -12,6 +12,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const arDir = path.resolve(root, "../htrgr/REPLIT-LATEST/HTRGroupLLC1/artifacts/appliance-repair");
 const viteBin = path.join(arDir, "node_modules/vite/bin/vite.js");
 const viteConfig = path.join(arDir, "vite.htr.config.ts");
+const viteAdminConfig = path.join(arDir, "vite.htr-admin.config.ts");
 
 if (!fs.existsSync(viteBin)) {
   console.error("vite not found:", viteBin);
@@ -51,9 +52,15 @@ if (fs.existsSync(replitAssets) && !fs.existsSync(assetsPath)) {
   linkedAssets = true;
 }
 
-console.log("Running vite build...");
+console.log("Running vite build (site)...");
 try {
   execSync(`node "${viteBin}" build --config "${viteConfig}"`, {
+    cwd: arDir,
+    stdio: "inherit",
+    env: { ...process.env, NODE_ENV: "production" },
+  });
+  console.log("Running vite build (admin)...");
+  execSync(`node "${viteBin}" build --config "${viteAdminConfig}"`, {
     cwd: arDir,
     stdio: "inherit",
     env: { ...process.env, NODE_ENV: "production" },
@@ -78,17 +85,25 @@ try {
 }
 
 const distJs = path.join(root, "dist-build/assets/index-utf8-v4.js");
+const distAdminJs = path.join(root, "dist-build-admin/assets/admin-utf8-v6.js");
 const outJs = path.join(root, "assets/index-utf8-v4.js");
+const outAdminJs = path.join(root, "assets/admin-utf8-v6.js");
 
 if (!fs.existsSync(distJs)) {
   console.error("Missing build output:", distJs);
+  process.exit(1);
+}
+if (!fs.existsSync(distAdminJs)) {
+  console.error("Missing admin build output:", distAdminJs);
   process.exit(1);
 }
 
 fs.copyFileSync(distJs, outJs);
 const outJsV5 = path.join(root, "assets/index-utf8-v5.js");
 fs.copyFileSync(distJs, outJsV5);
-console.log("Copied JS", (fs.statSync(outJs).size / 1048576).toFixed(2), "MiB → v4 + v5");
+fs.copyFileSync(distAdminJs, outAdminJs);
+console.log("Copied site JS", (fs.statSync(outJs).size / 1048576).toFixed(2), "MiB → v4 + v5");
+console.log("Copied admin JS", (fs.statSync(outAdminJs).size / 1048576).toFixed(2), "MiB → v6");
 
 const distAssetsDir = path.join(root, "dist-build/assets");
 const outAssetsDir = path.join(root, "assets");
@@ -96,7 +111,7 @@ const assetExt = /\.(png|jpe?g|webp|gif|svg|woff2?|ttf|ico)$/i;
 let copiedAssets = 0;
 if (fs.existsSync(distAssetsDir)) {
   for (const name of fs.readdirSync(distAssetsDir)) {
-    if (name === "index-utf8-v4.js" || name === "index-_bdQPowM.css") continue;
+    if (name === "index-utf8-v4.js" || name === "admin-utf8-v6.js" || name === "index-_bdQPowM.css") continue;
     if (!assetExt.test(name)) continue;
     fs.copyFileSync(path.join(distAssetsDir, name), path.join(outAssetsDir, name));
     copiedAssets++;
@@ -129,34 +144,54 @@ function verifyBundleAssets(jsText, assetsDir) {
 }
 
 const jsText = fs.readFileSync(outJs, "utf8");
+const adminJsText = fs.readFileSync(outAdminJs, "utf8");
 verifyBundleAssets(jsText, outAssetsDir);
+verifyBundleAssets(adminJsText, outAssetsDir);
 console.log("CSS unchanged (reusing existing index-_bdQPowM.css)");
 
 if (!jsText.includes("/api/calendar/events") && !jsText.includes("calendarTab")) {
-  console.error("Build verification failed: calendar code not found in bundle");
+  console.error("Build verification failed: calendar code not found in site bundle");
   process.exit(1);
 }
-console.log("OK: calendar code present in bundle");
+if (!adminJsText.includes("/api/calendar/events") && !adminJsText.includes("calendarTab")) {
+  console.error("Build verification failed: calendar code not found in admin bundle");
+  process.exit(1);
+}
+if (adminJsText.includes("AI Diagnostic Help") || adminJsText.includes("Describe your appliance problem")) {
+  console.error("Build verification failed: admin bundle must not include ChatWidget/home chat UI");
+  process.exit(1);
+}
+console.log("OK: calendar code present in site + admin bundles");
 
-const htmlFiles = [
+const siteHtmlFiles = [
   path.join(root, "index.html"),
-  path.join(root, "admin/index.html"),
   path.join(root, "pay/index.html"),
 ];
+const adminHtml = path.join(root, "admin/index.html");
 const oldVer = (() => {
-  const t = fs.readFileSync(htmlFiles[0], "utf8");
+  const t = fs.readFileSync(siteHtmlFiles[0], "utf8");
   const m = t.match(/index-utf8-v4\.js\?v=(\d+)/);
   return m ? parseInt(m[1], 10) : 100;
 })();
 const newVer = oldVer + 1;
 
-for (const html of htmlFiles) {
+for (const html of siteHtmlFiles) {
   if (!fs.existsSync(html)) continue;
   let t = fs.readFileSync(html, "utf8");
   t = t.replace(/index-utf8-v4\.js\?v=\d+/g, `index-utf8-v4.js?v=${newVer}`);
   t = t.replace(/index-_bdQPowM\.css\?v=\d+/g, `index-_bdQPowM.css?v=${newVer}`);
   fs.writeFileSync(html, t, "utf8");
   console.log("Updated", path.relative(root, html), "→ v=" + newVer);
+}
+
+if (fs.existsSync(adminHtml)) {
+  let t = fs.readFileSync(adminHtml, "utf8");
+  t = t.replace(/admin-utf8-v6\.js\?v=\d+/g, `admin-utf8-v6.js?v=${newVer}`);
+  t = t.replace(/index-utf8-v5\.js\?v=\d+/g, `admin-utf8-v6.js?v=${newVer}`);
+  t = t.replace(/index-utf8-v4\.js\?v=\d+/g, `admin-utf8-v6.js?v=${newVer}`);
+  t = t.replace(/index-_bdQPowM\.css\?v=\d+/g, `index-_bdQPowM.css?v=${newVer}`);
+  fs.writeFileSync(adminHtml, t, "utf8");
+  console.log("Updated", path.relative(root, adminHtml), "→ admin v6, v=" + newVer);
 }
 
 console.log("Done. Commit assets/ + HTML and push for Cloudflare deploy.");

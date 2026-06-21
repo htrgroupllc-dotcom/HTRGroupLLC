@@ -4,6 +4,9 @@
 /admin/
   Cache-Control: no-cache, no-store, must-revalidate
 
+/assets/admin-utf8-v6.js
+  Cache-Control: no-cache, must-revalidate
+
 /assets/index-utf8-v5.js
   Cache-Control: no-cache, must-revalidate
 

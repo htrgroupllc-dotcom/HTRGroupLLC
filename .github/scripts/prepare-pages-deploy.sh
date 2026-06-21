@@ -45,6 +45,10 @@ if [ -f "$OUT/assets/index-utf8-v5.js" ]; then
   node --check "$OUT/assets/index-utf8-v5.js"
 fi
 
+if [ -f "$OUT/assets/admin-utf8-v6.js" ]; then
+  node --check "$OUT/assets/admin-utf8-v6.js"
+fi
+
 oversized="$(find "$OUT" -type f -size +${CF_MAX_MIB}M || true)"
 if [ -n "$oversized" ]; then
   echo "::error::Deploy bundle contains file(s) over Cloudflare ${CF_MAX_MIB} MiB limit:"
@@ -76,13 +80,18 @@ if [ -n "$root_ver" ]; then
   done
   admin_html="$OUT/admin/index.html"
   if [ -f "$admin_html" ]; then
-    if grep -q "index-utf8-v5.js?v=${root_ver}" "$admin_html"; then
+    if grep -q "admin-utf8-v6.js?v=${root_ver}" "$admin_html"; then
+      if [ ! -f "$OUT/assets/admin-utf8-v6.js" ]; then
+        echo "::error::admin/index.html references admin-utf8-v6.js but assets/admin-utf8-v6.js is missing."
+        exit 1
+      fi
+    elif grep -q "index-utf8-v5.js?v=${root_ver}" "$admin_html"; then
       if [ ! -f "$OUT/assets/index-utf8-v5.js" ]; then
         echo "::error::admin/index.html references index-utf8-v5.js but assets/index-utf8-v5.js is missing."
         exit 1
       fi
     elif ! grep -q "index-utf8-v4.js?v=${root_ver}" "$admin_html"; then
-      echo "::error::admin/index.html must reference index-utf8-v4.js?v=${root_ver} or index-utf8-v5.js?v=${root_ver}."
+      echo "::error::admin/index.html must reference admin-utf8-v6.js, index-utf8-v5.js, or index-utf8-v4.js?v=${root_ver}."
       exit 1
     fi
     if ! grep -q "index-_bdQPowM.css?v=${root_ver}" "$admin_html"; then
