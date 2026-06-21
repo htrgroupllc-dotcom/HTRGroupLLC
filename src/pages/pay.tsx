@@ -8,20 +8,30 @@ import {
 } from "@stripe/react-stripe-js";
 
 const ACCENT = "#1B6FE8";
-const STRIPE_TAP_TO_PAY_URL = "https://dashboard.stripe.com/terminal/payments/create";
+const STRIPE_DASHBOARD_APP_URL = "https://dashboard.stripe.com/dashboard";
+const STRIPE_TERMINAL_CREATE_URL = "https://dashboard.stripe.com/terminal/payments/create";
 const DEFAULT_API = "https://htr-group-llc-appliance-repair.replit.app";
 const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined ?? "").replace(/\/$/, "") || DEFAULT_API;
 
+function stripeTapToPayUrl(): string {
+  const standalone = !!(navigator as Navigator & { standalone?: boolean }).standalone
+    || window.matchMedia("(display-mode: standalone)").matches;
+  const isMobile = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+  if (isMobile || standalone) return STRIPE_DASHBOARD_APP_URL;
+  return STRIPE_TERMINAL_CREATE_URL;
+}
+
 function openStripeTapToPay(e: React.MouseEvent<HTMLAnchorElement>) {
   e.preventDefault();
+  const url = stripeTapToPayUrl();
   const standalone = !!(navigator as Navigator & { standalone?: boolean }).standalone
     || window.matchMedia("(display-mode: standalone)").matches;
   const isMobile = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   if (isMobile || standalone) {
-    window.location.assign(STRIPE_TAP_TO_PAY_URL);
+    window.location.assign(url);
     return;
   }
-  window.open(STRIPE_TAP_TO_PAY_URL, "_blank", "noopener");
+  window.open(url, "_blank", "noopener");
 }
 
 type StripePromise = ReturnType<typeof loadStripe>;
@@ -514,7 +524,7 @@ export default function PayPage() {
                 {t.tapToPayHint}
               </div>
               <a
-                href={STRIPE_TAP_TO_PAY_URL}
+                href={stripeTapToPayUrl()}
                 rel="noopener noreferrer"
                 onClick={openStripeTapToPay}
                 style={{
