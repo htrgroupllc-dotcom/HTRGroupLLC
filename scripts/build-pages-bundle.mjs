@@ -138,8 +138,8 @@ console.log("OK: calendar code present in bundle");
 
 const htmlFiles = [
   path.join(root, "index.html"),
-  path.join(root, "admin/index.html"),
   path.join(root, "pay/index.html"),
+  // admin/index.html uses pinned admin-index-utf8-v4.js — do not bump with site bundle
 ];
 const oldVer = (() => {
   const t = fs.readFileSync(htmlFiles[0], "utf8");
