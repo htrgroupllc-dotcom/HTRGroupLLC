@@ -86,7 +86,9 @@ if (!fs.existsSync(distJs)) {
 }
 
 fs.copyFileSync(distJs, outJs);
-console.log("Copied JS", (fs.statSync(outJs).size / 1048576).toFixed(2), "MiB");
+const outJsV5 = path.join(root, "assets/index-utf8-v5.js");
+fs.copyFileSync(distJs, outJsV5);
+console.log("Copied JS", (fs.statSync(outJs).size / 1048576).toFixed(2), "MiB → v4 + v5");
 
 const distAssetsDir = path.join(root, "dist-build/assets");
 const outAssetsDir = path.join(root, "assets");

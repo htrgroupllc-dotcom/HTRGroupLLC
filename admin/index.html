@@ -19,17 +19,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function (regs) {
-          regs.forEach(function (reg) {
-            reg.update();
-            if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
+      (function () {
+        var KEY = "htr-admin-cache-purge-v2";
+        if (localStorage.getItem(KEY)) return;
+        var purge = Promise.resolve(false);
+        if ("serviceWorker" in navigator) {
+          purge = navigator.serviceWorker.getRegistrations().then(function (regs) {
+            var had = regs.length > 0;
+            return Promise.all(regs.map(function (r) { return r.unregister(); })).then(function () { return had; });
           });
+        }
+        purge.then(function (hadRegs) {
+          if (!window.caches) return !!hadRegs;
+          return caches.keys().then(function (keys) {
+            return Promise.all(keys.map(function (k) { return caches.delete(k); })).then(function () {
+              return !!hadRegs || keys.length > 0;
+            });
+          });
+        }).then(function (didPurge) {
+          localStorage.setItem(KEY, "1");
+          if (didPurge) location.reload();
         });
-      }
+      })();
     </script>
-    <script type="module" crossorigin src="/assets/index-utf8-v4.js?v=140"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-_bdQPowM.css?v=140">
+    <script type="module" crossorigin src="/assets/index-utf8-v5.js?v=141"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-_bdQPowM.css?v=141">
   </head>
   <body>
     <div id="root"></div>

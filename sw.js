@@ -1,7 +1,7 @@
-const CACHE = "htr-pwa-v6";
+const CACHE = "htr-pwa-v7";
 
 function isAppBundle(pathname) {
-  return pathname.includes("index-utf8-v4.js") || pathname.includes("index-_bdQPowM.css");
+  return /index-utf8-v[45]\.js/.test(pathname) || pathname.includes("index-_bdQPowM.css");
 }
 
 self.addEventListener("install", e => {
