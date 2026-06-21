@@ -88,6 +88,15 @@ if (!fs.existsSync(distJs)) {
 fs.copyFileSync(distJs, outJs);
 console.log("Copied JS", (fs.statSync(outJs).size / 1048576).toFixed(2), "MiB");
 
+const distCss = path.join(root, "dist-build/assets/index-_bdQPowM.css");
+const outCss = path.join(root, "assets/index-_bdQPowM.css");
+if (fs.existsSync(distCss)) {
+  fs.copyFileSync(distCss, outCss);
+  console.log("Copied CSS", (fs.statSync(outCss).size / 1024).toFixed(2), "KiB");
+} else {
+  console.warn("Missing build CSS output:", distCss);
+}
+
 const distAssetsDir = path.join(root, "dist-build/assets");
 const outAssetsDir = path.join(root, "assets");
 const assetExt = /\.(png|jpe?g|webp|gif|svg|woff2?|ttf|ico)$/i;
@@ -128,7 +137,20 @@ function verifyBundleAssets(jsText, assetsDir) {
 
 const jsText = fs.readFileSync(outJs, "utf8");
 verifyBundleAssets(jsText, outAssetsDir);
-console.log("CSS unchanged (reusing existing index-_bdQPowM.css)");
+if (fs.existsSync(outCss)) {
+  const cssText = fs.readFileSync(outCss, "utf8");
+  if (cssText.includes("@tailwind utilities")) {
+    console.error("Build verification failed: CSS still contains unprocessed @tailwind utilities");
+    process.exit(1);
+  }
+  if (!cssText.includes(".md\\:hidden") && !cssText.includes(".md:hidden")) {
+    console.error("Build verification failed: CSS missing .md:hidden utility");
+    process.exit(1);
+  }
+  console.log("OK: CSS utilities present in bundle");
+} else {
+  console.log("CSS unchanged (reusing existing index-_bdQPowM.css)");
+}
 
 if (!jsText.includes("/api/calendar/events") && !jsText.includes("calendarTab")) {
   console.error("Build verification failed: calendar code not found in bundle");

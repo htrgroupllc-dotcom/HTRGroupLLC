@@ -1368,7 +1368,7 @@ export default function Home() {
             </a>
           </nav>
 
-          <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+          <div className="htr-header-desktop-actions hidden md:flex items-center gap-2 flex-shrink-0">
             <PhonePair inHeader />
             <a href="#contact" className="text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider" style={{ backgroundColor: K.dark }}>
               {T.bookNow}
