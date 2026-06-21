@@ -2288,12 +2288,13 @@ function AdminDashboard() {
       </header>
 
       {/* ── CRM top-level tab bar ── */}
-      <div className="sticky top-14 z-20 bg-white border-b border-stone-200 shadow-sm overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-        <div className="flex min-w-max">
+      <div className="sticky top-14 z-20 bg-white border-b border-stone-200 shadow-sm overflow-x-auto overscroll-x-contain" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+        <div className="flex min-w-max pr-4">
           {([
             { key: "bookings",   icon: <Calendar className="w-3.5 h-3.5" />,  label: t.tabBookings   },
             { key: "calendar",   icon: <CalendarDays className="w-3.5 h-3.5" />, label: t.tabCalendar },
             { key: "jobsArchive", icon: <Archive className="w-3.5 h-3.5" />, label: t.tabJobsArchive, count: historyBookings.length || undefined },
+            { key: "trash",      icon: <Trash2 className="w-3.5 h-3.5" />,    label: t.tabTrash, count: trashCount },
             { key: "employees",  icon: <Users className="w-3.5 h-3.5" />,     label: t.tabEmployees  },
             { key: "archive",    icon: <ArchiveRestore className="w-3.5 h-3.5" />, label: t.tabArchive },
             { key: "blacklist",  icon: <ShieldOff className="w-3.5 h-3.5" />, label: t.tabBlacklist  },
@@ -2302,12 +2303,11 @@ function AdminDashboard() {
             { key: "pricebook",  icon: <span className="text-sm">🏷️</span>,   label: t.tabPricebook ?? "Прайс-лист" },
             { key: "photos", icon: <Camera className="w-3.5 h-3.5" />, label: t.tabPhotos ?? "Фото" },
             { key: "settings",   icon: <Settings className="w-3.5 h-3.5" />,  label: t.tabSettings   },
-            { key: "trash",      icon: <Trash2 className="w-3.5 h-3.5" />,    label: t.tabTrash, count: trashCount },
           ] as { key: "bookings"|"calendar"|"jobsArchive"|"employees"|"archive"|"blacklist"|"payroll"|"reports"|"settings"|"trash"|"pricebook"|"photos"; icon: React.ReactNode; label: string; count?: number }[]).map(({ key, icon, label, count }) => (
             <button
               key={key}
               onClick={() => setAdminTab(key)}
-              className={`flex items-center gap-1.5 px-4 md:px-5 py-2.5 text-sm font-semibold border-b-2 transition whitespace-nowrap ${
+              className={`flex items-center gap-1 md:gap-1.5 px-2.5 md:px-5 py-2 md:py-2.5 text-xs md:text-sm font-semibold border-b-2 transition whitespace-nowrap shrink-0 ${
                 adminTab === key
                   ? "border-blue-600 text-blue-600"
                   : "border-transparent text-stone-400 hover:text-stone-600"
@@ -2439,7 +2439,11 @@ function AdminDashboard() {
           </div>
         </div>
       )}
-      {adminTab === "trash"     && <TrashTab      apiBase={API()} adminAuthH={adminAuthH} onCountChange={setTrashCount} />}
+      {adminTab === "trash"     && (
+        <div className="overflow-y-auto w-full min-w-0" style={{ minHeight: "calc(100dvh - 7rem)", paddingBottom: "max(5rem, env(safe-area-inset-bottom))" }}>
+          <TrashTab apiBase={API()} adminAuthH={adminAuthH} onCountChange={setTrashCount} />
+        </div>
+      )}
       {adminTab === "photos" && (
         <div className="flex-1 overflow-y-auto p-4 md:p-6 max-w-2xl mx-auto w-full min-h-[calc(100dvh-7rem)]" style={{ paddingBottom: "max(5rem, env(safe-area-inset-bottom))" }}>
           <div className="bg-white rounded-xl shadow-sm p-5 border border-stone-100">

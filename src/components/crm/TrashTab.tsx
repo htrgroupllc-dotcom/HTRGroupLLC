@@ -295,7 +295,7 @@ export default function TrashTab({
   };
 
   return (
-    <div className="p-4 space-y-4 max-w-4xl mx-auto">
+    <div className="p-4 space-y-4 max-w-4xl mx-auto w-full min-w-0 box-border overflow-x-hidden">
 
       {/* ── Permanent delete confirm modal ── */}
       {confirmPerm && (
@@ -390,8 +390,8 @@ export default function TrashTab({
       )}
 
       {/* ── Header ── */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="min-w-0">
           <h2 className="text-lg font-bold text-stone-800 flex items-center gap-2">
             <Trash2 className="w-5 h-5 text-stone-400" />
             {t.trashTitle}
@@ -406,7 +406,7 @@ export default function TrashTab({
         {bookings.length > 0 && (
           <button
             onClick={() => setConfirmEmpty(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 text-red-600 border border-red-200 text-xs font-semibold hover:bg-red-100 transition"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-red-50 text-red-600 border border-red-200 text-xs font-semibold hover:bg-red-100 transition w-full sm:w-auto shrink-0"
           >
             <Trash2 className="w-3.5 h-3.5" />
             {t.trashEmptyBtn}
@@ -431,7 +431,7 @@ export default function TrashTab({
           {selectedIds.size > 0 && (
             <button
               onClick={() => { setConfirmBulkPerm([...selectedIds]); setPermErr(null); }}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition text-center leading-snug shrink-0"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition text-center leading-snug w-full sm:w-auto"
             >
               <Trash2 className="w-3.5 h-3.5 shrink-0" />
               <span>{t.trashBulkDeleteBtn(selectedIds.size)}</span>
@@ -488,11 +488,11 @@ export default function TrashTab({
                       </p>
                     </div>
                   </label>
-                  <div className="flex w-full gap-2 pl-7 sm:pl-0 sm:w-auto sm:flex-shrink-0">
+                  <div className="flex flex-col sm:flex-row w-full gap-2 pl-7 sm:pl-0 sm:w-auto sm:flex-shrink-0">
                     <button
                       onClick={() => restoreBooking(b.id)}
                       disabled={restoringId === b.id}
-                      className="flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 rounded-xl text-xs font-semibold border transition disabled:opacity-50 leading-snug text-center"
+                      className="w-full sm:flex-1 sm:min-w-0 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold border transition disabled:opacity-50 leading-snug text-center"
                       style={{ borderColor: ACCENT, color: ACCENT }}
                       title={t.trashRestoreBtn}
                     >
@@ -502,7 +502,7 @@ export default function TrashTab({
                     <button
                       onClick={() => { setConfirmPerm(b); setPermErr(null); }}
                       disabled={restoringId === b.id}
-                      className="flex-1 min-w-0 inline-flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 rounded-xl text-xs font-semibold border border-red-200 text-red-500 hover:bg-red-50 transition disabled:opacity-50 leading-snug text-center"
+                      className="w-full sm:flex-1 sm:min-w-0 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold border border-red-200 text-red-500 hover:bg-red-50 transition disabled:opacity-50 leading-snug text-center"
                       title={t.trashPermanentBtn}
                     >
                       <X className="w-3.5 h-3.5 shrink-0" />
