@@ -8,11 +8,20 @@ import {
 } from "@stripe/react-stripe-js";
 
 const ACCENT = "#1B6FE8";
-const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined ?? "").replace(/\/$/, "");
-const STRIPE_PK = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined ?? "";
+const DEFAULT_API = "https://htr-group-llc-appliance-repair.replit.app";
+const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined ?? "").replace(/\/$/, "") || DEFAULT_API;
 
-const stripePromiseEn = STRIPE_PK ? loadStripe(STRIPE_PK, { locale: "en" }) : null;
-const stripePromiseEs = STRIPE_PK ? loadStripe(STRIPE_PK, { locale: "es" }) : null;
+type StripePromise = ReturnType<typeof loadStripe>;
+
+function initStripePromises(publishableKey: string): {
+  en: StripePromise;
+  es: StripePromise;
+} {
+  return {
+    en: loadStripe(publishableKey, { locale: "en" }),
+    es: loadStripe(publishableKey, { locale: "es" }),
+  };
+}
 
 const T = {
   en: {
@@ -236,8 +245,39 @@ export default function PayPage() {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loadingIntent, setLoadingIntent] = useState(false);
   const [confirmedAmount, setConfirmedAmount] = useState(0);
+  const [stripePromiseEn, setStripePromiseEn] = useState<StripePromise | null>(null);
+  const [stripePromiseEs, setStripePromiseEs] = useState<StripePromise | null>(null);
+  const [stripeReady, setStripeReady] = useState(false);
 
   const t = T[lang];
+
+  // Load Stripe publishable key from API (bundle build has no VITE_STRIPE_PUBLISHABLE_KEY).
+  useEffect(() => {
+    let cancelled = false;
+    const embedded = (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined)?.trim();
+    if (embedded) {
+      const p = initStripePromises(embedded);
+      setStripePromiseEn(p.en);
+      setStripePromiseEs(p.es);
+      setStripeReady(true);
+      return;
+    }
+    fetch(`${API_BASE}/api/public/stripe-config`)
+      .then(async (r) => {
+        const d = (await r.json()) as { ok?: boolean; publishableKey?: string };
+        if (cancelled) return;
+        if (d.ok && d.publishableKey) {
+          const p = initStripePromises(d.publishableKey);
+          setStripePromiseEn(p.en);
+          setStripePromiseEs(p.es);
+        }
+        setStripeReady(true);
+      })
+      .catch(() => {
+        if (!cancelled) setStripeReady(true);
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   // PWA / home-screen manifest swap
   useEffect(() => {
@@ -470,8 +510,13 @@ export default function PayPage() {
         )}
 
         {/* Step 2: Stripe Elements */}
-        {clientSecret && (lang === "es" ? stripePromiseEs : stripePromiseEn) && elementsOptions && (
-          <Elements stripe={lang === "es" ? stripePromiseEs : stripePromiseEn} options={elementsOptions}>
+        {clientSecret && !stripeReady && (
+          <div style={{ textAlign: "center", padding: "24px 0", color: "#64748b", fontSize: 14 }}>
+            {t.processing}
+          </div>
+        )}
+        {clientSecret && stripeReady && (lang === "es" ? stripePromiseEs : stripePromiseEn) && elementsOptions && (
+          <Elements stripe={lang === "es" ? stripePromiseEs! : stripePromiseEn!} options={elementsOptions}>
             <CheckoutForm
               amount={confirmedAmount}
               lang={lang}
@@ -483,7 +528,7 @@ export default function PayPage() {
         )}
 
         {/* No Stripe key configured */}
-        {clientSecret && !stripePromiseEn && (
+        {clientSecret && stripeReady && !stripePromiseEn && (
           <div style={{ color: "#b91c1c", fontSize: 14, textAlign: "center" }}>
             Stripe is not configured. Please contact support.
           </div>
