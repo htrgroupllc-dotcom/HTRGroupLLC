@@ -1178,11 +1178,7 @@ export default function Home() {
     <Award  className="h-8 w-8" />,
   ];
 
-  // Google reviews — shared hook for hero overlay + ReviewsSection
   const { reviews: googleReviews, rating: googleRating, reviewCount: googleReviewCount, loading: loadingGoogleReviews, refresh: loadGoogleReviews } = useGoogleReviews();
-  const overlayReview = googleReviews.length
-    ? googleReviews[Math.floor(Date.now() / (12 * 36e5)) % googleReviews.length]
-    : null;
 
   const handleServiceClick = (svc: typeof SERVICES[0]) => {
     setAppliance(isEs ? svc.appEs : svc.appEn);
@@ -1592,30 +1588,6 @@ export default function Home() {
             <div className="grid lg:grid-cols-[2fr_3fr] gap-8 items-start htr-home-split-grid">
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={FADE_UP} className="relative htr-home-split-photo">
                 <img src={whyUsBgImg} alt="Appliance repair" className="htr-home-split-photo__img rounded-xl shadow-lg w-full h-auto object-contain" />
-
-                {/* Google review overlay card â€” rotates every 12 h */}
-                {overlayReview && (
-                <div className="absolute bottom-4 right-4 max-w-[260px] bg-transparent border-0 p-3">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 drop-shadow"
-                      style={{ backgroundColor: overlayReview?.avatarColor }}>
-                      {overlayReview?.initials}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-white leading-tight drop-shadow">{overlayReview?.name}</p>
-                      <p className="text-[10px] text-white/80 leading-tight drop-shadow">{overlayReview?.time}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-0.5 mb-1.5">
-                    {[1,2,3,4,5].map(s => (
-                      <Star key={s} className="h-3 w-3 drop-shadow" style={{ color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR }} />
-                    ))}
-                  </div>
-                  <p className="text-[11px] text-white leading-relaxed line-clamp-2 drop-shadow">
-                    "{isEs ? overlayReview?.textEs : overlayReview?.textEn}"
-                  </p>
-                </div>
-                )}
               </motion.div>
               <div>
                 <h2 className="text-2xl md:text-3xl font-extrabold mb-2">{T.whyH2}</h2>
@@ -1655,26 +1627,6 @@ export default function Home() {
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                 </a>
-                {overlayReview && (
-                <div className="absolute bottom-4 right-4 max-w-[220px] bg-transparent border-0 p-3">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 drop-shadow"
-                      style={{ backgroundColor: overlayReview.avatarColor }}>
-                      {overlayReview.initials}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-white leading-tight drop-shadow">{overlayReview.name}</p>
-                      <p className="text-[10px] text-white/80 leading-tight drop-shadow">{overlayReview.time}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-0.5 mb-1.5">
-                    {[1,2,3,4,5].map(s => <Star key={s} className="h-3 w-3 drop-shadow" style={{ color: GOOGLE_STAR_COLOR, fill: GOOGLE_STAR_COLOR }} />)}
-                  </div>
-                  <p className="text-[11px] text-white leading-relaxed line-clamp-2 drop-shadow">
-                    "{isEs ? overlayReview.textEs : overlayReview.textEn}"
-                  </p>
-                </div>
-                )}
               </motion.div>
 
               {/* RIGHT â€” content */}
