@@ -1732,24 +1732,24 @@ function EmployeePage() {
         borderBottom: "1px solid #f1f5f9",
         padding: "8px 12px",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
+        flexDirection: "column",
+        gap: 8,
         flexShrink: 0,
         zIndex: 10,
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
           <img
             src="/htr-logo-nobg.png"
             alt="HTR Group TX"
-            style={{ width: 72, height: 48, borderRadius: 8, objectFit: "contain" }}
+            style={{ width: 56, height: 38, borderRadius: 8, objectFit: "contain", flexShrink: 0 }}
           />
-          <div style={{ marginLeft: 2 }}>
-            <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1 }}>{t("hello")}</div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#0f172a" }}>{empName}</div>
+          <div style={{ marginLeft: 2, minWidth: 0, flex: 1, overflow: "hidden" }}>
+            <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t("hello")}</div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{empName}</div>
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "flex-end", flexWrap: "wrap" }}>
           <select
             value={lang}
             onChange={(e) => setLang(e.target.value as EmpLang)}
