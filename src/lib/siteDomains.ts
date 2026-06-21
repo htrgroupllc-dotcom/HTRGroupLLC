@@ -3,4 +3,4 @@ export const APPLIANCE_PRIMARY_DOMAIN = "appfixpro.com";
 export const DENTAL_PRIMARY_DOMAIN = "dentalfixpro.com";
 
 export const APPLIANCE_LEGACY_DOMAINS = ["htrgrouptx.com"] as const;
-export const DENTAL_LEGACY_DOMAINS = ["dentequmentfix.com"] as const;
+export const DENTAL_LEGACY_DOMAINS = [] as const;
