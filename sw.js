@@ -1,8 +1,4 @@
-const CACHE = "htr-pwa-v7";
-
-function isAppBundle(pathname) {
-  return /(?:index-utf8-v[45]|admin-utf8-v6)\.js/.test(pathname) || pathname.includes("index-_bdQPowM.css");
-}
+const CACHE = "htr-pwa-v5";
 
 self.addEventListener("install", e => {
   e.waitUntil(self.skipWaiting());
@@ -10,9 +6,9 @@ self.addEventListener("install", e => {
 
 self.addEventListener("activate", e => {
   e.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
   );
 });
 
@@ -31,13 +27,7 @@ self.addEventListener("fetch", e => {
     return;
   }
 
-  // App bundle (JS/CSS) — только сеть, без stale cache (fixes admin TDZ after deploy)
-  if (isAppBundle(url.pathname)) {
-    e.respondWith(fetch(e.request));
-    return;
-  }
-
-  // Прочие статические ресурсы — сеть + кеш
+  // Статические ресурсы (JS, CSS, изображения) — сеть + кеш
   e.respondWith(
     fetch(e.request)
       .then(res => {
@@ -102,10 +92,6 @@ async function checkAndSetBadge() {
 // ── Message handler (from main page) ─────────────────────────────────────────
 self.addEventListener("message", async event => {
   const msg = event.data || {};
-  if (msg.type === "SKIP_WAITING") {
-    self.skipWaiting();
-    return;
-  }
   if (msg.type === "BADGE_INIT") {
     let db;
     try { db = await openBadgeDb(); } catch { return; }
