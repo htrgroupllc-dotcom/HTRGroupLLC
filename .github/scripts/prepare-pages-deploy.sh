@@ -41,6 +41,9 @@ rsync -a \
 if [ -f "$OUT/assets/index-utf8-v4.js" ]; then
   node --check "$OUT/assets/index-utf8-v4.js"
 fi
+if [ -f "$OUT/assets/index-utf8-v5.js" ]; then
+  node --check "$OUT/assets/index-utf8-v5.js"
+fi
 
 oversized="$(find "$OUT" -type f -size +${CF_MAX_MIB}M || true)"
 if [ -n "$oversized" ]; then
@@ -61,16 +64,32 @@ if grep -rq 'index-BQDqdfFg.css' "$OUT" --include='*.html' 2>/dev/null; then
   exit 1
 fi
 
-# Entry HTML must share the same bundle cache version as root index.html.
+# Entry HTML cache-bust version must match across pages; admin may use v5 bundle.
 root_ver="$(grep -oE 'index-utf8-v4\.js\?v=[0-9]+' "$OUT/index.html" | head -1 | sed 's/.*=//')"
 if [ -n "$root_ver" ]; then
-  for html in "$OUT/index.html" "$OUT/admin/index.html" "$OUT/pay/index.html"; do
+  for html in "$OUT/index.html" "$OUT/pay/index.html"; do
     [ -f "$html" ] || continue
     if ! grep -q "index-utf8-v4.js?v=${root_ver}" "$html"; then
       echo "::error::${html} must reference index-utf8-v4.js?v=${root_ver} (same as index.html)."
       exit 1
     fi
   done
+  admin_html="$OUT/admin/index.html"
+  if [ -f "$admin_html" ]; then
+    if grep -q "index-utf8-v5.js?v=${root_ver}" "$admin_html"; then
+      if [ ! -f "$OUT/assets/index-utf8-v5.js" ]; then
+        echo "::error::admin/index.html references index-utf8-v5.js but assets/index-utf8-v5.js is missing."
+        exit 1
+      fi
+    elif ! grep -q "index-utf8-v4.js?v=${root_ver}" "$admin_html"; then
+      echo "::error::admin/index.html must reference index-utf8-v4.js?v=${root_ver} or index-utf8-v5.js?v=${root_ver}."
+      exit 1
+    fi
+    if ! grep -q "index-_bdQPowM.css?v=${root_ver}" "$admin_html"; then
+      echo "::error::admin/index.html CSS version must match index.html (v=${root_ver})."
+      exit 1
+    fi
+  fi
 fi
 
 echo "Pages deploy bundle OK ($(du -sh "$OUT" | cut -f1), max file < ${CF_MAX_MIB} MiB)"
