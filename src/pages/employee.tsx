@@ -35,8 +35,10 @@ function stripeDashboardUrl(): string {
 function openStripeDashboardLink(e: React.MouseEvent<HTMLAnchorElement>) {
   e.preventDefault();
   const url = stripeDashboardUrl();
+  const standalone = !!(navigator as Navigator & { standalone?: boolean }).standalone
+    || window.matchMedia("(display-mode: standalone)").matches;
   const isMobile = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
-  if (isMobile) {
+  if (isMobile || standalone) {
     window.location.assign(url);
     return;
   }
@@ -3816,6 +3818,22 @@ function JobCard({
                 {t("sendEstimate")}
               </button>
             )}
+            <a
+              href={stripeDashboardUrl()}
+              rel="noopener noreferrer"
+              onClick={openStripeDashboardLink}
+              style={{
+                width: "100%", minHeight: 44,
+                background: "#635bff", color: "#fff",
+                border: "none", borderRadius: 10,
+                fontSize: 13, fontWeight: 700, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                textDecoration: "none", boxSizing: "border-box",
+              }}
+            >
+              <span style={{ fontSize: 16 }}>📱</span>
+              {t("tapToPay")}
+            </a>
             {onClose && (
               <Btn onClick={onClose} color={SUCCESS}>
                 <CheckCircle2 style={{ width: 18, height: 18 }} />

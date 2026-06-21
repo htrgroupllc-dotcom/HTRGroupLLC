@@ -77,7 +77,15 @@ function GlobalUI() {
   const isAdmin   = location === "/admin" || location.startsWith("/admin/");
   const isGallery = location === "/gallery";
   const isEmployee = location === "/employee";
-  const isPay = location === "/pay" || location === "/payment-success";
+  const payPath = typeof window !== "undefined"
+    ? (window.location.pathname.replace(/\/$/, "") || "/")
+    : "";
+  const isPay =
+    location === "/pay" ||
+    location.startsWith("/pay/") ||
+    location === "/payment-success" ||
+    payPath === "/pay" ||
+    payPath.startsWith("/pay/");
   const isBookCall =
     location.startsWith("/book-call/") ||
     location.startsWith("/intake/") ||

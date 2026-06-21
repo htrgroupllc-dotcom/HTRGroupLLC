@@ -14,8 +14,10 @@ const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined ?? "").rep
 
 function openStripeTapToPay(e: React.MouseEvent<HTMLAnchorElement>) {
   e.preventDefault();
+  const standalone = !!(navigator as Navigator & { standalone?: boolean }).standalone
+    || window.matchMedia("(display-mode: standalone)").matches;
   const isMobile = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
-  if (isMobile) {
+  if (isMobile || standalone) {
     window.location.assign(STRIPE_TAP_TO_PAY_URL);
     return;
   }
