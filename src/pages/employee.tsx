@@ -26,12 +26,10 @@ const API = () => (import.meta.env.VITE_API_BASE as string ?? "").replace(/\/$/,
 const ACCENT  = "#1B6FE8";
 const SUCCESS = "#16a34a";
 
-const STRIPE_DASHBOARD_MOBILE_URL = "https://dashboard.stripe.com/dashboard";
+const STRIPE_TAP_TO_PAY_URL = "https://dashboard.stripe.com/terminal/payments/create";
 
 function stripeDashboardUrl(): string {
-  const ua = navigator.userAgent;
-  if (/iPad|iPhone|iPod/.test(ua) || /Android/.test(ua)) return STRIPE_DASHBOARD_MOBILE_URL;
-  return "https://dashboard.stripe.com/terminal/payments/create";
+  return STRIPE_TAP_TO_PAY_URL;
 }
 
 function openStripeDashboardLink(e: React.MouseEvent<HTMLAnchorElement>) {
