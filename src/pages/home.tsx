@@ -1353,9 +1353,9 @@ export default function Home() {
             <span className="text-lg font-extrabold tracking-tight logo-shimmer-text">
               HTRGroup
             </span>
-            <span className="logo-spark logo-spark-1">âœ¦</span>
-            <span className="logo-spark logo-spark-2">âœ¦</span>
-            <span className="logo-spark logo-spark-3">âœ¦</span>
+            <span className="logo-spark logo-spark-1">{"\u2726"}</span>
+            <span className="logo-spark logo-spark-2">{"\u2726"}</span>
+            <span className="logo-spark logo-spark-3">{"\u2726"}</span>
           </div>
 
           {/* Desktop nav */}
@@ -1427,11 +1427,11 @@ export default function Home() {
                 <div className="hero-pulse-ring" />
                 <div className="hero-pulse-ring-2" />
                 <div className="hero-rotate-glow" />
-                <span className="hero-sparkle hero-sparkle-1" aria-hidden>âœ¦</span>
-                <span className="hero-sparkle hero-sparkle-2" aria-hidden>âœ¦</span>
-                <span className="hero-sparkle hero-sparkle-3" aria-hidden>âœ¦</span>
-                <span className="hero-sparkle hero-sparkle-4" aria-hidden>âœ¦</span>
-                <span className="hero-sparkle hero-sparkle-5" aria-hidden>âœ¦</span>
+                <span className="hero-sparkle hero-sparkle-1" aria-hidden>{"\u2726"}</span>
+                <span className="hero-sparkle hero-sparkle-2" aria-hidden>{"\u2726"}</span>
+                <span className="hero-sparkle hero-sparkle-3" aria-hidden>{"\u2726"}</span>
+                <span className="hero-sparkle hero-sparkle-4" aria-hidden>{"\u2726"}</span>
+                <span className="hero-sparkle hero-sparkle-5" aria-hidden>{"\u2726"}</span>
               </div>
             </div>
 
@@ -1471,11 +1471,11 @@ export default function Home() {
               <div className="hero-pulse-ring" />
               <div className="hero-pulse-ring-2" />
               <div className="hero-rotate-glow" />
-              <span className="hero-sparkle hero-sparkle-1" aria-hidden>âœ¦</span>
-              <span className="hero-sparkle hero-sparkle-2" aria-hidden>âœ¦</span>
-              <span className="hero-sparkle hero-sparkle-3" aria-hidden>âœ¦</span>
-              <span className="hero-sparkle hero-sparkle-4" aria-hidden>âœ¦</span>
-              <span className="hero-sparkle hero-sparkle-5" aria-hidden>âœ¦</span>
+              <span className="hero-sparkle hero-sparkle-1" aria-hidden>{"\u2726"}</span>
+              <span className="hero-sparkle hero-sparkle-2" aria-hidden>{"\u2726"}</span>
+              <span className="hero-sparkle hero-sparkle-3" aria-hidden>{"\u2726"}</span>
+              <span className="hero-sparkle hero-sparkle-4" aria-hidden>{"\u2726"}</span>
+              <span className="hero-sparkle hero-sparkle-5" aria-hidden>{"\u2726"}</span>
             </div>
             <div className="absolute top-0 left-0 z-10 htr-hero-banner">
               <motion.div
