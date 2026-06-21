@@ -512,6 +512,25 @@ footer {
 
 /* Mobile layout (max-width 767px): header phones, marquee, blog sidebar */
 @media (max-width: 767px) {
+  .htr-site-header-root {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+  .htr-site-header-bar {
+    max-width: 100%;
+    min-width: 0;
+  }
+  .htr-site-header-bar .logo-container {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
+  }
+  .htr-site-header-bar .logo-shimmer-text {
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .htr-header-spacer {
     min-height: calc(3.5rem + env(safe-area-inset-top, 0px));
   }
@@ -520,6 +539,7 @@ footer {
   }
   .htr-header-mobile-strip {
     width: 100%;
+    max-width: 100%;
     border-top: 1px solid #e7e5e4;
     background: #fff;
   }
