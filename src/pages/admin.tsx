@@ -12,6 +12,7 @@ import BlacklistTab from "@/components/crm/BlacklistTab";
 import PayrollTab from "@/components/crm/PayrollTab";
 import SettingsTab from "@/components/crm/SettingsTab";
 import ReportsTab from "@/components/crm/ReportsTab";
+import TrashTab from "@/components/crm/TrashTab";
 import ReviewRequestButtons, { reviewLoadingKey, type ReviewChannel } from "@/components/ReviewRequestButtons";
 import PricebookTab from "@/components/crm/PricebookTab";
 import GalleryPhotoManager from "@/components/GalleryPhotoManager";
