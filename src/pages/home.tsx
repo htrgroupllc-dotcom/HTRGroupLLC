@@ -1368,16 +1368,17 @@ export default function Home() {
             </a>
           </nav>
 
-          <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+          <div className="htr-header-desktop-actions hidden md:flex items-center gap-2 flex-shrink-0">
             <PhonePair inHeader />
             <a href="#contact" className="text-white font-bold px-3 py-1.5 rounded text-sm uppercase tracking-wider" style={{ backgroundColor: K.dark }}>
               {T.bookNow}
             </a>
           </div>
 
-          <button className="md:hidden p-2 rounded" onClick={() => setMenuOpen(!menuOpen)}>
+          <button className="htr-header-menu-btn md:hidden p-2 rounded flex-shrink-0" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
+        </div>
 
         <div className="htr-header-mobile-strip md:hidden">
           <div className="container mx-auto px-4 py-2 flex flex-col gap-2">
@@ -1386,7 +1387,6 @@ export default function Home() {
               {T.bookNow}
             </a>
           </div>
-        </div>
         </div>
 
         {menuOpen && (
