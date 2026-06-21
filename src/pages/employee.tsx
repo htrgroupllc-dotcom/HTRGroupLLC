@@ -12,6 +12,8 @@ import { EmpLangProvider, useEmpLang, EmpLang } from "@/context/EmpLangContext";
 import { resolveBookingBiz } from "@/lib/adminSiteConfig";
 import ReviewRequestButtons, { reviewLoadingKey, type ReviewChannel } from "@/components/ReviewRequestButtons";
 import CalendarTab from "@/components/calendar/CalendarTab";
+import { usePageBg } from "@/hooks/use-page-bg";
+import PageBgPicker from "@/components/PageBgPicker";
 import {
   startRegistration,
   startAuthentication,
@@ -331,6 +333,7 @@ const TRANSLATOR_LANGS = [
 
 function EmployeePage() {
   const { lang, setLang, t } = useEmpLang();
+  const [pageBg, setPageBg] = usePageBg("#f8fafc");
 
   // Auth state
   type EmpScreen = "checking" | "login" | "register-fid";
@@ -1472,7 +1475,7 @@ function EmployeePage() {
     return (
       <div style={{
         minHeight: "100dvh",
-        background: "#f8fafc",
+        background: pageBg,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -1481,6 +1484,9 @@ function EmployeePage() {
         position: "relative",
         overflow: "hidden",
       }}>
+        <div style={{ position: "absolute", top: 12, right: 12, zIndex: 20 }}>
+          <PageBgPicker value={pageBg} onChange={setPageBg} lang={lang} compact />
+        </div>
         {/* Side logos — left */}
         <img
           src="/htr-logo-nobg.png"
@@ -1659,7 +1665,7 @@ function EmployeePage() {
   const archivedJobs  = bookings.filter(b => b.status === "completed" && !!b.employee_archived_at && matchesSearch(b, jobSearch));
 
   return (
-    <div style={{ height: "100dvh", background: "#f8fafc", position: "relative", overflow: "hidden" }}>
+    <div style={{ height: "100dvh", background: pageBg, position: "relative", overflow: "hidden" }}>
       {/* Side logos — left */}
       <img
         src="/htr-logo-nobg.png"
@@ -1764,6 +1770,8 @@ function EmployeePage() {
             <option value="az">🇦🇿 AZ</option>
             <option value="uk">🇺🇦 UK</option>
           </select>
+
+          <PageBgPicker value={pageBg} onChange={setPageBg} lang={lang} compact />
 
           {/* AI Translator button */}
           <button

@@ -4,6 +4,8 @@ import {
   Clock, User, Phone, Wrench, XCircle, PlusCircle, CheckCircle2, ThumbsUp, Pencil, RotateCcw, CalendarDays, Trash2, Search, Fingerprint, Users, Archive, ArchiveRestore, ShieldOff, ChevronDown, BarChart3, Settings, Download, MessageSquare, X, PhoneOutgoing, MapPin, Star, Mail, Camera, ShieldCheck, ArrowLeftRight, ChevronLeft,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { usePageBg } from "@/hooks/use-page-bg";
+import PageBgPicker from "@/components/PageBgPicker";
 import { AdminLangProvider, useAdminLang } from "@/context/AdminLangContext";
 import { downloadBinaryPdf, downloadReceiptPdf, openHtmlDocument } from "@/lib/downloadReceipt";
 import EmployeesTab from "@/components/crm/EmployeesTab";
@@ -317,6 +319,7 @@ interface BlockedRow {
 function AdminDashboard() {
   const { lang, setLang, t } = useAdminLang();
   const { toast } = useToast();
+  const [pageBg, setPageBg] = usePageBg(PAGE_BG);
   const storedSession = readStoredAdminSession();
   const [pin, setPin]             = useState(storedSession.pin);
   const [adminBearer, setBearer]  = useState<string | null>(storedSession.bearer);
@@ -1700,7 +1703,7 @@ function AdminDashboard() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-3" style={{ background: PAGE_BG }}>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3" style={{ background: pageBg }}>
         <RefreshCw className="w-8 h-8 animate-spin text-stone-400" />
         <p className="text-sm text-stone-500">Загрузка…</p>
       </div>
@@ -1714,7 +1717,7 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: PAGE_BG }}>
+    <div className="min-h-screen" style={{ background: pageBg }}>
 
       {/* ── Cancel booking modal ── */}
       {confirmCancel && (
@@ -2220,6 +2223,7 @@ function AdminDashboard() {
               <ShieldCheck className="w-4 h-4" />
               <span>{t.pay ?? "Pay"}</span>
             </a>
+            <PageBgPicker value={pageBg} onChange={setPageBg} lang={lang} compact />
             <button
               onClick={() => setLang(lang === "ru" ? "en" : "ru")}
               className="px-2 py-1 rounded-md text-xs font-bold border border-stone-200 hover:bg-stone-50 transition flex items-center gap-0.5">
@@ -2273,6 +2277,7 @@ function AdminDashboard() {
               <ShieldCheck className="w-3.5 h-3.5" />
               {t.pay ?? "Pay"}
             </a>
+            <PageBgPicker value={pageBg} onChange={setPageBg} lang={lang} />
             <button
               onClick={() => setLang(lang === "ru" ? "en" : "ru")}
               className="px-3 py-1.5 rounded-lg border border-stone-200 text-xs font-bold hover:bg-stone-50 transition flex items-center gap-0.5">
@@ -2462,7 +2467,7 @@ function AdminDashboard() {
         {/* ═══ LEFT PANEL / Слоты tab ═══ */}
         {adminTab === "bookings" && (
         <div className={`overflow-y-auto border-r border-stone-200 p-4 space-y-4 ${mobileTab !== "slots" ? "hidden md:block" : "block"} md:w-[300px] md:flex-none`}
-          style={{ background: PAGE_BG, paddingBottom: 80 }}>
+          style={{ background: pageBg, paddingBottom: 80 }}>
 
           {/* Date selector */}
           <div className="bg-white rounded-xl shadow-sm p-4">
