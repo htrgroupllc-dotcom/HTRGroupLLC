@@ -108,6 +108,7 @@ interface Labels {
   moveNotAllowed: string;
   newBooking: string;
   editBooking: string;
+  backToCalendar: string;
   bookingForm: CalendarBookingFormLabels;
 }
 
@@ -339,6 +340,26 @@ export default function CalendarTab({
     setDropHoverKey(null);
     setDropHoverWeekKey(null);
   };
+
+  useEffect(() => {
+    const onBack = () => {
+      if (bookingFormOpen) return;
+      if (movePickId) {
+        clearMoveState();
+        return;
+      }
+      if (selected) {
+        setSelected(null);
+        setMoveOpen(false);
+        return;
+      }
+      if (selectedDay) {
+        setSelectedDay(null);
+      }
+    };
+    window.addEventListener("htr-employee-back", onBack);
+    return () => window.removeEventListener("htr-employee-back", onBack);
+  }, [bookingFormOpen, movePickId, selected, selectedDay]);
 
   const startMovePick = (ev: CalendarEvent) => {
     if (!canReschedule(ev)) {
@@ -939,9 +960,11 @@ export default function CalendarTab({
               <button
                 type="button"
                 onClick={() => setSelectedDay(null)}
-                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-stone-100"
+                className="min-h-[44px] px-3 rounded-lg border-2 text-xs font-semibold touch-manipulation flex items-center gap-1"
+                style={{ borderColor: ACCENT, color: ACCENT, background: "#eff6ff" }}
               >
-                <ChevronDown className="w-5 h-5 text-stone-400" />
+                <ChevronLeft className="w-4 h-4 shrink-0" />
+                {labels.backToCalendar}
               </button>
             </div>
           </div>

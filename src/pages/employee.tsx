@@ -2147,6 +2147,7 @@ function EmployeePage() {
               moveNotAllowed: t("calMoveNotAllowed"),
               newBooking: t("calNewBooking"),
               editBooking: t("calEditBooking"),
+            backToCalendar: t("calBackToCalendar"),
               bookingForm: {
                 createTitle: t("calBookingCreateTitle"),
                 editTitle: t("calBookingEditTitle"),
