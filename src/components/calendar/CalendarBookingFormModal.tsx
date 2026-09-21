@@ -331,7 +331,7 @@ export default function CalendarBookingFormModal({
 
               <FieldInput label={labels.nameReq} value={name} onChange={setName} placeholder="John Smith" required />
               <FieldInput label={labels.phoneReq} value={phone} onChange={setPhone} placeholder="(346) 000-0000" type="tel" required />
-              <FieldInput label={labels.email} value={email} onChange={setEmail} placeholder="client@email.com" type="email" />
+              <FieldInput label={labels.email} value={email} onChange={setEmail} placeholder="customer@example.com" type="email" />
               <FieldInput label={labels.address} value={address} onChange={setAddress} placeholder="123 Main St" />
               <div className="grid grid-cols-2 gap-2">
                 <FieldInput label={labels.city} value={city} onChange={setCity} placeholder="Houston" />
