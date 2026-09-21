@@ -269,6 +269,7 @@ interface BookingRow {
   client_lang?: string | null;
   receipt_resend_count?: number | null;
   receipt_last_resent_at?: string | null;
+  final_invoice_sent_at?: string | null;
   recall_note?: string | null;
   client_signed_at?: string | null;
   business_type?: "appliance" | "dental" | string;
@@ -694,6 +695,9 @@ function AdminDashboard() {
   // Resend paid receipt email (HTML + PDF attachment)
   const [resendingReceiptId, setResendingReceiptId] = useState<string | null>(null);
   const [resendReceiptSentId, setResendReceiptSentId] = useState<string | null>(null);
+  const [invoiceSummaries, setInvoiceSummaries] = useState<Record<string, {
+    total: number; paid: number; balance: number;
+  }>>({});
   // Note: resendPaymentLink and downloadReceipt are defined further below
   // (after `adminAuthH`) because they depend on it.
 
@@ -1000,11 +1004,6 @@ function AdminDashboard() {
     if (downloadingReceiptId) return;
     setDownloadingReceiptId(b.id);
     try {
-      // Render the receipt in the booking's preferred language. Only force
-      // an explicit ?lang when the client UI has a strong signal — otherwise
-      // let the backend fall back to payment_language → language so older
-      // bookings (where payment_language/client_lang are null) still come
-      // out in the correct language.
       const langOverride: "en" | "es" | null =
         b.payment_language === "es" || b.client_lang === "es" ? "es"
         : b.payment_language === "en" || b.client_lang === "en" ? "en"
@@ -1014,11 +1013,8 @@ function AdminDashboard() {
       await downloadBinaryPdf({
         url,
         headers: adminAuthH(),
-        filenameBase: `receipt-${b.id.slice(0, 8)}`,
+        filenameBase: `invoice-${b.id.slice(0, 8)}`,
       });
-      // The download is logged server-side. If the admin already has the
-      // history panel open for this booking, refresh it so the new row shows
-      // up immediately. Otherwise just open + load it on demand.
       void loadReceiptHistory(b.id, getReceiptHistoryFilters(b.id));
       setReceiptHistoryOpen(prev => {
         if (prev.has(b.id)) return prev;
@@ -1030,6 +1026,52 @@ function AdminDashboard() {
       setDownloadingReceiptId(null);
     }
   }, [adminAuthH, downloadingReceiptId, loadReceiptHistory, getReceiptHistoryFilters, t.downloadReceiptError]);
+
+  const viewInvoice = useCallback(async (b: BookingRow) => {
+    try {
+      const langOverride: "en" | "es" | null =
+        b.payment_language === "es" || b.client_lang === "es" ? "es"
+        : b.payment_language === "en" || b.client_lang === "en" ? "en"
+        : null;
+      const url = `${API()}/api/admin/bookings/${b.id}/invoice-html`
+        + (langOverride ? `?lang=${langOverride}` : "");
+      await openHtmlDocument({ url, headers: adminAuthH() });
+    } catch {
+      window.alert(t.invoiceViewError);
+    }
+  }, [adminAuthH, t.invoiceViewError]);
+
+  const invoiceSummaryLoading = useRef(new Set<string>());
+  const ensureInvoiceSummary = useCallback(async (bookingId: string) => {
+    if (invoiceSummaryLoading.current.has(bookingId)) return;
+    invoiceSummaryLoading.current.add(bookingId);
+    try {
+      const r = await fetch(`${API()}/api/admin/bookings/${bookingId}/payments`, {
+        headers: adminAuthH(),
+        cache: "no-store",
+      });
+      const d = await r.json().catch(() => ({})) as {
+        estimateTotal?: number; paid?: number; balance?: number;
+      };
+      if (!r.ok) {
+        invoiceSummaryLoading.current.delete(bookingId);
+        return;
+      }
+      setInvoiceSummaries(prev => {
+        if (prev[bookingId]) return prev;
+        return {
+          ...prev,
+          [bookingId]: {
+            total: Number(d.estimateTotal ?? 0),
+            paid: Number(d.paid ?? 0),
+            balance: Number(d.balance ?? 0),
+          },
+        };
+      });
+    } catch {
+      invoiceSummaryLoading.current.delete(bookingId);
+    }
+  }, [adminAuthH]);
 
   const viewEstimate = useCallback(async (b: BookingRow, estimateId?: number) => {
     try {
@@ -3329,67 +3371,93 @@ function AdminDashboard() {
                             />
                           </div>
                         )}
-                          {/* Download receipt for paid bookings */}
-                          {b.status === "completed" && (b.payment_status === "paid" || b.stripe_paid) && (
-                            <button
-                              disabled={downloadingReceiptId === b.id}
-                              onClick={() => downloadReceipt(b)}
-                              className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition border border-blue-200 disabled:opacity-50">
-                              <Download className="w-3.5 h-3.5" />
-                              {downloadingReceiptId === b.id ? t.downloadReceiptDownloading : t.downloadReceiptBtn}
-                            </button>
-                          )}
-                          {/* Resend receipt email (HTML + PDF) for paid bookings */}
-                          {b.status === "completed" && (b.payment_status === "paid" || b.stripe_paid) && b.email && (
-                            <>
-                              <button
-                                disabled={resendingReceiptId === b.id}
-                                onClick={() => resendReceipt(b)}
-                                className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition border border-emerald-200 disabled:opacity-50">
-                                📧 {resendReceiptSentId === b.id ? t.resendReceiptSent : resendingReceiptId === b.id ? t.resendReceiptSending : t.resendReceiptBtn}
-                              </button>
-                              {(b.receipt_resend_count ?? 0) > 0 && (
-                                <div className="text-[10px] text-stone-500 text-center">
-                                  {t.receiptResentCount(b.receipt_resend_count ?? 0)}
-                                  {b.receipt_last_resent_at && (
-                                    <> · {t.receiptLastResentAt} {new Date(b.receipt_last_resent_at).toLocaleString(t.dateLocale, { dateStyle: "short", timeStyle: "short", timeZone: "America/Chicago" })}</>
+                          {/* Canonical Final Invoice / Receipt (same doc as Employee + email) */}
+                          {b.status === "completed" && (() => {
+                            const sum = invoiceSummaries[b.id];
+                            if (!sum) void ensureInvoiceSummary(b.id);
+                            const invNo = b.id.slice(0, 8).toUpperCase();
+                            const total = sum?.total
+                              ?? (adminEstimateHistory[b.id] ? Number(adminEstimateHistory[b.id]!.total) : Number(b.payment_amount ?? 0));
+                            const paid = sum?.paid ?? (
+                              (b.payment_status === "paid" || b.stripe_paid) ? total : 0
+                            );
+                            const balance = sum?.balance ?? Math.max(0, Math.round((total - paid) * 100) / 100);
+                            const isPaidBadge = balance <= 0.001 && (paid > 0 || b.payment_status === "paid" || !!b.stripe_paid);
+                            return (
+                              <div className="mt-1 rounded-lg border border-blue-200 bg-blue-50/60 px-3 py-2 space-y-1.5">
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="text-xs font-bold text-blue-800">{t.invoiceBlockTitle} #{invNo}</span>
+                                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isPaidBadge ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-800"}`}>
+                                    {isPaidBadge ? t.invoiceStatusPaid : t.invoiceStatusDue}
+                                  </span>
+                                </div>
+                                <div className="grid grid-cols-3 gap-1 text-[10px] text-stone-600">
+                                  <div>Total <span className="font-bold text-stone-800">${total.toFixed(2)}</span></div>
+                                  <div>Paid <span className="font-bold text-green-700">${paid.toFixed(2)}</span></div>
+                                  <div>Balance <span className={`font-bold ${balance > 0 ? "text-amber-700" : "text-stone-700"}`}>${balance.toFixed(2)}</span></div>
+                                </div>
+                                <div className="text-[10px] text-stone-500">
+                                  {b.final_invoice_sent_at || (b.receipt_resend_count ?? 0) > 0
+                                    ? `${t.invoiceSentLabel}${b.final_invoice_sent_at ? `: ${new Date(b.final_invoice_sent_at).toLocaleString(t.dateLocale, { dateStyle: "short", timeStyle: "short", timeZone: "America/Chicago" })}` : (b.receipt_last_resent_at ? `: ${new Date(b.receipt_last_resent_at).toLocaleString(t.dateLocale, { dateStyle: "short", timeStyle: "short", timeZone: "America/Chicago" })}` : "")}`
+                                    : t.invoiceNotSentLabel}
+                                </div>
+                                <div className="flex flex-wrap gap-1.5">
+                                  <button type="button" onClick={() => void viewInvoice(b)}
+                                    className="flex-1 min-w-[30%] text-[11px] font-bold py-1.5 rounded-lg bg-white text-blue-700 border border-blue-200 hover:bg-blue-100">
+                                    {t.invoiceViewBtn}
+                                  </button>
+                                  <button type="button" disabled={downloadingReceiptId === b.id} onClick={() => void downloadReceipt(b)}
+                                    className="flex-1 min-w-[30%] text-[11px] font-bold py-1.5 rounded-lg bg-white text-blue-700 border border-blue-200 hover:bg-blue-100 disabled:opacity-50">
+                                    {downloadingReceiptId === b.id ? t.downloadReceiptDownloading : t.downloadReceiptBtn}
+                                  </button>
+                                  {b.email && (
+                                    <button type="button" disabled={resendingReceiptId === b.id} onClick={() => void resendReceipt(b)}
+                                      className="w-full text-[11px] font-bold py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 disabled:opacity-50">
+                                      📧 {resendReceiptSentId === b.id ? t.resendReceiptSent : resendingReceiptId === b.id ? t.resendReceiptSending : t.resendReceiptBtn}
+                                    </button>
                                   )}
                                 </div>
-                              )}
-                            </>
-                          )}
-                          {/* Receipt download history (audit log) */}
-                          {b.status === "completed" && (b.payment_status === "paid" || b.stripe_paid) && (
-                            <div className="rounded-lg border border-stone-200 bg-white">
-                              <button
-                                type="button"
-                                onClick={() => toggleReceiptHistory(b.id)}
-                                className="w-full flex items-center justify-between gap-2 px-2 py-1.5 text-[11px] font-semibold text-stone-700 hover:bg-stone-50 rounded-lg"
-                              >
-                                <span className="flex items-center gap-1">
-                                  📜 {receiptHistoryOpen.has(b.id) ? t.receiptHistoryToggleHide : t.receiptHistoryToggleShow}
-                                  {receiptHistory[b.id] && receiptHistory[b.id].length > 0 && (
-                                    <span className="inline-flex items-center justify-center min-w-[1.25rem] px-1 rounded-full bg-stone-200 text-stone-700 text-[10px] font-bold">
-                                      {receiptHistory[b.id].length}
+                                {balance > 0.001 && !b.is_remote && (
+                                  <div className="flex flex-wrap gap-1.5 pt-0.5">
+                                    <button type="button" onClick={() => void openStripePayLinkModal(b)}
+                                      className="flex-1 text-[11px] font-semibold py-1.5 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                      💳 {t.stripePayLink}
+                                    </button>
+                                    <button type="button" onClick={() => void openPayModal(b)}
+                                      className="flex-1 text-[11px] font-semibold py-1.5 rounded-lg bg-amber-50 text-amber-800 border border-amber-200">
+                                      💰 Payment Received
+                                    </button>
+                                  </div>
+                                )}
+                                <div className="rounded-lg border border-stone-200 bg-white">
+                                  <button type="button" onClick={() => toggleReceiptHistory(b.id)}
+                                    className="w-full flex items-center justify-between gap-2 px-2 py-1.5 text-[11px] font-semibold text-stone-700 hover:bg-stone-50 rounded-lg">
+                                    <span className="flex items-center gap-1">
+                                      📜 {receiptHistoryOpen.has(b.id) ? t.receiptHistoryToggleHide : t.receiptHistoryToggleShow}
+                                      {receiptHistory[b.id] && receiptHistory[b.id].length > 0 && (
+                                        <span className="inline-flex items-center justify-center min-w-[1.25rem] px-1 rounded-full bg-stone-200 text-stone-700 text-[10px] font-bold">
+                                          {receiptHistory[b.id].length}
+                                        </span>
+                                      )}
                                     </span>
+                                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${receiptHistoryOpen.has(b.id) ? "rotate-180" : ""}`} />
+                                  </button>
+                                  {receiptHistoryOpen.has(b.id) && (
+                                    <ReceiptHistoryPanel
+                                      rows={receiptHistory[b.id]}
+                                      loading={receiptHistoryLoading.has(b.id)}
+                                      error={receiptHistoryError[b.id]}
+                                      t={t}
+                                      filters={getReceiptHistoryFilters(b.id)}
+                                      onFiltersChange={next => updateReceiptHistoryFilters(b.id, next)}
+                                      onExport={() => void exportReceiptHistory(b.id)}
+                                      exporting={receiptHistoryExporting.has(b.id)}
+                                    />
                                   )}
-                                </span>
-                                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${receiptHistoryOpen.has(b.id) ? "rotate-180" : ""}`} />
-                              </button>
-                              {receiptHistoryOpen.has(b.id) && (
-                                <ReceiptHistoryPanel
-                                  rows={receiptHistory[b.id]}
-                                  loading={receiptHistoryLoading.has(b.id)}
-                                  error={receiptHistoryError[b.id]}
-                                  t={t}
-                                  filters={getReceiptHistoryFilters(b.id)}
-                                  onFiltersChange={next => updateReceiptHistoryFilters(b.id, next)}
-                                  onExport={() => void exportReceiptHistory(b.id)}
-                                  exporting={receiptHistoryExporting.has(b.id)}
-                                />
-                              )}
-                            </div>
-                          )}
+                                </div>
+                              </div>
+                            );
+                          })()}
                           {/* CRM: who was assigned */}
                           {b.assigned_employee_id && (
                             <div className="text-[10px] text-stone-400">
