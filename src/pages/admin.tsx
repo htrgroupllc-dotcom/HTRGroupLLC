@@ -342,6 +342,33 @@ function AdminDashboard() {
   // Gender picker: which bookingId is showing the ♂/♀ selector
   const [genderPickerId, setGenderPickerId] = useState<string | null>(null);
 
+  const [reviewLoading, setReviewLoading] = useState<string | null>(null);
+  const [moveBizLoading, setMoveBizLoading] = useState<Set<string>>(new Set());
+
+  // ── Admin Estimate Modal ──────────────────────────────────────────────────
+  const [adminEstimateTarget, setAdminEstimateTarget] = useState<{ id: string; name: string; email: string; phone: string } | null>(null);
+  const [adminEstimateItems, setAdminEstimateItems] = useState<{ description: string; category: string; qty: number; unit_price: number }[]>([]);
+  const [adminEstimateNotes, setAdminEstimateNotes] = useState("");
+  const [adminEstimateNoTax, setAdminEstimateNoTax] = useState(false);
+  const [adminEstimateNotify, setAdminEstimateNotify] = useState<"email" | "sms" | "both">("email");
+  const [adminEstimateSending, setAdminEstimateSending] = useState(false);
+  const [adminEstimateErr, setAdminEstimateErr] = useState("");
+  const [adminEstimateDone, setAdminEstimateDone] = useState(false);
+  const [adminEstimateHistory, setAdminEstimateHistory] = useState<Record<string, AdminEstimateRecord | null>>({});
+  const [adminEstimateIsEdit, setAdminEstimateIsEdit] = useState(false);
+
+  // MUST be declared before any useCallback that lists adminAuthH in deps (TDZ → minified "gt")
+  // Returns admin auth headers: Bearer JWT only (never plaintext PIN)
+  const adminAuthH = useCallback((extra?: Record<string, string>): Record<string, string> => {
+    const base = extra ?? {};
+    const bearer =
+      adminBearer ??
+      sessionStorage.getItem("adminAuthToken") ??
+      localStorage.getItem("adminAuthToken");
+    if (bearer) return { ...base, Authorization: `Bearer ${bearer}` };
+    return base;
+  }, [adminBearer]);
+
   const handleCallback = useCallback(async (phone: string, bookingId: string, clientName?: string, clientLanguage?: string, clientGender: "male" | "female" = "male") => {
     if (callbackLoading.has(bookingId)) return;
     setCallbackLoading(prev => new Set(prev).add(bookingId));
@@ -369,32 +396,6 @@ function AdminDashboard() {
       setCallbackLoading(prev => { const s = new Set(prev); s.delete(bookingId); return s; });
     }
   }, [callbackLoading, toast, adminAuthH]);
-
-  const [reviewLoading, setReviewLoading] = useState<string | null>(null);
-  const [moveBizLoading, setMoveBizLoading] = useState<Set<string>>(new Set());
-
-  // ── Admin Estimate Modal ──────────────────────────────────────────────────
-  const [adminEstimateTarget, setAdminEstimateTarget] = useState<{ id: string; name: string; email: string; phone: string } | null>(null);
-  const [adminEstimateItems, setAdminEstimateItems] = useState<{ description: string; category: string; qty: number; unit_price: number }[]>([]);
-  const [adminEstimateNotes, setAdminEstimateNotes] = useState("");
-  const [adminEstimateNoTax, setAdminEstimateNoTax] = useState(false);
-  const [adminEstimateNotify, setAdminEstimateNotify] = useState<"email" | "sms" | "both">("email");
-  const [adminEstimateSending, setAdminEstimateSending] = useState(false);
-  const [adminEstimateErr, setAdminEstimateErr] = useState("");
-  const [adminEstimateDone, setAdminEstimateDone] = useState(false);
-  const [adminEstimateHistory, setAdminEstimateHistory] = useState<Record<string, AdminEstimateRecord | null>>({});
-  const [adminEstimateIsEdit, setAdminEstimateIsEdit] = useState(false);
-
-  // Returns admin auth headers: Bearer JWT only (never plaintext PIN)
-  const adminAuthH = useCallback((extra?: Record<string, string>): Record<string, string> => {
-    const base = extra ?? {};
-    const bearer =
-      adminBearer ??
-      sessionStorage.getItem("adminAuthToken") ??
-      localStorage.getItem("adminAuthToken");
-    if (bearer) return { ...base, Authorization: `Bearer ${bearer}` };
-    return base;
-  }, [adminBearer]);
 
   const handleSendReview = useCallback(async (bookingId: string, channel: ReviewChannel) => {
     const key = reviewLoadingKey(bookingId, channel);
