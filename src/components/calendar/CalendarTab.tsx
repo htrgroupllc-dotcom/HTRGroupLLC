@@ -57,6 +57,7 @@ export interface CalendarEvent {
   title: string;
   client_name: string;
   phone?: string;
+  email?: string;
   address?: string;
   appliance?: string;
   brand_model?: string;
@@ -1237,6 +1238,7 @@ export default function CalendarTab({
         authHeaders={authHeaders}
         actorMode={mode}
         timeSlots={TIME_SLOTS}
+        employees={employees}
         labels={labels.bookingForm}
         onClose={() => setBookingFormOpen(false)}
         onSaved={() => {

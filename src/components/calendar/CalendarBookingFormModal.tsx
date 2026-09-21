@@ -9,6 +9,7 @@ export interface CalendarBookingEvent {
   id: string;
   client_name: string;
   phone?: string;
+  email?: string;
   address?: string;
   appliance?: string;
   brand_model?: string;
@@ -17,6 +18,7 @@ export interface CalendarBookingEvent {
   preferred_date?: string;
   preferred_time?: string;
   message?: string;
+  assigned_employee_id?: string | null;
 }
 
 export interface CalendarBookingFormLabels {
@@ -25,7 +27,12 @@ export interface CalendarBookingFormLabels {
   timeReq: string;
   nameReq: string;
   phoneReq: string;
+  email: string;
+  city: string;
+  zip: string;
   address: string;
+  assignTechnician: string;
+  unassigned: string;
   equipmentAppliance: string;
   equipmentDental: string;
   problemAppliance: string;
@@ -38,10 +45,16 @@ export interface CalendarBookingFormLabels {
   saveBtn: string;
   saving: string;
   errNamePhone: string;
+  errEmail: string;
   errSlotTaken: string;
   errServer: string;
   savedOk: string;
   next: string;
+}
+
+export interface CalendarEmployeeOpt {
+  id: string;
+  name: string;
 }
 
 interface Props {
@@ -55,9 +68,16 @@ interface Props {
   authHeaders: () => Record<string, string>;
   actorMode: "admin" | "employee";
   timeSlots: string[];
+  employees?: CalendarEmployeeOpt[];
   labels: CalendarBookingFormLabels;
   onClose: () => void;
   onSaved: () => void;
+}
+
+function isValidEmail(v: string): boolean {
+  const s = v.trim();
+  if (!s) return true;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s) && s.length <= 254;
 }
 
 function FieldInput({
@@ -82,23 +102,33 @@ function FieldInput({
   );
 }
 
+function composeAddress(street: string, city: string, zip: string): string {
+  const parts = [street.trim(), city.trim(), zip.trim()].filter(Boolean);
+  return parts.join(", ");
+}
+
 export default function CalendarBookingFormModal({
   open, mode, day, event, defaultBiz, showBizPicker, apiBase, authHeaders,
-  actorMode, timeSlots, labels, onClose, onSaved,
+  actorMode, timeSlots, employees = [], labels, onClose, onSaved,
 }: Props) {
   const [time, setTime] = useState(timeSlots[0] ?? "9:00 AM");
   const [biz, setBiz] = useState<BookingBiz>(defaultBiz);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [zip, setZip] = useState("");
   const [equipment, setEquipment] = useState("");
   const [problem, setProblem] = useState("");
+  const [assignedId, setAssignedId] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [step, setStep] = useState<"time" | "details">("time");
 
   const dateLabel = useMemo(() => formatBookingDate(day), [day]);
   const isDental = biz === "dental";
+  const showAssign = actorMode === "admin";
 
   useEffect(() => {
     if (!open) return;
@@ -110,18 +140,26 @@ export default function CalendarBookingFormModal({
       setTime(event.preferred_time ?? timeSlots[0] ?? "9:00 AM");
       setName(event.client_name ?? "");
       setPhone(event.phone ?? "");
+      setEmail(event.email ?? "");
       setAddress(event.address ?? "");
+      setCity("");
+      setZip("");
       setEquipment([event.appliance, event.brand_model].filter(Boolean).join(" — "));
       setProblem(event.message ?? "");
+      setAssignedId(event.assigned_employee_id ?? "");
       setBiz(event.business_type === "dental" ? "dental" : "appliance");
       setStep("details");
     } else {
       setTime(timeSlots[0] ?? "9:00 AM");
       setName("");
       setPhone("");
+      setEmail("");
       setAddress("");
+      setCity("");
+      setZip("");
       setEquipment("");
       setProblem("");
+      setAssignedId("");
     }
   }, [open, mode, event, defaultBiz, timeSlots]);
 
@@ -139,16 +177,21 @@ export default function CalendarBookingFormModal({
       setError(labels.errNamePhone);
       return;
     }
+    if (!isValidEmail(email)) {
+      setError(labels.errEmail);
+      return;
+    }
     setSaving(true);
     setError("");
     try {
-      const body = mode === "edit" && event
+      const fullAddress = composeAddress(address, city, zip);
+      const body: Record<string, unknown> = mode === "edit" && event
         ? {
             id: event.id,
             name: name.trim(),
             phone: phone.trim(),
-            email: "",
-            address: address.trim(),
+            email: email.trim(),
+            address: fullAddress,
             appliance: equipment.trim(),
             date: dateLabel,
             time: time.trim(),
@@ -158,14 +201,18 @@ export default function CalendarBookingFormModal({
         : {
             name: name.trim(),
             phone: phone.trim(),
-            email: "",
-            address: address.trim(),
+            email: email.trim(),
+            address: fullAddress,
             appliance: equipment.trim(),
             date: dateLabel,
             time: time.trim(),
             message: problem.trim(),
             business_type: biz,
           };
+
+      if (showAssign) {
+        body.assigned_employee_id = assignedId || null;
+      }
 
       const r = await fetch(mode === "edit" ? editUrl : createUrl, {
         method: "POST",
@@ -175,6 +222,10 @@ export default function CalendarBookingFormModal({
       const d = await r.json().catch(() => ({})) as { error?: string; message?: string };
       if (r.status === 409 || d.error === "slot_taken") {
         setError(labels.errSlotTaken);
+        return;
+      }
+      if (d.error === "invalid_email") {
+        setError(labels.errEmail);
         return;
       }
       if (!r.ok) {
@@ -280,7 +331,12 @@ export default function CalendarBookingFormModal({
 
               <FieldInput label={labels.nameReq} value={name} onChange={setName} placeholder="John Smith" required />
               <FieldInput label={labels.phoneReq} value={phone} onChange={setPhone} placeholder="(346) 000-0000" type="tel" required />
-              <FieldInput label={labels.address} value={address} onChange={setAddress} placeholder="123 Main St, Houston, TX" />
+              <FieldInput label={labels.email} value={email} onChange={setEmail} placeholder="client@email.com" type="email" />
+              <FieldInput label={labels.address} value={address} onChange={setAddress} placeholder="123 Main St" />
+              <div className="grid grid-cols-2 gap-2">
+                <FieldInput label={labels.city} value={city} onChange={setCity} placeholder="Houston" />
+                <FieldInput label={labels.zip} value={zip} onChange={setZip} placeholder="77001" />
+              </div>
               <FieldInput
                 label={isDental ? labels.equipmentDental : labels.equipmentAppliance}
                 value={equipment}
@@ -299,6 +355,22 @@ export default function CalendarBookingFormModal({
                   style={{ "--tw-ring-color": ACCENT } as React.CSSProperties}
                 />
               </div>
+
+              {showAssign && (
+                <div>
+                  <label className="block text-xs font-semibold text-stone-500 mb-1">{labels.assignTechnician}</label>
+                  <select
+                    value={assignedId}
+                    onChange={(e) => setAssignedId(e.target.value)}
+                    className="w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm min-h-[44px] bg-white"
+                  >
+                    <option value="">{labels.unassigned}</option>
+                    {employees.map((e) => (
+                      <option key={e.id} value={e.id}>{e.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {error && <p className="text-xs text-red-500">{error}</p>}
 

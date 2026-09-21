@@ -736,7 +736,9 @@ function AdminDashboard() {
   const [mAppl,  setMAppl]     = useState("");
   const [mNote,  setMNote]     = useState("");
   const [mAddr,  setMAddr]     = useState("");
+  const [mCity,  setMCity]     = useState("");
   const [mZip,   setMZip]      = useState("");
+  const [mAssigned, setMAssigned] = useState("");
   const [mError, setMError]    = useState("");
   const [mSaving, setMSaving]  = useState(false);
 
@@ -750,6 +752,7 @@ function AdminDashboard() {
   const [eDate,  setEDate]   = useState("");
   const [eTime,  setETime]   = useState("");
   const [eNote,  setENote]   = useState("");
+  const [eAssigned, setEAssigned] = useState("");
   const [eError, setEError]  = useState("");
   const [eSaving, setESaving] = useState(false);
 
@@ -1129,16 +1132,39 @@ function AdminDashboard() {
   };
 
   const assignEmployee = useCallback(async (bookingId: string, employeeId: string | null) => {
-    setAllBookings(prev => prev.map(b =>
-      b.id === bookingId ? { ...b, assigned_employee_id: employeeId } : b,
-    ));
-    await fetch(`${API()}/api/admin/bookings/${bookingId}/assign`, {
-      method: "POST",
-      headers: adminAuthH({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ employee_id: employeeId || null }),
+    let prevAssigned: string | null = null;
+    setAllBookings(prevList => {
+      prevAssigned = prevList.find(b => b.id === bookingId)?.assigned_employee_id ?? null;
+      return prevList.map(b =>
+        b.id === bookingId ? { ...b, assigned_employee_id: employeeId } : b,
+      );
     });
-    void loadSchedule();
-  }, [adminAuthH, loadSchedule]);
+    try {
+      const r = await fetch(`${API()}/api/admin/bookings/${bookingId}/assign`, {
+        method: "POST",
+        headers: adminAuthH({ "Content-Type": "application/json" }),
+        body: JSON.stringify({ employee_id: employeeId || null }),
+      });
+      const d = await r.json().catch(() => ({})) as { ok?: boolean; error?: string; message?: string };
+      if (!r.ok || d.ok === false) {
+        setAllBookings(prevList => prevList.map(b =>
+          b.id === bookingId ? { ...b, assigned_employee_id: prevAssigned } : b,
+        ));
+        toast({
+          title: t.assignFailed,
+          description: d.message ?? d.error ?? String(r.status),
+          variant: "destructive",
+        });
+        return;
+      }
+      void loadSchedule();
+    } catch {
+      setAllBookings(prevList => prevList.map(b =>
+        b.id === bookingId ? { ...b, assigned_employee_id: prevAssigned } : b,
+      ));
+      toast({ title: t.assignFailed, variant: "destructive" });
+    }
+  }, [adminAuthH, loadSchedule, toast, t.assignFailed]);
 
   // Initial load + re-load whenever selected date changes
   useEffect(() => { if (authed) { loadSlots(); loadSchedule(); loadCredentials(); loadEmployees(); } }, [authed, loadSlots, loadSchedule, loadCredentials, loadEmployees]);
@@ -1503,7 +1529,7 @@ function AdminDashboard() {
   };
 
   // Open edit modal pre-filled with current booking data
-  const openEditModal = (b: { id: string; status: string; name: string; phone: string; email?: string; address?: string; appliance?: string; preferred_date: string; preferred_time: string; message?: string; client_lang?: string | null }) => {
+  const openEditModal = (b: { id: string; status: string; name: string; phone: string; email?: string; address?: string; appliance?: string; preferred_date: string; preferred_time: string; message?: string; client_lang?: string | null; assigned_employee_id?: string | null }) => {
     setEditTarget({ id: b.id, status: b.status, client_lang: b.client_lang ?? null });
     setEName(b.name ?? "");
     setEPhone(b.phone ?? "");
@@ -1513,6 +1539,7 @@ function AdminDashboard() {
     setEDate(b.preferred_date ?? "");
     setETime(b.preferred_time ?? "");
     setENote(b.message ?? "");
+    setEAssigned(b.assigned_employee_id ?? "");
     setEError("");
   };
 
@@ -1522,15 +1549,33 @@ function AdminDashboard() {
       setEError(t.errFillRequired);
       return;
     }
+    const emailTrim = eEmail.trim();
+    if (emailTrim && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)) {
+      setEError(t.calBookingErrEmail);
+      return;
+    }
     setESaving(true);
     setEError("");
     try {
       const r = await fetch(`${API()}/api/admin/edit-booking`, {
         method: "POST", headers,
-        body: JSON.stringify({ id: editTarget.id, name: eName, phone: ePhone, email: eEmail, address: eAddr, appliance: eAppl, date: eDate, time: eTime, message: eNote }),
+        body: JSON.stringify({
+          id: editTarget.id,
+          name: eName,
+          phone: ePhone,
+          email: eEmail,
+          address: eAddr,
+          appliance: eAppl,
+          date: eDate,
+          time: eTime,
+          message: eNote,
+          assigned_employee_id: eAssigned || null,
+        }),
       });
       const d = await r.json();
       if (d.error === "slot_taken") { setEError(t.errSlotTaken); return; }
+      if (d.error === "invalid_email") { setEError(t.calBookingErrEmail); return; }
+      if (d.error === "invalid_employee") { setEError(t.assignFailed); return; }
       if (!r.ok) { setEError(d.error ?? t.errServer); return; }
       setEditTarget(null);
       await loadSlots();
@@ -1582,23 +1627,34 @@ function AdminDashboard() {
 
   const openManual = (time: string) => {
     setManualSlot(time);
-    setMName(""); setMPhone(""); setMEmail(""); setMAppl(""); setMNote(""); setMAddr(""); setMZip(""); setMError("");
+    setMName(""); setMPhone(""); setMEmail(""); setMAppl(""); setMNote(""); setMAddr(""); setMCity(""); setMZip(""); setMAssigned(""); setMError("");
   };
 
   const createManualBooking = async () => {
     if (!mName.trim() || !mPhone.trim()) { setMError(t.errEnterNamePhone); return; }
+    const emailTrim = mEmail.trim();
+    if (emailTrim && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)) {
+      setMError(t.calBookingErrEmail);
+      return;
+    }
     setMSaving(true); setMError("");
+    const addressParts = [mAddr.trim(), mCity.trim(), mZip.trim()].filter(Boolean);
     const r = await fetch(`${API()}/api/admin/booking`, {
       method: "POST", headers,
       body: JSON.stringify({
-        name: mName, phone: mPhone, email: mEmail, appliance: mAppl, address: mAddr,
-        message: [mNote, mZip ? `ZIP: ${mZip}` : ""].filter(Boolean).join(" | "),
+        name: mName, phone: mPhone, email: mEmail, appliance: mAppl,
+        address: addressParts.join(", "),
+        message: mNote.trim(),
         date: dateStr, time: manualSlot,
         business_type: ADMIN_SITE_CONFIG.bookingBizFallback,
+        assigned_employee_id: mAssigned || null,
       }),
     });
+    const d = await r.json().catch(() => ({})) as { error?: string; message?: string };
     if (r.status === 409) { setMError(t.errSlotTakenShort); setMSaving(false); return; }
-    if (!r.ok) { setMError(t.errServer); setMSaving(false); return; }
+    if (d.error === "invalid_email") { setMError(t.calBookingErrEmail); setMSaving(false); return; }
+    if (d.error === "invalid_employee") { setMError(t.assignFailed); setMSaving(false); return; }
+    if (!r.ok) { setMError(d.message ?? d.error ?? t.errServer); setMSaving(false); return; }
     setManualSlot(null);
     setMSaving(false);
     await loadSlots();
@@ -1713,7 +1769,7 @@ function AdminDashboard() {
   // ── Helpers ───────────────────────────────────────────────────────────────
   const closeManualModal = () => {
     setManualSlot(null);
-    setMName(""); setMPhone(""); setMEmail(""); setMAppl(""); setMNote(""); setMAddr(""); setMZip(""); setMError("");
+    setMName(""); setMPhone(""); setMEmail(""); setMAppl(""); setMNote(""); setMAddr(""); setMCity(""); setMZip(""); setMAssigned(""); setMError("");
   };
 
   return (
@@ -2101,6 +2157,16 @@ function AdminDashboard() {
               <AdminInput label={t.addressOptional} value={eAddr} onChange={setEAddr} placeholder="123 Main St, Houston TX" />
               <AdminInput label={t.applianceOptional} value={eAppl} onChange={setEAppl} placeholder="Washer, Dryer, Fridge…" />
               <div>
+                <label className="block text-xs font-semibold text-stone-500 mb-1">{t.assignTechnician}</label>
+                <select value={eAssigned} onChange={e => setEAssigned(e.target.value)}
+                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white min-h-[40px]">
+                  <option value="">{t.notAssigned}</option>
+                  {employees.map(emp => (
+                    <option key={emp.id} value={emp.id}>{emp.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
                 <label className="block text-xs font-semibold text-stone-500 mb-1">{t.dateReq}</label>
                 <input type="text" value={eDate} onChange={e => setEDate(e.target.value)} placeholder="Apr 25, 2026"
                   className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100" />
@@ -2150,9 +2216,23 @@ function AdminDashboard() {
               <AdminInput label={t.clientNameReq} value={mName} onChange={setMName} placeholder="John Smith" />
               <AdminInput label={t.phoneReq} value={mPhone} onChange={setMPhone} placeholder="(346) 000-0000" type="tel" />
               <AdminInput label={t.emailClient} value={mEmail} onChange={setMEmail} placeholder="client@email.com" type="email" />
-              <AdminInput label={t.addressOptional} value={mAddr} onChange={setMAddr} placeholder="123 Main St, Houston, TX" />
-              <AdminInput label={t.zipOptional} value={mZip} onChange={setMZip} placeholder="77001" />
+              <AdminInput label={t.addressOptional} value={mAddr} onChange={setMAddr} placeholder="123 Main St" />
+              <div className="grid grid-cols-2 gap-2">
+                <AdminInput label={t.cityOptional} value={mCity} onChange={setMCity} placeholder="Houston" />
+                <AdminInput label={t.zipOptional} value={mZip} onChange={setMZip} placeholder="77001" />
+              </div>
               <AdminInput label={t.applianceOptional} value={mAppl} onChange={setMAppl} placeholder={t.appliancePlaceholderRu} />
+              <div>
+                <label className="block text-xs font-semibold text-stone-500 mb-1">{t.assignTechnician}</label>
+                <select value={mAssigned} onChange={e => setMAssigned(e.target.value)}
+                  className="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 bg-white min-h-[40px]"
+                  style={{ "--tw-ring-color": ACCENT } as React.CSSProperties}>
+                  <option value="">{t.notAssigned}</option>
+                  {employees.map(emp => (
+                    <option key={emp.id} value={emp.id}>{emp.name}</option>
+                  ))}
+                </select>
+              </div>
               <div>
                 <label className="block text-xs font-semibold text-stone-500 mb-1">{t.noteOptional}</label>
                 <textarea value={mNote} onChange={e => setMNote(e.target.value)} placeholder={t.addlInfoPlaceholder}
@@ -2388,7 +2468,12 @@ function AdminDashboard() {
               timeReq: t.calBookingTimeReq,
               nameReq: t.calBookingNameReq,
               phoneReq: t.calBookingPhoneReq,
+              email: t.calBookingEmail,
+              city: t.calBookingCity,
+              zip: t.calBookingZip,
               address: t.calBookingAddress,
+              assignTechnician: t.calBookingAssignTech,
+              unassigned: t.calBookingUnassigned,
               equipmentAppliance: t.calBookingEquipAppliance,
               equipmentDental: t.calBookingEquipDental,
               problemAppliance: t.calBookingProblemAppliance,
@@ -2401,6 +2486,7 @@ function AdminDashboard() {
               saveBtn: t.calBookingSaveBtn,
               saving: t.calBookingSaving,
               errNamePhone: t.calBookingErrNamePhone,
+              errEmail: t.calBookingErrEmail,
               errSlotTaken: t.calBookingErrSlotTaken,
               errServer: t.calBookingErrServer,
               savedOk: t.calBookingSavedOk,
@@ -2845,21 +2931,18 @@ function AdminDashboard() {
                       )}
                       {(b.status === "pending" || b.status === "approved") && !b.is_remote && (
                         <div className="flex flex-col gap-1.5 mt-1">
-                          {/* CRM: employee assignment dropdown */}
-                          {employees.length > 0 && (
-                            <div className="flex items-center gap-1.5">
-                              <User className="w-3.5 h-3.5 text-stone-400 flex-none" />
-                              <select
-                                value={b.assigned_employee_id ?? ""}
-                                onChange={e => assignEmployee(b.id, e.target.value || null)}
-                                className="flex-1 border border-stone-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white">
-                                <option value="">{t.notAssigned}</option>
-                                {employees.map(e => (
-                                  <option key={e.id} value={e.id}>{e.name}</option>
-                                ))}
-                              </select>
-                            </div>
-                          )}
+                          <div className="flex items-center gap-1.5">
+                            <User className="w-3.5 h-3.5 text-stone-400 flex-none" />
+                            <select
+                              value={b.assigned_employee_id ?? ""}
+                              onChange={e => assignEmployee(b.id, e.target.value || null)}
+                              className="flex-1 border border-stone-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white">
+                              <option value="">{t.notAssigned}</option>
+                              {employees.map(e => (
+                                <option key={e.id} value={e.id}>{e.name}</option>
+                              ))}
+                            </select>
+                          </div>
                           {b.status === "pending" && (
                             <button onClick={() => approveBooking(b.id)}
                               className="w-full flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition border border-green-100">
@@ -3349,8 +3432,7 @@ function AdminDashboard() {
                             <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${stCls}`}>
                               {stLabel}
                             </span>
-                            {employees.length > 0 && (
-                              <div className="mt-1">
+                            <div className="mt-1">
                                 {(b.status === "pending" || b.status === "approved") ? (
                                   <select
                                     value={b.assigned_employee_id ?? ""}
@@ -3365,7 +3447,6 @@ function AdminDashboard() {
                                   <span className="text-[11px] text-stone-500">👤 {employees.find(e => e.id === b.assigned_employee_id)?.name ?? "—"}</span>
                                 ) : null}
                               </div>
-                            )}
                           </td>
 
                           {/* Действия */}
