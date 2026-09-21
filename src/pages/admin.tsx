@@ -261,8 +261,6 @@ interface BookingRow {
   created_at?: string;
   // CRM fields
   assigned_employee_id?: string | null;
-  created_by_employee_id?: string | null;
-  created_by_employee_name?: string | null;
   payment_method?: string | null;
   payment_amount?: number | null;
   payment_status?: string | null;
@@ -343,18 +341,6 @@ function AdminDashboard() {
   // Gender picker: which bookingId is showing the ♂/♀ selector
   const [genderPickerId, setGenderPickerId] = useState<string | null>(null);
 
-  // Returns admin auth headers: Bearer JWT only (never plaintext PIN)
-  // MUST be declared before any useCallback that lists adminAuthH in deps (TDZ).
-  const adminAuthH = useCallback((extra?: Record<string, string>): Record<string, string> => {
-    const base = extra ?? {};
-    const bearer =
-      adminBearer ??
-      sessionStorage.getItem("adminAuthToken") ??
-      localStorage.getItem("adminAuthToken");
-    if (bearer) return { ...base, Authorization: `Bearer ${bearer}` };
-    return base;
-  }, [adminBearer]);
-
   const handleCallback = useCallback(async (phone: string, bookingId: string, clientName?: string, clientLanguage?: string, clientGender: "male" | "female" = "male") => {
     if (callbackLoading.has(bookingId)) return;
     setCallbackLoading(prev => new Set(prev).add(bookingId));
@@ -397,6 +383,17 @@ function AdminDashboard() {
   const [adminEstimateDone, setAdminEstimateDone] = useState(false);
   const [adminEstimateHistory, setAdminEstimateHistory] = useState<Record<string, AdminEstimateRecord | null>>({});
   const [adminEstimateIsEdit, setAdminEstimateIsEdit] = useState(false);
+
+  // Returns admin auth headers: Bearer JWT only (never plaintext PIN)
+  const adminAuthH = useCallback((extra?: Record<string, string>): Record<string, string> => {
+    const base = extra ?? {};
+    const bearer =
+      adminBearer ??
+      sessionStorage.getItem("adminAuthToken") ??
+      localStorage.getItem("adminAuthToken");
+    if (bearer) return { ...base, Authorization: `Bearer ${bearer}` };
+    return base;
+  }, [adminBearer]);
 
   const handleSendReview = useCallback(async (bookingId: string, channel: ReviewChannel) => {
     const key = reviewLoadingKey(bookingId, channel);
@@ -659,6 +656,17 @@ function AdminDashboard() {
   const [isRescheduling, setIsRescheduling] = useState(false);
   const [rsError, setRsError] = useState<string | null>(null);
   const [rsConflict, setRsConflict] = useState<{ name: string; date: string; time: string } | null>(null);
+
+  // Deposit / partial payment (does not complete job)
+  const [payTarget, setPayTarget] = useState<BookingRow | null>(null);
+  const [paySummary, setPaySummary] = useState<{
+    estimateTotal: number; paid: number; balance: number; suggestedDeposit50: number; paymentStatus: string | null;
+  } | null>(null);
+  const [payAmount, setPayAmount] = useState("");
+  const [payMethod, setPayMethod] = useState("zelle");
+  const [payType, setPayType] = useState("deposit");
+  const [paySaving, setPaySaving] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
 
   // Stripe payment link modal
   const [stripeModal, setStripeModal] = useState<{ id: string; name: string; amount: string } | null>(null);
@@ -1521,6 +1529,70 @@ function AdminDashboard() {
     }
   };
 
+  const openPayModal = async (b: BookingRow) => {
+    setPayTarget(b);
+    setPayError(null);
+    setPaySummary(null);
+    setPayAmount("");
+    setPayMethod("zelle");
+    setPayType("deposit");
+    try {
+      const r = await fetch(`${API()}/api/admin/bookings/${b.id}/payments`, { headers: adminAuthH(), cache: "no-store" });
+      const d = await r.json() as {
+        ok?: boolean; estimateTotal?: number; paid?: number; balance?: number;
+        suggestedDeposit50?: number; paymentStatus?: string | null; error?: string;
+      };
+      if (!r.ok) {
+        setPayError(d.error ?? "Failed to load payment summary");
+        return;
+      }
+      const summary = {
+        estimateTotal: Number(d.estimateTotal ?? 0),
+        paid: Number(d.paid ?? 0),
+        balance: Number(d.balance ?? 0),
+        suggestedDeposit50: Number(d.suggestedDeposit50 ?? 0),
+        paymentStatus: d.paymentStatus ?? null,
+      };
+      setPaySummary(summary);
+      const amt = summary.paid <= 0 && summary.suggestedDeposit50 > 0
+        ? summary.suggestedDeposit50
+        : summary.balance;
+      setPayAmount(amt > 0 ? String(amt) : "");
+      setPayType(summary.paid <= 0 ? "deposit" : summary.balance <= 0.01 ? "final" : "partial");
+    } catch {
+      setPayError(t.errNetwork);
+    }
+  };
+
+  const submitAdminPayment = async () => {
+    if (!payTarget || paySaving) return;
+    const amount = Number(payAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setPayError("Enter a valid amount");
+      return;
+    }
+    setPaySaving(true);
+    setPayError(null);
+    try {
+      const r = await fetch(`${API()}/api/admin/bookings/${payTarget.id}/payments`, {
+        method: "POST",
+        headers: { ...adminAuthH(), "Content-Type": "application/json" },
+        body: JSON.stringify({ amount, method: payMethod, payment_type: payType }),
+      });
+      const d = await r.json() as { error?: string; message?: string };
+      if (!r.ok) {
+        setPayError(d.message ?? d.error ?? "Payment failed");
+        return;
+      }
+      setPayTarget(null);
+      await loadSchedule();
+    } catch {
+      setPayError(t.errNetwork);
+    } finally {
+      setPaySaving(false);
+    }
+  };
+
   // Open edit modal pre-filled with current booking data
   const openEditModal = (b: { id: string; status: string; name: string; phone: string; email?: string; address?: string; appliance?: string; preferred_date: string; preferred_time: string; message?: string; client_lang?: string | null; assigned_employee_id?: string | null }) => {
     setEditTarget({ id: b.id, status: b.status, client_lang: b.client_lang ?? null });
@@ -2133,6 +2205,74 @@ function AdminDashboard() {
         </div>
       )}
 
+      {/* ── Payment Received (deposit/partial — does NOT complete) ── */}
+      {payTarget && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 px-0 sm:px-4"
+          onClick={() => setPayTarget(null)}>
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl p-5 w-full max-w-sm max-h-[92dvh] overflow-y-auto"
+            onClick={e => e.stopPropagation()}>
+            <h3 className="font-bold text-stone-800 mb-1">Payment Received</h3>
+            <p className="text-xs text-stone-500 mb-3">{payTarget.name} — job stays active</p>
+            {paySummary && (
+              <div className="grid grid-cols-3 gap-2 mb-3 text-center">
+                <div className="rounded-lg bg-stone-50 p-2">
+                  <div className="text-[10px] font-bold text-stone-400">TOTAL</div>
+                  <div className="text-sm font-extrabold">${paySummary.estimateTotal.toFixed(2)}</div>
+                </div>
+                <div className="rounded-lg bg-green-50 p-2">
+                  <div className="text-[10px] font-bold text-green-600">PAID</div>
+                  <div className="text-sm font-extrabold text-green-700">${paySummary.paid.toFixed(2)}</div>
+                </div>
+                <div className="rounded-lg bg-amber-50 p-2">
+                  <div className="text-[10px] font-bold text-amber-600">BALANCE</div>
+                  <div className="text-sm font-extrabold text-amber-700">${paySummary.balance.toFixed(2)}</div>
+                </div>
+              </div>
+            )}
+            {paySummary && paySummary.suggestedDeposit50 > 0 && paySummary.paid <= 0 && (
+              <button type="button"
+                onClick={() => { setPayAmount(String(paySummary.suggestedDeposit50)); setPayType("deposit"); }}
+                className="w-full mb-3 py-2 rounded-lg border border-teal-300 bg-teal-50 text-teal-800 text-xs font-bold">
+                50% Deposit (${paySummary.suggestedDeposit50.toFixed(2)})
+              </button>
+            )}
+            <label className="block text-xs font-semibold text-stone-500 mb-1">Amount</label>
+            <input type="number" inputMode="decimal" step="0.01" min="0" value={payAmount}
+              onChange={e => setPayAmount(e.target.value)}
+              className="w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm mb-3 min-h-[44px]" />
+            <label className="block text-xs font-semibold text-stone-500 mb-1">Type</label>
+            <div className="flex gap-1.5 mb-3">
+              {(["deposit", "partial", "final"] as const).map(tp => (
+                <button key={tp} type="button" onClick={() => setPayType(tp)}
+                  className={`flex-1 py-2 rounded-lg text-xs font-bold border ${payType === tp ? "border-teal-500 bg-teal-50 text-teal-800" : "border-stone-200 text-stone-500"}`}>
+                  {tp === "deposit" ? "Deposit" : tp === "final" ? "Final" : "Partial"}
+                </button>
+              ))}
+            </div>
+            <label className="block text-xs font-semibold text-stone-500 mb-1">Method</label>
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {["zelle", "cash", "card", "check", "other"].map(m => (
+                <button key={m} type="button" onClick={() => setPayMethod(m)}
+                  className={`px-3 py-2 rounded-lg text-xs font-bold border capitalize ${payMethod === m ? "border-blue-500 bg-blue-50 text-blue-700" : "border-stone-200 text-stone-500"}`}>
+                  {m}
+                </button>
+              ))}
+            </div>
+            {payError && <p className="text-xs text-red-600 mb-2">{payError}</p>}
+            <div className="flex gap-2">
+              <button type="button" onClick={() => setPayTarget(null)} disabled={paySaving}
+                className="flex-1 py-2.5 rounded-lg border border-stone-200 text-sm font-semibold text-stone-600">
+                {t.cancel}
+              </button>
+              <button type="button" onClick={() => void submitAdminPayment()} disabled={paySaving}
+                className="flex-1 py-2.5 rounded-lg text-white text-sm font-semibold bg-teal-600 disabled:opacity-60">
+                {paySaving ? t.loading : "Record"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Edit booking modal ── */}
       {editTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
@@ -2522,7 +2662,6 @@ function AdminDashboard() {
             setEmpFilter("");
             setMobileTab("bookings");
           }}
-          onBookingMutated={() => { void loadSchedule(); }}
         />
       )}
       {adminTab === "archive"   && <ArchiveTab   apiBase={API()} adminAuthH={adminAuthH} />}
@@ -3023,6 +3162,10 @@ function AdminDashboard() {
                               className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition border border-blue-100">
                               <CalendarDays className="w-3.5 h-3.5" /> {t.rescheduleBtn}
                             </button>
+                            <button onClick={() => void openPayModal(b)}
+                              className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-100 transition border border-teal-100">
+                              $ Payment
+                            </button>
                             <button onClick={() => setConfirmCancel({ id: b.id, name: b.name, time: b.preferred_time })}
                               className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition border border-red-100">
                               <XCircle className="w-3.5 h-3.5" /> {t.cancelBtn}
@@ -3169,21 +3312,10 @@ function AdminDashboard() {
                               )}
                             </div>
                           )}
-                          {/* CRM: who was assigned / who created */}
-                          {(b.assigned_employee_id || b.created_by_employee_id) && (
-                            <div className="text-[10px] text-stone-400 space-y-0.5">
-                              {b.assigned_employee_id && (
-                                <div>
-                                  👤 {employees.find(e => e.id === b.assigned_employee_id)?.name ?? b.assigned_employee_id.slice(0, 8)}
-                                </div>
-                              )}
-                              {b.created_by_employee_id && (
-                                <div>
-                                  Created by: {b.created_by_employee_name
-                                    ?? employees.find(e => e.id === b.created_by_employee_id)?.name
-                                    ?? b.created_by_employee_id.slice(0, 8)}
-                                </div>
-                              )}
+                          {/* CRM: who was assigned */}
+                          {b.assigned_employee_id && (
+                            <div className="text-[10px] text-stone-400">
+                              👤 {employees.find(e => e.id === b.assigned_employee_id)?.name ?? b.assigned_employee_id.slice(0, 8)}
                             </div>
                           )}
                           {/* Recall button — only for completed bookings with assigned employee */}
@@ -3476,13 +3608,6 @@ function AdminDashboard() {
                                 ) : b.assigned_employee_id ? (
                                   <span className="text-[11px] text-stone-500">👤 {employees.find(e => e.id === b.assigned_employee_id)?.name ?? "—"}</span>
                                 ) : null}
-                                {b.created_by_employee_id && (
-                                  <div className="text-[10px] text-stone-400 mt-0.5">
-                                    Created by: {b.created_by_employee_name
-                                      ?? employees.find(e => e.id === b.created_by_employee_id)?.name
-                                      ?? b.created_by_employee_id.slice(0, 8)}
-                                  </div>
-                                )}
                               </div>
                           </td>
 

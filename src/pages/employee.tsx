@@ -93,6 +93,9 @@ interface Booking {
   last_estimate_sent_at?: string | null;
   last_estimate_items?: EstimateLineItem[] | null;
   last_estimate_notes?: string | null;
+  /** Ledger totals from booking_payments (API) */
+  payments_paid?: number | null;
+  payments_balance?: number | null;
 }
 
 interface PricebookItem {
@@ -1112,6 +1115,21 @@ function EmployeePage() {
   const [closePartsCost, setClosePartsCost] = useState("");
   const [closeTax,       setCloseTax]       = useState(true);
 
+  // ── Payment Received (deposit/partial — does NOT complete job) ──────────────
+  const [payTarget, setPayTarget] = useState<Booking | null>(null);
+  const [payAmount, setPayAmount] = useState("");
+  const [payMethod, setPayMethod] = useState<"cash" | "zelle" | "card" | "check" | "other">("zelle");
+  const [payType, setPayType] = useState<"deposit" | "partial" | "final">("deposit");
+  const [paySaving, setPaySaving] = useState(false);
+  const [payError, setPayError] = useState("");
+
+  // ── Follow-up Reschedule (same booking via edit-booking) ───────────────────
+  const [reschedTarget, setReschedTarget] = useState<Booking | null>(null);
+  const [reschedDate, setReschedDate] = useState("");
+  const [reschedTime, setReschedTime] = useState("");
+  const [reschedSaving, setReschedSaving] = useState(false);
+  const [reschedError, setReschedError] = useState("");
+
   // ── Photo Upload State ─────────────────────────────────────────────────────
   const [photoModalId,    setPhotoModalId]    = useState<string | null>(null);
   const [bookingPhotos,   setBookingPhotos]   = useState<Record<string, Array<{ id: number; url: string | null; created_at: string }>>>({});
@@ -1139,6 +1157,8 @@ function EmployeePage() {
   useEffect(() => {
     const onEmployeeBack = () => {
       if (closeTarget) { setCloseTarget(null); return; }
+      if (payTarget) { setPayTarget(null); return; }
+      if (reschedTarget) { setReschedTarget(null); return; }
       if (estimateTarget) { setEstimateTarget(null); return; }
       if (photoModalId) { setPhotoModalId(null); return; }
       if (translatorOpen) {
@@ -1151,7 +1171,7 @@ function EmployeePage() {
     };
     window.addEventListener("htr-employee-back", onEmployeeBack);
     return () => window.removeEventListener("htr-employee-back", onEmployeeBack);
-  }, [closeTarget, estimateTarget, photoModalId, translatorOpen, stopListening]);
+  }, [closeTarget, payTarget, reschedTarget, estimateTarget, photoModalId, translatorOpen, stopListening]);
 
   const loadPricebook = useCallback(async () => {
     if (!token) return;
@@ -1249,12 +1269,9 @@ function EmployeePage() {
     setClosePayment("cash");
     setClosePartsCost("");
     setCloseTax(true);
-    // Default notify method: email if available, else sms
     const hasEmail = !!b.email?.trim();
     const hasPhone = !!b.phone?.trim();
     setCloseNotify(hasEmail ? "email" : hasPhone ? "sms" : "email");
-    // Default the language toggle to the client's saved preference
-    // (falling back to payment_language for older bookings, then English).
     const savedLang: "en" | "es" =
       b.client_lang === "es" ? "es"
       : b.client_lang === "en" ? "en"
@@ -1265,6 +1282,95 @@ function EmployeePage() {
     setCloseErr("");
     setSigHasData(false);
     setSigConsentGiven(true);
+  };
+
+  const openPayModal = (b: Booking) => {
+    const total = Number(b.last_estimate_total ?? 0);
+    const paid = Number(b.payments_paid ?? 0);
+    const bal = Math.max(0, Number(b.payments_balance ?? (total - paid)));
+    const suggest50 = Math.round(total * 0.5 * 100) / 100;
+    setPayTarget(b);
+    setPayAmount(String(paid <= 0 && suggest50 > 0 ? suggest50 : bal > 0 ? bal : ""));
+    setPayMethod("zelle");
+    setPayType(paid <= 0 ? "deposit" : bal <= suggest50 + 0.01 ? "final" : "partial");
+    setPayError("");
+  };
+
+  const submitPayment = async () => {
+    if (!payTarget || !token) return;
+    const amount = Number(payAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setPayError("Enter a valid amount");
+      return;
+    }
+    setPaySaving(true);
+    setPayError("");
+    try {
+      const r = await fetch(`${API()}/api/employee/bookings/${payTarget.id}/payments`, {
+        method: "POST",
+        headers: { ...authH(), "Content-Type": "application/json" },
+        body: JSON.stringify({ amount, method: payMethod, payment_type: payType }),
+      });
+      const d = await r.json().catch(() => ({})) as {
+        error?: string; message?: string;
+      };
+      if (!r.ok) {
+        setPayError(d.message ?? d.error ?? "Payment failed");
+        return;
+      }
+      setPayTarget(null);
+      await loadBookings();
+    } catch {
+      setPayError("Network error");
+    } finally {
+      setPaySaving(false);
+    }
+  };
+
+  const openReschedModal = (b: Booking) => {
+    setReschedTarget(b);
+    setReschedDate(b.preferred_date || "");
+    setReschedTime(b.preferred_time || "9:00 AM");
+    setReschedError("");
+  };
+
+  const submitReschedule = async () => {
+    if (!reschedTarget || !token) return;
+    if (!reschedDate.trim() || !reschedTime.trim()) {
+      setReschedError("Date and time required");
+      return;
+    }
+    setReschedSaving(true);
+    setReschedError("");
+    try {
+      const r = await fetch(`${API()}/api/employee/edit-booking`, {
+        method: "POST",
+        headers: { ...authH(), "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: reschedTarget.id,
+          name: reschedTarget.name,
+          phone: reschedTarget.phone,
+          email: reschedTarget.email ?? "",
+          address: reschedTarget.address ?? "",
+          appliance: reschedTarget.appliance ?? "",
+          message: reschedTarget.message ?? "",
+          date: reschedDate.trim(),
+          time: reschedTime.trim(),
+          business_type: reschedTarget.business_type ?? undefined,
+        }),
+      });
+      const d = await r.json().catch(() => ({})) as { error?: string; message?: string };
+      if (!r.ok) {
+        setReschedError(d.message ?? d.error ?? "Reschedule failed");
+        return;
+      }
+      setReschedTarget(null);
+      await loadBookings();
+    } catch {
+      setReschedError("Network error");
+    } finally {
+      setReschedSaving(false);
+    }
   };
 
   const addPart = () => setCloseParts(p => [...p, ""]);
@@ -2005,6 +2111,8 @@ function EmployeePage() {
                     justClosed={b.id === justClosedId}
                     isHighlighted={highlightJobId === b.id || !!jobSearch.trim()}
                     onClose={() => openCloseModal(b)}
+                    onPayment={() => openPayModal(b)}
+                    onReschedule={() => openReschedModal(b)}
                     onEstimate={() => openEstimateModal(b)}
                     onEditEstimate={estimateHistory[b.id] ? () => openEstimateModal(b, estimateHistory[b.id]!) : undefined}
                     lastEstimate={estimateHistory[b.id]}
@@ -2189,12 +2297,7 @@ function EmployeePage() {
                 timeReq: t("calBookingTimeReq"),
                 nameReq: t("calBookingNameReq"),
                 phoneReq: t("calBookingPhoneReq"),
-                email: t("calBookingEmail"),
-                city: t("calBookingCity"),
-                zip: t("calBookingZip"),
                 address: t("calBookingAddress"),
-                assignTechnician: t("calBookingAssignTech"),
-                unassigned: t("calBookingUnassigned"),
                 equipmentAppliance: t("calBookingEquipAppliance"),
                 equipmentDental: t("calBookingEquipDental"),
                 problemAppliance: t("calBookingProblemAppliance"),
@@ -2207,14 +2310,12 @@ function EmployeePage() {
                 saveBtn: t("calBookingSaveBtn"),
                 saving: t("calBookingSaving"),
                 errNamePhone: t("calBookingErrNamePhone"),
-                errEmail: t("calBookingErrEmail"),
                 errSlotTaken: t("calBookingErrSlotTaken"),
                 errServer: t("calBookingErrServer"),
                 savedOk: t("calBookingSavedOk"),
                 next: t("calBookingNext"),
               },
             }}
-            onBookingMutated={() => { void loadBookings(); }}
             onOpenBooking={(id) => {
               const b = bookings.find(x => x.id === id);
               if (b) {
@@ -2797,6 +2898,156 @@ function EmployeePage() {
                 <Btn outline color="#64748b" onClick={() => setCloseTarget(null)}>{t("cancel")}</Btn>
                 <Btn onClick={() => void submitClose()} disabled={closing}>{closing ? t("signingIn") : t("submit")}</Btn>
               </div>
+            </div>
+          </div>
+        </div>
+      , document.body)}
+
+      {/* ── Payment Received Modal (deposit/partial — does NOT complete job) ── */}
+      {payTarget && createPortal(
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 120,
+          background: "rgba(15,23,42,0.7)",
+          display: "flex", alignItems: "flex-end", justifyContent: "center",
+        }} onClick={() => setPayTarget(null)}>
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              width: "100%", maxWidth: 480, background: "#fff",
+              borderTopLeftRadius: 24, borderTopRightRadius: 24,
+              maxHeight: "92dvh", overflowY: "auto",
+              padding: "20px 20px max(20px, env(safe-area-inset-bottom))",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <div style={{ fontWeight: 800, fontSize: 18 }}>Payment Received</div>
+              <button type="button" onClick={() => setPayTarget(null)}
+                style={{ border: "none", background: "#f1f5f9", padding: 6, borderRadius: "50%", cursor: "pointer" }}>
+                <X style={{ width: 20, height: 20, color: "#64748b" }} />
+              </button>
+            </div>
+            <p style={{ margin: "0 0 12px", fontSize: 13, color: "#64748b" }}>
+              {payTarget.name} — does <strong>not</strong> complete the job
+            </p>
+            {(() => {
+              const total = Number(payTarget.last_estimate_total ?? 0);
+              const paid = Number(payTarget.payments_paid ?? 0);
+              const bal = Math.max(0, Number(payTarget.payments_balance ?? (total - paid)));
+              const sug = Math.round(total * 0.5 * 100) / 100;
+              return (
+                <>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 14 }}>
+                    <div style={{ background: "#f8fafc", borderRadius: 10, padding: 10, textAlign: "center" }}>
+                      <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700 }}>TOTAL</div>
+                      <div style={{ fontWeight: 800 }}>${total.toFixed(2)}</div>
+                    </div>
+                    <div style={{ background: "#f0fdf4", borderRadius: 10, padding: 10, textAlign: "center" }}>
+                      <div style={{ fontSize: 10, color: "#16a34a", fontWeight: 700 }}>PAID</div>
+                      <div style={{ fontWeight: 800, color: "#16a34a" }}>${paid.toFixed(2)}</div>
+                    </div>
+                    <div style={{ background: "#fff7ed", borderRadius: 10, padding: 10, textAlign: "center" }}>
+                      <div style={{ fontSize: 10, color: "#c2410c", fontWeight: 700 }}>BALANCE</div>
+                      <div style={{ fontWeight: 800, color: "#c2410c" }}>${bal.toFixed(2)}</div>
+                    </div>
+                  </div>
+                  {sug > 0 && paid <= 0 && (
+                    <button type="button" onClick={() => { setPayAmount(String(sug)); setPayType("deposit"); }}
+                      style={{
+                        width: "100%", marginBottom: 10, minHeight: 40, borderRadius: 10,
+                        border: "1.5px solid #0f766e", background: "#f0fdfa", color: "#0f766e",
+                        fontWeight: 700, fontSize: 13, cursor: "pointer",
+                      }}>
+                      50% Deposit (${sug.toFixed(2)})
+                    </button>
+                  )}
+                </>
+              );
+            })()}
+            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 4 }}>Amount</label>
+            <input type="number" inputMode="decimal" min="0" step="0.01" value={payAmount}
+              onChange={e => setPayAmount(e.target.value)}
+              style={{ width: "100%", boxSizing: "border-box", minHeight: 44, borderRadius: 10, border: "1.5px solid #e2e8f0", padding: "10px 12px", fontSize: 16, marginBottom: 12 }}
+            />
+            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 6 }}>Type</label>
+            <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
+              {(["deposit", "partial", "final"] as const).map(tp => (
+                <button key={tp} type="button" onClick={() => setPayType(tp)}
+                  style={{
+                    flex: 1, minWidth: 90, minHeight: 40, borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: "pointer",
+                    border: payType === tp ? "2px solid #0f766e" : "1.5px solid #e2e8f0",
+                    background: payType === tp ? "#f0fdfa" : "#fff", color: payType === tp ? "#0f766e" : "#64748b",
+                  }}>
+                  {tp === "deposit" ? "Deposit" : tp === "final" ? "Final" : "Partial"}
+                </button>
+              ))}
+            </div>
+            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 6 }}>Method</label>
+            <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
+              {(["zelle", "cash", "card", "check", "other"] as const).map(m => (
+                <button key={m} type="button" onClick={() => setPayMethod(m)}
+                  style={{
+                    flex: 1, minWidth: 64, minHeight: 40, borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: "pointer",
+                    border: payMethod === m ? `2px solid ${ACCENT}` : "1.5px solid #e2e8f0",
+                    background: payMethod === m ? "#f0f7ff" : "#fff", color: payMethod === m ? ACCENT : "#64748b",
+                    textTransform: "capitalize",
+                  }}>
+                  {m}
+                </button>
+              ))}
+            </div>
+            {payError && <p style={{ color: "#ef4444", fontSize: 13, margin: "0 0 10px" }}>{payError}</p>}
+            <div style={{ display: "flex", gap: 10 }}>
+              <Btn outline color="#64748b" onClick={() => setPayTarget(null)}>Cancel</Btn>
+              <Btn onClick={() => void submitPayment()} disabled={paySaving} color="#0f766e">
+                {paySaving ? "Saving…" : "Record Payment"}
+              </Btn>
+            </div>
+          </div>
+        </div>
+      , document.body)}
+
+      {/* ── Follow-up Reschedule Modal (same booking) ── */}
+      {reschedTarget && createPortal(
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 120,
+          background: "rgba(15,23,42,0.7)",
+          display: "flex", alignItems: "flex-end", justifyContent: "center",
+        }} onClick={() => setReschedTarget(null)}>
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              width: "100%", maxWidth: 480, background: "#fff",
+              borderTopLeftRadius: 24, borderTopRightRadius: 24,
+              maxHeight: "92dvh", overflowY: "auto",
+              padding: "20px 20px max(20px, env(safe-area-inset-bottom))",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <div style={{ fontWeight: 800, fontSize: 18 }}>Follow-up Visit</div>
+              <button type="button" onClick={() => setReschedTarget(null)}
+                style={{ border: "none", background: "#f1f5f9", padding: 6, borderRadius: "50%", cursor: "pointer" }}>
+                <X style={{ width: 20, height: 20, color: "#64748b" }} />
+              </button>
+            </div>
+            <p style={{ margin: "0 0 12px", fontSize: 13, color: "#64748b" }}>
+              Same job · assignment stays with you · frees old slot
+            </p>
+            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 4 }}>New date</label>
+            <input type="text" value={reschedDate} onChange={e => setReschedDate(e.target.value)}
+              placeholder="September 25, 2026"
+              style={{ width: "100%", boxSizing: "border-box", minHeight: 44, borderRadius: 10, border: "1.5px solid #e2e8f0", padding: "10px 12px", fontSize: 16, marginBottom: 12 }}
+            />
+            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 4 }}>New time</label>
+            <input type="text" value={reschedTime} onChange={e => setReschedTime(e.target.value)}
+              placeholder="2:00 PM"
+              style={{ width: "100%", boxSizing: "border-box", minHeight: 44, borderRadius: 10, border: "1.5px solid #e2e8f0", padding: "10px 12px", fontSize: 16, marginBottom: 12 }}
+            />
+            {reschedError && <p style={{ color: "#ef4444", fontSize: 13, margin: "0 0 10px" }}>{reschedError}</p>}
+            <div style={{ display: "flex", gap: 10 }}>
+              <Btn outline color="#64748b" onClick={() => setReschedTarget(null)}>Cancel</Btn>
+              <Btn onClick={() => void submitReschedule()} disabled={reschedSaving} color="#7c3aed">
+                {reschedSaving ? "Saving…" : "Save Follow-up"}
+              </Btn>
             </div>
           </div>
         </div>
@@ -3484,7 +3735,7 @@ function ClientMessageBlock({
 
 // ── Job Card ───────────────────────────────────────────────────────────────
 function JobCard({
-  b, justClosed, isHighlighted, onClose, onEstimate, onEditEstimate, lastEstimate,
+  b, justClosed, isHighlighted, onClose, onPayment, onReschedule, onEstimate, onEditEstimate, lastEstimate,
   onViewEstimate, onDownloadEstimate, downloadingEstimate,
   onArchive, onRestore, isArchived,
   archiving, onPhotos, photoCount, onDownloadReceipt, downloadingReceipt, onSendReview, reviewLoading,
@@ -3498,6 +3749,8 @@ function JobCard({
   justClosed: boolean;
   isHighlighted?: boolean;
   onClose?: () => void;
+  onPayment?: () => void;
+  onReschedule?: () => void;
   onEstimate?: () => void;
   onEditEstimate?: () => void;
   lastEstimate?: EstimateRecord | null;
@@ -3557,13 +3810,29 @@ function JobCard({
             }} className={statusCls(b.status)}>
               {statusLabel(b.status, t)}
             </span>
+            {b.payment_status === "partial" && (
+              <span style={{
+                fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20,
+                background: "#ffedd5", color: "#c2410c",
+              }}>
+                PARTIALLY PAID
+              </span>
+            )}
+            {b.payment_status === "paid" && b.status !== "completed" && (
+              <span style={{
+                fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20,
+                background: "#dcfce7", color: "#15803d",
+              }}>
+                PAID
+              </span>
+            )}
             <span style={{
               fontSize: 10, fontWeight: 700,
               padding: "2px 8px", borderRadius: 20,
-              background: resolveBookingBiz(b.business_type, b.appliance, b.brand_model) === "dental" ? "#ede9fe" : "#dbeafe",
-              color: resolveBookingBiz(b.business_type, b.appliance, b.brand_model) === "dental" ? "#6d28d9" : "#1d4ed8",
+              background: resolveBookingBiz(b.business_type) === "dental" ? "#ede9fe" : "#dbeafe",
+              color: resolveBookingBiz(b.business_type) === "dental" ? "#6d28d9" : "#1d4ed8",
             }}>
-              {resolveBookingBiz(b.business_type, b.appliance, b.brand_model) === "dental" ? t("bizDental") : t("bizAppliance")}
+              {resolveBookingBiz(b.business_type) === "dental" ? t("bizDental") : t("bizAppliance")}
             </span>
           </div>
         </div>
@@ -3849,9 +4118,35 @@ function JobCard({
           </div>
         )}
 
-        {/* Estimate + Close Job buttons */}
+        {/* Estimate + Payment + Reschedule + Close Job */}
         {b.status !== "completed" && (
           <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+            {Number(b.last_estimate_total ?? 0) > 0 && (
+              <div style={{
+                display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6,
+                background: "#f8fafc", borderRadius: 10, padding: "10px 8px",
+                border: "1px solid #e2e8f0",
+              }}>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: "#94a3b8", letterSpacing: 0.4 }}>TOTAL</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#0f172a" }}>
+                    ${Number(b.last_estimate_total).toFixed(2)}
+                  </div>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: "#94a3b8", letterSpacing: 0.4 }}>PAID</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#16a34a" }}>
+                    ${Number(b.payments_paid ?? 0).toFixed(2)}
+                  </div>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: "#94a3b8", letterSpacing: 0.4 }}>BALANCE</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#b45309" }}>
+                    ${Number(b.payments_balance ?? Math.max(0, Number(b.last_estimate_total) - Number(b.payments_paid ?? 0))).toFixed(2)}
+                  </div>
+                </div>
+              </div>
+            )}
             {onEstimate && (
               <button
                 type="button"
@@ -3867,6 +4162,34 @@ function JobCard({
               >
                 <FileText style={{ width: 15, height: 15 }} />
                 {t("sendEstimate")}
+              </button>
+            )}
+            {onPayment && Number(b.last_estimate_total ?? 0) > 0 && (
+              <button
+                type="button"
+                onClick={onPayment}
+                style={{
+                  width: "100%", minHeight: 40,
+                  background: "#fff", color: "#0f766e",
+                  border: "1.5px solid #0f766e", borderRadius: 10,
+                  fontSize: 13, fontWeight: 700, cursor: "pointer",
+                }}
+              >
+                Payment Received
+              </button>
+            )}
+            {onReschedule && (
+              <button
+                type="button"
+                onClick={onReschedule}
+                style={{
+                  width: "100%", minHeight: 40,
+                  background: "#fff", color: "#7c3aed",
+                  border: "1.5px solid #7c3aed", borderRadius: 10,
+                  fontSize: 13, fontWeight: 700, cursor: "pointer",
+                }}
+              >
+                Reschedule / Follow-up
               </button>
             )}
             <a
