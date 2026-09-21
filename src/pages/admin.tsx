@@ -1957,7 +1957,7 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: pageBg }}>
+    <div className="min-h-screen max-w-[100vw]" style={{ background: pageBg }}>
 
       {/* ── Cancel booking modal ── */}
       {confirmCancel && (
@@ -2527,50 +2527,59 @@ function AdminDashboard() {
         </p>
       </div>
 
-      {/* ── Header (sticky) ── */}
-      <header className="sticky top-0 z-30 bg-white border-b shadow-sm">
-        {/* ── Mobile header: compact 1-row ── */}
-        <div className="flex md:hidden items-center gap-2 px-3 h-14">
-          <img src="/htr-logo-nobg.png" alt="HTR" style={{ width: 80, height: 54, borderRadius: 8, objectFit: "contain", flexShrink: 0 }} />
-          <div className="min-w-0 flex-1">
-            <div className="font-bold text-stone-800 text-sm leading-tight truncate">HTRGroupTX Admin</div>
-            {fidLabel ? (
-              <div className="text-xs leading-tight truncate flex items-center gap-1" style={{ color: ACCENT }}>
-                <Fingerprint className="w-3 h-3 flex-none" />
-                <span className="truncate">{t.loggedFid} {fidLabel}</span>
-              </div>
-            ) : pin ? (
-              <div className="text-xs leading-tight truncate flex items-center gap-1 text-stone-500">
-                <Lock className="w-3 h-3 flex-none" />
-                <span className="truncate">{t.loggedPin}</span>
-              </div>
-            ) : (
-              <div className="text-xs text-stone-400 leading-tight truncate">{t.schedule}</div>
-            )}
+      {/* ── Sticky chrome: header + CRM nav (one stack so mobile multi-row header doesn't break top offsets) ── */}
+      <div className="sticky top-0 z-30 bg-white shadow-sm max-w-[100vw]">
+      <header className="border-b">
+        {/* ── Mobile header: 2 rows so Portal/Pay/Theme/RU-EN-AZ/Logout fit without document overflow ── */}
+        <div className="flex md:hidden flex-col gap-1.5 px-3 py-2 min-w-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <img src="/htr-logo-nobg.png" alt="HTR" className="w-14 h-10 rounded-lg object-contain shrink-0" />
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-stone-800 text-sm leading-tight truncate">HTRGroupTX Admin</div>
+              {fidLabel ? (
+                <div className="text-xs leading-tight truncate flex items-center gap-1" style={{ color: ACCENT }}>
+                  <Fingerprint className="w-3 h-3 flex-none" />
+                  <span className="truncate">{t.loggedFid} {fidLabel}</span>
+                </div>
+              ) : pin ? (
+                <div className="text-xs leading-tight truncate flex items-center gap-1 text-stone-500">
+                  <Lock className="w-3 h-3 flex-none" />
+                  <span className="truncate">{t.loggedPin}</span>
+                </div>
+              ) : (
+                <div className="text-xs text-stone-400 leading-tight truncate">{t.schedule}</div>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-1 flex-none">
+          <div className="flex flex-wrap items-center justify-end gap-1 w-full min-w-0">
             <a
               href="/employee"
               target="_blank"
               rel="noreferrer"
-              className="md:hidden flex-none flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-[10px] font-bold leading-tight"
+              className="flex-none flex flex-col items-center justify-center gap-0.5 min-h-[36px] px-1.5 py-1 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-[10px] font-bold leading-tight"
               title={lang === "ru" ? "Портал сотрудника" : lang === "az" ? "Əməkdaş portalı" : "Employee Portal"}
             >
-              <Wrench className="w-4 h-4" />
+              <Wrench className="w-3.5 h-3.5" />
               <span>{lang === "ru" ? "Портал" : lang === "az" ? "Portal" : "Portal"}</span>
             </a>
-            <a href="/pay" target="_blank" rel="noreferrer" className="md:hidden flex-none flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-[10px] font-bold leading-tight" title={t.pay ?? "Pay"}>
-              <ShieldCheck className="w-4 h-4" />
+            <a
+              href="/pay"
+              target="_blank"
+              rel="noreferrer"
+              className="flex-none flex flex-col items-center justify-center gap-0.5 min-h-[36px] px-1.5 py-1 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-[10px] font-bold leading-tight"
+              title={t.pay ?? "Pay"}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
               <span>{t.pay ?? "Pay"}</span>
             </a>
             <PageBgPicker value={pageBg} onChange={setPageBg} lang={lang} compact />
-            <div className="inline-flex items-center gap-0.5 rounded-md border border-stone-200 bg-white p-0.5">
+            <div className="inline-flex items-center gap-0 rounded-md border border-stone-200 bg-white p-0.5 shrink-0">
               {(["ru", "en", "az"] as const).map((code) => (
                 <button
                   key={code}
                   type="button"
                   onClick={() => setLang(code)}
-                  className="px-2 py-1 rounded text-xs font-bold transition"
+                  className="min-h-[32px] min-w-[32px] px-1.5 py-1 rounded text-[11px] font-bold transition"
                   style={{
                     color: lang === code ? "#fff" : "#a8a29e",
                     backgroundColor: lang === code ? ACCENT : "transparent",
@@ -2580,8 +2589,14 @@ function AdminDashboard() {
                 </button>
               ))}
             </div>
-            <button onClick={logout} className="flex items-center gap-1 text-xs text-stone-500 hover:text-red-500 transition px-2 py-1.5 rounded-lg hover:bg-red-50">
-              <LogOut className="w-3.5 h-3.5" />
+            <button
+              type="button"
+              onClick={logout}
+              className="flex items-center justify-center min-h-[36px] min-w-[36px] text-stone-500 hover:text-red-500 transition rounded-lg hover:bg-red-50 shrink-0"
+              title={t.logout}
+              aria-label={t.logout}
+            >
+              <LogOut className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -2650,9 +2665,9 @@ function AdminDashboard() {
         </div>
       </header>
 
-      {/* ── CRM top-level tab bar ── */}
-      <div className="sticky top-14 z-20 bg-white border-b border-stone-200 shadow-sm overflow-x-auto overscroll-x-contain" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
-        <div className="flex min-w-max pr-4">
+      {/* ── CRM top-level tab bar (local horizontal scroll OK; does not widen document) ── */}
+      <div className="bg-white border-b border-stone-200 overflow-x-auto overscroll-x-contain max-w-[100vw]" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+        <div className="flex w-max min-w-full pr-4">
           {([
             { key: "bookings",   icon: <Calendar className="w-3.5 h-3.5" />,  label: t.tabBookings   },
             { key: "calendar",   icon: <CalendarDays className="w-3.5 h-3.5" />, label: t.tabCalendar },
@@ -2688,7 +2703,7 @@ function AdminDashboard() {
 
       {/* ── Mobile slots/bookings sub-tab bar (only on "bookings" CRM tab) ── */}
       {adminTab === "bookings" && (
-        <div className="md:hidden sticky top-24 z-10 flex border-b border-stone-200 bg-white shadow-sm">
+        <div className="md:hidden flex border-b border-stone-200 bg-white">
           <button onClick={() => setMobileTab("slots")}
             className={`flex-1 py-3 text-sm font-semibold border-b-2 transition ${mobileTab === "slots" ? "border-blue-600 text-blue-600" : "border-transparent text-stone-400"}`}>
             {t.slotsTab}
@@ -2699,6 +2714,7 @@ function AdminDashboard() {
           </button>
         </div>
       )}
+      </div>
 
       {/* ── Non-bookings CRM tabs ── */}
       {adminTab === "employees" && <EmployeesTab apiBase={API()} adminAuthH={adminAuthH} />}
@@ -2826,7 +2842,7 @@ function AdminDashboard() {
       )}
 
       {/* ── Two-panel layout (desktop) / Tab content (mobile) — bookings tab only ── */}
-      <div className={`flex gap-0 md:overflow-hidden md:h-[calc(100vh-96px)] ${adminTab !== "bookings" && adminTab !== "jobsArchive" ? "hidden" : ""}`}>
+      <div className={`flex gap-0 md:overflow-hidden md:h-[calc(100vh-96px)] min-w-0 max-w-[100vw] ${adminTab !== "bookings" && adminTab !== "jobsArchive" ? "hidden" : ""}`}>
 
         {/* ═══ LEFT PANEL / Слоты tab ═══ */}
         {adminTab === "bookings" && (
@@ -2958,7 +2974,7 @@ function AdminDashboard() {
         )}
 
         {/* ═══ RIGHT PANEL / Заявки tab ═══ */}
-        <div className={`overflow-y-auto p-4 ${adminTab === "jobsArchive" ? "block" : mobileTab !== "bookings" ? "hidden md:block" : "block"} flex-1`}>
+        <div className={`overflow-y-auto overflow-x-hidden p-3 sm:p-4 min-w-0 ${adminTab === "jobsArchive" ? "block" : mobileTab !== "bookings" ? "hidden md:block" : "block"} flex-1`}>
         <div className="bg-white rounded-xl shadow-sm p-4 md:p-5">
           {bookingFromCalendar && (adminTab === "bookings" || adminTab === "jobsArchive") && (
             <button
