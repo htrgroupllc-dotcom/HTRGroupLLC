@@ -12,6 +12,7 @@ import EmployeePage from "@/pages/employee";
 import PaymentSuccess from "@/pages/payment-success";
 import PayPage from "@/pages/pay";
 import VoiceBookCallPage from "@/pages/voice-book-call";
+import EstimateViewPage from "@/pages/estimate-view";
 import BackButton from "@/components/BackButton";
 import PromoPopup from "@/components/PromoPopup";
 import AuthGate from "@/components/AuthGate";
@@ -64,6 +65,7 @@ function Router() {
       <Route path="/book-call/:token" component={VoiceBookCallPage} />
       <Route path="/intake/:token" component={VoiceBookCallPage} />
       <Route path="/form/:token" component={VoiceBookCallPage} />
+      <Route path="/estimate/:token" component={EstimateViewPage} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -89,7 +91,8 @@ function GlobalUI() {
   const isBookCall =
     location.startsWith("/book-call/") ||
     location.startsWith("/intake/") ||
-    location.startsWith("/form/");
+    location.startsWith("/form/") ||
+    location.startsWith("/estimate/");
   const [bubbleVisible, setBubbleVisible] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);

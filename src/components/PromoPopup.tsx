@@ -5,7 +5,7 @@ import { X, Wrench, CalendarCheck } from "lucide-react";
 const STORAGE_KEY = "htr_promo_shown";
 const DELAY_MS = 1_000;
 
-const EXCLUDED_PATHS = ["/admin", "/gallery", "/book-call", "/intake", "/form", "/pay", "/payment-success"];
+const EXCLUDED_PATHS = ["/admin", "/gallery", "/book-call", "/intake", "/form", "/estimate", "/pay", "/payment-success"];
 
 function makeTranslations(fee: string) {
   const n = Number(fee);

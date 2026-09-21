@@ -1,2 +1,7 @@
+# Cloudflare Pages
 /admin    /admin/    301
+/book-call/*  https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
+/intake/*     https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
+/form/*       https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
+/estimate/*   https://htr-group-llc-appliance-repair.replit.app/api/estimate/:splat  302
 /*          /index.html     200

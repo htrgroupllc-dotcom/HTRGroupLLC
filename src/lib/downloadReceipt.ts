@@ -210,7 +210,7 @@ export async function downloadReceiptPdf(opts: {
   }
 }
 
-/** Opens server-rendered HTML in a new browser tab (for estimate preview). */
+/** Opens server-rendered HTML in a new browser tab (staff preview only — never email this blob URL). */
 export async function openHtmlDocument(opts: {
   url: string;
   headers?: Record<string, string>;
