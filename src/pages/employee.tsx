@@ -3560,10 +3560,10 @@ function JobCard({
             <span style={{
               fontSize: 10, fontWeight: 700,
               padding: "2px 8px", borderRadius: 20,
-              background: resolveBookingBiz(b.business_type) === "dental" ? "#ede9fe" : "#dbeafe",
-              color: resolveBookingBiz(b.business_type) === "dental" ? "#6d28d9" : "#1d4ed8",
+              background: resolveBookingBiz(b.business_type, b.appliance, b.brand_model) === "dental" ? "#ede9fe" : "#dbeafe",
+              color: resolveBookingBiz(b.business_type, b.appliance, b.brand_model) === "dental" ? "#6d28d9" : "#1d4ed8",
             }}>
-              {resolveBookingBiz(b.business_type) === "dental" ? t("bizDental") : t("bizAppliance")}
+              {resolveBookingBiz(b.business_type, b.appliance, b.brand_model) === "dental" ? t("bizDental") : t("bizAppliance")}
             </span>
           </div>
         </div>

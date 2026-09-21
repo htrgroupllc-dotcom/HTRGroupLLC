@@ -1309,7 +1309,7 @@ function AdminDashboard() {
   };
 
   const MoveBizButton = ({ b, className }: { b: BookingRow; className?: string }) => {
-    const current = resolveBookingBiz(b.business_type);
+    const current = resolveBookingBiz(b.business_type, b.appliance, b.brand_model);
     const target: "appliance" | "dental" = current === "dental" ? "appliance" : "dental";
     const loading = moveBizLoading.has(b.id);
     const btnClass = className ?? (
@@ -1593,7 +1593,7 @@ function AdminDashboard() {
     const sq = searchQuery.trim().toLowerCase();
     let result = listBookings;
     if (bizFilter !== "all") {
-      result = result.filter(b => resolveBookingBiz(b.business_type) === bizFilter);
+      result = result.filter(b => resolveBookingBiz(b.business_type, b.appliance, b.brand_model) === bizFilter);
     }
     if (empFilter) {
       result = result.filter(b => b.assigned_employee_id === empFilter);
@@ -2882,8 +2882,8 @@ function AdminDashboard() {
                       <div className="flex items-center gap-1.5 mb-1">
                         <User className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
                         <span className="text-sm font-semibold text-stone-800">{b.name}</span>
-                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${resolveBookingBiz(b.business_type) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
-                          {resolveBookingBiz(b.business_type) === "dental" ? t.bizDental : t.bizAppliance}
+                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${resolveBookingBiz(b.business_type, b.appliance, b.brand_model) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
+                          {resolveBookingBiz(b.business_type, b.appliance, b.brand_model) === "dental" ? t.bizDental : t.bizAppliance}
                         </span>
                         <MoveBizButton b={b} />
                         {b.is_remote && (
@@ -3403,8 +3403,8 @@ function AdminDashboard() {
                             <span className="flex items-center gap-1 flex-wrap">
                               <User className="w-3 h-3 text-stone-400 shrink-0" />
                               <span className="font-medium text-stone-700">{b.name}</span>
-                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${resolveBookingBiz(b.business_type) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
-                                {resolveBookingBiz(b.business_type) === "dental" ? t.bizDental : t.bizAppliance}
+                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold leading-none ${resolveBookingBiz(b.business_type, b.appliance, b.brand_model) === "dental" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"}`}>
+                                {resolveBookingBiz(b.business_type, b.appliance, b.brand_model) === "dental" ? t.bizDental : t.bizAppliance}
                               </span>
                               <MoveBizButton b={b} />
                               {b.is_remote && (

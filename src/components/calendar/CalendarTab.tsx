@@ -224,7 +224,8 @@ export default function CalendarTab({
         cache: "no-store",
       });
       const d = await r.json() as { events?: CalendarEvent[] };
-      setEvents(d.events ?? []);
+      // Active calendar only — completed/cancelled belong in Jobs Archive (API also filters after deploy).
+      setEvents((d.events ?? []).filter((e) => e.status !== "completed" && e.status !== "cancelled"));
     } catch {
       setEvents([]);
     } finally {
@@ -247,10 +248,14 @@ export default function CalendarTab({
         cache: "no-store",
       });
       const d = await r.json() as { events?: CalendarEvent[] };
-      const incoming = d.events ?? [];
+      const incoming = (d.events ?? []).filter((e) => e.status !== "completed" && e.status !== "cancelled");
       setEvents((prev) => {
         const byId = new Map(prev.map((e) => [e.id, e]));
         for (const e of incoming) byId.set(e.id, e);
+        // Drop closed jobs that may still be in prev from an older API response.
+        for (const [id, e] of byId) {
+          if (e.status === "completed" || e.status === "cancelled") byId.delete(id);
+        }
         return [...byId.values()];
       });
     } catch { /* ignore */ }
@@ -480,7 +485,7 @@ export default function CalendarTab({
   };
 
   const bizBadge = (ev: CalendarEvent) => {
-    const b = resolveBookingBiz(ev.business_type);
+    const b = resolveBookingBiz(ev.business_type, ev.appliance, ev.brand_model);
     return (
       <span className={`text-[10px] px-1.5 py-0.5 rounded ${b === "appliance" ? "bg-sky-100 text-sky-700" : "bg-violet-100 text-violet-700"}`}>
         {b === "appliance" ? labels.bizAppliance : labels.bizDental}
