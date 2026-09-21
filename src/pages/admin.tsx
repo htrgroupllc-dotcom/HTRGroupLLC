@@ -343,6 +343,18 @@ function AdminDashboard() {
   // Gender picker: which bookingId is showing the ♂/♀ selector
   const [genderPickerId, setGenderPickerId] = useState<string | null>(null);
 
+  // Returns admin auth headers: Bearer JWT only (never plaintext PIN)
+  // MUST be declared before any useCallback that lists adminAuthH in deps (TDZ).
+  const adminAuthH = useCallback((extra?: Record<string, string>): Record<string, string> => {
+    const base = extra ?? {};
+    const bearer =
+      adminBearer ??
+      sessionStorage.getItem("adminAuthToken") ??
+      localStorage.getItem("adminAuthToken");
+    if (bearer) return { ...base, Authorization: `Bearer ${bearer}` };
+    return base;
+  }, [adminBearer]);
+
   const handleCallback = useCallback(async (phone: string, bookingId: string, clientName?: string, clientLanguage?: string, clientGender: "male" | "female" = "male") => {
     if (callbackLoading.has(bookingId)) return;
     setCallbackLoading(prev => new Set(prev).add(bookingId));
@@ -385,17 +397,6 @@ function AdminDashboard() {
   const [adminEstimateDone, setAdminEstimateDone] = useState(false);
   const [adminEstimateHistory, setAdminEstimateHistory] = useState<Record<string, AdminEstimateRecord | null>>({});
   const [adminEstimateIsEdit, setAdminEstimateIsEdit] = useState(false);
-
-  // Returns admin auth headers: Bearer JWT only (never plaintext PIN)
-  const adminAuthH = useCallback((extra?: Record<string, string>): Record<string, string> => {
-    const base = extra ?? {};
-    const bearer =
-      adminBearer ??
-      sessionStorage.getItem("adminAuthToken") ??
-      localStorage.getItem("adminAuthToken");
-    if (bearer) return { ...base, Authorization: `Bearer ${bearer}` };
-    return base;
-  }, [adminBearer]);
 
   const handleSendReview = useCallback(async (bookingId: string, channel: ReviewChannel) => {
     const key = reviewLoadingKey(bookingId, channel);
