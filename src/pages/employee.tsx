@@ -12,8 +12,26 @@ import { EmpLangProvider, useEmpLang, EmpLang } from "@/context/EmpLangContext";
 import { resolveBookingBiz } from "@/lib/adminSiteConfig";
 import ReviewRequestButtons, { reviewLoadingKey, type ReviewChannel } from "@/components/ReviewRequestButtons";
 import CalendarTab from "@/components/calendar/CalendarTab";
+import {
+  BOOKING_TIME_SLOTS,
+  formatBookingDateStr,
+  getMinBookingDate,
+} from "@/lib/bookingDate";
 import { usePageBg } from "@/hooks/use-page-bg";
 import PageBgPicker from "@/components/PageBgPicker";
+
+/** Next N Mon–Fri dates in canonical booking format ("Sep 22, 2026"), Houston cutoff via getMinBookingDate. */
+function getEmpFollowUpDates(n: number): string[] {
+  const days: string[] = [];
+  const d = getMinBookingDate();
+  while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + 1);
+  while (days.length < n) {
+    const dow = d.getDay();
+    if (dow !== 0 && dow !== 6) days.push(formatBookingDateStr(d));
+    d.setDate(d.getDate() + 1);
+  }
+  return days;
+}
 import {
   startRegistration,
   startAuthentication,
@@ -1328,16 +1346,22 @@ function EmployeePage() {
   };
 
   const openReschedModal = (b: Booking) => {
+    const dates = getEmpFollowUpDates(14);
+    const curDate = (b.preferred_date || "").trim();
+    const dateOpts = curDate && !dates.includes(curDate) ? [curDate, ...dates] : dates;
+    const curTime = (b.preferred_time || "").trim();
     setReschedTarget(b);
-    setReschedDate(b.preferred_date || "");
-    setReschedTime(b.preferred_time || "9:00 AM");
+    setReschedDate(dateOpts.includes(curDate) ? curDate : (dateOpts[0] ?? ""));
+    setReschedTime(
+      BOOKING_TIME_SLOTS.includes(curTime) ? curTime : (BOOKING_TIME_SLOTS[0] ?? "9:00 AM"),
+    );
     setReschedError("");
   };
 
   const submitReschedule = async () => {
     if (!reschedTarget || !token) return;
     if (!reschedDate.trim() || !reschedTime.trim()) {
-      setReschedError("Date and time required");
+      setReschedError(t("followUpDateTimeRequired"));
       return;
     }
     setReschedSaving(true);
@@ -3023,30 +3047,50 @@ function EmployeePage() {
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-              <div style={{ fontWeight: 800, fontSize: 18 }}>Follow-up Visit</div>
+              <div style={{ fontWeight: 800, fontSize: 18 }}>{t("followUpTitle")}</div>
               <button type="button" onClick={() => setReschedTarget(null)}
                 style={{ border: "none", background: "#f1f5f9", padding: 6, borderRadius: "50%", cursor: "pointer" }}>
                 <X style={{ width: 20, height: 20, color: "#64748b" }} />
               </button>
             </div>
             <p style={{ margin: "0 0 12px", fontSize: 13, color: "#64748b" }}>
-              Same job · assignment stays with you · frees old slot
+              {t("followUpHint")}
             </p>
-            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 4 }}>New date</label>
-            <input type="text" value={reschedDate} onChange={e => setReschedDate(e.target.value)}
-              placeholder="September 25, 2026"
-              style={{ width: "100%", boxSizing: "border-box", minHeight: 44, borderRadius: 10, border: "1.5px solid #e2e8f0", padding: "10px 12px", fontSize: 16, marginBottom: 12 }}
-            />
-            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 4 }}>New time</label>
-            <input type="text" value={reschedTime} onChange={e => setReschedTime(e.target.value)}
-              placeholder="2:00 PM"
-              style={{ width: "100%", boxSizing: "border-box", minHeight: 44, borderRadius: 10, border: "1.5px solid #e2e8f0", padding: "10px 12px", fontSize: 16, marginBottom: 12 }}
-            />
+            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 4 }}>{t("followUpNewDate")}</label>
+            <select
+              value={reschedDate}
+              onChange={e => setReschedDate(e.target.value)}
+              style={{
+                width: "100%", boxSizing: "border-box", minHeight: 44, borderRadius: 10,
+                border: "1.5px solid #e2e8f0", padding: "10px 12px", fontSize: 16, marginBottom: 12,
+                background: "#fff", WebkitAppearance: "menulist" as const,
+              }}
+            >
+              {(() => {
+                const dates = getEmpFollowUpDates(14);
+                const opts = reschedDate && !dates.includes(reschedDate) ? [reschedDate, ...dates] : dates;
+                return opts.map(d => <option key={d} value={d}>{d}</option>);
+              })()}
+            </select>
+            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 4 }}>{t("followUpNewTime")}</label>
+            <select
+              value={reschedTime}
+              onChange={e => setReschedTime(e.target.value)}
+              style={{
+                width: "100%", boxSizing: "border-box", minHeight: 44, borderRadius: 10,
+                border: "1.5px solid #e2e8f0", padding: "10px 12px", fontSize: 16, marginBottom: 12,
+                background: "#fff", WebkitAppearance: "menulist" as const,
+              }}
+            >
+              {BOOKING_TIME_SLOTS.map(slot => (
+                <option key={slot} value={slot}>{slot}</option>
+              ))}
+            </select>
             {reschedError && <p style={{ color: "#ef4444", fontSize: 13, margin: "0 0 10px" }}>{reschedError}</p>}
             <div style={{ display: "flex", gap: 10 }}>
-              <Btn outline color="#64748b" onClick={() => setReschedTarget(null)}>Cancel</Btn>
+              <Btn outline color="#64748b" onClick={() => setReschedTarget(null)}>{t("cancel")}</Btn>
               <Btn onClick={() => void submitReschedule()} disabled={reschedSaving} color="#7c3aed">
-                {reschedSaving ? "Saving…" : "Save Follow-up"}
+                {reschedSaving ? t("followUpSaving") : t("followUpSave")}
               </Btn>
             </div>
           </div>
@@ -4189,7 +4233,7 @@ function JobCard({
                   fontSize: 13, fontWeight: 700, cursor: "pointer",
                 }}
               >
-                Reschedule / Follow-up
+                {t("followUpBtn")}
               </button>
             )}
             <a
