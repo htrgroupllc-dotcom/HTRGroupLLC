@@ -5,12 +5,15 @@ import { useAdminLang } from "../../context/AdminLangContext";
 const ACCENT = "#1B6FE8";
 
 const EMP_LANGS: { code: string; label: string }[] = [
-  { code: "en", label: "EN" },
-  { code: "ru", label: "RU" },
-  { code: "es", label: "ES" },
-  { code: "tr", label: "TR" },
-  { code: "az", label: "AZ" },
-  { code: "uk", label: "UK" },
+  { code: "en", label: "English" },
+  { code: "ru", label: "Русский" },
+  { code: "es", label: "Español" },
+  { code: "tr", label: "Türkçe" },
+  { code: "az", label: "Azərbaycan" },
+  { code: "uk", label: "Українська" },
+  { code: "kk", label: "Қазақша" },
+  { code: "ky", label: "Кыргызча" },
+  { code: "uz", label: "O‘zbekcha" },
 ];
 
 interface Employee {
@@ -676,8 +679,11 @@ export default function EmployeesTab({
                   <option value="ru">Русский</option>
                   <option value="es">Español</option>
                   <option value="tr">Türkçe</option>
-                  <option value="az">Azərbaycanca</option>
+                  <option value="az">Azərbaycan</option>
                   <option value="uk">Українська</option>
+                  <option value="kk">Қазақша</option>
+                  <option value="ky">Кыргызча</option>
+                  <option value="uz">O‘zbekcha</option>
                 </select>
               </div>
             </div>

@@ -243,7 +243,7 @@ const EMP_NAME_KEY      = "empName";
 const EMP_EXP_KEY       = "empTokenExp";
 const EMP_FID_KEY       = "empFidCredId";
 const EMP_LAST_SEEN_KEY = "empLastSeenAt";
-const EMP_TOKEN_TTL     = 7 * 24 * 60 * 60 * 1000; // 7 days
+const EMP_TOKEN_TTL     = 365 * 24 * 60 * 60 * 1000; // 365 days (match server JWT)
 
 // ── PWA Badge helpers ──────────────────────────────────────────────────────────
 function clearAppBadge() {
@@ -381,6 +381,7 @@ function EmployeePage() {
       const optRes = await fetch(`${API()}/api/employee/webauthn/login-options`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ credentialId: localCredId }),
       });
       if (!optRes.ok) throw new Error("Failed to get options");
@@ -389,6 +390,7 @@ function EmployeePage() {
       const verRes = await fetch(`${API()}/api/employee/webauthn/login-verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ response: credential, challengeId }),
       });
       if (!verRes.ok) throw new Error("Verification failed");
@@ -412,13 +414,22 @@ function EmployeePage() {
       const r = await fetch(`${API()}/api/employee/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ phone: phone.trim(), pin }),
       });
-      const d = await r.json() as { ok?: boolean; token?: string; name?: string; error?: string };
+      const d = await r.json() as { ok?: boolean; token?: string; name?: string; lang?: string; error?: string };
       if (!r.ok || !d.ok) { setLoginErr(d.error ? (d.error === "Invalid phone or PIN" ? t("invalidLogin") : d.error) : t("invalidLogin")); return; }
       saveEmpToken(d.token!, d.name!);
       setToken(d.token!);
       setEmpName(d.name!);
+      // Prefer existing UI language; if none, apply DB preference from login
+      try {
+        const saved = localStorage.getItem("empUiLang");
+        const allowed = ["en","ru","es","tr","az","uk","kk","ky","uz"] as const;
+        if ((!saved || !(allowed as readonly string[]).includes(saved)) && d.lang && (allowed as readonly string[]).includes(d.lang)) {
+          setLang(d.lang as EmpLang);
+        }
+      } catch { /* ignore */ }
       // Offer Face ID registration on mobile if not yet registered
       const ua = navigator.userAgent;
       const isMobile = /iPhone|iPad|Android/i.test(ua);
@@ -463,6 +474,12 @@ function EmployeePage() {
   };
 
   const logout = () => {
+    const tok = token ?? loadStoredToken()?.token ?? null;
+    void fetch(`${API()}/api/employee/logout`, {
+      method: "POST",
+      credentials: "include",
+      headers: tok ? { Authorization: `Bearer ${tok}` } : {},
+    }).catch(() => {});
     clearEmpToken();
     setToken(null);
     setEmpName("");
@@ -1366,16 +1383,19 @@ function EmployeePage() {
   };
 
   const LangPicker = () => {
-    const langs: {code: EmpLang, flag: string}[] = [
-      {code: "en", flag: "🇺🇸"},
-      {code: "ru", flag: "🇷🇺"},
-      {code: "es", flag: "🇪🇸"},
-      {code: "tr", flag: "🇹🇷"},
-      {code: "az", flag: "🇦🇿"},
-      {code: "uk", flag: "🇺🇦"},
+    const langs: {code: EmpLang, label: string}[] = [
+      {code: "en", label: "English"},
+      {code: "ru", label: "Русский"},
+      {code: "es", label: "Español"},
+      {code: "tr", label: "Türkçe"},
+      {code: "az", label: "Azərbaycan"},
+      {code: "uk", label: "Українська"},
+      {code: "kk", label: "Қазақша"},
+      {code: "ky", label: "Кыргызча"},
+      {code: "uz", label: "O‘zbekcha"},
     ];
     return (
-      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", justifyContent: "center", marginBottom: 12 }}>
+      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", justifyContent: "center", marginBottom: 12, maxWidth: "100%" }}>
         {langs.map(l => (
           <button
             key={l.code}
@@ -1390,10 +1410,10 @@ function EmployeePage() {
               display: "flex",
               alignItems: "center",
               gap: 4,
+              maxWidth: "100%",
             }}
           >
-            <span>{l.flag}</span>
-            <span style={{ fontWeight: lang === l.code ? 700 : 400, textTransform: "uppercase" }}>{l.code}</span>
+            <span style={{ fontWeight: lang === l.code ? 700 : 400 }}>{l.label}</span>
           </button>
         ))}
       </div>
@@ -1761,14 +1781,18 @@ function EmployeePage() {
               background: "#fff",
               outline: "none",
               cursor: "pointer",
+              maxWidth: "min(42vw, 160px)",
             }}
           >
-            <option value="en">🇺🇸 EN</option>
-            <option value="ru">🇷🇺 RU</option>
-            <option value="es">🇪🇸 ES</option>
-            <option value="tr">🇹🇷 TR</option>
-            <option value="az">🇦🇿 AZ</option>
-            <option value="uk">🇺🇦 UK</option>
+            <option value="en">English</option>
+            <option value="ru">Русский</option>
+            <option value="es">Español</option>
+            <option value="tr">Türkçe</option>
+            <option value="az">Azərbaycan</option>
+            <option value="uk">Українська</option>
+            <option value="kk">Қазақша</option>
+            <option value="ky">Кыргызча</option>
+            <option value="uz">O‘zbekcha</option>
           </select>
 
           <PageBgPicker value={pageBg} onChange={setPageBg} lang={lang} compact />
@@ -2122,6 +2146,9 @@ function EmployeePage() {
               : lang === "az" ? "az-AZ"
               : lang === "tr" ? "tr-TR"
               : lang === "uk" ? "uk-UA"
+              : lang === "kk" ? "kk-KZ"
+              : lang === "ky" ? "ky-KG"
+              : lang === "uz" ? "uz-UZ"
               : "en-US"
             }
             labels={{
@@ -3352,6 +3379,9 @@ const EMP_EMPLOYEE_LANG_MAP: Record<EmpLang, { label: string; code: string }> = 
   tr: { label: "Turkish", code: "tr" },
   az: { label: "Azerbaijani", code: "az" },
   uk: { label: "Ukrainian", code: "uk" },
+  kk: { label: "Kazakh", code: "kk" },
+  ky: { label: "Kyrgyz", code: "ky" },
+  uz: { label: "Uzbek", code: "uz" },
 };
 
 function ClientMessageBlock({

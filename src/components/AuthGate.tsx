@@ -25,20 +25,34 @@ function getToken(): string | null {
 function saveToken(token: string) {
   sessionStorage.setItem(TOKEN_KEY, token);
   localStorage.setItem(TOKEN_KEY, token);
+  // Never store PIN/password — remove any legacy plaintext leftovers
+  try {
+    sessionStorage.removeItem("adminPin");
+    localStorage.removeItem("adminPin");
+    localStorage.removeItem("admin_pin");
+  } catch { /* ignore */ }
 }
 function clearToken() {
   sessionStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(TOKEN_KEY);
+  try {
+    sessionStorage.removeItem("adminPin");
+    localStorage.removeItem("adminPin");
+    localStorage.removeItem("admin_pin");
+  } catch { /* ignore */ }
 }
 function getLocalCredId(): string | null { return localStorage.getItem(FID_KEY); }
 function saveLocalCredId(id: string)     { localStorage.setItem(FID_KEY, id); }
 
-async function isTokenValid(token: string): Promise<boolean> {
+async function isTokenValid(token: string | null): Promise<boolean> {
   try {
     const controller = new AbortController();
     const timer = window.setTimeout(() => controller.abort(), 8000);
+    const headers: Record<string, string> = {};
+    if (token) headers.Authorization = `Bearer ${token}`;
     const res = await fetch(`${API}/api/auth/webauthn/credentials`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers,
+      credentials: "include",
       signal: controller.signal,
     });
     window.clearTimeout(timer);
@@ -85,7 +99,8 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
   useEffect(() => {
     async function init() {
       const token = getToken();
-      if (token && await isTokenValid(token)) {
+      if (await isTokenValid(token)) {
+        if (token) saveToken(token);
         setScreen("authenticated");
         return;
       }
@@ -111,36 +126,35 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
       const res = await fetch(`${API}/api/auth/verify-pin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ pin: pin.trim() }),
       });
       const ct = res.headers.get("content-type") ?? "";
       if (!ct.includes("application/json")) {
-        setError("Сайт не подключён к API (VITE_API_BASE). Подождите деплой Cloudflare или проверьте Secrets.");
+        setError(ui.apiNotConnected);
         return;
       }
       const data = await res.json().catch(() => ({})) as { error?: string; code?: string; token?: string };
       if (!res.ok) {
         if (data.code === "admin_pin_missing") {
-          setError("На сервере не задан ADMIN_PIN. Replit → Secrets → ADMIN_PIN → Publish.");
+          setError(ui.adminPinMissing);
         } else if (data.code === "session_secret_missing") {
-          setError("На сервере не задан SESSION_SECRET. Replit → Secrets → Publish.");
+          setError(ui.sessionSecretMissing);
         } else if (data.code === "pin_invalid" || res.status === 401) {
           setError(ui.pinWrong);
         } else if (res.status >= 500) {
-          setError(data.error ?? "Ошибка сервера. Проверьте Replit Secrets.");
+          setError(data.error ?? ui.serverError);
         } else {
-          setError(data.error ?? "Ошибка входа. Проверьте подключение к API.");
+          setError(data.error ?? ui.loginError);
         }
         return;
       }
       if (!data.token) {
-        setError("Ошибка сервера: нет токена");
+        setError(ui.noToken);
         return;
       }
       saveToken(data.token);
-      const trimmed = pin.trim();
-      sessionStorage.setItem("adminPin", trimmed);
-      localStorage.setItem("adminPin", trimmed);
+      setPin(""); // clear PIN from React state immediately
 
       // Offer Face ID registration only if device supports biometrics
       // and doesn't already have a registered credential on this device
@@ -150,11 +164,11 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
         setScreen("authenticated");
       }
     } catch {
-      setError("Ошибка соединения");
+      setError(ui.connError);
     } finally {
       setLoading(false);
     }
-  }, [pin, hasBiometrics, ui.pinWrong]);
+  }, [pin, hasBiometrics, ui]);
 
   const handleFaceID = useCallback(async () => {
     setLoading(true);
@@ -164,6 +178,7 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
       const optRes = await fetch(`${API}/api/auth/webauthn/login-options`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(localCredId ? { credentialId: localCredId } : {}),
       });
       if (!optRes.ok) throw new Error("Failed to get options");
@@ -174,6 +189,7 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
       const verRes = await fetch(`${API}/api/auth/webauthn/login-verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ response: credential, challengeId }),
       });
       if (!verRes.ok) throw new Error("Verification failed");
@@ -181,11 +197,11 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
       saveToken(data.token);
       setScreen("authenticated");
     } catch {
-      setError("Face ID не прошёл. Попробуйте пароль.");
+      setError(ui.fidFailed);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [ui.fidFailed]);
 
   const handleRegisterFaceID = useCallback(async () => {
     setLoading(true);
@@ -195,6 +211,7 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
     try {
       const optRes = await fetch(`${API}/api/auth/webauthn/register-options`, {
         headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       if (!optRes.ok) throw new Error("Failed to get options");
       const { challengeId, ...optionsJSON } = await optRes.json() as RegisterOptionsResponse;
@@ -210,6 +227,7 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
       const verRes = await fetch(`${API}/api/auth/webauthn/register-verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        credentials: "include",
         body: JSON.stringify({ response: credential, label: deviceLabel, challengeId }),
       });
       if (!verRes.ok) throw new Error("Registration failed");
@@ -223,13 +241,13 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
       if (msg.includes("cancel") || msg.includes("abort") || msg.includes("NotAllowed")) {
         // User cancelled — just proceed to authenticated
       } else {
-        setError("Не удалось зарегистрировать Face ID");
+        setError(ui.fidEnableTitle);
       }
       setScreen("authenticated");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [ui.fidEnableTitle]);
 
   if (screen === "checking") {
     return (
@@ -269,11 +287,10 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
         }}>
           <div style={{ fontSize: 52, marginBottom: 12 }}>🔒</div>
           <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: "#1F2937" }}>
-            Включить Face ID?
+            {ui.fidEnableTitle}
           </h2>
-          <p style={{ margin: "0 0 28px", fontSize: 14, color: "#64748b", lineHeight: 1.5 }}>
-            Вход одним касанием без пароля.<br />
-            Ваше лицо / отпечаток не покидает устройство.
+          <p style={{ margin: "0 0 28px", fontSize: 14, color: "#64748b", lineHeight: 1.5, whiteSpace: "pre-line" }}>
+            {ui.fidEnableDesc}
           </p>
           <button
             onClick={() => void handleRegisterFaceID()}
@@ -287,7 +304,7 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
             }}
           >
             <span style={{ fontSize: 20 }}>👤</span>
-            {loading ? "Регистрация..." : "Включить Face ID / Fingerprint"}
+            {loading ? ui.fidRegistering : ui.fidEnable}
           </button>
           <button
             onClick={() => setScreen("authenticated")}
@@ -299,7 +316,7 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
               fontSize: 14, cursor: loading ? "not-allowed" : "pointer",
             }}
           >
-            Пропустить
+            {ui.fidSkip}
           </button>
           {error && <p style={{ marginTop: 10, color: "#ef4444", fontSize: 13 }}>{error}</p>}
         </div>
@@ -348,7 +365,7 @@ export default function AuthGate({ children, title = "HTRGroup Admin" }: AuthGat
             }}
           >
             <span style={{ fontSize: 20 }}>👤</span>
-            {loading ? "Проверка..." : "Войти через Face ID"}
+            {loading ? ui.fidRegistering : ui.fidSignIn}
           </button>
         )}
 

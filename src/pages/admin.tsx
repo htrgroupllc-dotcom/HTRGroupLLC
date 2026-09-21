@@ -39,12 +39,13 @@ function readStoredAdminSession(): {
   fidLabel: string | null;
 } {
   try {
+    // Clean legacy plaintext PIN if present
+    sessionStorage.removeItem("adminPin");
+    localStorage.removeItem("adminPin");
+    localStorage.removeItem("admin_pin");
+
     const authToken =
       sessionStorage.getItem("adminAuthToken") ?? localStorage.getItem("adminAuthToken");
-    const authPin = sessionStorage.getItem("adminPin") ?? localStorage.getItem("adminPin");
-    if (authToken && authPin) {
-      return { authed: true, pin: authPin, bearer: null, fidLabel: null };
-    }
     if (authToken) {
       const sessionLabel = sessionStorage.getItem("adminFidLabel");
       const credId = localStorage.getItem("htr_fid_cred_id");
@@ -383,22 +384,16 @@ function AdminDashboard() {
   const [adminEstimateHistory, setAdminEstimateHistory] = useState<Record<string, AdminEstimateRecord | null>>({});
   const [adminEstimateIsEdit, setAdminEstimateIsEdit] = useState(false);
 
-  // Returns admin auth headers: Bearer token if biometric auth, PIN otherwise
+  // Returns admin auth headers: Bearer JWT only (never plaintext PIN)
   const adminAuthH = useCallback((extra?: Record<string, string>): Record<string, string> => {
     const base = extra ?? {};
-    const pinValue =
-      pin ||
-      sessionStorage.getItem("adminPin") ||
-      localStorage.getItem("adminPin") ||
-      "";
-    if (pinValue) return { ...base, "x-admin-pin": encodeURIComponent(pinValue) };
     const bearer =
       adminBearer ??
       sessionStorage.getItem("adminAuthToken") ??
       localStorage.getItem("adminAuthToken");
     if (bearer) return { ...base, Authorization: `Bearer ${bearer}` };
     return base;
-  }, [pin, adminBearer]);
+  }, [adminBearer]);
 
   const handleSendReview = useCallback(async (bookingId: string, channel: ReviewChannel) => {
     const key = reviewLoadingKey(bookingId, channel);
@@ -533,21 +528,16 @@ function AdminDashboard() {
     }
   }, [toast]);
 
-  // Auto-login: AuthGate session token (PIN or biometric)
-  // AuthGate saves to localStorage; also check sessionStorage for legacy compat
+  // Auto-login: AuthGate session JWT (never plaintext PIN)
   useEffect(() => {
     try {
+      sessionStorage.removeItem("adminPin");
+      localStorage.removeItem("adminPin");
+      localStorage.removeItem("admin_pin");
       const authToken = sessionStorage.getItem("adminAuthToken") ?? localStorage.getItem("adminAuthToken");
-      const authPin   = sessionStorage.getItem("adminPin")       ?? localStorage.getItem("adminPin");
-      if (authToken && authPin) {
-        setPin(authPin);
-        setAuthed(true);
-        return;
-      }
-      // Biometric auth: valid token exists but no PIN — use Bearer token for API calls
       if (authToken) {
         setBearer(authToken);
-        // Prefer sessionStorage label (set on this login), fall back to localStorage (persisted across refreshes)
+        setPin("");
         const sessionLabel = sessionStorage.getItem("adminFidLabel");
         if (sessionLabel) {
           setFidLabel(sessionLabel);
@@ -1746,6 +1736,13 @@ function AdminDashboard() {
   };
 
   const logout = () => {
+    const token =
+      sessionStorage.getItem("adminAuthToken") ?? localStorage.getItem("adminAuthToken");
+    void fetch(`${API()}/api/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    }).catch(() => {});
     localStorage.removeItem("adminAuthToken");
     localStorage.removeItem("adminAuthTokenExp");
     localStorage.removeItem("adminPin");
@@ -2294,23 +2291,32 @@ function AdminDashboard() {
               target="_blank"
               rel="noreferrer"
               className="md:hidden flex-none flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-[10px] font-bold leading-tight"
-              title={lang === "ru" ? "Портал сотрудника" : "Employee Portal"}
+              title={lang === "ru" ? "Портал сотрудника" : lang === "az" ? "Əməkdaş portalı" : "Employee Portal"}
             >
               <Wrench className="w-4 h-4" />
-              <span>{lang === "ru" ? "Портал" : "Portal"}</span>
+              <span>{lang === "ru" ? "Портал" : lang === "az" ? "Portal" : "Portal"}</span>
             </a>
             <a href="/pay" target="_blank" rel="noreferrer" className="md:hidden flex-none flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-[10px] font-bold leading-tight" title={t.pay ?? "Pay"}>
               <ShieldCheck className="w-4 h-4" />
               <span>{t.pay ?? "Pay"}</span>
             </a>
             <PageBgPicker value={pageBg} onChange={setPageBg} lang={lang} compact />
-            <button
-              onClick={() => setLang(lang === "ru" ? "en" : "ru")}
-              className="px-2 py-1 rounded-md text-xs font-bold border border-stone-200 hover:bg-stone-50 transition flex items-center gap-0.5">
-              <span style={{ color: lang === "ru" ? ACCENT : "#a8a29e" }}>RU</span>
-              <span className="text-stone-300 font-normal">|</span>
-              <span style={{ color: lang === "en" ? ACCENT : "#a8a29e" }}>EN</span>
-            </button>
+            <div className="inline-flex items-center gap-0.5 rounded-md border border-stone-200 bg-white p-0.5">
+              {(["ru", "en", "az"] as const).map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => setLang(code)}
+                  className="px-2 py-1 rounded text-xs font-bold transition"
+                  style={{
+                    color: lang === code ? "#fff" : "#a8a29e",
+                    backgroundColor: lang === code ? ACCENT : "transparent",
+                  }}
+                >
+                  {code.toUpperCase()}
+                </button>
+              ))}
+            </div>
             <button onClick={logout} className="flex items-center gap-1 text-xs text-stone-500 hover:text-red-500 transition px-2 py-1.5 rounded-lg hover:bg-red-50">
               <LogOut className="w-3.5 h-3.5" />
             </button>
@@ -2351,20 +2357,29 @@ function AdminDashboard() {
               title="Открыть портал сотрудника"
             >
               <Wrench className="w-3.5 h-3.5" />
-              {lang === "ru" ? "Портал сотрудника" : "Employee Portal"}
+              {lang === "ru" ? "Портал сотрудника" : lang === "az" ? "Əməkdaş portalı" : "Employee Portal"}
             </a>
             <a href="/pay" target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition" title={t.pay ?? "Pay"}>
               <ShieldCheck className="w-3.5 h-3.5" />
               {t.pay ?? "Pay"}
             </a>
             <PageBgPicker value={pageBg} onChange={setPageBg} lang={lang} />
-            <button
-              onClick={() => setLang(lang === "ru" ? "en" : "ru")}
-              className="px-3 py-1.5 rounded-lg border border-stone-200 text-xs font-bold hover:bg-stone-50 transition flex items-center gap-0.5">
-              <span style={{ color: lang === "ru" ? ACCENT : "#a8a29e" }}>RU</span>
-              <span className="text-stone-300 font-normal mx-0.5">|</span>
-              <span style={{ color: lang === "en" ? ACCENT : "#a8a29e" }}>EN</span>
-            </button>
+            <div className="inline-flex items-center gap-0.5 rounded-lg border border-stone-200 bg-white p-0.5">
+              {(["ru", "en", "az"] as const).map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => setLang(code)}
+                  className="px-2.5 py-1 rounded-md text-xs font-bold transition"
+                  style={{
+                    color: lang === code ? "#fff" : "#a8a29e",
+                    backgroundColor: lang === code ? ACCENT : "transparent",
+                  }}
+                >
+                  {code.toUpperCase()}
+                </button>
+              ))}
+            </div>
             <button onClick={logout} className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-red-500 transition">
               <LogOut className="w-4 h-4" />{t.logout}
             </button>
@@ -2429,7 +2444,7 @@ function AdminDashboard() {
           apiBase={API()}
           authHeaders={adminAuthH}
           mode="admin"
-          locale={lang === "ru" ? "ru-RU" : "en-US"}
+          locale={lang === "ru" ? "ru-RU" : lang === "az" ? "az-AZ" : "en-US"}
           labels={{
             title: t.calTitle,
             week: t.calWeek,
