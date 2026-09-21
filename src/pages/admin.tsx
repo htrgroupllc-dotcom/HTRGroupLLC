@@ -261,6 +261,8 @@ interface BookingRow {
   created_at?: string;
   // CRM fields
   assigned_employee_id?: string | null;
+  created_by_employee_id?: string | null;
+  created_by_employee_name?: string | null;
   payment_method?: string | null;
   payment_amount?: number | null;
   payment_status?: string | null;
@@ -2519,6 +2521,7 @@ function AdminDashboard() {
             setEmpFilter("");
             setMobileTab("bookings");
           }}
+          onBookingMutated={() => { void loadSchedule(); }}
         />
       )}
       {adminTab === "archive"   && <ArchiveTab   apiBase={API()} adminAuthH={adminAuthH} />}
@@ -3165,10 +3168,21 @@ function AdminDashboard() {
                               )}
                             </div>
                           )}
-                          {/* CRM: who was assigned */}
-                          {b.assigned_employee_id && (
-                            <div className="text-[10px] text-stone-400">
-                              👤 {employees.find(e => e.id === b.assigned_employee_id)?.name ?? b.assigned_employee_id.slice(0, 8)}
+                          {/* CRM: who was assigned / who created */}
+                          {(b.assigned_employee_id || b.created_by_employee_id) && (
+                            <div className="text-[10px] text-stone-400 space-y-0.5">
+                              {b.assigned_employee_id && (
+                                <div>
+                                  👤 {employees.find(e => e.id === b.assigned_employee_id)?.name ?? b.assigned_employee_id.slice(0, 8)}
+                                </div>
+                              )}
+                              {b.created_by_employee_id && (
+                                <div>
+                                  Created by: {b.created_by_employee_name
+                                    ?? employees.find(e => e.id === b.created_by_employee_id)?.name
+                                    ?? b.created_by_employee_id.slice(0, 8)}
+                                </div>
+                              )}
                             </div>
                           )}
                           {/* Recall button — only for completed bookings with assigned employee */}
@@ -3461,6 +3475,13 @@ function AdminDashboard() {
                                 ) : b.assigned_employee_id ? (
                                   <span className="text-[11px] text-stone-500">👤 {employees.find(e => e.id === b.assigned_employee_id)?.name ?? "—"}</span>
                                 ) : null}
+                                {b.created_by_employee_id && (
+                                  <div className="text-[10px] text-stone-400 mt-0.5">
+                                    Created by: {b.created_by_employee_name
+                                      ?? employees.find(e => e.id === b.created_by_employee_id)?.name
+                                      ?? b.created_by_employee_id.slice(0, 8)}
+                                  </div>
+                                )}
                               </div>
                           </td>
 

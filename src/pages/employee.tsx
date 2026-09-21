@@ -2189,7 +2189,12 @@ function EmployeePage() {
                 timeReq: t("calBookingTimeReq"),
                 nameReq: t("calBookingNameReq"),
                 phoneReq: t("calBookingPhoneReq"),
+                email: t("calBookingEmail"),
+                city: t("calBookingCity"),
+                zip: t("calBookingZip"),
                 address: t("calBookingAddress"),
+                assignTechnician: t("calBookingAssignTech"),
+                unassigned: t("calBookingUnassigned"),
                 equipmentAppliance: t("calBookingEquipAppliance"),
                 equipmentDental: t("calBookingEquipDental"),
                 problemAppliance: t("calBookingProblemAppliance"),
@@ -2202,12 +2207,14 @@ function EmployeePage() {
                 saveBtn: t("calBookingSaveBtn"),
                 saving: t("calBookingSaving"),
                 errNamePhone: t("calBookingErrNamePhone"),
+                errEmail: t("calBookingErrEmail"),
                 errSlotTaken: t("calBookingErrSlotTaken"),
                 errServer: t("calBookingErrServer"),
                 savedOk: t("calBookingSavedOk"),
                 next: t("calBookingNext"),
               },
             }}
+            onBookingMutated={() => { void loadBookings(); }}
             onOpenBooking={(id) => {
               const b = bookings.find(x => x.id === id);
               if (b) {

@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 const nm = path.resolve(
   rootDir,
-  "../htrgr/REPLIT-LATEST/HTRGroupLLC1/artifacts/appliance-repair/node_modules",
+  "../HTRGroupLLC1/artifacts/appliance-repair/node_modules",
 );
 
 export default defineConfig({

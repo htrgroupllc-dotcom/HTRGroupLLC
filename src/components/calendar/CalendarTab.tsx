@@ -120,6 +120,8 @@ interface Props {
   labels: Labels;
   locale?: string;
   onOpenBooking?: (id: string) => void;
+  /** Called after create/edit booking succeeds (parent can refresh jobs list). */
+  onBookingMutated?: () => void;
 }
 
 const TIME_SLOTS: string[] = [];
@@ -168,7 +170,7 @@ function eventDay(ev: CalendarEvent): Date {
 }
 
 export default function CalendarTab({
-  apiBase, authHeaders, mode, labels, locale = "en-US", onOpenBooking,
+  apiBase, authHeaders, mode, labels, locale = "en-US", onOpenBooking, onBookingMutated,
 }: Props) {
   const [view, setView] = useState<CalendarView>("month");
   const [anchor, setAnchor] = useState(() => houstonNow());
@@ -1244,6 +1246,7 @@ export default function CalendarTab({
         onSaved={() => {
           showToast(labels.bookingForm.savedOk);
           void loadEvents();
+          onBookingMutated?.();
         }}
       />
 
