@@ -19,20 +19,22 @@ function logoUrl(path: string): string {
 function fixEmailAssetUrls(html: string): string {
   const inv = logoUrl(LOGO_INVOICE);
   const est = logoUrl(LOGO_ESTIMATE);
+  const zelle = logoUrl("/zelle-payment-qr.jpg");
   return html
     .replace(/cid:htr-invoice-logo@htr/gi, inv)
-    .replace(/cid:htr-estimate-logo@htr/gi, est);
+    .replace(/cid:htr-estimate-logo@htr/gi, est)
+    .replace(/cid:htr-zelle-qr@htr/gi, zelle);
 }
 
 function ensurePreviewBase(html: string): string {
   const origin = previewOrigin();
-  const logoCss = `<style>img[src*="htr-logo"],img[alt*="HTR Group"]{height:auto!important;max-height:72px!important;width:auto!important;max-width:150px!important;object-fit:contain!important;}</style>`;
+  const logoCss = `<style id="htr-doc-logo-css">img[src*="htr-logo"],img[alt*="HTR Group"]{height:auto!important;max-height:72px!important;width:auto!important;max-width:150px!important;object-fit:contain!important;}img[src*="zelle-payment-qr"]{width:200px!important;max-width:70vw!important;height:auto!important;max-height:none!important;aspect-ratio:1/1!important;object-fit:contain!important;}</style>`;
   let out = html;
   if (origin && !/<base\s/i.test(out)) {
     out = out.replace(/<head([^>]*)>/i, `<head$1><base href="${origin}/">`);
   }
   if (!out.includes("htr-doc-logo-css")) {
-    out = out.replace(/<head([^>]*)>/i, `<head$1>${logoCss.replace("<style>", '<style id="htr-doc-logo-css">')}`);
+    out = out.replace(/<head([^>]*)>/i, `<head$1>${logoCss}`);
   }
   return out;
 }
@@ -198,6 +200,7 @@ export async function downloadReceiptPdf(opts: {
           html2canvas: { scale: 2, useCORS: true, backgroundColor: "#f4f6f9", scrollY: 0 },
           jsPDF: { unit: "pt", format: "letter", orientation: "portrait" },
           pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+          enableLinks: true,
         })
         .from(content)
         .save(),
