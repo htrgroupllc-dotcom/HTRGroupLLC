@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v6";
+const CACHE = "htr-pwa-v7";
 
 self.addEventListener("install", e => {
   e.waitUntil(self.skipWaiting());
