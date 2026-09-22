@@ -1,0 +1,38 @@
+---
+description: Permanent Cloudflare frontend deploy via HTRGroupLLC-DEPLOY (never dirty HTRGroupLLC clone)
+alwaysApply: true
+---
+
+# Cloudflare frontend deploy (this repo = production static)
+
+This clone (`C:\Projects\HTRGroupLLC-DEPLOY`) is the **clean** production frontend repo for Cloudflare Pages → **https://appliance-fixpro.com**.
+
+## Do not use
+
+`C:\Projects\HTRGroupLLC` — dirty (~55 local changes), behind origin. Never reset/stash/delete/sync from there.
+
+## Source of truth
+
+Frontend + API source: `C:\Projects\HTRGroupLLC1`
+
+## Deploy command (run from SOURCE)
+
+```bash
+node scripts/cf-frontend-deploy.mjs --push --verify
+```
+
+Agent may commit + push **this** repo's `main` when the scripted allowlist diff is clean and verify passes.
+
+## Verification
+
+`git push` ≠ production live. Always HTTP-check:
+
+- https://appliance-fixpro.com/
+- https://appliance-fixpro.com/admin/
+- https://appliance-fixpro.com/employee
+
+Use: `node scripts/cf-frontend-verify-live.mjs` from HTRGroupLLC1.
+
+## Replit
+
+Never auto-Publish. If API changed: `REPLIT PUBLISH REQUIRED: YES`.

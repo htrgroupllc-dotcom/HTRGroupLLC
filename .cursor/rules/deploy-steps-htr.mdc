@@ -5,28 +5,27 @@ alwaysApply: true
 
 # Деплой HTR — минимум для пользователя
 
-## Агент (Cursor)
+## Агент (Cursor) — frontend
 
-1. Правки в правильной папке
-2. **Commit + push** сам (не просить пользователя коммитить, если не попросил иное)
-3. В конце — **только** что нажать пользователю (без Shell)
+1. Правки в `C:\Projects\HTRGroupLLC1`
+2. `node scripts/cf-frontend-deploy.mjs --push --verify`
+3. HTTP-проверка **https://appliance-fixpro.com** (не считать push = deployed)
+4. Не использовать dirty `C:\Projects\HTRGroupLLC`
 
 ## Пользователь
 
-### API и голос (Replit)
+### API (Replit) — только если менялся backend
 
-1. replit.com → проект appliance repair
+1. replit.com → appliance repair
 2. **Publishing → Publish**
-3. Ctrl+F5: `https://htr-group-llc-appliance-repair.replit.app/api/voice/status`
 
 ### Сайт (Cloudflare)
 
-Если агент запушил в **HTRGroupLLC** → **main**: подождать 2–5 мин → Ctrl+F5 `https://htrgrouptx.com`  
-Иначе: GitHub Desktop → **Push origin** (ветка **main**)
+Агент уже push в `HTRGroupLLC` `main` через `HTRGroupLLC-DEPLOY`. Пользователь ничего не жмёт — только при необходимости Ctrl+F5 на https://appliance-fixpro.com
 
 ## Не путать
 
 | URL | Где деплой |
 |-----|------------|
-| htrgrouptx.com | Cloudflare, HTRGroupLLC |
-| htr-group-llc-appliance-repair.replit.app | Replit, HTRGroupLLC1 |
+| appliance-fixpro.com | Cloudflare Pages ← GitHub `HTRGroupLLC` |
+| Replit API | HTRGroupLLC1 → Replit Publish |
