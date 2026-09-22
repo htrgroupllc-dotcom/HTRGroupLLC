@@ -421,10 +421,12 @@ footer {
   padding-bottom: calc(0.25rem + 2.5mm) !important;
 }
 
-/* Home hero: keep blue banner from overlapping services grid */
+/* Home hero: prevent banner stacking over #services (z-index only).
+   Do NOT set overflow:auto / max-height on .htr-hero-banner — that caused the
+   ~340px panel horizontal scrollbar and clipped CTAs (regressed in b7d1d63).
+   Last known good: banner is absolute overlay; content may extend past maxWidth
+   without an inner scrollbar (pre-b7d1d63 / 56e39ca). */
 .htr-home-hero-desktop {
-  overflow-x: hidden;
-  overflow-y: visible;
   isolation: isolate;
 }
 .htr-home-hero-mobile {
@@ -436,8 +438,8 @@ footer {
   z-index: 6;
 }
 .htr-home-hero-desktop .htr-hero-banner {
-  max-height: 100%;
-  overflow: auto;
+  max-height: none;
+  overflow: visible;
 }
 .htr-promo-bar {
   position: relative;
