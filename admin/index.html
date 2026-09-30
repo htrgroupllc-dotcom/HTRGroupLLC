@@ -1,6 +1,48 @@
 <!DOCTYPE html>
 <html lang="en-US">
   <head>
+    <script data-htr-google-ads-inline="1">
+(() => {
+  try {
+    var p = (location.pathname || "/").split("?")[0];
+    if (p === "/admin" || p.indexOf("/admin/") === 0 || p === "/employee" || p.indexOf("/employee/") === 0) {
+      window.__HTR_GADS_STATUS__ = { ok:false, path:p, skippedCrm:true, stubOk:false, scriptOk:false, reason:"crm_excluded", blockedWrite:false };
+      return;
+    }
+    var stubOk = true, blocked = false;
+    try { window.dataLayer = window.dataLayer || []; } catch (e) { stubOk = false; blocked = true; }
+    try {
+      if (typeof window.gtag !== "function") {
+        window.gtag = function(){ try { window.dataLayer.push(arguments); } catch (e2) {} };
+      }
+    } catch (e) { stubOk = false; blocked = true; }
+    if (typeof window.gtag !== "function" || !Array.isArray(window.dataLayer)) stubOk = false;
+    try { if (typeof window.gtag === "function") { window.gtag("js", new Date()); window.gtag("config", "AW-18058400756"); } } catch (e3) {}
+    var scriptOk = false;
+    try {
+      if (!document.querySelector('script[data-htr-google-ads]') && !document.querySelector('script[src*="AW-18058400756"]')) {
+        var s = document.createElement("script");
+        s.async = true;
+        s.src = "https://www.googletagmanager.com/gtag/js?id=AW-18058400756";
+        s.setAttribute("data-htr-google-ads", "AW-18058400756");
+        (document.head || document.documentElement).appendChild(s);
+      }
+      scriptOk = !!(document.querySelector('script[data-htr-google-ads]') || document.querySelector('script[src*="AW-18058400756"]'));
+    } catch (e4) { scriptOk = false; }
+    window.__HTR_GADS_STATUS__ = {
+      ok: stubOk && scriptOk,
+      path: p,
+      skippedCrm: false,
+      stubOk: stubOk,
+      scriptOk: scriptOk,
+      reason: blocked ? "stub_write_blocked" : (stubOk && scriptOk ? "installed_inline" : "partial"),
+      blockedWrite: blocked
+    };
+  } catch (e5) {
+    try { window.__HTR_GADS_STATUS__ = { ok:false, path:location.pathname||"/", skippedCrm:false, stubOk:false, scriptOk:false, reason:"exception", blockedWrite:false }; } catch (e6) {}
+  }
+})();
+</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <title>HTR Admin</title>
@@ -18,8 +60,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="/assets/admin-index-utf8-v4.js?v=184"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-_bdQPowM.css?v=184">
+    <script type="module" crossorigin src="/assets/admin-index-utf8-v4.js?v=185"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-_bdQPowM.css?v=185">
   </head>
   <body>
     <div id="root"></div>
