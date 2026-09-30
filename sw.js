@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v8";
+const CACHE = "htr-pwa-v9";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
@@ -128,41 +128,53 @@ self.addEventListener("push", (event) => {
   const tag = String(data.tag || (data.bookingId ? `htr-booking-${data.bookingId}` : "htr-booking"));
   const url = String(data.url || "https://appliance-fixpro.com/admin");
   const vibrate = data.vibrate === false ? undefined : [200, 100, 200, 100, 400];
-
-  const options = {
-    body,
-    tag, // OS replaces same-tag notifications → duplicate protection
-    renotify: true,
-    data: {
-      url,
-      bookingId: data.bookingId || null,
-      sound: data.sound || "htr1",
-      test: Boolean(data.test),
-    },
-    icon: "/htr-admin-icon.png",
-    badge: "/admin-icon-192.png",
-    // Background sound is OS-controlled; do not claim custom system ringtones.
-    silent: data.sound === "silent",
-  };
-  if (vibrate) options.vibrate = vibrate;
+  const soundPref = String(data.sound || "htr1");
 
   event.waitUntil(
     (async () => {
-      await self.registration.showNotification(title, options);
-      // Notify open Admin clients for foreground custom sound (once per tag)
       const clientsList = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      const hasFocusedClient = clientsList.some((c) => {
+        try { return typeof c.focused === "boolean" ? c.focused : true; } catch { return true; }
+      });
+
+      // Background/locked: OS notification sound (Web Push cannot set custom Alert 1/2 WAV).
+      // Foreground (focused Admin): suppress OS ding — page plays unlocked custom Audio instead.
+      // silent preference: never play OS sound.
+      const silent =
+        soundPref === "silent" ||
+        (hasFocusedClient && (soundPref === "htr1" || soundPref === "htr2"));
+
+      const options = {
+        body,
+        tag, // OS replaces same-tag notifications → duplicate protection
+        renotify: true,
+        silent,
+        data: {
+          url,
+          bookingId: data.bookingId || null,
+          sound: soundPref,
+          test: Boolean(data.test),
+        },
+        icon: "/htr-admin-icon.png",
+        badge: "/admin-icon-192.png",
+      };
+      if (vibrate) options.vibrate = vibrate;
+
+      await self.registration.showNotification(title, options);
+
       for (const client of clientsList) {
         try {
           client.postMessage({
             type: "HTR_BOOKING_PUSH",
             bookingId: data.bookingId || null,
             tag,
-            sound: data.sound || "htr1",
+            sound: soundPref,
             vibrate: data.vibrate !== false,
             title,
             body,
             url,
             test: Boolean(data.test),
+            focusedHint: hasFocusedClient,
           });
         } catch { /* ignore */ }
       }
