@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v10";
+const CACHE = "htr-pwa-v11";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
@@ -16,10 +16,8 @@ self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
 
-  // API — do not intercept
   if (url.pathname.startsWith("/api/")) return;
 
-  // HTML navigation — network first
   if (e.request.mode === "navigate") {
     e.respondWith(
       fetch(e.request).catch(() => caches.match("/index.html")),
@@ -27,7 +25,6 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // Static assets — network + cache
   e.respondWith(
     fetch(e.request)
       .then((res) => {
@@ -41,7 +38,6 @@ self.addEventListener("fetch", (e) => {
   );
 });
 
-// ── Badge state persistence via IndexedDB ─────────────────────────────────────
 function openBadgeDb() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open("htr-badge-db", 1);
@@ -89,7 +85,6 @@ async function checkAndSetBadge() {
   } catch { /* network error */ }
 }
 
-// ── Message handler (from main page) ─────────────────────────────────────────
 self.addEventListener("message", async (event) => {
   const msg = event.data || {};
   if (msg.type === "BADGE_INIT") {
@@ -107,14 +102,19 @@ self.addEventListener("message", async (event) => {
   }
 });
 
-// ── Periodic Background Sync (Chrome Android) ─────────────────────────────────
 self.addEventListener("periodicsync", (event) => {
   if (event.tag === "emp-badge-check") {
     event.waitUntil(checkAndSetBadge());
   }
 });
 
-// ── Web Push: Admin new-booking alerts ───────────────────────────────────────
+const CUSTOM_TONES = new Set([
+  "htr1", "htr2",
+  "ru_female_professional", "ru_female_warm", "ru_female_attention",
+  "en_female_professional", "en_female_warm", "en_female_attention",
+]);
+
+// ── Web Push: Admin NEW_BOOKING + Employee BOOKING_ASSIGNED ──────────────────
 self.addEventListener("push", (event) => {
   let data = {};
   try {
@@ -123,30 +123,52 @@ self.addEventListener("push", (event) => {
     try { data = { body: event.data?.text?.() || "New booking received" }; } catch { data = {}; }
   }
 
-  const title = String(data.title || "New Appliance Booking");
-  const body = String(data.body || "New booking received — tap to review.");
-  const tag = String(data.tag || (data.bookingId ? `htr-booking-${data.bookingId}` : "htr-booking"));
-  const url = String(data.url || "https://appliance-fixpro.com/admin");
+  const eventType = String(data.eventType || (data.test ? "TEST" : "NEW_BOOKING"));
+  const role = String(data.role || "admin");
+  const title = String(
+    data.title ||
+      (eventType === "BOOKING_ASSIGNED" ? "New Job Assigned" : "New Appliance Booking"),
+  );
+  const body = String(
+    data.body ||
+      (eventType === "BOOKING_ASSIGNED"
+        ? "You have a new service job."
+        : "New booking received — tap to review."),
+  );
+  const tag = String(
+    data.tag ||
+      (data.bookingId
+        ? eventType === "BOOKING_ASSIGNED"
+          ? `htr-assigned-${data.bookingId}`
+          : `htr-booking-${data.bookingId}`
+        : "htr-booking"),
+  );
+  const url = String(
+    data.url ||
+      (role === "employee"
+        ? "https://appliance-fixpro.com/employee"
+        : "https://appliance-fixpro.com/admin"),
+  );
   const vibrate = data.vibrate === false ? undefined : [200, 100, 200, 100, 400];
   const soundPref = String(data.sound || "htr1");
 
   event.waitUntil(
     (async () => {
       const clientsList = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      // Only treat as focused when Client.focused === true (not undefined → true)
       const hasFocusedClient = clientsList.some((c) => {
-        try { return typeof c.focused === "boolean" ? c.focused : true; } catch { return true; }
+        try { return c.focused === true; } catch { return false; }
       });
 
-      // Background/locked: OS notification sound (Web Push cannot set custom Alert 1/2 WAV).
-      // Foreground (focused Admin): suppress OS ding — page plays unlocked custom Audio instead.
-      // silent preference: never play OS sound.
+      // Background: OS notification sound.
+      // Focused CRM: silence OS ding when a custom tone will play in-page.
       const silent =
         soundPref === "silent" ||
-        (hasFocusedClient && (soundPref === "htr1" || soundPref === "htr2"));
+        (hasFocusedClient && CUSTOM_TONES.has(soundPref));
 
       const options = {
         body,
-        tag, // OS replaces same-tag notifications → duplicate protection
+        tag,
         renotify: true,
         silent,
         data: {
@@ -154,9 +176,11 @@ self.addEventListener("push", (event) => {
           bookingId: data.bookingId || null,
           sound: soundPref,
           test: Boolean(data.test),
+          eventType,
+          role,
         },
-        icon: "/htr-admin-icon.png",
-        badge: "/admin-icon-192.png",
+        icon: role === "employee" ? "/manifest-icon-192.png" : "/htr-admin-icon.png",
+        badge: role === "employee" ? "/manifest-icon-192.png" : "/admin-icon-192.png",
       };
       if (vibrate) options.vibrate = vibrate;
 
@@ -174,6 +198,8 @@ self.addEventListener("push", (event) => {
             body,
             url,
             test: Boolean(data.test),
+            eventType,
+            role,
             focusedHint: hasFocusedClient,
           });
         } catch { /* ignore */ }
@@ -185,7 +211,14 @@ self.addEventListener("push", (event) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const data = event.notification.data || {};
-  const targetUrl = String(data.url || "https://appliance-fixpro.com/admin");
+  const role = String(data.role || "admin");
+  const targetUrl = String(
+    data.url ||
+      (role === "employee"
+        ? "https://appliance-fixpro.com/employee"
+        : "https://appliance-fixpro.com/admin"),
+  );
+  const pathHint = role === "employee" ? "/employee" : "/admin";
 
   event.waitUntil(
     (async () => {
@@ -193,12 +226,14 @@ self.addEventListener("notificationclick", (event) => {
       for (const client of all) {
         try {
           const href = client.url || "";
-          if (href.includes("/admin") && "focus" in client) {
+          if (href.includes(pathHint) && "focus" in client) {
             await client.focus();
             client.postMessage({
               type: "HTR_OPEN_BOOKING",
               bookingId: data.bookingId || null,
               url: targetUrl,
+              role,
+              eventType: data.eventType || "NEW_BOOKING",
             });
             return;
           }
