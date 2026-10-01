@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v12";
+const CACHE = "htr-pwa-v13";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
@@ -85,8 +85,22 @@ async function checkAndSetBadge() {
   } catch { /* network error */ }
 }
 
+/** True after page reports a successful unmuted unlock of the selected Audio element. */
+let pageAudioUnlocked = false;
+
 self.addEventListener("message", async (event) => {
   const msg = event.data || {};
+  if (msg.type === "HTR_AUDIO_SESSION") {
+    // Page reports whether selected Audio was successfully unlocked for unmuted playback.
+    pageAudioUnlocked = Boolean(msg.ready);
+    try {
+      console.info("[HTR BOOKING ALERT]", {
+        stage: "sw-audio-session",
+        ready: pageAudioUnlocked,
+      });
+    } catch { /* ignore */ }
+    return;
+  }
   if (msg.type === "BADGE_INIT") {
     let db;
     try { db = await openBadgeDb(); } catch { return; }
@@ -161,10 +175,25 @@ self.addEventListener("push", (event) => {
       });
 
       // Background: OS notification sound.
-      // Focused CRM: silence OS ding when a custom tone will play in-page.
+      // Focused + custom: silence OS ONLY when page has proven unmuted Audio unlock.
+      // Otherwise keep OS audible — muted-unlock lies caused production total silence.
       const silent =
         soundPref === "silent" ||
-        (hasFocusedClient && CUSTOM_TONES.has(soundPref));
+        (hasFocusedClient && CUSTOM_TONES.has(soundPref) && pageAudioUnlocked);
+
+      try {
+        console.info("[HTR BOOKING ALERT]", {
+          stage: "sw-received",
+          eventType,
+          role,
+          bookingId: data.bookingId ? String(data.bookingId).slice(0, 8) : null,
+          hasFocusedClient,
+          pageAudioUnlocked,
+          silent,
+          sound: soundPref,
+          clientCount: clientsList.length,
+        });
+      } catch { /* ignore */ }
 
       const options = {
         body,
@@ -204,6 +233,15 @@ self.addEventListener("push", (event) => {
           });
         } catch { /* ignore */ }
       }
+      try {
+        console.info("[HTR BOOKING ALERT]", {
+          stage: "sw-postmessage",
+          eventType,
+          role,
+          bookingId: data.bookingId ? String(data.bookingId).slice(0, 8) : null,
+          clientsNotified: clientsList.length,
+        });
+      } catch { /* ignore */ }
     })(),
   );
 });
