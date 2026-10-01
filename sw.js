@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v13";
+const CACHE = "htr-pwa-v14";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
@@ -128,7 +128,7 @@ const CUSTOM_TONES = new Set([
   "en_female_professional", "en_female_warm", "en_female_attention",
 ]);
 
-// ── Web Push: Admin NEW_BOOKING + Employee BOOKING_ASSIGNED ──────────────────
+// ── Web Push: Admin NEW_BOOKING / RESTORED_BOOKING + Employee BOOKING_ASSIGNED / RESTORED_ASSIGNMENT
 self.addEventListener("push", (event) => {
   let data = {};
   try {
@@ -141,20 +141,30 @@ self.addEventListener("push", (event) => {
   const role = String(data.role || "admin");
   const title = String(
     data.title ||
-      (eventType === "BOOKING_ASSIGNED" ? "New Job Assigned" : "New Appliance Booking"),
+      (eventType === "BOOKING_ASSIGNED"
+        ? "New Job Assigned"
+        : eventType === "RESTORED_BOOKING"
+          ? "Booking Restored"
+          : eventType === "RESTORED_ASSIGNMENT"
+            ? "Job Restored"
+            : "New Appliance Booking"),
   );
   const body = String(
     data.body ||
       (eventType === "BOOKING_ASSIGNED"
         ? "You have a new service job."
-        : "New booking received — tap to review."),
+        : eventType === "RESTORED_BOOKING" || eventType === "RESTORED_ASSIGNMENT"
+          ? "A booking was restored — tap to review."
+          : "New booking received — tap to review."),
   );
   const tag = String(
     data.tag ||
       (data.bookingId
         ? eventType === "BOOKING_ASSIGNED"
           ? `htr-assigned-${data.bookingId}`
-          : `htr-booking-${data.bookingId}`
+          : eventType === "RESTORED_BOOKING" || eventType === "RESTORED_ASSIGNMENT"
+            ? `htr-restored-${data.restoreOpId || data.bookingId}`
+            : `htr-booking-${data.bookingId}`
         : "htr-booking"),
   );
   const url = String(
@@ -165,6 +175,7 @@ self.addEventListener("push", (event) => {
   );
   const vibrate = data.vibrate === false ? undefined : [200, 100, 200, 100, 400];
   const soundPref = String(data.sound || "htr1");
+  const restoreOpId = data.restoreOpId ? String(data.restoreOpId) : null;
 
   event.waitUntil(
     (async () => {
@@ -187,6 +198,7 @@ self.addEventListener("push", (event) => {
           eventType,
           role,
           bookingId: data.bookingId ? String(data.bookingId).slice(0, 8) : null,
+          restoreOpId: restoreOpId ? restoreOpId.slice(0, 8) : null,
           hasFocusedClient,
           pageAudioUnlocked,
           silent,
@@ -203,6 +215,7 @@ self.addEventListener("push", (event) => {
         data: {
           url,
           bookingId: data.bookingId || null,
+          restoreOpId,
           sound: soundPref,
           test: Boolean(data.test),
           eventType,
@@ -220,6 +233,7 @@ self.addEventListener("push", (event) => {
           client.postMessage({
             type: "HTR_BOOKING_PUSH",
             bookingId: data.bookingId || null,
+            restoreOpId,
             tag,
             sound: soundPref,
             vibrate: data.vibrate !== false,
@@ -239,6 +253,7 @@ self.addEventListener("push", (event) => {
           eventType,
           role,
           bookingId: data.bookingId ? String(data.bookingId).slice(0, 8) : null,
+          restoreOpId: restoreOpId ? restoreOpId.slice(0, 8) : null,
           clientsNotified: clientsList.length,
         });
       } catch { /* ignore */ }
