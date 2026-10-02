@@ -1,6 +1,7 @@
-# Cloudflare Pages — AUDIT-008
-# Explicit SPA rewrites only. Unknown public URLs must hit 404.html (HTTP 404).
-# Do NOT restore a catch-all: /*  /index.html  200
+# Cloudflare Pages — AUDIT-008 follow-up
+# Do NOT restore catch-all: /*  /index.html  200
+# Do NOT rewrite SPA routes to /index.html — Cloudflare Pretty URLs
+# canonicalize /index.html → / (308), which broke /gallery and /employee.
 
 # Admin static shell lives at /admin/
 /admin              /admin/     301
@@ -11,16 +12,16 @@
 /form/*       https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
 /estimate/*   https://htr-group-llc-appliance-repair.replit.app/api/estimate/:splat  302
 
-# Public SPA deep links → main index.html (refresh / direct-open)
-/gallery            /index.html  200
-/gallery/           /index.html  200
-/blog               /index.html  200
-/blog/              /index.html  200
-/blog/*             /index.html  200
-/employee           /index.html  200
-/employee/          /index.html  200
-/payment-success    /index.html  200
-/payment-success/   /index.html  200
+# Trailing-slash → extensionless. Exact paths are served by static
+# gallery.html / employee.html / blog.html / payment-success.html
+# (minted from index.html at deploy; Pretty URLs maps /gallery → gallery.html).
+/gallery/           /gallery            301
+/employee/          /employee           301
+/blog/              /blog               301
+/payment-success/   /payment-success    301
+
+# Nested blog slugs → spa-shell.html (NOT /index.html — would 308 to /)
+/blog/*             /spa-shell.html     200
 
 # Pay static shell lives at /pay/
 /pay                /pay/        301
