@@ -1,7 +1,26 @@
-# Cloudflare Pages
-/admin    /admin/    301
+# Cloudflare Pages — AUDIT-008
+# Explicit SPA rewrites only. Unknown public URLs must hit 404.html (HTTP 404).
+# Do NOT restore a catch-all: /*  /index.html  200
+
+# Admin static shell lives at /admin/
+/admin              /admin/     301
+
+# Intentional token aliases → Replit API (production behavior)
 /book-call/*  https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
 /intake/*     https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
 /form/*       https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
 /estimate/*   https://htr-group-llc-appliance-repair.replit.app/api/estimate/:splat  302
-/*          /index.html     200
+
+# Public SPA deep links → main index.html (refresh / direct-open)
+/gallery            /index.html  200
+/gallery/           /index.html  200
+/blog               /index.html  200
+/blog/              /index.html  200
+/blog/*             /index.html  200
+/employee           /index.html  200
+/employee/          /index.html  200
+/payment-success    /index.html  200
+/payment-success/   /index.html  200
+
+# Pay static shell lives at /pay/
+/pay                /pay/        301
