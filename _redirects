@@ -17,8 +17,11 @@
 # (minted from index.html at deploy; Pretty URLs maps /gallery → gallery.html).
 /gallery/           /gallery            301
 /employee/          /employee           301
+/dispatcher/        /dispatcher         301
 /blog/              /blog               301
 /payment-success/   /payment-success    301
+/admin/dispatchers/ /admin/dispatchers  301
+/admin/dispatchers  /dispatcher-admin.html  200
 
 # Nested blog slugs → spa-shell.html (NOT /index.html — would 308 to /)
 /blog/*             /spa-shell.html     200
