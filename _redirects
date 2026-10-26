@@ -13,7 +13,7 @@
 /estimate/*   https://htr-group-llc-appliance-repair.replit.app/api/estimate/:splat  302
 
 # Trailing-slash → extensionless. Exact paths are served by static
-# gallery.html / employee.html / blog.html / payment-success.html
+# gallery.html / employee.html / dispatcher.html / admin/dispatchers.html
 # (minted from index.html at deploy; Pretty URLs maps /gallery → gallery.html).
 /gallery/           /gallery            301
 /employee/          /employee           301
@@ -21,7 +21,6 @@
 /blog/              /blog               301
 /payment-success/   /payment-success    301
 /admin/dispatchers/ /admin/dispatchers  301
-/admin/dispatchers  /dispatcher-admin.html  200
 
 # Nested blog slugs → spa-shell.html (NOT /index.html — would 308 to /)
 /blog/*             /spa-shell.html     200
