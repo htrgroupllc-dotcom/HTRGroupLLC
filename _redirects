@@ -22,6 +22,15 @@
 /payment-success/   /payment-success    301
 /admin/dispatchers/ /admin/dispatchers  301
 
+# Dispatcher cabinet is /dispatcher (case-sensitive on Cloudflare Pages).
+# Wrong case / singular admin typo must not hit the static 404.html page.
+/Dispatcher         /dispatcher         302
+/Dispatcher/        /dispatcher         302
+/DISPATCHER         /dispatcher         302
+/DISPATCHER/        /dispatcher         302
+/admin/dispatcher   /dispatcher         302
+/admin/dispatcher/  /dispatcher         302
+
 # Nested blog slugs → spa-shell.html (NOT /index.html — would 308 to /)
 /blog/*             /spa-shell.html     200
 

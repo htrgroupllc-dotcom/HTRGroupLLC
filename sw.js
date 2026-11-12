@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v16";
+const CACHE = "htr-pwa-v17-dispatcher";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
@@ -12,6 +12,22 @@ self.addEventListener("activate", (e) => {
   );
 });
 
+function offlineShellFor(pathname) {
+  if (pathname === "/dispatcher" || pathname.startsWith("/dispatcher/")) {
+    return caches.match("/dispatcher.html").then((hit) => hit || caches.match(pathname));
+  }
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    return caches.match("/admin/index.html").then((hit) => hit || caches.match("/index.html"));
+  }
+  if (pathname === "/pay" || pathname.startsWith("/pay/")) {
+    return caches.match("/pay/index.html").then((hit) => hit || caches.match("/index.html"));
+  }
+  if (pathname === "/employee" || pathname.startsWith("/employee/")) {
+    return caches.match("/employee.html").then((hit) => hit || caches.match("/index.html"));
+  }
+  return caches.match("/index.html");
+}
+
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
@@ -20,7 +36,7 @@ self.addEventListener("fetch", (e) => {
 
   if (e.request.mode === "navigate") {
     e.respondWith(
-      fetch(e.request).catch(() => caches.match("/index.html")),
+      fetch(e.request).catch(() => offlineShellFor(url.pathname)),
     );
     return;
   }
