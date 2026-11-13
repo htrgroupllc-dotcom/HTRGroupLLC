@@ -1,20 +1,15 @@
-# Cloudflare Pages — AUDIT-008 follow-up
+﻿# Cloudflare Pages — AUDIT-008 follow-up
 # Do NOT restore catch-all: /*  /index.html  200
 # Do NOT rewrite SPA routes to /index.html — Cloudflare Pretty URLs
 # canonicalize /index.html → / (308), which broke /gallery and /employee.
 
+# TEMP while Cloudflare Workers degraded: external + 200-rewrite rules in _redirects.full
+# Restore: copy _redirects.full → _redirects, then push when Workers is operational.
+
 # Admin static shell lives at /admin/
 /admin              /admin/     301
 
-# Intentional token aliases → Replit API (production behavior)
-/book-call/*  https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
-/intake/*     https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
-/form/*       https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
-/estimate/*   https://htr-group-llc-appliance-repair.replit.app/api/estimate/:splat  302
-
-# Trailing-slash → extensionless. Exact paths are served by static
-# gallery.html / employee.html / dispatcher.html / admin/dispatchers.html
-# (minted from index.html at deploy; Pretty URLs maps /gallery → gallery.html).
+# Trailing-slash → extensionless.
 /gallery/           /gallery            301
 /employee/          /employee           301
 /dispatcher/        /dispatcher         301
@@ -22,8 +17,6 @@
 /payment-success/   /payment-success    301
 /admin/dispatchers/ /admin/dispatchers  301
 
-# Dispatcher cabinet is /dispatcher (case-sensitive on Cloudflare Pages).
-# Wrong case / singular admin typo must not hit the static 404.html page.
 /Dispatcher         /dispatcher         302
 /Dispatcher/        /dispatcher         302
 /DISPATCHER         /dispatcher         302
@@ -31,8 +24,4 @@
 /admin/dispatcher   /dispatcher         302
 /admin/dispatcher/  /dispatcher         302
 
-# Nested blog slugs → spa-shell.html (NOT /index.html — would 308 to /)
-/blog/*             /spa-shell.html     200
-
-# Pay static shell lives at /pay/
 /pay                /pay/        301
