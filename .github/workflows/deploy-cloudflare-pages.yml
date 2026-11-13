@@ -51,14 +51,32 @@ jobs:
           echo "CLOUDFLARE_API_TOKEN length after normalization: ${#CLOUDFLARE_API_TOKEN}"
           npx wrangler@3.90.0 whoami
           # Pages Functions publish can fail on transient Cloudflare Workers API errors.
+          # Wrangler may still exit 0 with "couldn't ascertain the final status" while
+          # the deployment never becomes Production — treat that as failure and retry.
           attempt=1
-          max_attempts=5
-          until npx wrangler@3.90.0 pages deploy _pages_deploy --project-name=htrgrouptx --branch=main --commit-hash="${GITHUB_SHA}"; do
-            if [ "$attempt" -ge "$max_attempts" ]; then
-              echo "::error::Cloudflare Pages deploy failed after ${max_attempts} attempts"
-              exit 1
+          max_attempts=8
+          deploy_ok=0
+          while [ "$attempt" -le "$max_attempts" ]; do
+            echo "Cloudflare Pages deploy attempt ${attempt}/${max_attempts}…"
+            set +e
+            deploy_log="$(mktemp)"
+            npx wrangler@3.90.0 pages deploy _pages_deploy --project-name=htrgrouptx --branch=main --commit-hash="${GITHUB_SHA}" 2>&1 | tee "$deploy_log"
+            wr_ec=${PIPESTATUS[0]}
+            set -e
+            if [ "$wr_ec" -eq 0 ] && grep -q 'Deployment complete!' "$deploy_log" && ! grep -q "couldn't ascertain the final status" "$deploy_log"; then
+              deploy_ok=1
+              rm -f "$deploy_log"
+              break
             fi
-            echo "::warning::Cloudflare Pages deploy attempt ${attempt}/${max_attempts} failed; retrying in 45s…"
+            echo "::warning::Cloudflare Pages deploy attempt ${attempt}/${max_attempts} incomplete (exit=${wr_ec}); retrying in 60s…"
+            rm -f "$deploy_log"
+            if [ "$attempt" -ge "$max_attempts" ]; then
+              break
+            fi
             attempt=$((attempt + 1))
-            sleep 45
+            sleep 60
           done
+          if [ "$deploy_ok" -ne 1 ]; then
+            echo "::error::Cloudflare Pages deploy failed after ${max_attempts} attempts (or status could not be confirmed)"
+            exit 1
+          fi
