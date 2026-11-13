@@ -50,4 +50,15 @@ jobs:
           fi
           echo "CLOUDFLARE_API_TOKEN length after normalization: ${#CLOUDFLARE_API_TOKEN}"
           npx wrangler@3.90.0 whoami
-          npx wrangler@3.90.0 pages deploy _pages_deploy --project-name=htrgrouptx --branch=main --commit-hash="${GITHUB_SHA}"
+          # Pages Functions publish can fail on transient Cloudflare Workers API errors.
+          attempt=1
+          max_attempts=5
+          until npx wrangler@3.90.0 pages deploy _pages_deploy --project-name=htrgrouptx --branch=main --commit-hash="${GITHUB_SHA}"; do
+            if [ "$attempt" -ge "$max_attempts" ]; then
+              echo "::error::Cloudflare Pages deploy failed after ${max_attempts} attempts"
+              exit 1
+            fi
+            echo "::warning::Cloudflare Pages deploy attempt ${attempt}/${max_attempts} failed; retrying in 45s…"
+            attempt=$((attempt + 1))
+            sleep 45
+          done
