@@ -3,12 +3,14 @@
 # Do NOT rewrite SPA routes to /index.html — Cloudflare Pretty URLs
 # canonicalize /index.html → / (308), which broke /gallery and /employee.
 
-# TEMP 2026-11-13: external + 200-rewrite rules omitted while Cloudflare Workers
-# is degraded (Pages Functions publish fails). Full rules restored after CF recovers.
-# See _redirects.full.bak in git history / next commit.
-
 # Admin static shell lives at /admin/
 /admin              /admin/     301
+
+# Intentional token aliases → Replit API (production behavior)
+/book-call/*  https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
+/intake/*     https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
+/form/*       https://htr-group-llc-appliance-repair.replit.app/api/intake-form/:splat  302
+/estimate/*   https://htr-group-llc-appliance-repair.replit.app/api/estimate/:splat  302
 
 # Trailing-slash → extensionless. Exact paths are served by static
 # gallery.html / employee.html / dispatcher.html / admin/dispatchers.html
@@ -28,6 +30,9 @@
 /DISPATCHER/        /dispatcher         302
 /admin/dispatcher   /dispatcher         302
 /admin/dispatcher/  /dispatcher         302
+
+# Nested blog slugs → spa-shell.html (NOT /index.html — would 308 to /)
+/blog/*             /spa-shell.html     200
 
 # Pay static shell lives at /pay/
 /pay                /pay/        301
