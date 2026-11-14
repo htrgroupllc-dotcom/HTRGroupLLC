@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v21-payroll-ledger-doc-lines";
+const CACHE = "htr-pwa-v22-dispatcher-card-chat-icons";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
