@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v19-closed-days";
+const CACHE = "htr-pwa-v20-source-payroll-chat";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
