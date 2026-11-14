@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v18-dispatcher";
+const CACHE = "htr-pwa-v19-closed-days";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
