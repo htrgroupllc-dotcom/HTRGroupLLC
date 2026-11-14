@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v23-chat-realtime-payment-schema";
+const CACHE = "htr-pwa-v24-chat-send-theme-docs-admin-audit";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
