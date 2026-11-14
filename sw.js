@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v25-crm-unified-design-tokens";
+const CACHE = "htr-pwa-v26-chat-send-dark-slots";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
