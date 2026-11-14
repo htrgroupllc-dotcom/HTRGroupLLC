@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v20-source-payroll-chat";
+const CACHE = "htr-pwa-v21-payroll-ledger-doc-lines";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
