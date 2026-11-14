@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v22-dispatcher-card-chat-icons";
+const CACHE = "htr-pwa-v23-chat-realtime-payment-schema";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
