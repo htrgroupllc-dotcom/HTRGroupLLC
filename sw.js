@@ -1,4 +1,4 @@
-const CACHE = "htr-pwa-v24-chat-send-theme-docs-admin-audit";
+const CACHE = "htr-pwa-v25-crm-unified-design-tokens";
 
 self.addEventListener("install", (e) => {
   e.waitUntil(self.skipWaiting());
